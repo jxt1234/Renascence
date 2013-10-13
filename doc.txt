@@ -1,0 +1,109 @@
+带*号表示未开发，带&号表示只实现部分或实现方式需要重写
+
+1、提供编写软件的IDE，允许用户在指导将各个结点结合成一个软件
+2、提供软件自动生成的功能，在两个结点中自动生成连线结构
+3、提供修正功能，通过GP驱动，将计算性结点重新组合
+4、提供每种结点的状态查询和调试功能
+
+
+程序框架：
+Core: 稳定性最强的部分，用户完全不需关注
+	GeneticProgram：抽象的程序对象，只有函数、状态Id和相应的连接关系
+	调用：无
+	功能：提供抽象程序架构
+	*GeneticView：将GeneticProgram展示为图片
+	调用：GeneticProgram
+
+System:需要适配
+关于system的一些table载入以后采取xml读取的方式
+computeSystem, statusSystem需要手动做下适配，functionDataBase和dataSystem需要挑选，GenerateSystem可以引入自身的算法
+	&functionDataBase：储存计算函数库，包括两部分，一部分是原始函数，一部分是将原始函数经过转换后的规则函数（机器代码）
+	（高级的计算函数库将包括分类与查找的功能。）
+	*dataSystem：根据取数据的方式，可从functionDataBase分离出dataSystem，以专门负责数据的管理
+	computeSystem：
+	调用：functionDataBase
+	管理：mapFunction，computeFunction的依赖关系表
+	功能：
+		1、提供mapFunction通过访问functionDataBase
+		2、提供GeneticProgram程序计算所需的compute函数
+		3、通过依赖关系表，为设定或自动生成GeneticProgram提供依据。
+		*4、提供适应度计算的函数，也即计算结果好坏的评价(改为由函数库提供)
+	statusSystem：
+	调用：functionDataBase（函数是否支持状态处理，支持什么类型的状态处理是由函数库提供的）
+	管理：状态映射函数（statusMapFunction）、状态设定函数、状态数据
+	功能：
+		1、根据使用的函数，创建相应的状态列表，以便给结点发放状态Id
+		2、提供statusMapFunction，以便将结点的状态Id转换为实际状态变量。
+		3、提供状态申请功能，GenerateSystem在生成结点时，可以向此系统申请状态内存
+		4、提供每个结点的状态查询与设定功能
+	GenerateSystem：
+	调用：statusSystem, computeSystem
+	管理：生成GeneticProgram的数集
+	功能：为GeneticProgram的生成与变换提供数集，GeneticProgram只能通过数集进行确定性的变换，随机性在GenerateSystem生成数集的过程中反映。
+
+user:开发软件时需要列出需求表，测试表，并且可能需要写少量自己的函数
+	userFunction：自用函数，在函数库中的函数不足以满足需求的情况下编写
+	*fixTable：输出匹配表
+	*test：测试用例表
+	*statusTable：状态数据表
+
+ass:调试用程序，打印日志必须用debug.h中的宏或函数
+
+主程序：
+1、必须依赖：GeneticProgram、computeSystem
+2、存在状态性函数，需要追加状态管理则加 statusSystem
+3、需要显示，追加 GeneticView
+4、需要在编辑GeneticProgram知道操作是否合法，需要智能生成GeneticProgram：追加GenerateSystem
+
+
+
+一种函数库设计：
+1、所有的函数均被封装为一系列的so，附带xml提供函数名、函数输入输出类型，输入类型集等。
+2、所有被封装的函数均是GP指定的类型。
+3、函数库在初始化时根据总XML表去查找并打开相应的so，构建成函数表。
+4、根据函数的输入类型（只允许是类型指针）构建匹配表
+5、根据函数的状态类型，自动生成状态表相关代码。
+6、状态的改变函数额外设计。
+
+9.8 TODO
+1、补充evolution_tree只变状态的变异方法（完成）
+2、补充全搜索的提供，补充全搜索中状态的申请（完成）
+3、补充变异时对状态的释放，补充挎贝时对状态的同步挎贝（完成）
+4、补充转接法，在最后一步时，将输出函数由适应度计算转变为输出图片（完成）
+5、补充状态的打印方法（完成）
+
+9.15 TODO
+1、函数系统、状态系统的xml制作规范与解析算法（完成）
+2、多元线性回归的数学库（完成）
+3、修正规范函数为 void* func(vector<void*> inputs, vector<void*> status),以与状态组合匹配（完成）
+4、修正状态打印函数为 string func(void*)（完成）
+
+9.19 TODO
+1、追加string输出的GeneticProgram打印方法，此为标准打印法则（完成）
+2、修改GP生长、变异机制为函数赋予形式（取消，改为增加一个状态变异方法）（完成）
+3、修改GenerateSystem：（1）使之在生成序列过长时折断。（完成）（2）事先对所有函数类型判断是不是可加入的函数（不会构成死循环）（更新）
+
+9.25 TODO
+1、尽快完成9.8 9.15 9.19的残留任务
+2、根据 require.txt的需求分析，编写相关的介绍文档并详细说明
+3、寻找资源协助并分解任务
+4、阅读最新的GP相关文献
+
+10.7 TODO
+1、制定将GP的输出转变为程序的方案，并实施（暂缓）
+2、制定函数固化的方案并实施。（完成）
+
+10.9 Points
+1、构思package函数重用的方式。
+2、构思交叉验证的实现方式
+
+10.11 TODO
+1、提供GP的xml、so匹配校验方法，允许用户在启动evolution之前先进行检查，看xml是否匹配。
+2、设计不同so之间衔接的方式，追加函数output、input属性，在存在input属性时，寻找有output相同类型的函数作为输入，而非直接指定。
+（1）so内部，也即单一模块内部的xml文件中，主要通过指定函数输入来衔接。
+（2）模块要和外部模块打交道，引用其他模块的函数时，按类型匹配来衔接，即本模块指定输入类型，系统在所有模块函数中查输出类型并与之适配。
+3、确定作用范围尽可能大的公共类型说明
+
+10.13 TODO
+1、追加带输入输出的GP运算方式
+2、构思GP中函数转换的方式
