@@ -8,6 +8,8 @@ class xmlGenerateSystem:public GenerateSystem
     public:
         xmlGenerateSystem(const char* xmlFile, bool print= false);
         virtual ~xmlGenerateSystem();
+    private:
+        void* mHandle;
 };
 
 

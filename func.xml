@@ -1,4 +1,4 @@
-<main>
+<libpics>
 
 <TrPackageCompse>
 	<output>TrBmp</output>
@@ -55,4 +55,4 @@
 <input>TrPackageInput</input>
 <fit>TrPackageFitCompute</fit>
 
-</main>
+</libpics>

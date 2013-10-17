@@ -32,11 +32,11 @@ vector<int> GenerateSystem::searchOneWithOutput(int out)
     computePoint* start = new computePoint(warpOutput, avail);
     computeSearchTree tree(start);
     vector<int> result = tree.searchOne();
-    if (!mStatusSystem)
+    if (!mComputeSystem)
     {
         for (int i=0; i<result.size()/3; ++i)
         {
-            result[i*3+1] = mStatusSystem->allocateStatus(result[i*3]);
+            result[i*3+1] = mComputeSystem->allocateStatus(result[i*3]);
         }
     }
 }
@@ -100,9 +100,9 @@ vector<int> GenerateSystem::getRandSequenceWithOutput(int outputFunctionId)
             }
         }
         //Input information to result
-        if (mStatusSystem)
+        if (mComputeSystem)
         {
-            GeneticProgram::loadUnitFunction(result, functionId, mStatusSystem->allocateStatus(functionId), n);
+            GeneticProgram::loadUnitFunction(result, functionId, mComputeSystem->allocateStatus(functionId), n);
         }
         else
         {

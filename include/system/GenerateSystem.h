@@ -2,39 +2,27 @@
 #define GENERATE_SYSTEM_H
 
 #include "computeSystem.h"
-#include "statusSystem.h"
+#include "core/GeneticProgram.h"
+#include <assert.h>
 
 class GenerateSystem
 {
     public:
-        GenerateSystem():mStatusSystem(NULL), mComputeSystem(NULL){}
-        GenerateSystem(computeSystem* sys, statusSystem* status = NULL):mStatusSystem(status), mComputeSystem(sys){}
+        GenerateSystem():mComputeSystem(NULL){}
+        GenerateSystem(computeSystem* sys ):mComputeSystem(sys){}
         virtual ~GenerateSystem(){}
         vector<int> searchOneSequence();
         vector<int> searchOneWithOutput(int out);
         virtual vector<int> getRandSequence();
         virtual vector<int> getRandSequenceWithOutput(int outputFunctionId);
         inline void setComputeSystem(computeSystem* comsys){mComputeSystem = comsys;}
-        inline void setStatusSystem(statusSystem* status){mStatusSystem = status;}
-        inline mapFunction getMapFunction()
+        inline const std::vector<computeFunction>& getMapFunction()
         {
-            if (NULL!=mComputeSystem)
-            {
-                return mComputeSystem->getMapFunction();
-            }
-            return NULL;
-        }
-        inline statusMapFunction getStatusMapFunction()
-        {
-            if (NULL!=mStatusSystem)
-            {
-                return mStatusSystem->getMapFunction();
-            }
-            return NULL;
+            assert(NULL!=mComputeSystem);
+            return mComputeSystem->getMapFunction();
         }
     protected:
         computeSystem* mComputeSystem;
-        statusSystem* mStatusSystem;
 
 };
 #endif

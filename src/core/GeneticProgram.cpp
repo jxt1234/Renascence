@@ -140,9 +140,9 @@ void GeneticProgram::clear()
     }
 }
 
-GP_Output GeneticProgram::compute(mapFunction map)
+GP_Output GeneticProgram::compute(const vector<computeFunction>& table)
 {
-    GP_Output output = computeUnit(map, mRoot);
+    GP_Output output = computeUnit(table, mRoot);
     return output;
 }
 
@@ -229,7 +229,7 @@ vector<GeneticPoint*> GeneticProgram::searchAllPoints()
     return result;
 }
 
-GP_Output GeneticProgram::computeUnit(mapFunction map, GeneticPoint* point)
+GP_Output GeneticProgram::computeUnit(const vector<computeFunction>& table, GeneticPoint* point)
 {
     assert(NULL!=point);
     GP_Output result;
@@ -241,13 +241,13 @@ GP_Output GeneticProgram::computeUnit(mapFunction map, GeneticPoint* point)
         GP_Output_SetNoFree(result);
         return result;
     }
-    computeFunction compute = map(point->functionId);
+    computeFunction compute = table[point->functionId];
     vector<GP_Output::GP_Unit> inputMap;
     vector<void*> inputs;
     //Get Inputs from childern point
     for (int i=0; i<point->inputs.size(); ++i)
     {
-        GP_Output out = computeUnit(map, point->inputs[i]);
+        GP_Output out = computeUnit(table, point->inputs[i]);
         vector<GP_Output::GP_Unit>& output_unit = out.output;
         for (int j=0; j<output_unit.size(); ++j)
         {
@@ -309,11 +309,11 @@ void GeneticProgram::xmlPrintUnit(ostringstream& res, string(*funcPrint)(int), G
     res<<"</"<<funcPrint(point->functionId)<<">\n";
 }
 
-void GeneticProgram::save(mapFunction map, const std::vector<int>& functionIds)
+void GeneticProgram::save(const vector<computeFunction>& table, const std::vector<int>& functionIds)
 {
     assert(NULL!=mRoot);
     reset();
-    computeUnitSave(map, mRoot, functionIds);
+    computeUnitSave(table, mRoot, functionIds);
 }
 
 void GeneticProgram::reset()
@@ -330,14 +330,14 @@ void GeneticProgram::reset()
     }
 }
 
-void GeneticProgram::computeUnitSave(mapFunction map, GeneticPoint* point, const std::vector<int> functionIds)
+void GeneticProgram::computeUnitSave(const vector<computeFunction>& table, GeneticPoint* point, const std::vector<int> functionIds)
 {
     for (int i=0; i<functionIds.size(); ++i)
     {
         if (point->functionId == functionIds[i])
         {
             GP_Output out;
-            out = computeUnit(map, point);
+            out = computeUnit(table, point);
             assert(NULL==point->save);
             point->save = new GP_Output;
             *(point->save) = out;
@@ -346,6 +346,6 @@ void GeneticProgram::computeUnitSave(mapFunction map, GeneticPoint* point, const
     }
     for (int i=0; i<point->inputs.size(); ++i)
     {
-        computeUnitSave(map, point->inputs[i], functionIds);
+        computeUnitSave(table, point->inputs[i], functionIds);
     }
 }

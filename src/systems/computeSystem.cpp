@@ -3,13 +3,10 @@
 #include "system/computeSystem.h"
 #include "utils/debug.h"
 #include "math/carryArray.h"
-#define FUNCTION_TABLE_FILE_DEFAULT "db/function.table"
+#include "system/system_lib.h"
+#include <assert.h>
 
-static computeFunction myMapFunction(int functionId)
-{
-    int id = functionId%gAllFunctionsNumber;
-    return gAllFunctions[id];
-}
+#define FUNCTION_TABLE_FILE_DEFAULT "db/function.table"
 
 computeSystem::computeSystem()
 {
@@ -29,130 +26,79 @@ vector<int> computeSystem::getAllFunctionIDs()
     return result;
 }
 
-mapFunction computeSystem::getMapFunction()
-{
-    mapFunction result;
-    result = myMapFunction;
-    return result;
-}
-computeFunction computeSystem::map(int functionId)
-{
-    int id = functionId%mFunctions.size();
-    return mFunctions[id];
-}
-
-const vector<int>& computeSystem::getAvailablemFunctions(int functionId)
-{
-    int id = functionId%mTable.size();
-    return mTable[id];
-}
-
 void computeSystem::clear()
 {
     mBasicTable.clear();
-    mTable.clear();
+    mStatusTable.clear();
     mInputId.clear();
     mOutputId.clear();
     mFunctions.clear();
-    initFunctions();
 }
 
-void computeSystem::loadFuncXml(xmlFunctionLoader& loader)
+vector<int> computeSystem::loadStatus(const vector<xmlFunctionLoader::status>& sta, void* handle)
 {
-    clear();
-    mOutputId.push_back(loader.mFit);
-    for (int i=0; i<loader.size(); ++i)
+    vector<int> typeId;
+    for (int i=0; i<sta.size(); ++i)
     {
-        mBasicTable.push_back(loader.getCombo(i));
+#define FINDFUNC(type, subname) type subname = (type)system_find_func(handle, (sta[i].name+#subname).c_str());
+        FINDFUNC(statusAllocMethod, _alloc);
+        FINDFUNC(statusVaryMethod, _free);
+        FINDFUNC(statusVaryMethod, _vary);
+        FINDFUNC(statusCopyMethod, _copy);
+        FINDFUNC(statusPrintMethod, _print);
+        FINDFUNC(statusLoadMethod, _load);
+#undef FINDFUNC
+        int id = status_allocType(0, _alloc, _free, _vary, _copy, _print, _load);
+        typeId.push_back(id);
+    }
+    return typeId;
+}
+
+void computeSystem::loadFuncXml(xmlFunctionLoader& loader, void* &handle)
+{
+    if (NULL == handle)
+    {
+        handle = system_load_lib(loader.libName.c_str());
+    }
+    assert(NULL!=handle);
+    vector<int> statusTypeId = loadStatus(loader.getStatus(), handle);
+    int offset = mFunctions.size();
+    mOutputId.push_back(loader.mFit);
+    const vector<xmlFunctionLoader::function>& functions = loader.getFunc();
+    for (int i=0; i<functions.size(); ++i)
+    {
+        const xmlFunctionLoader::function& f = functions[i];
+        /*Load function handle*/
+        computeFunction func = (computeFunction)system_find_func(handle, f.name.c_str());
+        assert(NULL!=func);
+        mFunctions.push_back(func);
+        /*Load function status*/
+        vector<int> statusType = f.statusType;
+        vector<int> newST;
+        for (int j=0; j<statusType.size(); ++j)
+        {
+            int cur = statusType[j];
+            newST.push_back(statusTypeId[cur]);
+        }
+        mStatusTable.push_back(newST);
+        /*Load function inputs*/
+        vector<vector<int> > newCombo = f.inputs;
+        for (int j=0; j<newCombo.size(); ++j)
+        {
+            for (int k=0; k<newCombo[j].size(); ++k)
+            {
+                newCombo[j][k]+=offset;
+            }
+        }
+        mBasicTable.push_back(newCombo);
     }
     mInputId = loader.mInputs;
 }
 
-void computeSystem::loadTable(const char* file)
+
+int computeSystem::allocateStatus(int id)
 {
-    clear();
-    ifstream readFile;
-    if (NULL==file)
-    {
-        readFile.open(FUNCTION_TABLE_FILE_DEFAULT);
-    }
-    else
-    {
-        readFile.open(file);
-    }
-    if (!readFile.fail())
-    {
-        for (int i=0; i < gAllFunctionsNumber; ++i)
-        {
-            mFunctions.push_back(gAllFunctions[i]);
-        }
-        //Input numbers
-        int inputsNumber;
-        readFile >> inputsNumber;
-        for (int i=0; i<inputsNumber; ++i)
-        {
-            int temp;
-            readFile>>temp;
-            mInputId.push_back(temp);
-        }
-        //Output numbers
-        int outputsNumber;
-        readFile>>outputsNumber;
-        for (int i=0; i < outputsNumber; ++i)
-        {
-            int temp;
-            readFile >> temp;
-            mOutputId.push_back(temp);
-        }
-        //Table
-        for (int i=0; i < mFunctions.size(); ++i)
-        {
-            int inputsNumber;
-            readFile >> inputsNumber;
-            vector<int> tempVector;
-            for (int j=0; j<inputsNumber;++j)
-            {
-                int temp;
-                readFile>>temp;
-                tempVector.push_back(temp);
-            }
-            mTable.push_back(tempVector);
-        }
-        //Every functions' min and max inputs number
-        mInputNumbers.clear();
-        for (int i=0; i<mFunctions.size(); ++i)
-        {
-            int min, max;
-            readFile>>min>>max;
-            pair<int, int> temp(min, max);
-            mInputNumbers.push_back(temp);
-        }
-        readFile.close();
-    }
-    constructBasicTable();
-}
-void computeSystem::constructBasicTable()
-{
-    mBasicTable.clear();
-    for (int i=0; i<mFunctions.size(); ++i)
-    {
-        vector<int> inputFunc = getAvailablemFunctions(i);
-        vector<vector<int> > inputs;
-        int size = getInputNumbers(i).first;
-        carryArray signQueue(size, inputFunc.size());
-        while(!signQueue.reachEnd())
-        {
-            const vector<int>& queue = signQueue.getCurrent();
-            vector<int> inputUnit;
-            for (int j=0; j<queue.size(); j++)
-            {
-                inputUnit.push_back(inputFunc[queue[j]]);
-            }
-            inputs.push_back(inputUnit);
-            ++signQueue;
-        }
-        mBasicTable.push_back(inputs);
-    }
+    return status_allocSet(mStatusTable[id]);
 }
 
 void computeSystem::print()
@@ -176,16 +122,15 @@ void computeSystem::print()
         cout << i<<":\t"<<mInputNumbers[i].first <<"\t"<<mInputNumbers[i].second<<endl;
     }
     cout << endl;
-    cout << "The match table is "<<endl;
-    for (int i=0; i<mTable.size(); ++i)
+    cout << "Status table is "<<endl;
+    for (int i=0; i<mStatusTable.size(); ++i)
     {
-        vector<int> &temp(mTable[i]);
-        cout <<"The inputs of function " << i << "  Can be ";
-        for (int j=0; j<temp.size(); ++j)
+        cout << "The "<<i<<" functions' status:"<<endl;
+        for (int j=0; j<mStatusTable[i].size(); ++j)
         {
-            cout << temp[j]<<"    ";
+            cout << mStatusTable[i][j]<<" ";
         }
-        cout << endl;
+        cout <<endl;
     }
     cout << "Basic table is "<<endl;
     for (int i=0; i<mBasicTable.size(); ++i)

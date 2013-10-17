@@ -22,8 +22,10 @@ struct statusType
     statusVaryMethod mutate;
     statusCopyMethod copy;
     statusPrintMethod print;
+    statusLoadMethod load;
     statusType(int _size, statusAllocMethod _alloc, statusVaryMethod _free, statusVaryMethod _mutate, 
-            statusCopyMethod _copy, statusPrintMethod _print):size(_size), alloc(_alloc), sfree(_free), mutate(_mutate), copy(_copy), print(_print){}
+            statusCopyMethod _copy, statusPrintMethod _print, statusLoadMethod _load):
+        size(_size), alloc(_alloc), sfree(_free), mutate(_mutate), copy(_copy), print(_print), load(_load){}
 };
 
 static vector<statusSet> gStatusSet;
@@ -44,9 +46,9 @@ bool status_init()
     gStatusType.clear();
     return true;
 }
-int status_allocType(int size, statusAllocMethod alloc, statusVaryMethod free, statusVaryMethod vary, statusCopyMethod copy, statusPrintMethod print)
+int status_allocType(int size, statusAllocMethod alloc, statusVaryMethod free, statusVaryMethod vary, statusCopyMethod copy, statusPrintMethod print, statusLoadMethod load)
 {
-    gStatusType.push_back(statusType(size, alloc, free, vary, copy, print));
+    gStatusType.push_back(statusType(size, alloc, free, vary, copy, print, load));
     return gStatusType.size()-1;
 }
 int status_allocSet(const vector<int>& type)

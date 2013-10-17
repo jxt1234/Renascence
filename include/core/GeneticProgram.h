@@ -11,7 +11,7 @@
 
 /*GeneticPoint is a compute point in a GeneticProgram, it collect a seriers inputs from other GeneticPoint, and then compute an result with its own constValue.
   The constValue is mapped from statusMapFunction, which map the statusId to void* constValue
- GeneticPoint is just a symbol, which means it can repress every kind of compute function, so it must work with a mapFunction, which can turn its functionId to actual computeFunction*/
+ GeneticPoint is just a symbol, which means it can repress every kind of compute function, so it must work with a const std::vector<computeFunction>&, which can turn its functionId to actual computeFunction*/
 
 
 struct GeneticPoint
@@ -40,11 +40,11 @@ class GeneticProgram
         virtual ~GeneticProgram();
         void operator=(const GeneticProgram& program);
         void clear();
-        GP_Output compute(mapFunction map);
+        GP_Output compute(const std::vector<computeFunction>& map);
         bool replacePoint(const std::vector<int> &numbers, int n);
         //Save appointed functionIds' output
         void reset();
-        void save(mapFunction map, const std::vector<int>& functionIds);
+        void save(const std::vector<computeFunction>& map, const std::vector<int>& functionIds);
         //Output a xml string, which can be write into file directly
         string xmlPrint(string(*funcPrint)(int));
         //For evolution trees
@@ -54,8 +54,8 @@ class GeneticProgram
         static void loadUnitFunction(std::vector<int>& result, int functionId, int statusId, int number);
     protected:
         bool replacePoint(const std::vector<int> &numbers, GeneticPoint* point);
-        GP_Output computeUnit(mapFunction map, GeneticPoint* point);
-        void computeUnitSave(mapFunction map, GeneticPoint* point, const std::vector<int> functionIds);
+        GP_Output computeUnit(const std::vector<computeFunction>& map, GeneticPoint* point);
+        void computeUnitSave(const std::vector<computeFunction>& map, GeneticPoint* point, const std::vector<int> functionIds);
         std::vector<GeneticPoint*> searchAllPoints();
         void deleteUnit(GeneticPoint* point);
         void copyPoints(GeneticPoint* self, GeneticPoint* source);

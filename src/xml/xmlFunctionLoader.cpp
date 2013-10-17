@@ -33,11 +33,15 @@ void xmlFunctionLoader::attributeUnflatten()
         for (int i=0; i<funcs.size(); ++i)
         {
             loadFunc(funcs[i]);
+            loadStatus(funcs[i]);
         }
     }
 }
+
+
 vector<xmlReader::package*> xmlFunctionLoader::loadMain(package* p)
 {
+    libName = p->name;
     vector<xmlReader::package*> result;
     const vector<xmlReader::package*> children = p->children;
     //Load Function Table and Statuc Table
@@ -57,7 +61,9 @@ vector<xmlReader::package*> xmlFunctionLoader::loadMain(package* p)
         {
             for (int j=0; j<cur->attr.size(); ++j)
             {
-                mStatus.push_back(cur->attr[j]);
+                status s;
+                s.name = cur->attr[j];
+                mStatus.push_back(s);
             }
         }
     }
@@ -107,7 +113,7 @@ int xmlFunctionLoader::findStatus(string name)
     int result = -1;
     for (int i=0; i<mStatus.size(); ++i)
     {
-        if (mStatus[i] == name)
+        if (mStatus[i].name == name)
         {
             result = i;
             break;
@@ -158,6 +164,10 @@ void xmlFunctionLoader::loadFunc(package* p)
         }
     }
 }
+void xmlFunctionLoader::loadStatus(xmlReader::package* p)
+{
+    int id = findStatus(p->name);
+}
 
 void xmlFunctionLoader::subClear()
 {
@@ -188,6 +198,16 @@ void xmlFunctionLoader::printFunc(xmlFunctionLoader::function& func)
     cout << endl;
 }
 
+void xmlFunctionLoader::printStatus(status& sta)
+{
+    cout << "Alloc: " << sta._alloc << endl;
+    cout << "Free: " << sta._free << endl;
+    cout << "Print: " << sta._print << endl;
+    cout << "Load: " << sta._load << endl;
+    cout << "Copy: " << sta._copy << endl;
+    cout << "Vary: " << sta._vary << endl;
+}
+
 void xmlFunctionLoader::print()
 {
     cout << "Inputs = ";
@@ -203,5 +223,12 @@ void xmlFunctionLoader::print()
         xmlFunctionLoader::function& func = mFunctions[i];
         cout << "name = "<<func.name <<"    id = "<<i<<endl;
         printFunc(func);
+    }
+    cout << " Status Types Amount = "<<mStatus.size()<<endl;
+    for (int i=0; i<mStatus.size(); ++i)
+    {
+        xmlFunctionLoader::status& sta = mStatus[i];
+        cout << "name = "<<sta.name <<"    id = "<<i<<endl;
+        printStatus(sta);
     }
 }
