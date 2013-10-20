@@ -35,6 +35,22 @@ vector<int> GeneticProgram::getStatusId()
     return status;
 }
 
+void GeneticProgram::replaceFunctionId(vector<pair<int, int> > pairList)
+{
+    vector<GeneticPoint*> points = searchAllPoints();
+    for (int i=0; i<points.size(); ++i)
+    {
+        for (int j=0; j<pairList.size(); ++j)
+        {
+            if (points[i]->functionId == pairList[j].first)
+            {
+                points[i]->functionId = pairList[j].second;
+                break;
+            }
+        }
+    }
+}
+
 vector<int> GeneticProgram::getFuncId()
 {
     vector<int> queue = getPointQueue(mRoot);

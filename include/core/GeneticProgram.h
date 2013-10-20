@@ -52,6 +52,8 @@ class GeneticProgram
         std::vector<int> getFuncId();
         //Standard load method
         static void loadUnitFunction(std::vector<int>& result, int functionId, int statusId, int number);
+        //Replace pair<old, new> function id
+        void replaceFunctionId(std::vector<std::pair<int, int> > pairList);
     protected:
         bool replacePoint(const std::vector<int> &numbers, GeneticPoint* point);
         GP_Output computeUnit(const std::vector<computeFunction>& map, GeneticPoint* point);

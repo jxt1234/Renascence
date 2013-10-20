@@ -22,9 +22,9 @@ string func_stat(int id)
 
 void swapOutput(vector<computeFunction>& func)
 {
-	computeFunction temp = func[2];
-	func[2] = func[7];
-	func[7]=temp;
+    computeFunction temp = func[2];
+    func[2] = func[7];
+    func[7]=temp;
 }
 
 int main()
@@ -39,8 +39,8 @@ int main()
     cout << best->xmlPrint(func);
     vector<int> saveFunc(1,5);
     best->save(gen.getMapFunction(), saveFunc);
-	vector<computeFunction> newFunction = gen.getMapFunction();
-	swapOutput(newFunction);
+    vector<computeFunction> newFunction = gen.getMapFunction();
+    swapOutput(newFunction);
     cout << best->fit_comput();
     //best->compute(gen.getMapFunction());
     best->compute(newFunction);
