@@ -18,15 +18,14 @@ cmd = "find include/ -name \"*.h\""
 include_h = os.popen(cmd).read().split('\n');
 
 import sys
-userDir = 'test'
-if len(sys.argv)>=2:
-	userDir = sys.argv[1]
-userDir = 'src/ user/'+userDir
+sourceDir = 'src/'
 
-cmd = "find "+userDir+" -name \"*.cpp\""
+cmd = "find "+sourceDir+" -name \"*.cpp\""
 sources_cpp = os.popen(cmd).read().split('\n');
-cmd = "find " + userDir+" -name \"*.c\""
+cmd = "find " + sourceDir+" -name \"*.c\""
 sources_c = os.popen(cmd).read().split('\n');
+
+sources_cpp.append('./main.cpp')
 
 #Head Files
 include_Flag = '-Iinclude'
