@@ -6,9 +6,9 @@ OUTPUT_STATUS='system_status_cpp'
 OUTPUT_STATUS_USER_CPP = 'status_user.cpp'
 OUTPUT_STATUS_USER_H = 'status_user.h'
 
-statusFunctions = ['alloc','free', 'vary', 'copy','print'];
-statusFuncType = ['STATUS_ALLOC', 'STATUS_VARY', 'STATUS_VARY','STATUS_COPY',  'STATUS_PRINT'];
-statusFuncNameStyle = ['void* STYLE()', 'void STYLE(void* src)', 'void STYLE(void* src)', 'void STYLE(void* src, void* dst)', 'std::string STYLE(void* src)']
+statusFunctions = ['alloc','free', 'vary', 'copy','print', 'load'];
+statusFuncType = ['STATUS_ALLOC', 'STATUS_VARY', 'STATUS_VARY','STATUS_COPY',  'STATUS_PRINT', 'STATUS_LOAD'];
+statusFuncNameStyle = ['void* STYLE()', 'void STYLE(void* src)', 'void STYLE(void* src)', 'void STYLE(void* src, void* dst)', 'std::string STYLE(void* src)', 'void STYLE(std::string src)']
 
 gFunctionTable = []
 gStatus = []

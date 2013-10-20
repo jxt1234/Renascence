@@ -20,12 +20,11 @@ string func_stat(int id)
     return gXmlLoader.getStatusName(id);
 }
 
-computeFunction selfMap(int id)
+void swapOutput(vector<computeFunction>& func)
 {
-    if (id == 2) id = 7;
-    computeFunction result=NULL;
-    //gAllFunctions[id];
-    return result;
+	computeFunction temp = func[2];
+	func[2] = func[7];
+	func[7]=temp;
 }
 
 int main()
@@ -38,10 +37,12 @@ int main()
     group.evolution(100);
     evolutionTreeV2* best = group.get_best();
     cout << best->xmlPrint(func);
-    //vector<int> saveFunc(1,5);
-    //best->save(gen.getMapFunction(), saveFunc);
-    //cout << best->fit_comput();
-    ////best->compute(gen.getMapFunction());
-    //best->compute(selfMap);
+    vector<int> saveFunc(1,5);
+    best->save(gen.getMapFunction(), saveFunc);
+	vector<computeFunction> newFunction = gen.getMapFunction();
+	swapOutput(newFunction);
+    cout << best->fit_comput();
+    //best->compute(gen.getMapFunction());
+    best->compute(newFunction);
     return 1;
 }
