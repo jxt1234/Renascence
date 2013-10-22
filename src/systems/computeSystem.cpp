@@ -48,7 +48,7 @@ vector<int> computeSystem::loadStatus(const vector<xmlFunctionLoader::status>& s
         FINDFUNC(statusPrintMethod, _print);
         FINDFUNC(statusLoadMethod, _load);
 #undef FINDFUNC
-        int id = status_allocType(0, _alloc, _free, _vary, _copy, _print, _load);
+        int id = status_allocType(0, sta[i].name, _alloc, _free, _vary, _copy, _print, _load);
         typeId.push_back(id);
     }
     return typeId;

@@ -9,6 +9,8 @@
 #include "status.h"
 #include <sstream>
 
+#include "core/IDataBase.h"
+
 /*GeneticPoint is a compute point in a GeneticProgram, it collect a seriers inputs from other GeneticPoint, and then compute an result with its own constValue.
   The constValue is mapped from statusMapFunction, which map the statusId to void* constValue
  GeneticPoint is just a symbol, which means it can repress every kind of compute function, so it must work with a const std::vector<computeFunction>&, which can turn its functionId to actual computeFunction*/
@@ -46,7 +48,7 @@ class GeneticProgram
         void reset();
         void save(const std::vector<computeFunction>& map, const std::vector<int>& functionIds);
         //Output a xml string, which can be write into file directly
-        string xmlPrint(string(*funcPrint)(int));
+        string xmlPrint(IDataBase* data);
         //For evolution trees
         std::vector<int> getStatusId();
         std::vector<int> getFuncId();
@@ -62,7 +64,7 @@ class GeneticProgram
         void deleteUnit(GeneticPoint* point);
         void copyPoints(GeneticPoint* self, GeneticPoint* source);
         std::vector<int> getPointQueue(GeneticPoint* point);
-        void xmlPrintUnit(ostringstream& res, string(*funcPrint)(int), GeneticPoint* point);
+        void xmlPrintUnit(ostringstream& res, IDataBase* data, GeneticPoint* point);
     private:
         GeneticPoint* mRoot;
         std::vector<GeneticPoint*> varyPoints;//Record the points that can be modified

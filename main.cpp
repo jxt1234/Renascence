@@ -34,9 +34,13 @@ int main()
     xmlGenerateSystem gen("func.xml", true);
     evolutionTreeV2::setGenSystem(&gen);
     evolution_group<evolutionTreeV2> group(10);
-    group.evolution(100);
+    group.evolution(1);
     evolutionTreeV2* best = group.get_best();
-    cout << best->xmlPrint(func);
+    string result = gen.xmlPrint(best);
+    ofstream file;
+    file.open("result.xml");
+    file<<result;
+    file.close();
     vector<int> saveFunc(1,5);
     best->save(gen.getMapFunction(), saveFunc);
     vector<computeFunction> newFunction = gen.getMapFunction();

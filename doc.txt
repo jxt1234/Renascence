@@ -112,5 +112,8 @@ ass:调试用程序，打印日志必须用debug.h中的宏或函数
 10.20 架构修改
 1、取消functionDataBase、statusSystem，其功能集中至computeSystem中实现
 2、原先的mapFunction方式改为传入函数列表。
-*3、设立同构函数机制，同构的函数可以相互替换，同构函数由computeSystem认定，GP提供API去替换同构函数
+*3、设立同构函数机制，同构的函数可以相互替换，同构函数由computeSystem认定，GP提供API去替换同构函数（完成）
 *4、函数匹配采用指定函数匹配（模块内）和类型匹配（模块外）两种方式，GenerateSystem根据指定的类型去生成函数树
+
+10.22 TODO
+1、编写执行GP生成结果——xml的程序

@@ -3,18 +3,29 @@
 
 xmlGenerateSystem::xmlGenerateSystem(const char* xmlFile, bool print)
 {
-    mHandle=NULL;
+    void* handle = NULL;
     xmlFunctionLoader xmlLoader;
     xmlLoader.loadFile(xmlFile);
     if (print) xmlLoader.print();
     mComputeSystem = new computeSystem;
-    mComputeSystem->loadFuncXml(xmlLoader, mHandle);
+    mComputeSystem->loadFuncXml(xmlLoader, handle);
+    mData.loadXml(xmlLoader);
+    mHandle.push_back(handle);
 }
 
 xmlGenerateSystem::~xmlGenerateSystem()
 {
-    if (NULL!=mHandle) system_unload_lib(mHandle);
+    for (int i=0; i<mHandle.size(); ++i)
+    {
+        if (NULL!=mHandle[i]) system_unload_lib(mHandle[i]);
+    }
     delete mComputeSystem;
+}
+
+std::string xmlGenerateSystem::xmlPrint(GeneticProgram* gp)
+{
+    assert(NULL!=gp);
+    return gp->xmlPrint(&mData);
 }
 
 

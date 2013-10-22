@@ -301,17 +301,21 @@ void GeneticProgram::loadUnitFunction(vector<int>& result, int functionId, int s
 }
 
 
-string GeneticProgram::xmlPrint(string(*funcPrint)(int))
+string GeneticProgram::xmlPrint(IDataBase* data)
 {
-    assert(NULL!=funcPrint);
+    assert(NULL!=data);
     assert(NULL!=mRoot);
     ostringstream res;
-    xmlPrintUnit(res, funcPrint, mRoot);
+    xmlPrintUnit(res, data, mRoot);
     return res.str();
 }
-void GeneticProgram::xmlPrintUnit(ostringstream& res, string(*funcPrint)(int), GeneticPoint* point)
+void GeneticProgram::xmlPrintUnit(ostringstream& res, IDataBase* data, GeneticPoint* point)
 {
-    res<<"<"<<funcPrint(point->functionId)<<">\n";
+    string funcName, libName;
+    data->vQueryFunction(point->functionId, funcName, libName);
+    res << "<ComputeNode>"<<endl;
+    res<<"<function>"<<funcName<<"</function>\n";
+    res<<"<libName>"<<libName<<"</libName>\n";
     if (point->statusId >= 0)
     {
         res<<"<status>\n";
@@ -320,9 +324,9 @@ void GeneticProgram::xmlPrintUnit(ostringstream& res, string(*funcPrint)(int), G
     }
     for (int i=0; i<point->inputs.size(); ++i)
     {
-        xmlPrintUnit(res, funcPrint, point->inputs[i]);
+        xmlPrintUnit(res, data, point->inputs[i]);
     }
-    res<<"</"<<funcPrint(point->functionId)<<">\n";
+    res << "</ComputeNode>"<<endl;
 }
 
 void GeneticProgram::save(const vector<computeFunction>& table, const std::vector<int>& functionIds)
