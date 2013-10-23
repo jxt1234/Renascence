@@ -5,6 +5,8 @@
 #include "utils/debug.h"
 #include <execinfo.h>
 #include <sstream>
+#include <iostream>
+#include <assert.h>
 using namespace std;
 //Defines
 struct statusSet
@@ -50,10 +52,10 @@ int status_allocType(int size, string name, statusAllocMethod alloc, statusVaryM
     gStatusType.push_back(t);
     return gStatusType.size()-1;
 }
-int status_allocSet(const vector<int>& type)
+
+int _findEmptySet()
 {
     int pos = -1;
-    if (type.empty()) return pos;
     //Find a position that can insert
     for (int i=0; i<gStatusSet.size(); ++i)
     {
@@ -63,6 +65,13 @@ int status_allocSet(const vector<int>& type)
             break;
         }
     }
+    return pos;
+}
+int status_allocSet(const vector<int>& type)
+{
+    int pos = -1;
+    if (type.empty()) return pos;
+    pos = _findEmptySet();
     statusSet set;
     set.type = type;
     for (int i=0; i<type.size(); ++i)
@@ -89,6 +98,36 @@ int status_allocSet(const vector<int>& type)
     }
     return pos;
 }
+
+int status_loadSet(const std::vector<int>& type, std::vector<std::string>& contents)
+{
+    assert(contents.size() == type.size());
+    assert(!contents.empty());
+    statusSet set;
+    set.type = type;
+    for (int i=0; i<type.size(); ++i)
+    {
+        statusType& t = gStatusType[i];
+        if (t.load)
+        {
+            set.content.push_back(t.load(contents[i]));
+        }
+    }
+    int pos = _findEmptySet();
+    int result;
+    if (-1==pos)
+    {
+        gStatusSet.push_back(set);
+        result = gStatusSet.size() -1;
+    }
+    else
+    {
+        gStatusSet[pos] = set;
+        result = pos;
+    }
+    return result;
+}
+
 
 int status_computesize(const vector<int>& type)
 {
@@ -132,10 +171,6 @@ bool status_freeSet(int statusId)
         if (t.sfree)
         {
             t.sfree(set.content[i]);
-        }
-        else
-        {
-            free(set.content[i]);
         }
     }
     set.type.clear();

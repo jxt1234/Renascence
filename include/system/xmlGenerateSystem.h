@@ -10,6 +10,7 @@ class xmlGenerateSystem:public GenerateSystem
         xmlGenerateSystem(const char* xmlFile, bool print= false);
         virtual ~xmlGenerateSystem();
         std::string xmlPrint(GeneticProgram* gp);
+        GeneticProgram* xmlLoad(const char* xmlFile);
     private:
         xmlDataBase mData;
         std::vector<void*> mHandle;

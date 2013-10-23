@@ -3,6 +3,8 @@
 #include <list>
 #include <iostream>
 
+using namespace std;
+
 vector<vector<int> > xmlFunctionLoader::getCombo(int funcId)
 {
     vector<vector<int> > result;

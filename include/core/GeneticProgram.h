@@ -20,7 +20,7 @@ struct GeneticPoint
 {
     int functionId;
     int statusId;
-    std::vector<GeneticPoint*> inputs;
+    std::vector<GeneticPoint*> children;
     GP_Output* save;
     GeneticPoint(int _fun = -1, int _sta = -1, GP_Output* _save=NULL)
     {
@@ -48,7 +48,7 @@ class GeneticProgram
         void reset();
         void save(const std::vector<computeFunction>& map, const std::vector<int>& functionIds);
         //Output a xml string, which can be write into file directly
-        string xmlPrint(IDataBase* data);
+        std::string xmlPrint(IDataBase* data);
         //For evolution trees
         std::vector<int> getStatusId();
         std::vector<int> getFuncId();
@@ -64,8 +64,8 @@ class GeneticProgram
         void deleteUnit(GeneticPoint* point);
         void copyPoints(GeneticPoint* self, GeneticPoint* source);
         std::vector<int> getPointQueue(GeneticPoint* point);
-        void xmlPrintUnit(ostringstream& res, IDataBase* data, GeneticPoint* point);
-    private:
+        void xmlPrintUnit(std::ostringstream& res, IDataBase* data, GeneticPoint* point);
+    protected:
         GeneticPoint* mRoot;
         std::vector<GeneticPoint*> varyPoints;//Record the points that can be modified
 };

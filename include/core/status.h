@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 #include <stdlib.h>
-using namespace std;
 
 typedef void*(*statusAllocMethod)();
 typedef void(*statusVaryMethod)(void*);
@@ -16,7 +15,8 @@ typedef void*(*statusLoadMethod)(std::string);
 bool status_init();
 int status_allocSet(const std::vector<int>& type);
 int status_allocSet(int type);
-int status_allocType(int size, string name, statusAllocMethod alloc=NULL, statusVaryMethod free=NULL, statusVaryMethod vary=NULL, 
+int status_loadSet(const std::vector<int>& type, std::vector<std::string>& contents);
+int status_allocType(int size, std::string name, statusAllocMethod alloc=NULL, statusVaryMethod free=NULL, statusVaryMethod vary=NULL, 
         statusCopyMethod copy=NULL, statusPrintMethod print=NULL, statusLoadMethod load = NULL);
 bool status_uploadSet(const std::vector<void*> src, int statusId);
 int status_computesize(const std::vector<int>& type);

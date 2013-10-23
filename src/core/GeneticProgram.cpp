@@ -1,7 +1,10 @@
 #include "core/GeneticProgram.h"
+#include "core/GP_XmlString.h"
 #include "utils/debug.h"
 #include <assert.h>
 #include <list>
+using namespace std;
+
 static void GP_OutputFree(GP_Output* save)
 {
     assert(NULL!=save);
@@ -79,7 +82,7 @@ static void saveNumbers(vector<int>& outputNumbers, GeneticPoint* point)
 {
     outputNumbers.push_back(point->functionId);
     outputNumbers.push_back(point->statusId);
-    outputNumbers.push_back(point->inputs.size());
+    outputNumbers.push_back(point->children.size());
 }
 
 GeneticProgram::GeneticProgram()
@@ -122,9 +125,9 @@ vector<int> GeneticProgram::getPointQueue(GeneticPoint* point)
     {
         GeneticPoint* current = *(cacheQueue.begin());
         saveNumbers(result, current);
-        for (int i=0; i<current->inputs.size(); ++i)
+        for (int i=0; i<current->children.size(); ++i)
         {
-            cacheQueue.push_back(current->inputs[i]);
+            cacheQueue.push_back(current->children[i]);
         }
         cacheQueue.erase(cacheQueue.begin());
     }
@@ -166,12 +169,12 @@ void GeneticProgram::deleteUnit(GeneticPoint* point)
 {
     if (NULL!=point)
     {
-        for (int i; i < point->inputs.size(); ++i)
+        for (int i; i < point->children.size(); ++i)
         {
-            deleteUnit(point->inputs[i]);
-            delete point->inputs[i];
+            deleteUnit(point->children[i]);
+            delete point->children[i];
         }
-        point->inputs.clear();
+        point->children.clear();
         status_freeSet(point->statusId);
         point->statusId = -1;
     }
@@ -208,7 +211,7 @@ bool GeneticProgram::replacePoint(const vector<int> &numbers, GeneticPoint* poin
             for (int i=0; i < pointNumber; ++i)
             {
                 GeneticPoint* input = new GeneticPoint;
-                current->inputs.push_back(input);
+                current->children.push_back(input);
                 cacheQueue.push_back(input);
             }
             cacheQueue.erase(cacheQueue.begin());
@@ -235,10 +238,10 @@ vector<GeneticPoint*> GeneticProgram::searchAllPoints()
         {
             return result;
         }
-        for (int i=0; i<current->inputs.size(); ++i)
+        for (int i=0; i<current->children.size(); ++i)
         {
-            pointQueue.push_back(current->inputs[i]);
-            result.push_back(current->inputs[i]);
+            pointQueue.push_back(current->children[i]);
+            result.push_back(current->children[i]);
         }
         pointQueue.erase(pointQueue.begin());
     }
@@ -259,16 +262,16 @@ GP_Output GeneticProgram::computeUnit(const vector<computeFunction>& table, Gene
     }
     computeFunction compute = table[point->functionId];
     vector<GP_Output::GP_Unit> inputMap;
-    vector<void*> inputs;
+    vector<void*> children;
     //Get Inputs from childern point
-    for (int i=0; i<point->inputs.size(); ++i)
+    for (int i=0; i<point->children.size(); ++i)
     {
-        GP_Output out = computeUnit(table, point->inputs[i]);
+        GP_Output out = computeUnit(table, point->children[i]);
         vector<GP_Output::GP_Unit>& output_unit = out.output;
         for (int j=0; j<output_unit.size(); ++j)
         {
             inputMap.push_back(output_unit[j]);
-            inputs.push_back(output_unit[j].content);
+            children.push_back(output_unit[j].content);
         }
     }
     vector<void*> constValue;
@@ -276,8 +279,8 @@ GP_Output GeneticProgram::computeUnit(const vector<computeFunction>& table, Gene
     {
         constValue = status_queryContent(point->statusId);
     }
-    result = compute(inputs, constValue);
-    //Free All inputs' memory
+    result = compute(children, constValue);
+    //Free All children' memory
     for (int i=0; i < inputMap.size(); ++i)
     {
         GP_Output::GP_Unit& out = inputMap[i];
@@ -313,22 +316,22 @@ void GeneticProgram::xmlPrintUnit(ostringstream& res, IDataBase* data, GeneticPo
 {
     string funcName, libName;
     data->vQueryFunction(point->functionId, funcName, libName);
-    res << "<ComputeNode>"<<endl;
-    res<<"<function>"<<funcName<<"</function>\n";
-    res<<"<libName>"<<libName<<"</libName>\n";
+    res << "<"<< GP_XmlString::node<<">"<<endl;
+    res<<"<"<<GP_XmlString::lib<<">"<<libName<<"</"<<GP_XmlString::lib<<">\n";
+    res<<"<"<<GP_XmlString::func<<">"<<funcName<<"</"<<GP_XmlString::func<<">\n";
     if (point->statusId >= 0)
     {
-        res<<"<status>\n";
+        res<<"<"<<GP_XmlString::status<<">\n";
         res<<status_printSet(point->statusId);
-        res<<"</status>\n";
+        res<<"</"<<GP_XmlString::status<<">\n";
     }
-	res <<"<childern>"<<endl;
-    for (int i=0; i<point->inputs.size(); ++i)
+    res <<"<"<< GP_XmlString::children<<">"<<endl;
+    for (int i=0; i<point->children.size(); ++i)
     {
-        xmlPrintUnit(res, data, point->inputs[i]);
+        xmlPrintUnit(res, data, point->children[i]);
     }
-	res <<"</childern>"<<endl;
-    res << "</ComputeNode>"<<endl;
+    res <<"</"<< GP_XmlString::children<<">"<<endl;
+    res << "</"<< GP_XmlString::node<<">"<<endl;
 }
 
 void GeneticProgram::save(const vector<computeFunction>& table, const std::vector<int>& functionIds)
@@ -366,8 +369,8 @@ void GeneticProgram::computeUnitSave(const vector<computeFunction>& table, Genet
             return;
         }
     }
-    for (int i=0; i<point->inputs.size(); ++i)
+    for (int i=0; i<point->children.size(); ++i)
     {
-        computeUnitSave(table, point->inputs[i], functionIds);
+        computeUnitSave(table, point->children[i], functionIds);
     }
 }

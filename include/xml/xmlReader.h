@@ -6,7 +6,6 @@
 #define XMLAPI
 
 
-using namespace std;
 class xmlReader
 {
     public:
@@ -21,17 +20,17 @@ class xmlReader
         virtual void subClear(){}
         struct package
         {
-            string name;
-            vector<string> attr;
-            vector<package*> children;
+            std::string name;
+            std::vector<std::string> attr;
+            std::vector<package*> children;
         };
-        void analysisLine(const string& line);
-        package* loadPackage(ifstream& file);
+        void analysisLine(const std::string& line);
+        package* loadPackage(std::ifstream& file);
         package* mAttributes;
-        string mFile;
+        std::string mFile;
     private:
-        vector<package*> mPackage;
-        string mString;
+        std::vector<package*> mPackage;
+        std::string mString;
         package* mCurPackage;
 };
 

@@ -4,6 +4,7 @@
 
 #include <string>
 #include <sstream>
+#include <iostream>
 using namespace std;
 
 /*TODO Add windows version*/

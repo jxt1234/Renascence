@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 
+using namespace std;
 
 xmlReader::xmlReader(const char* file)
 {

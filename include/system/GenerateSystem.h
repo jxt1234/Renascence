@@ -11,10 +11,10 @@ class GenerateSystem
         GenerateSystem():mComputeSystem(NULL){}
         GenerateSystem(computeSystem* sys ):mComputeSystem(sys){}
         virtual ~GenerateSystem(){}
-        vector<int> searchOneSequence();
-        vector<int> searchOneWithOutput(int out);
-        virtual vector<int> getRandSequence();
-        virtual vector<int> getRandSequenceWithOutput(int outputFunctionId);
+        std::vector<int> searchOneSequence();
+        std::vector<int> searchOneWithOutput(int out);
+        virtual std::vector<int> getRandSequence();
+        virtual std::vector<int> getRandSequenceWithOutput(int outputFunctionId);
         inline void setComputeSystem(computeSystem* comsys){mComputeSystem = comsys;}
         inline const std::vector<computeFunction>& getMapFunction()
         {

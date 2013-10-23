@@ -27,14 +27,14 @@ void swapOutput(vector<computeFunction>& func)
     func[7]=temp;
 }
 
-int main()
+int test_evolution()
 {
     srand((unsigned) time(NULL));
     gXmlLoader.loadFile("func.xml");
     xmlGenerateSystem gen("func.xml", true);
     evolutionTreeV2::setGenSystem(&gen);
     evolution_group<evolutionTreeV2> group(10);
-    group.evolution(1);
+    group.evolution(100);
     evolutionTreeV2* best = group.get_best();
     string result = gen.xmlPrint(best);
     ofstream file;
@@ -48,5 +48,23 @@ int main()
     cout << best->fit_comput();
     //best->compute(gen.getMapFunction());
     best->compute(newFunction);
+    return 1;
+}
+
+#include "xml/xmlGPLoader.h"
+int test_run()
+{
+    xmlGPLoader load;
+    load.loadFile("result.xml");
+    GP_Output gp = load.run();
+    double* result = (double*)gp.output[0].content;
+    cout <<"result = "<<*result<<endl;
+    free(result);
+}
+
+int main()
+{
+    test_evolution();
+    test_run();
     return 1;
 }

@@ -18,12 +18,12 @@ class computeSystem
         inline const std::vector<int>& getOutputFunctions(){return mOutputId;}
         //Option API, for spection function set
         const std::vector<int>& getAvailablemFunctions(int functionId);
-        inline pair<int, int> getInputNumbers(int functionId){return mInputNumbers[functionId];}
+        inline std::pair<int, int> getInputNumbers(int functionId){return mInputNumbers[functionId];}
         void print();
         computeSystem();
         virtual ~computeSystem();
     protected:
-        vector<int> loadStatus(const vector<xmlFunctionLoader::status>& sta, void* handle);
+        std::vector<int> loadStatus(const std::vector<xmlFunctionLoader::status>& sta, void* handle);
         void constructBasicTable();
     private:
         void _loadUnit(xmlFunctionLoader func);
@@ -32,7 +32,7 @@ class computeSystem
         std::vector<std::vector<int> > mStatusTable;
         std::vector<int> mOutputId;//可做为根结点的函数Id
         std::vector<int> mInputId;//作为叶结点的函数Id
-        std::vector<pair<int, int> > mInputNumbers;//各函数所需的最小及最大输入数
+        std::vector<std::pair<int, int> > mInputNumbers;//各函数所需的最小及最大输入数
 };
 
 #endif

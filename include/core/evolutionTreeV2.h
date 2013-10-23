@@ -21,7 +21,7 @@ class evolutionTreeV2:public GeneticProgram
         double fit_comput();
         inline double get_fit(){return mFit;}
         virtual void mutate();
-        void print_f(ofstream& file);
+        void print_f(std::ofstream& file);
     protected:
         void mutate_struct();
         void mutate_parameter();
