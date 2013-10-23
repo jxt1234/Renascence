@@ -322,10 +322,12 @@ void GeneticProgram::xmlPrintUnit(ostringstream& res, IDataBase* data, GeneticPo
         res<<status_printSet(point->statusId);
         res<<"</status>\n";
     }
+	res <<"<childern>"<<endl;
     for (int i=0; i<point->inputs.size(); ++i)
     {
         xmlPrintUnit(res, data, point->inputs[i]);
     }
+	res <<"</childern>"<<endl;
     res << "</ComputeNode>"<<endl;
 }
 

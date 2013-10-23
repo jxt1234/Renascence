@@ -1,9 +1,11 @@
 <ComputeNode>
 <function>TrPackageFitCompute</function>
 <libName>libpics</libName>
+<childern>
 <ComputeNode>
 <function>TrPackageFilterTransformFromRegress</function>
 <libName>libpics</libName>
+<childern>
 <ComputeNode>
 <function>TrPackageCompse</function>
 <libName>libpics</libName>
@@ -12,9 +14,23 @@
 0.5 0.5 
 </float>
 </status>
+<childern>
+<ComputeNode>
+<function>TrPackageFilterMatrix</function>
+<libName>libpics</libName>
+<status>
+<TrFilterMatrix>
+3 0 0.1 0.1 0.1 0.1 0.2 0.1 0.1 0.1 0.1 
+</TrFilterMatrix>
+</status>
+<childern>
 <ComputeNode>
 <function>TrPackageInput</function>
 <libName>libpics</libName>
+<childern>
+</childern>
+</ComputeNode>
+</childern>
 </ComputeNode>
 <ComputeNode>
 <function>TrPackageFilterMatrix</function>
@@ -24,11 +40,16 @@
 3 0 0.1 0.1 0.1 0.1 0.2 0.1 0.1 0.1 0.1 
 </TrFilterMatrix>
 </status>
+<childern>
 <ComputeNode>
 <function>TrPackageInput</function>
 <libName>libpics</libName>
+<childern>
+</childern>
 </ComputeNode>
+</childern>
 </ComputeNode>
+</childern>
 </ComputeNode>
 <ComputeNode>
 <function>TrPackageFilterMatrixRegress</function>
@@ -38,14 +59,22 @@
 3 1 1 1 1 1 1 1 1 1 
 </TrRegreeMode>
 </status>
+<childern>
 <ComputeNode>
 <function>TrPackageInput</function>
 <libName>libpics</libName>
+<childern>
+</childern>
 </ComputeNode>
 <ComputeNode>
 <function>TrPackageInputTarget</function>
 <libName>libpics</libName>
+<childern>
+</childern>
 </ComputeNode>
+</childern>
 </ComputeNode>
+</childern>
 </ComputeNode>
+</childern>
 </ComputeNode>

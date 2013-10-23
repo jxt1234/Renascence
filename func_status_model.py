@@ -8,7 +8,7 @@ OUTPUT_STATUS_USER_H = 'status_user.h'
 
 statusFunctions = ['alloc','free', 'vary', 'copy','print', 'load'];
 statusFuncType = ['STATUS_ALLOC', 'STATUS_VARY', 'STATUS_VARY','STATUS_COPY',  'STATUS_PRINT', 'STATUS_LOAD'];
-statusFuncNameStyle = ['void* STYLE()', 'void STYLE(void* src)', 'void STYLE(void* src)', 'void STYLE(void* src, void* dst)', 'std::string STYLE(void* src)', 'void STYLE(std::string src)']
+statusFuncNameStyle = ['void* STYLE()', 'void STYLE(void* src)', 'void STYLE(void* src)', 'void STYLE(void* src, void* dst)', 'std::string STYLE(void* src)', 'void* STYLE(std::string src)']
 
 gFunctionTable = []
 gStatus = []
@@ -56,9 +56,9 @@ funcCode+='    gAllFunctions = new computeFunction[4];\n    gAllFunctionsNumber 
 for i in range(0,len(gFunctionTable)):
 	funcCode+='    gAllFunctions['+ '%d' %i + ']=(computeFunction)dlsym(gFunctionHandle, \"'+gFunctionTable[i]+'\");\n'
 funcCode+='}\n'
-f = open(OUTPUT_FUNC,'w')
-f.write(funcCode);
-f.close()
+#f = open(OUTPUT_FUNC,'w')
+#f.write(funcCode);
+#f.close()
 
 #Generate status code
 statusCode='/*AUTO-GENERATE CODE STYLE*/\n'
@@ -124,6 +124,6 @@ for statusName in gStatus:
 	statusCode+=status_type_code
 
 statusCode+='    return result;\n}\n'
-f=open(OUTPUT_STATUS, 'w')
-f.write(statusCode)
-f.close()
+#f=open(OUTPUT_STATUS, 'w')
+#f.write(statusCode)
+#f.close()
