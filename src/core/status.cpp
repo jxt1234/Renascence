@@ -107,7 +107,7 @@ int status_loadSet(const std::vector<int>& type, std::vector<std::string>& conte
     set.type = type;
     for (int i=0; i<type.size(); ++i)
     {
-        statusType& t = gStatusType[i];
+        statusType& t = gStatusType[type[i]];
         if (t.load)
         {
             set.content.push_back(t.load(contents[i]));

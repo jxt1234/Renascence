@@ -107,7 +107,7 @@ int xmlGPLoader::findStatus(string name)
         }
     }
     /*Alloc status type*/
-    string loadName = name+"_load";
+    string loadName = name +"_load";
     string freeName = name +"_free";
     statusLoadMethod load = (statusLoadMethod)system_find_func(mCurrentHandle, loadName.c_str());
     statusVaryMethod _free = (statusVaryMethod)system_find_func(mCurrentHandle, freeName.c_str());
