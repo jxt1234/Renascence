@@ -14,3 +14,7 @@
 
 tags
 *.swp
+GP_MAIN
+output/*
+output_fix.jpg
+result.xml

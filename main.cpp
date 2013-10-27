@@ -65,7 +65,7 @@ int test_run()
 
 int main()
 {
-//    test_evolution(100);
+    test_evolution(100);
     test_run();
     return 1;
 }
