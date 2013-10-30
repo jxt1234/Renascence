@@ -7,6 +7,12 @@ using namespace std;
 
 #define LIMIT_SIZE 100
 
+computeFunction GenerateSystem::vGetCompute(int id)
+{
+    assert(NULL!=mComputeSystem);
+    return mComputeSystem->getFunction(id);
+}
+
 vector<int> GenerateSystem::getRandSequence()
 {
     vector<int> result;

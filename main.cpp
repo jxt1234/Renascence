@@ -8,27 +8,11 @@
 #include <sstream>
 using namespace std;
 
-xmlFunctionLoader gXmlLoader;
 
-string func(int id)
-{
-    return gXmlLoader.getFuncName(id);
-}
-
-string func_stat(int id)
-{
-    return gXmlLoader.getStatusName(id);
-}
-
-void swapOutput(vector<computeFunction>& func)
-{
-    computeFunction temp = func[2];
-    func[2] = func[7];
-    func[7]=temp;
-}
 
 int test_evolution(int num)
 {
+xmlFunctionLoader gXmlLoader;
     srand((unsigned) time(NULL));
     gXmlLoader.loadFile("func.xml");
     xmlGenerateSystem gen("func.xml", false);

@@ -8,17 +8,15 @@ class computeSystem
 {
     public:
         inline const std::vector<computeFunction>& getMapFunction() {return mFunctions;}
+        computeFunction getFunction(int id) {if (id < mFunctions.size() && 0<=id) return mFunctions[id]; return NULL;}
         void loadFuncXml(xmlFunctionLoader& loader, void* &handle);
         void clear();
         std::vector<int> getAllFunctionIDs();
         //Basic Api
         int allocateStatus(int id);
         inline const std::vector<int>& getInputFunctions(){return mInputId;}
-        inline const std::vector<std::vector<int> >& getAvailableFunctionInputs(int functionId){return mBasicTable[functionId];}
-        inline const std::vector<int>& getOutputFunctions(){return mOutputId;}
-        //Option API, for spection function set
-        const std::vector<int>& getAvailablemFunctions(int functionId);
-        inline std::pair<int, int> getInputNumbers(int functionId){return mInputNumbers[functionId];}
+        const std::vector<std::vector<int> >& getAvailableFunctionInputs(int functionId);
+        const std::vector<int>& getOutputFunctions(){return mOutputId;}
         void print();
         computeSystem();
         virtual ~computeSystem();
@@ -32,7 +30,6 @@ class computeSystem
         std::vector<std::vector<int> > mStatusTable;
         std::vector<int> mOutputId;//可做为根结点的函数Id
         std::vector<int> mInputId;//作为叶结点的函数Id
-        std::vector<std::pair<int, int> > mInputNumbers;//各函数所需的最小及最大输入数
 };
 
 #endif

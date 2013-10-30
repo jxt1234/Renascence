@@ -10,4 +10,7 @@
 typedef GP_Output(*computeFunction)(std::vector<void*> inputs, std::vector<void*> constValue);
 typedef computeFunction(*mapFunction)(int functionId);
 typedef std::vector<void*>(*statusMapFunction)(int statusId);
+
+void GP_Output_clear(GP_Output* out);
+
 #endif

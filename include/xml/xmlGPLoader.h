@@ -5,10 +5,11 @@
 #include "core/GP_XmlString.h"
 #include "core/GeneticProgram.h"
 
-class xmlGPLoader:public xmlReader, GeneticProgram
+class xmlGPLoader:public xmlReader, GeneticProgram, IFunctionDataBase
 {
     public:
         xmlGPLoader(){mCurrentPoint = NULL;}
+        virtual computeFunction vGetCompute(int id) {return mFunctions[id];}
         virtual ~xmlGPLoader(){}
         void reset();
         GP_Output run();

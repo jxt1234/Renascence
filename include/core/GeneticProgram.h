@@ -42,11 +42,11 @@ class GeneticProgram
         virtual ~GeneticProgram();
         void operator=(const GeneticProgram& program);
         void clear();
-        GP_Output compute(const std::vector<computeFunction>& map);
+        GP_Output compute(IFunctionDataBase* map);
         bool replacePoint(const std::vector<int> &numbers, int n);
         //Save appointed functionIds' output
         void reset();
-        void save(const std::vector<computeFunction>& map, const std::vector<int>& functionIds);
+        void save(IFunctionDataBase* map, const std::vector<int>& functionIds);
         //Output a xml string, which can be write into file directly
         std::string xmlPrint(IDataBase* data);
         //For evolution trees
@@ -58,8 +58,8 @@ class GeneticProgram
         void replaceFunctionId(std::vector<std::pair<int, int> > pairList);
     protected:
         bool replacePoint(const std::vector<int> &numbers, GeneticPoint* point);
-        GP_Output computeUnit(const std::vector<computeFunction>& map, GeneticPoint* point);
-        void computeUnitSave(const std::vector<computeFunction>& map, GeneticPoint* point, const std::vector<int> functionIds);
+        GP_Output computeUnit(IFunctionDataBase* map, GeneticPoint* point);
+        void computeUnitSave(IFunctionDataBase* map, GeneticPoint* point, const std::vector<int> functionIds);
         std::vector<GeneticPoint*> searchAllPoints();
         void deleteUnit(GeneticPoint* point);
         void copyPoints(GeneticPoint* self, GeneticPoint* source);

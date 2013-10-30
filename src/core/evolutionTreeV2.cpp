@@ -83,7 +83,7 @@ double evolutionTreeV2::fit_comput()
 {
     double* result = NULL;
     assert(NULL!=mGen);
-    result = (double*)(compute(mGen->getMapFunction()).output[0].content);
+    result = (double*)(compute(mGen).output[0].content);
     assert(NULL!=result);
     mFit = *result;
     free(result);

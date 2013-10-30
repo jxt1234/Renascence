@@ -159,7 +159,7 @@ void GeneticProgram::clear()
     }
 }
 
-GP_Output GeneticProgram::compute(const vector<computeFunction>& table)
+GP_Output GeneticProgram::compute(IFunctionDataBase* table)
 {
     GP_Output output = computeUnit(table, mRoot);
     return output;
@@ -248,7 +248,7 @@ vector<GeneticPoint*> GeneticProgram::searchAllPoints()
     return result;
 }
 
-GP_Output GeneticProgram::computeUnit(const vector<computeFunction>& table, GeneticPoint* point)
+GP_Output GeneticProgram::computeUnit(IFunctionDataBase* table, GeneticPoint* point)
 {
     assert(NULL!=point);
     GP_Output result;
@@ -260,7 +260,7 @@ GP_Output GeneticProgram::computeUnit(const vector<computeFunction>& table, Gene
         GP_Output_SetNoFree(result);
         return result;
     }
-    computeFunction compute = table[point->functionId];
+    computeFunction comp = table->vGetCompute(point->functionId);
     vector<GP_Output::GP_Unit> inputMap;
     vector<void*> children;
     //Get Inputs from childern point
@@ -279,7 +279,7 @@ GP_Output GeneticProgram::computeUnit(const vector<computeFunction>& table, Gene
     {
         constValue = status_queryContent(point->statusId);
     }
-    result = compute(children, constValue);
+    result = comp(children, constValue);
     //Free All children' memory
     for (int i=0; i < inputMap.size(); ++i)
     {
@@ -334,7 +334,7 @@ void GeneticProgram::xmlPrintUnit(ostringstream& res, IDataBase* data, GeneticPo
     res << "</"<< GP_XmlString::node<<">"<<endl;
 }
 
-void GeneticProgram::save(const vector<computeFunction>& table, const std::vector<int>& functionIds)
+void GeneticProgram::save(IFunctionDataBase* table, const std::vector<int>& functionIds)
 {
     assert(NULL!=mRoot);
     reset();
@@ -355,7 +355,7 @@ void GeneticProgram::reset()
     }
 }
 
-void GeneticProgram::computeUnitSave(const vector<computeFunction>& table, GeneticPoint* point, const std::vector<int> functionIds)
+void GeneticProgram::computeUnitSave(IFunctionDataBase* table, GeneticPoint* point, const std::vector<int> functionIds)
 {
     for (int i=0; i<functionIds.size(); ++i)
     {

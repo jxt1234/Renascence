@@ -36,7 +36,7 @@ void xmlGPLoader::attributeUnflatten()
 
 GP_Output xmlGPLoader::run()
 {
-    return compute(mFunctions);
+    return compute(this);
 }
 
 void xmlGPLoader::reset()

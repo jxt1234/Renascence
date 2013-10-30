@@ -11,6 +11,15 @@
 computeSystem::computeSystem()
 {
 }
+const std::vector<std::vector<int> >& computeSystem::getAvailableFunctionInputs(int functionId)
+{
+    static vector<vector<int> > nullVector;
+    if (functionId >=0 && functionId < mBasicTable.size())
+    {
+        return mBasicTable[functionId];
+    }
+    return nullVector;
+}
 
 computeSystem::~computeSystem()
 {
@@ -98,6 +107,7 @@ void computeSystem::loadFuncXml(xmlFunctionLoader& loader, void* &handle)
 
 int computeSystem::allocateStatus(int id)
 {
+    if (id < 0) return -1;
     return status_allocSet(mStatusTable[id]);
 }
 
@@ -114,12 +124,6 @@ void computeSystem::print()
     for (int i=0; i< mOutputId.size(); ++i)
     {
         cout << mOutputId[i]<<"    ";
-    }
-    cout << endl;
-    cout <<" All functions' inputNumber is "<<endl;
-    for (int i=0; i<mInputNumbers.size(); ++i)
-    {
-        cout << i<<":\t"<<mInputNumbers[i].first <<"\t"<<mInputNumbers[i].second<<endl;
     }
     cout << endl;
     cout << "Status table is "<<endl;
