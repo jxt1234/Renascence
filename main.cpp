@@ -9,12 +9,11 @@
 using namespace std;
 
 
+#include "api/evolution.h"
 
 int test_evolution(int num)
 {
-xmlFunctionLoader gXmlLoader;
     srand((unsigned) time(NULL));
-    gXmlLoader.loadFile("func.xml");
     xmlGenerateSystem gen("func.xml", false);
     evolutionTreeV2::setGenSystem(&gen);
     evolution_group<evolutionTreeV2> group(10);
@@ -49,7 +48,7 @@ int test_run()
 
 int main()
 {
-    test_evolution(100);
+    GP_evolution(10, 10, "func.xml", NULL, "result.xml");
     test_run();
     return 1;
 }

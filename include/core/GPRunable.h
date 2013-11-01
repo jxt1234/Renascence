@@ -13,6 +13,8 @@ class GPRunable:public GeneticProgram
         /*Compute the result from root to leaf, the outpus is put to savePoint, which will be collected and output*/
         /*f(a, b) = g(f(a,b).x), h(f(a,b),y)*/
         GP_Output outputCompute(std::vector<void*> inputs, std::vector<void*> constValue);
+
+        /*Search All SavePoint and their parent*/
     protected:
         /*The points is used as inputs or outputs, they are Generated when begin to compute*/
         /*Each savePoint can has only one input*/
