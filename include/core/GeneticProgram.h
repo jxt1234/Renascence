@@ -11,6 +11,8 @@
 
 #include "core/IDataBase.h"
 
+#include "utils/GP_Clock.h"
+
 /*GeneticPoint is a compute point in a GeneticProgram, it collect a seriers inputs from other GeneticPoint, and then compute an result with its own constValue.
   The constValue is mapped from statusMapFunction, which map the statusId to void* constValue
  GeneticPoint is just a symbol, which means it can repress every kind of compute function, so it must work with a const std::vector<computeFunction>&, which can turn its functionId to actual computeFunction*/

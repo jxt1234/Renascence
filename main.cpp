@@ -11,29 +11,6 @@ using namespace std;
 
 #include "api/evolution.h"
 
-int test_evolution(int num)
-{
-    srand((unsigned) time(NULL));
-    xmlGenerateSystem gen("func.xml", false);
-    evolutionTreeV2::setGenSystem(&gen);
-    evolution_group<evolutionTreeV2> group(10);
-    group.evolution(num);
-    evolutionTreeV2* best = group.get_best();
-    string result = gen.xmlPrint(best);
-    ofstream file;
-    file.open("result.xml");
-    file<<result;
-    file.close();
-    cout << "fit = "<<best->fit_comput()<<endl;;
-    //vector<int> saveFunc(1,5);
-    //best->save(gen.getMapFunction(), saveFunc);
-    //vector<computeFunction> newFunction = gen.getMapFunction();
-    //swapOutput(newFunction);
-    ////best->compute(gen.getMapFunction());
-    //best->compute(newFunction);
-    return 1;
-}
-
 #include "xml/xmlGPLoader.h"
 int test_run()
 {
@@ -48,7 +25,7 @@ int test_run()
 
 int main()
 {
-    GP_evolution(10, 10, "func.xml", NULL, "result.xml");
+    //GP_evolution(10, 100, "func.xml", NULL, "result.xml");
     test_run();
     return 1;
 }
