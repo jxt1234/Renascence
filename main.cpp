@@ -1,24 +1,16 @@
-#include "system/xmlGenerateSystem.h"
-#include "utils/debug.h"
-#include <time.h>
-#include "core/evolutionTreeV2.h"
-#include "core/group.h"
+#include "api/evolution.h"
+#include "xml/xmlGPLoader.h"
+
 #include <iostream>
-#include <string>
-#include <sstream>
 using namespace std;
 
-
-#include "api/evolution.h"
-
-#include "xml/xmlGPLoader.h"
 void print(GP_Output& out)
 {
     if (out.output.size()>0)
     {
-		double* result = (double*)(out.output[0].content);
-		cout <<"result = "<<(*result)<<endl;
-	}
+        double* result = (double*)(out.output[0].content);
+        cout <<"result = "<<(*result)<<endl;
+    }
 }
 
 int main()
