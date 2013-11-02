@@ -6,9 +6,11 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include "xml/xmlGPLoader.h"
 using namespace std;
 
 /*TODO Support inputTable*/
+/*TODO Invalid Inputs treat*/
 void GP_evolution(int number, int times, const char* functionTable, const char* inputTable, const char* outputXml)
 {
     srand((unsigned) time(NULL));
@@ -22,4 +24,13 @@ void GP_evolution(int number, int times, const char* functionTable, const char* 
     file.open(outputXml);
     file<<result;
     file.close();
+}
+
+void GP_RunXml(const char* functionXml, const char* input, void(*output)(GP_Output&))
+{
+    xmlGPLoader load;
+    load.loadFile(functionXml);
+    GP_Output gp = load.run();
+    if (NULL!=output) output(gp);
+    GP_Output_clear(gp);
 }

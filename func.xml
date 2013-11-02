@@ -20,6 +20,7 @@
 
 <TrPackageFitCompute>
 	<inputs>TrPackageFilterTransformFromRegress</inputs>
+	<inputs>TrPackageCompse</inputs>
 </TrPackageFitCompute>
 
 <TrPackageFilterMatrixRegress>

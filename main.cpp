@@ -12,20 +12,18 @@ using namespace std;
 #include "api/evolution.h"
 
 #include "xml/xmlGPLoader.h"
-int test_run()
+void print(GP_Output& out)
 {
-    xmlGPLoader load;
-    load.loadFile("result.xml");
-    GP_Output gp = load.run();
-    cout <<"GPOUPUT   "<<gp.output.size()<<endl;
-    double* result = (double*)gp.output[0].content;
-    cout <<"result = "<<(*result)<<endl;
-    free(result);
+    if (out.output.size()>0)
+    {
+		double* result = (double*)(out.output[0].content);
+		cout <<"result = "<<(*result)<<endl;
+	}
 }
 
 int main()
 {
-    //GP_evolution(10, 100, "func.xml", NULL, "result.xml");
-    test_run();
+    GP_evolution(10, 100, "func.xml", NULL, "result.xml");
+    GP_RunXml("result.xml", NULL, print);
     return 1;
 }
