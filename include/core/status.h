@@ -29,12 +29,9 @@ typedef void*(*statusLoadMethod)(std::string);
 /*Basic API*/
 bool status_init();
 int status_allocSet(const std::vector<int>& type);
-int status_allocSet(int type);
 int status_loadSet(const std::vector<int>& type, std::vector<std::string>& contents);
 int status_allocType(int size, std::string name, statusAllocMethod alloc=NULL, statusVaryMethod free=NULL, statusVaryMethod vary=NULL, 
         statusCopyMethod copy=NULL, statusPrintMethod print=NULL, statusLoadMethod load = NULL);
-bool status_uploadSet(const std::vector<void*> src, int statusId);
-int status_computesize(const std::vector<int>& type);
 bool status_freeSet(int statusId);
 bool status_CopySet(int srcId, int dstId);
 std::vector<void*> status_queryContent(int statusId);

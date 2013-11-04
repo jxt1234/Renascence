@@ -144,27 +144,6 @@ int status_loadSet(const std::vector<int>& type, std::vector<std::string>& conte
 }
 
 
-int status_computesize(const vector<int>& type)
-{
-    int result =0;
-    for (int i=0; i<type.size(); ++i)
-    {
-        result+= gStatusType[type[i]].size;
-    }
-    return result;
-}
-
-bool status_uploadSet(const vector<void*> src, int statusId)
-{
-    if (!static_validId(statusId)) return NULL;
-    statusSet& set = gStatusSet[statusId];
-    for (int i=0; i<set.type.size(); ++i)
-    {
-        statusType& t = gStatusType[set.type[i]];
-        memcpy(set.content[i], src[i], t.size);
-    }
-    return true;
-}
 
 const vector<int>& status_queryType(int statusId)
 {
@@ -210,12 +189,6 @@ bool status_clear()
     return true;
 }
 
-int status_allocSet(int type)
-{
-    vector<int> nType;
-    nType.push_back(type);
-    return status_allocSet(nType);
-}
 bool status_varySet(int statusId)
 {
     if (!static_validId(statusId)) return false;

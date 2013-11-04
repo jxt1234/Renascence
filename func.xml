@@ -5,9 +5,18 @@
 
 	<inputs>TrPackageFilterMatrix, TrPackageFilterMatrix</inputs>
 	<inputs>TrPackageInput, TrPackageFilterMatrix</inputs>
+	<inputs>TrPackageInput, TrPackageSaturation</inputs>
 
 	<status>float</status>
 </TrPackageCompse>
+
+<TrPackageSaturation>
+	<inputs>TrPackageInput</inputs>
+	<inputs>TrPackageFilterMatrix</inputs>
+	<inputs>TrPackageCompse</inputs>
+	<status>float</status>
+
+</TrPackageSaturation>
 
 <TrPackageFilterMatrix>
 	<output>TrBmp</output>
@@ -19,11 +28,12 @@
 </TrPackageFilterMatrix>
 
 <TrPackageFitCompute>
-	<inputs>TrPackageFilterTransformFromRegress</inputs>
 	<inputs>TrPackageCompse</inputs>
+	<inputs>TrPackageSaturation</inputs>
 </TrPackageFitCompute>
 
 <TrPackageFilterMatrixRegress>
+	<output>TrFilterMatrix</output>
 	<status>TrRegreeMode</status>
 	<inputs>TrPackageCompse, TrPackageInputTarget</inputs>
 	<inputs>TrPackageInput, TrPackageInputTarget</inputs>
@@ -44,6 +54,7 @@
 	TrPackageFilterMatrixRegress
 	TrPackageFilterTransformFromRegress
 	TrPackageOutput
+	TrPackageSaturation
 </functionTable>
 
 <statusTable>
