@@ -26,7 +26,7 @@ class GenerateSystem:public IFunctionDataBase
 {
     public:
         GenerateSystem():mComputeSystem(NULL){}
-        GenerateSystem(computeSystem* sys ):mComputeSystem(sys){}
+        GenerateSystem(computeSystem* sys):mComputeSystem(sys){}
         virtual computeFunction vGetCompute(int id);
         virtual ~GenerateSystem(){}
         std::vector<int> searchOneSequence();

@@ -41,6 +41,15 @@ computeSystem::~computeSystem()
     clear();
 }
 
+void computeSystem::vQueryFunction(int id, std::string& name, std::string& libName)
+{
+    name = mFunctionTable[id]->name;
+    libName = mFunctionTable[id]->libName;
+}
+void computeSystem::vQueryOutput(int functionId, std::vector<int>& output)
+{
+    output = mFunctionTable[functionId]->outputType;
+}
 computeFunction computeSystem::getFunction(int id)
 {
     if (id < mFunctionTable.size() && 0<=id)
@@ -91,8 +100,10 @@ void computeSystem::loadFuncXml(xmlFunctionLoader& loader, void* &handle)
     const vector<xmlFunctionLoader::function>& functions = loader.getFunc();
     for (int i=0; i<functions.size(); ++i)
     {
-        computeSystem::function* fc = new computeSystem::function;
         const xmlFunctionLoader::function& f = functions[i];
+        computeSystem::function* fc = new computeSystem::function;
+        fc->name = f.name;
+        fc->libName = loader.libName;
         /*Load function handle*/
         computeFunction func = (computeFunction)system_find_func(handle, f.name.c_str());
         assert(NULL!=func);

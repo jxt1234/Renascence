@@ -38,10 +38,13 @@ std::vector<void*> status_queryContent(int statusId);
 const std::vector<int>& status_queryType(int statusId);
 int status_CopyAllocSet(int srcId);
 bool status_clear();
-
 /*Optional API*/
 bool status_varySet(int statusId);
 std::string status_printSet(int statusId);
+
+/*Not safe API*/
+void status_printSetWithType(std::vector<void*>& contents, std::vector<int>& types, std::ostringstream& output);
+
 
 
 #endif

@@ -24,7 +24,6 @@ xmlGenerateSystem::xmlGenerateSystem(const char* xmlFile, bool print)
     if (print) xmlLoader.print();
     mComputeSystem = new computeSystem;
     mComputeSystem->loadFuncXml(xmlLoader, handle);
-    mData.loadXml(xmlLoader);
     mHandle.push_back(handle);
 }
 
@@ -40,7 +39,7 @@ xmlGenerateSystem::~xmlGenerateSystem()
 std::string xmlGenerateSystem::xmlPrint(GeneticProgram* gp)
 {
     assert(NULL!=gp);
-    return gp->xmlPrint(&mData);
+    return gp->xmlPrint(mComputeSystem);
 }
 
 

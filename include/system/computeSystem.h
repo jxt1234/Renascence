@@ -18,12 +18,18 @@
 #include "core/function.h"
 #include "core/status.h"
 #include "xml/xmlFunctionLoader.h"
+#include <string>
+#include "core/IDataBase.h"
 
-class computeSystem
+class computeSystem:public IDataBase
 {
     public:
         struct function
         {
+            //For print
+            std::string name;
+            std::string libName;
+            //For compute
             computeFunction basic;
             std::vector<int> outputType;
             std::vector<int> statusType;
@@ -38,6 +44,10 @@ class computeSystem
         const std::vector<std::vector<int> >& getAvailableFunctionInputs(int functionId);
         const std::vector<int>& getOutputFunctions(){return mOutputId;}
         void print();
+        //DataBase
+        virtual void vQueryStatus(int id, std::string& name, std::string& libName){}
+        virtual void vQueryFunction(int id, std::string& name, std::string& libName);
+        virtual void vQueryOutput(int functionId, std::vector<int>& output);
         computeSystem();
         virtual ~computeSystem();
     protected:

@@ -27,7 +27,6 @@ class xmlGenerateSystem:public GenerateSystem
         std::string xmlPrint(GeneticProgram* gp);
         GeneticProgram* xmlLoad(const char* xmlFile);
     private:
-        xmlDataBase mData;
         std::vector<void*> mHandle;
 };
 

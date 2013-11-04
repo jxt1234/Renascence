@@ -25,6 +25,7 @@ class xmlDataBase:public IDataBase
         /*API for GP*/
         virtual void vQueryStatus(int id, std::string& name, std::string& libName);
         virtual void vQueryFunction(int id, std::string& name, std::string& libName);
+        virtual void vQueryOutput(int functionId, std::vector<int>& output){}
         /*Load Data Method*/
         void loadXml(xmlFunctionLoader& loader);
         void loadXml(const char* fileName);

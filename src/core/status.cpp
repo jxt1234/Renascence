@@ -253,3 +253,19 @@ bool status_CopySet(int srcId, int dstId)
     }
     return true;
 }
+void status_printSetWithType(std::vector<void*>& contents, std::vector<int>& types, std::ostringstream& output)
+{
+    if (types.empty()) return;
+    if (types.size()!=contents.size()) return;
+    output<<endl;
+    for (int i=0; i<types.size(); ++i)
+    {
+        statusType& t = gStatusType[types[i]];
+        output <<"<"<<t.name <<">"<<endl;
+        if(t.print)
+        {
+            output << t.print(contents[i]);
+        }
+        output <<endl<<"</"<<t.name <<">"<<endl;
+    }
+}

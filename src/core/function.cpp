@@ -25,3 +25,10 @@ void GP_Output_clear(GP_Output& out)
     }
 }
 
+void GP_Output_collect(std::vector<void*>& output, GP_Output& out)
+{
+    for (int i=0; i<out.output.size(); ++i)
+    {
+        output.push_back(out.output[i].content);
+    }
+}

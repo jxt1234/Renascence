@@ -335,6 +335,17 @@ string GeneticProgram::xmlPrint(IDataBase* data)
 void GeneticProgram::xmlPrintUnit(ostringstream& res, IDataBase* data, GeneticPoint* point)
 {
     string funcName, libName;
+    /*If the point is saved, just print the value*/
+    if (NULL!=point->save)
+    {
+        res << "<result>"<<endl;
+        vector<void*> output;
+        GP_Output_collect(output, *(point->save));
+        vector<int> outputType;
+        data->vQueryOutput(point->functionId, outputType);
+        status_printSetWithType(output, outputType, res);
+        res << "</result>"<<endl;
+    }
     data->vQueryFunction(point->functionId, funcName, libName);
     res << "<"<< GP_XmlString::node<<">"<<endl;
     res<<"<"<<GP_XmlString::lib<<">"<<libName<<"</"<<GP_XmlString::lib<<">\n";

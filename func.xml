@@ -29,6 +29,7 @@
 
 <TrPackageFitCompute>
 	<inputs>TrPackageCompse</inputs>
+	<inputs>TrPackageFilterTransformFromRegress</inputs>
 	<inputs>TrPackageSaturation</inputs>
 </TrPackageFitCompute>
 

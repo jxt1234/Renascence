@@ -24,6 +24,7 @@ class IDataBase
     public:
         virtual void vQueryStatus(int id, std::string& name, std::string& libName) = 0;
         virtual void vQueryFunction(int id, std::string& name, std::string& libName) = 0;
+        virtual void vQueryOutput(int functionId, std::vector<int>& output)=0;
 
         IDataBase(){}
         virtual ~IDataBase(){}
