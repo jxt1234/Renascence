@@ -42,8 +42,6 @@ bool status_clear();
 /*Optional API*/
 bool status_varySet(int statusId);
 std::string status_printSet(int statusId);
-void status_init(const std::vector<int>& type, void* content);
-
 
 
 #endif

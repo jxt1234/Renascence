@@ -179,6 +179,17 @@ void xmlFunctionLoader::loadFunc(package* p)
                 }
             }
         }
+        else if(cur->name == "output")
+        {
+            for (int j=0; j<cur->attr.size(); ++j)
+            {
+                int sta = findStatus(cur->attr[j]);
+                if (sta != -1)
+                {
+                    func.outputType.push_back(sta);
+                }
+            }
+        }
     }
 }
 void xmlFunctionLoader::loadStatus(xmlReader::package* p)
@@ -211,6 +222,11 @@ void xmlFunctionLoader::printFunc(xmlFunctionLoader::function& func)
     for (int j=0; j <func.statusType.size(); ++j)
     {
         cout <<" "<<func.statusType[j];
+    }
+    cout << "output = ";
+    for (int j=0; j <func.outputType.size(); ++j)
+    {
+        cout <<" "<<func.outputType[j];
     }
     cout << endl;
 }

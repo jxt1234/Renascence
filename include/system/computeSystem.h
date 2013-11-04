@@ -22,11 +22,16 @@
 class computeSystem
 {
     public:
-        inline const std::vector<computeFunction>& getMapFunction() {return mFunctions;}
-        computeFunction getFunction(int id) {if (id < mFunctions.size() && 0<=id) return mFunctions[id]; return NULL;}
+        struct function
+        {
+            computeFunction basic;
+            std::vector<int> outputType;
+            std::vector<int> statusType;
+            std::vector<std::vector<int> > fixTable;
+        };
+        computeFunction getFunction(int id);
         void loadFuncXml(xmlFunctionLoader& loader, void* &handle);
         void clear();
-        std::vector<int> getAllFunctionIDs();
         //Basic Api
         int allocateStatus(int id);
         inline const std::vector<int>& getInputFunctions(){return mInputId;}
@@ -40,9 +45,7 @@ class computeSystem
         void constructBasicTable();
     private:
         void _loadUnit(xmlFunctionLoader func);
-        std::vector<std::vector<std::vector<int> > > mBasicTable;
-        std::vector<computeFunction> mFunctions;
-        std::vector<std::vector<int> > mStatusTable;
+        std::vector<function*> mFunctionTable;
         std::vector<int> mOutputId;//可做为根结点的函数Id
         std::vector<int> mInputId;//作为叶结点的函数Id
 };

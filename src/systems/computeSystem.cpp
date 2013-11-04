@@ -29,34 +29,34 @@ computeSystem::computeSystem()
 const std::vector<std::vector<int> >& computeSystem::getAvailableFunctionInputs(int functionId)
 {
     static vector<vector<int> > nullVector;
-    if (functionId >=0 && functionId < mBasicTable.size())
+    if (functionId >=0 && functionId < mFunctionTable.size())
     {
-        return mBasicTable[functionId];
+        return (mFunctionTable[functionId])->fixTable;
     }
     return nullVector;
 }
 
 computeSystem::~computeSystem()
 {
+    clear();
 }
 
-vector<int> computeSystem::getAllFunctionIDs()
+computeFunction computeSystem::getFunction(int id)
 {
-    vector<int> result;
-    for (int i=0; i<mFunctions.size(); ++i)
+    if (id < mFunctionTable.size() && 0<=id)
     {
-        result.push_back(i);
+        return mFunctionTable[id]->basic;
     }
-    return result;
+    return NULL;
 }
 
 void computeSystem::clear()
 {
-    mBasicTable.clear();
-    mStatusTable.clear();
-    mInputId.clear();
-    mOutputId.clear();
-    mFunctions.clear();
+    for (int i=0; i<mFunctionTable.size(); ++i)
+    {
+        delete mFunctionTable[i];
+    }
+    mFunctionTable.clear();
 }
 
 vector<int> computeSystem::loadStatus(const vector<xmlFunctionLoader::status>& sta, void* handle)
@@ -86,25 +86,34 @@ void computeSystem::loadFuncXml(xmlFunctionLoader& loader, void* &handle)
     }
     assert(NULL!=handle);
     vector<int> statusTypeId = loadStatus(loader.getStatus(), handle);
-    int offset = mFunctions.size();
+    int offset = mFunctionTable.size();
     mOutputId.push_back(loader.mFit);
     const vector<xmlFunctionLoader::function>& functions = loader.getFunc();
     for (int i=0; i<functions.size(); ++i)
     {
+        computeSystem::function* fc = new computeSystem::function;
         const xmlFunctionLoader::function& f = functions[i];
         /*Load function handle*/
         computeFunction func = (computeFunction)system_find_func(handle, f.name.c_str());
         assert(NULL!=func);
-        mFunctions.push_back(func);
+        fc->basic = func;
         /*Load function status*/
         vector<int> statusType = f.statusType;
+        vector<int> outputType = f.outputType;
         vector<int> newST;
+        vector<int> newOT;
         for (int j=0; j<statusType.size(); ++j)
         {
             int cur = statusType[j];
             newST.push_back(statusTypeId[cur]);
         }
-        mStatusTable.push_back(newST);
+        for (int j=0; j<outputType.size(); ++j)
+        {
+            int cur = outputType[j];
+            newOT.push_back(statusTypeId[cur]);
+        }
+        fc->statusType = newST;
+        fc->outputType = newOT;
         /*Load function inputs*/
         vector<vector<int> > newCombo = f.inputs;
         for (int j=0; j<newCombo.size(); ++j)
@@ -114,7 +123,8 @@ void computeSystem::loadFuncXml(xmlFunctionLoader& loader, void* &handle)
                 newCombo[j][k]+=offset;
             }
         }
-        mBasicTable.push_back(newCombo);
+        fc->fixTable = newCombo;
+        mFunctionTable.push_back(fc);
     }
     mInputId = loader.mInputs;
 }
@@ -122,46 +132,10 @@ void computeSystem::loadFuncXml(xmlFunctionLoader& loader, void* &handle)
 
 int computeSystem::allocateStatus(int id)
 {
-    if (id < 0) return -1;
-    return status_allocSet(mStatusTable[id]);
+    if (id < 0 || id >= mFunctionTable.size()) return -1;
+    return status_allocSet(mFunctionTable[id]->statusType);
 }
 
 void computeSystem::print()
 {
-    cout << "All functions number is "<<mFunctions.size()<<endl;
-    cout<<"Input function Id"<<endl;
-    for (int i=0; i< mInputId.size(); ++i)
-    {
-        cout<<mInputId[i]<<"    ";
-    }
-    cout << endl;
-    cout << "Output funciton Id"<<endl;
-    for (int i=0; i< mOutputId.size(); ++i)
-    {
-        cout << mOutputId[i]<<"    ";
-    }
-    cout << endl;
-    cout << "Status table is "<<endl;
-    for (int i=0; i<mStatusTable.size(); ++i)
-    {
-        cout << "The "<<i<<" functions' status:"<<endl;
-        for (int j=0; j<mStatusTable[i].size(); ++j)
-        {
-            cout << mStatusTable[i][j]<<" ";
-        }
-        cout <<endl;
-    }
-    cout << "Basic table is "<<endl;
-    for (int i=0; i<mBasicTable.size(); ++i)
-    {
-        cout <<endl<<"The "<<i<<" function "<<endl;
-        for(int j=0; j<mBasicTable[i].size(); ++j)
-        {
-            cout <<endl<<" combo "<<j<<": ";
-            for(int k=0; k<mBasicTable[i][j].size(); ++k)
-            {
-                cout << mBasicTable[i][j][k]<<" ";
-            }
-        }
-    }
 }
