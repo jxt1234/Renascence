@@ -4,7 +4,7 @@
 #Const Values
 CFLAGS=""
 CFLAGS="-rdynamic "
-CFLAGS=" -O3 "
+#CFLAGS=" -O3 "
 CPP="g++ "
 C="gcc "
 MIDPATH='build/'

@@ -28,6 +28,7 @@ void print(GP_Output& out)
     }
 }
 
+#include "utils/debug.h"
 int main()
 {
     GP_evolution(10, 1, "func.xml", NULL, "result.xml");

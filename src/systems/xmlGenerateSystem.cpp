@@ -15,6 +15,9 @@
 ******************************************************************/
 #include "system/xmlGenerateSystem.h"
 #include "system/system_lib.h"
+#include "utils/debug.h"
+
+using namespace std;
 
 xmlGenerateSystem::xmlGenerateSystem(const char* xmlFile, bool print)
 {
@@ -39,6 +42,18 @@ xmlGenerateSystem::~xmlGenerateSystem()
 std::string xmlGenerateSystem::xmlPrint(GeneticProgram* gp)
 {
     assert(NULL!=gp);
+    vector<int> func = gp->getFuncId();
+    vector<int> saveFunc;
+    for (int i=0; i<func.size(); ++i)
+    {
+        vector<int> out;
+        mComputeSystem->vQueryOutput(func[i], out);
+        if (!out.empty())
+        {
+            saveFunc.push_back(func[i]);
+        }
+    }
+    gp->save(this, saveFunc);
     return gp->xmlPrint(mComputeSystem);
 }
 

@@ -17,7 +17,6 @@
 #define XML_GENERATE_SYSTEM_H
 
 #include "system/GenerateSystem.h"
-#include "system/xmlDataBase.h"
 
 class xmlGenerateSystem:public GenerateSystem
 {
@@ -25,7 +24,6 @@ class xmlGenerateSystem:public GenerateSystem
         xmlGenerateSystem(const char* xmlFile, bool print= false);
         virtual ~xmlGenerateSystem();
         std::string xmlPrint(GeneticProgram* gp);
-        GeneticProgram* xmlLoad(const char* xmlFile);
     private:
         std::vector<void*> mHandle;
 };
