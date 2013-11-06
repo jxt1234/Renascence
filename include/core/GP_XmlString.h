@@ -24,6 +24,7 @@ class GP_XmlString
         static const std::string lib;
         static const std::string status;
         static const std::string children;
+        static const std::string result;
 };
 
 #endif

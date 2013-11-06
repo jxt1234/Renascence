@@ -241,14 +241,10 @@ bool status_CopySet(int srcId, int dstId)
         if (t.alloc)
         {
             d.content.push_back(t.alloc());
-        }
-        else
-        {
-            d.content.push_back(malloc(t.size));
-        }
-        if (t.copy)
-        {
-            t.copy(s.content[i], d.content[i]);
+            if (t.copy)
+            {
+                t.copy(s.content[i], d.content[i]);
+            }
         }
     }
     return true;

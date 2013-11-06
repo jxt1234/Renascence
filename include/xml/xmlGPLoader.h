@@ -37,6 +37,7 @@ class xmlGPLoader:public xmlReader, GeneticProgram, IFunctionDataBase
         std::vector<std::string> mStatusName;
         std::vector<int> mStatusType;
     private:
+        void _getStatusFunc(const std::string& name, statusLoadMethod& _load, statusVaryMethod& _free);
         int findStatus(std::string name);
         void* findLib(std::string name);
         int findFunc(std::string name);
@@ -46,6 +47,7 @@ class xmlGPLoader:public xmlReader, GeneticProgram, IFunctionDataBase
         void _lib(xmlReader::package* p);
         void _children(xmlReader::package* p);
         void _func(xmlReader::package* p);
+        void _result(xmlReader::package* p);
         void load(int num, int type);
         void* mCurrentHandle;
         GeneticPoint* mCurrentPoint;

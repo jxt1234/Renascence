@@ -81,6 +81,7 @@ void xmlGPLoader::unFlattenUnit(xmlReader::package* p)
     RUN(GP_XmlString::lib, _lib);
     RUN(GP_XmlString::func, _func);
     RUN(GP_XmlString::children, _children);
+    RUN(GP_XmlString::result, _result);
 #undef RUN
 }
 
@@ -89,6 +90,39 @@ void xmlGPLoader::_node(xmlReader::package* p)
     for (int i=0; i<p->children.size(); ++i)
     {
         unFlattenUnit(p->children[i]);
+    }
+}
+
+void xmlGPLoader::_getStatusFunc(const string& name, statusLoadMethod& _load, statusVaryMethod& _free)
+{
+    string loadName = name +"_load";
+    string freeName = name +"_free";
+    _load = (statusLoadMethod)system_find_func(mCurrentHandle, loadName.c_str());
+    _free = (statusVaryMethod)system_find_func(mCurrentHandle, freeName.c_str());
+    assert(NULL!=_load);
+    assert(NULL!=_free);
+}
+/*Generate GP_Output, freeCallBack is type's free method.Though it's something like status, but are not the same*/
+void xmlGPLoader::_result(xmlReader::package* p)
+{
+    if (p->children.size() == 0) return;
+    mCurrentPoint->save = new GP_Output;
+    for (int i=0; i<p->children.size(); ++i)
+    {
+        GP_Output::GP_Unit unit;
+        xmlReader::package* _p = p->children[i];
+        string name = _p->name;
+        string content;
+        statusLoadMethod _load;
+        statusVaryMethod _free;
+        _getStatusFunc(name, _load, _free);
+        for (int j=0; j<_p->attr.size(); ++j)
+        {
+            content = content +" "+ _p->attr[j];
+        }
+        unit.content = _load(content);
+        unit.freeCallBack = _free;
+        (mCurrentPoint->save->output).push_back(unit);
     }
 }
 void xmlGPLoader::_status(xmlReader::package* p)
@@ -122,12 +156,9 @@ int xmlGPLoader::findStatus(string name)
         }
     }
     /*Alloc status type*/
-    string loadName = name +"_load";
-    string freeName = name +"_free";
-    statusLoadMethod load = (statusLoadMethod)system_find_func(mCurrentHandle, loadName.c_str());
-    statusVaryMethod _free = (statusVaryMethod)system_find_func(mCurrentHandle, freeName.c_str());
-    assert(NULL!=load);
-    assert(NULL!=_free);
+    statusLoadMethod load;
+    statusVaryMethod _free;
+    _getStatusFunc(name, load, _free);
     mStatusName.push_back(name);
     int type = status_allocType(0, name, NULL, _free, NULL, NULL, NULL, load);
     mStatusType.push_back(type);
@@ -170,6 +201,8 @@ void xmlGPLoader::_lib(xmlReader::package* p)
     string libName = p->attr[0];
     mCurrentHandle = findLib(libName);
 }
+
+
 void xmlGPLoader::_children(xmlReader::package* p)
 {
     GeneticPoint* back = mCurrentPoint;
