@@ -15,9 +15,19 @@
 ******************************************************************/
 #ifndef CORE_IGPRUNNER_H
 #define CORE_IGPRUNNER_H
-#include "GeneticProgram.h"
+#include "core/IDataBase.h"
+#include "core/function.h"
 class IGPRunner
 {
+    public:
+        /*The combined function is implement by this circle: input--compute--output */
+        //The input function may delete the content of inp, so the inp must be reconstruct after input 
+        virtual void input(GP_Input& inp)=0;
+        virtual void compute(IFunctionDataBase* map)=0;
+        virtual GP_Output output() = 0;
+        //Basic Function
+        IGPRunner(){}
+        virtual ~IGPRunner(){}
 };
 
 

@@ -27,6 +27,16 @@ struct GP_Output
     std::vector<GP_Unit> output;
 };
 
+struct GP_Input
+{
+    struct unit
+    {
+        void* content;
+        int sign;
+    };
+    std::vector<unit> input;
+};
+
 #define GP_OUTPUT_SINGLE_EXIT(x, result) GP_Output x;x.output.push_back(result);return x;
 
 #endif
