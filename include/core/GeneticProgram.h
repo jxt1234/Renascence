@@ -58,7 +58,6 @@ class GeneticProgram
         GeneticProgram(const GeneticProgram& program);
         virtual ~GeneticProgram();
         void operator=(const GeneticProgram& program);
-        void clear();
         GP_Output compute(IFunctionDataBase* map);
         bool replacePoint(const std::vector<int> &numbers, int n);
         //Save appointed functionIds' output
@@ -74,6 +73,7 @@ class GeneticProgram
         //Replace pair<old, new> function id
         void replaceFunctionId(std::vector<std::pair<int, int> > pairList);
     protected:
+        void clear();
         bool replacePoint(const std::vector<int> &numbers, GeneticPoint* point);
         GP_Output computeUnit(IFunctionDataBase* map, GeneticPoint* point);
         void computeUnitSave(IFunctionDataBase* map, GeneticPoint* point, const std::vector<int> functionIds);

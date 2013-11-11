@@ -1,7 +1,21 @@
 #include "core/AbstractGP.h"
+#include "core/GP_XmlString.h"
+#include <algorithm>
+#include <sstream>
 
 using namespace std;
+#define DO_CHILDREN_FUNC(func) \
+    for (int i=0; i<mChildren.size();++i)\
+    {\
+        AbstractGP* p = dynamic_cast<AbstractGP*>(mChildren[i]);\
+        p->func;\
+    }
 
+void AbstractGP::reset()
+{
+    _reset();
+    DO_CHILDREN_FUNC(reset());
+}
 AbstractGP::AbstractGP(const AbstractGP& gp)
 {
     mFunc = gp.mFunc;
@@ -13,6 +27,71 @@ AbstractGP::AbstractGP(const AbstractGP& gp)
     }
 }
 
+void AbstractGP::save(IFunctionDataBase* map, const std::vector<int>& functionIds)
+{
+    if (functionIds.empty() || find(functionIds.begin(), functionIds.end(), mFunc)!=functionIds.end())
+    {
+        _reset();
+        mSave = new GP_Output;
+        *mSave = up_compute(map);
+    }
+    DO_CHILDREN_FUNC(save(map, functionIds));
+}
+
+string AbstractGP::xmlPrint(IDataBase* data)
+{
+    string funcName, libName;
+    ostringstream res;
+    res << "<"<< GP_XmlString::node<<">"<<endl;
+    data->vQueryFunction(mFunc, funcName, libName);
+    res<<"<"<<GP_XmlString::lib<<">"<<libName<<"</"<<GP_XmlString::lib<<">\n";
+    res<<"<"<<GP_XmlString::func<<">"<<funcName<<"</"<<GP_XmlString::func<<">\n";
+    /*If the point is saved, just print the value*/
+    if (NULL!=mSave)
+    {
+        res << "<"<<GP_XmlString::result<<">"<<endl;
+        vector<void*> output;
+        GP_Output_collect(output, *(mSave));
+        vector<int> outputType;
+        data->vQueryOutput(mFunc, outputType);
+        status_printSetWithType(output, outputType, res);
+        res << "</"<<GP_XmlString::result<<">"<<endl;
+    }
+    if (mStatus >= 0)
+    {
+        res<<"<"<<GP_XmlString::status<<">\n";
+        res<<status_printSet(mStatus);
+        res<<"</"<<GP_XmlString::status<<">\n";
+    }
+    res <<"<"<< GP_XmlString::children<<">"<<endl;
+    for (int i=0; i<mChildren.size(); ++i)
+    {
+        AbstractGP* p = dynamic_cast<AbstractGP*>(mChildren[i]);
+        res << p->xmlPrint(data);
+    }
+    res <<"</"<< GP_XmlString::children<<">"<<endl;
+    res << "</"<< GP_XmlString::node<<">"<<endl;
+    return res.str();
+}
+
+void AbstractGP::replacePoint(const std::vector<int> &numbers, int& cur)
+{
+    for (int i=0; i<mChildren.size(); ++i)
+    {
+        delete mChildren[i];
+    }
+    mChildren.clear();
+    status_freeSet(mStatus);
+    mFunc = numbers[cur++];
+    mStatus = numbers[cur++];
+    int n = numbers[cur++];
+    for (int i=0; i<n; ++i)
+    {
+        AbstractGP* p = new AbstractGP;
+        p->replacePoint(numbers, cur);
+        mChildren.push_back(p);
+    }
+}
 void AbstractGP::operator=(const AbstractGP& gp)
 {
     for (int i=0; i<mChildren.size(); ++i)
@@ -27,12 +106,46 @@ void AbstractGP::operator=(const AbstractGP& gp)
         addPoint(deepCopy((gp.mChildren[i]), &c));
     }
 }
+
+void AbstractGP::compute(IFunctionDataBase* map)
+{
+    _reset();
+    mSave = new GP_Output;
+    *mSave = up_compute(map);
+}
+
+void AbstractGP::_reset()
+{
+    if (NULL!=mSave)
+    {
+        GP_Output_clear(*mSave);
+        delete mSave;
+        mSave = NULL;
+    }
+}
+
+void AbstractGP::input(GP_Input& input)
+{
+    //TODO Add Input
+}
+
+GP_Output AbstractGP::output()
+{
+    GP_Output result;
+    if (NULL!=mSave)
+    {
+        result = *mSave;
+    }
+    return result;
+}
+
 AbstractGP::~AbstractGP()
 {
     if (NULL!=mSave)
     {
         delete mSave;
     }
+    status_freeSet(mStatus);
 }
 
 GP_Output AbstractGP::up_compute(IFunctionDataBase* map)

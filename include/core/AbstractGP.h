@@ -26,11 +26,21 @@ class AbstractGP:public AbstractGPPoint, IGPRunner
         void operator=(const AbstractGP& gp);
         virtual ~AbstractGP();
         //Basic API
-        virtual void compute(IFunctionDataBase* map){}
-        virtual void input(GP_Input& input){}
-        virtual GP_Output output(){}
+        virtual void compute(IFunctionDataBase* map);
+        virtual void input(GP_Input& input);
+        virtual GP_Output output();
+        /*Old API to cover GeneticProgram*/
+        void reset();//Clear all mSave
+        //If the functionIds is empty, it means to save all points
+        void save(IFunctionDataBase* map, const std::vector<int>& functionIds);
+        //The cur means from which element to use, it's assumed that the numbers is valid and the status has been alloc
+        //FIXME: dangerous api
+        void replacePoint(const std::vector<int> &numbers, int& cur);
+        //Output a xml string, which can be write into file directly
+        std::string xmlPrint(IDataBase* data);
     protected:
         GP_Output up_compute(IFunctionDataBase* map);
+        void _reset();
         class AbstractGPCopy:public AbstractPoint::IPointCopy
         {
             public:
@@ -39,7 +49,7 @@ class AbstractGP:public AbstractGPPoint, IGPRunner
                     AbstractGP* result = new AbstractGP;
                     AbstractGP* s = (AbstractGP*)src;
                     result->mFunc = s->mFunc;
-                    result->mStatus = s->mStatus;
+                    result->mStatus = status_CopyAllocSet(s->mStatus);
                     return result;
                 }
         };
