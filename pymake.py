@@ -3,7 +3,7 @@
 
 #Const Values
 CFLAGS=""
-CFLAGS="-rdynamic "
+#CFLAGS="-rdynamic "
 CFLAGS=" -O3 "
 CPP="g++ "
 C="gcc "

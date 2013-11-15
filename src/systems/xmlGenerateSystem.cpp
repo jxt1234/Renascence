@@ -57,4 +57,13 @@ std::string xmlGenerateSystem::xmlPrint(GeneticProgram* gp)
     return gp->xmlPrint(mComputeSystem);
 }
 
+std::string xmlGenerateSystem::xmlPrint(AbstractGP* gp)
+{
+    assert(NULL!=gp);
+    vector<int> nullVector;
+    gp->save(this, nullVector);
+    return gp->xmlPrint(mComputeSystem);
+}
+
+
 

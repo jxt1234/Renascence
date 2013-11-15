@@ -1,7 +1,23 @@
+/******************************************************************
+   Copyright 2013, Jiang Xiao-tang
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+******************************************************************/
 #include "core/AbstractGP.h"
 #include "core/GP_XmlString.h"
 #include <algorithm>
 #include <sstream>
+#include "utils/debug.h"
 
 using namespace std;
 #define DO_CHILDREN_FUNC(func) \
@@ -11,6 +27,15 @@ using namespace std;
         p->func;\
     }
 
+AbstractPoint* AbstractGP::AbstractGPCopy::copy(AbstractPoint* src)
+{
+    AbstractGP* result = new AbstractGP;
+    AbstractGP* s = dynamic_cast<AbstractGP*>(src);
+    result->mFunc = s->mFunc;
+    result->mStatus = status_CopyAllocSet(s->mStatus);
+    result->mSave = NULL;
+    return result;
+}
 void AbstractGP::reset()
 {
     _reset();
@@ -98,8 +123,10 @@ void AbstractGP::operator=(const AbstractGP& gp)
     {
         delete mChildren[i];
     }
+    mChildren.clear();
     mFunc = gp.mFunc;
     mStatus = gp.mStatus;
+    mSave = NULL;
     AbstractGPCopy c;
     for (int i=0; i<gp.mChildren.size(); ++i)
     {
@@ -110,8 +137,9 @@ void AbstractGP::operator=(const AbstractGP& gp)
 void AbstractGP::compute(IFunctionDataBase* map)
 {
     _reset();
+    GP_Output result = up_compute(map);
     mSave = new GP_Output;
-    *mSave = up_compute(map);
+    *mSave = result;
 }
 
 void AbstractGP::_reset()

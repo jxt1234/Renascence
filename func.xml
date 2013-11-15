@@ -51,10 +51,10 @@
 	TrPackageInputTarget
 	TrPackageFitCompute
 	TrPackageFilterMatrix
-	TrPackageCompse
 	TrPackageFilterMatrixRegress
 	TrPackageFilterTransformFromRegress
 	TrPackageOutput
+	TrPackageCompse
 	TrPackageSaturation
 </functionTable>
 

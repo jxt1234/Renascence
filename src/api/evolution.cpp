@@ -16,12 +16,14 @@
 #include "api/evolution.h"
 
 #include "core/evolutionTreeV2.h"
+#include "core/evolutionTree.h"
 #include "core/group.h"
 #include "system/xmlGenerateSystem.h"
 #include <iostream>
 #include <string>
 #include <sstream>
 #include "xml/xmlGPLoader.h"
+#include "utils/debug.h"
 using namespace std;
 
 /*TODO Support inputTable*/
@@ -39,6 +41,16 @@ void GP_evolution(int number, int times, const char* functionTable, const char* 
     file.open(outputXml);
     file<<result;
     file.close();
+/*
+    evolutionTree::setGenSystem(&gen);
+    evolution_group<evolutionTree> group(number);
+    group.evolution(times);
+    evolutionTree* best = group.get_best();
+    string result = gen.xmlPrint(best);
+    ofstream file;
+    file.open(outputXml);
+    file<<result;
+    file.close();*/
 }
 
 void GP_RunXml(const char* functionXml, const char* input, void(*output)(GP_Output&))

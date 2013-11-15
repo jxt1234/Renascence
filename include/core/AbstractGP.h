@@ -1,3 +1,18 @@
+/******************************************************************
+   Copyright 2013, Jiang Xiao-tang
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+******************************************************************/
 #ifndef CORE_ABSTRACTGP_H
 #define CORE_ABSTRACTGP_H
 #include <stdlib.h>
@@ -6,6 +21,7 @@
 #include "core/IDataBase.h"
 #include "core/IGPRunner.h"
 #include "utils/GP_Clock.h"
+#include "utils/debug.h"
 #include "core/status.h"
 class AbstractGPPoint:public AbstractPoint
 {
@@ -44,14 +60,7 @@ class AbstractGP:public AbstractGPPoint, IGPRunner
         class AbstractGPCopy:public AbstractPoint::IPointCopy
         {
             public:
-                virtual AbstractPoint* copy(AbstractPoint* src)
-                {
-                    AbstractGP* result = new AbstractGP;
-                    AbstractGP* s = (AbstractGP*)src;
-                    result->mFunc = s->mFunc;
-                    result->mStatus = status_CopyAllocSet(s->mStatus);
-                    return result;
-                }
+                virtual AbstractPoint* copy(AbstractPoint* src);
         };
         GP_Output* mSave;
 };
