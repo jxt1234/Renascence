@@ -17,6 +17,7 @@
 #define ALGORITHM_ABSTRACTPOINT_H
 
 #include <vector>
+#include <list>
 
 class AbstractPoint
 {
@@ -30,6 +31,7 @@ class AbstractPoint
         AbstractPoint(){}
         /*Use for different types of tree to transform*/
         static AbstractPoint* deepCopy(AbstractPoint* src, IPointCopy* copy);
+        std::vector<AbstractPoint*> display();
         virtual ~AbstractPoint();
     protected:
         void addPoint(AbstractPoint* p);

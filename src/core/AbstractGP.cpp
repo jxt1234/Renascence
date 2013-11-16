@@ -101,22 +101,33 @@ string AbstractGP::xmlPrint(IDataBase* data)
 
 void AbstractGP::replacePoint(const std::vector<int> &numbers, int& cur)
 {
+    //Clear all children, status and result
+    _reset();
     for (int i=0; i<mChildren.size(); ++i)
     {
         delete mChildren[i];
     }
     mChildren.clear();
     status_freeSet(mStatus);
-    mFunc = numbers[cur++];
-    mStatus = numbers[cur++];
-    int n = numbers[cur++];
-    for (int i=0; i<n; ++i)
+    //Wide-search
+    list<AbstractGP*> cacheQueue;
+    cacheQueue.push_back(this);
+    while(!cacheQueue.empty())
     {
-        AbstractGP* p = new AbstractGP;
-        p->replacePoint(numbers, cur);
-        mChildren.push_back(p);
+        AbstractGP* current = cacheQueue.front();
+        current->mFunc = numbers[cur++];
+        current->mStatus = numbers[cur++];
+        int pointNumber = numbers[cur++];
+        for (int i=0; i < pointNumber; ++i)
+        {
+            AbstractGP* input = new AbstractGP;
+            current->mChildren.push_back(input);
+            cacheQueue.push_back(input);
+        }
+        cacheQueue.pop_front();
     }
 }
+
 void AbstractGP::operator=(const AbstractGP& gp)
 {
     for (int i=0; i<mChildren.size(); ++i)

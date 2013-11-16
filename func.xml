@@ -53,8 +53,8 @@
 	TrPackageFilterMatrix
 	TrPackageFilterMatrixRegress
 	TrPackageFilterTransformFromRegress
-	TrPackageOutput
 	TrPackageCompse
+	TrPackageOutput
 	TrPackageSaturation
 </functionTable>
 

@@ -59,7 +59,6 @@ double evolutionTree::get_fit() const
 
 void evolutionTree::mutate()
 {
-    return;
     assert(NULL!=mGen);
     const int scale = 100;
     /*Little prob to totally changed*/
@@ -76,7 +75,7 @@ void evolutionTree::mutate()
     }
     for (int i=0; i<mChildren.size(); ++i)
     {
-        evolutionTree* p = dynamic_cast<evolutionTree*>(mChildren[i]);
+        evolutionTree* p = (evolutionTree*)(mChildren[i]);
         p->mutate();
     }
 }

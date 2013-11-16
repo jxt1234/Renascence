@@ -48,3 +48,23 @@ AbstractPoint* AbstractPoint::deepCopy(AbstractPoint* src, AbstractPoint::IPoint
 }
 
 
+
+std::vector<AbstractPoint*> AbstractPoint::display()
+{
+    vector<AbstractPoint*> result;
+    list<AbstractPoint*> cache;
+    result.push_back(this);
+    cache.push_back(this);
+    while(!cache.empty())
+    {
+        AbstractPoint* p = cache.front();
+        for (int i=0; i<(p->mChildren).size(); ++i)
+        {
+            AbstractPoint* c = p->mChildren[i];
+            result.push_back(c);
+            cache.push_back(c);
+        }
+        cache.pop_front();
+    }
+    return result;
+}
