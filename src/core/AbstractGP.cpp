@@ -57,8 +57,9 @@ void AbstractGP::save(IFunctionDataBase* map, const std::vector<int>& functionId
     if (functionIds.empty() || find(functionIds.begin(), functionIds.end(), mFunc)!=functionIds.end())
     {
         _reset();
+        GP_Output output = up_compute(map);
         mSave = new GP_Output;
-        *mSave = up_compute(map);
+        *mSave = output;
     }
     DO_CHILDREN_FUNC(save(map, functionIds));
 }
@@ -74,13 +75,16 @@ string AbstractGP::xmlPrint(IDataBase* data)
     /*If the point is saved, just print the value*/
     if (NULL!=mSave)
     {
-        res << "<"<<GP_XmlString::result<<">"<<endl;
         vector<void*> output;
         GP_Output_collect(output, *(mSave));
         vector<int> outputType;
         data->vQueryOutput(mFunc, outputType);
-        status_printSetWithType(output, outputType, res);
-        res << "</"<<GP_XmlString::result<<">"<<endl;
+        if (!outputType.empty())
+        {
+            res << "<"<<GP_XmlString::result<<">"<<endl;
+            status_printSetWithType(output, outputType, res);
+            res << "</"<<GP_XmlString::result<<">"<<endl;
+        }
     }
     if (mStatus >= 0)
     {
@@ -183,6 +187,7 @@ AbstractGP::~AbstractGP()
     if (NULL!=mSave)
     {
         delete mSave;
+        mSave = NULL;
     }
     status_freeSet(mStatus);
 }

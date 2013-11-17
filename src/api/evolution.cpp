@@ -32,7 +32,7 @@ void GP_evolution(int number, int times, const char* functionTable, const char* 
 {
     srand((unsigned) time(NULL));
     xmlGenerateSystem gen(functionTable, false);
-#if 1
+#if 0
     evolutionTreeV2::setGenSystem(&gen);
     evolution_group<evolutionTreeV2> group(number);
     group.evolution(times);

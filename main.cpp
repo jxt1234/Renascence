@@ -29,22 +29,9 @@ void print(GP_Output& out)
 }
 
 
-#include "core/evolutionTree.h"
-#include "system/xmlGenerateSystem.h"
-void test_evolutionTree()
-{
-    srand((unsigned) time(NULL));
-    xmlGenerateSystem gen("func.xml", false);
-    evolutionTree::setGenSystem(&gen);
-    evolutionTree t1;
-    evolutionTree t2;
-    t2 = t1;
-}
-
 int main()
 {
-    //test_evolutionTree();
-    GP_evolution(10, 10, "func.xml", NULL, "result.xml");
+    GP_evolution(10, 1000, "func.xml", NULL, "result.xml");
     GP_RunXml("result.xml", NULL, print);
     return 1;
 }
