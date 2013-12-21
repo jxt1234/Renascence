@@ -1,8 +1,9 @@
 #!/bin/bash
 rm -rf temp
-find -name "*.h" >> temp
-find -name "*.c" >> temp
-find -name "*.cpp" >> temp
+find src/ -name "*.h" >> temp
+find src/ -name "*.c" >> temp
+find src/ -name "*.cpp" >> temp
+find include/ -name "*.h" >> temp
 
 while read x
 do
