@@ -15,6 +15,7 @@
 ******************************************************************/
 #ifndef USER_PACKAGE_H
 #define USER_PACKAGE_H
+#include <vector>
 
 /*We can not define a destructor function and use freeCallBack for GP_Output, because the freeCallBack is called by the system outside*/
 struct GP_Output

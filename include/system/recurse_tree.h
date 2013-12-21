@@ -16,7 +16,7 @@
 #ifndef VECTOR_POINT_TREE_H
 #define VECTOR_POINT_TREE_H
 #include "math/carryTree.h"
-#include "system/computeSystem.h"
+#include "computeSystem.h"
 #include "utils/debug.h"
 class computePoint:public carryPoint
 {

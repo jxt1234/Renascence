@@ -15,8 +15,8 @@
 ******************************************************************/
 #ifndef CORE_IGPRUNNER_H
 #define CORE_IGPRUNNER_H
-#include "core/IDataBase.h"
-#include "core/function.h"
+#include "IDataBase.h"
+#include "function.h"
 class IGPRunner
 {
     public:

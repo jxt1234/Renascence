@@ -16,7 +16,7 @@
 #ifndef XML_GENERATE_SYSTEM_H
 #define XML_GENERATE_SYSTEM_H
 
-#include "system/GenerateSystem.h"
+#include "GenerateSystem.h"
 #include "core/AbstractGP.h"
 
 class xmlGenerateSystem:public GenerateSystem

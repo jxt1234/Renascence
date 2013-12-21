@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef XML_READER_FUNCTION_H
 #define XML_READER_FUNCTION_H
-#include "xml/xmlReader.h"
+#include "xmlReader.h"
 
 class xmlFunctionLoader:public xmlReader
 {

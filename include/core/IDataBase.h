@@ -18,7 +18,7 @@
 /*Abstarct Class, used for GP to query status, function name, and relative lib*/
 #include <string>
 #include <vector>
-#include "core/function.h"
+#include "function.h"
 class IDataBase
 {
     public:

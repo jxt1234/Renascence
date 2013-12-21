@@ -17,12 +17,12 @@
 #define CORE_ABSTRACTGP_H
 #include <stdlib.h>
 #include "algorithm/AbstractPoint.h"
-#include "core/function.h"
-#include "core/IDataBase.h"
-#include "core/IGPRunner.h"
+#include "function.h"
+#include "IDataBase.h"
+#include "IGPRunner.h"
 #include "utils/GP_Clock.h"
 #include "utils/debug.h"
-#include "core/status.h"
+#include "status.h"
 class AbstractGPPoint:public AbstractPoint
 {
     public:

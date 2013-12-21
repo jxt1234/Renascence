@@ -16,7 +16,7 @@
 #ifndef EVOLUTIONTREE_V2_H
 #define EVOLUTIONTREE_V2_H
 
-#include "core/GeneticProgram.h"
+#include "GeneticProgram.h"
 #include "system/GenerateSystem.h"
 
 class evolutionTreeV2:public GeneticProgram

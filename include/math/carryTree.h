@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef CARRY_TREE_H
 #define CARRY_TREE_H
-#include "math/carryPoint.h"
+#include "carryPoint.h"
 template <class outputType>
 class carryTree
 {

@@ -16,7 +16,7 @@
 #ifndef CORE_EVOLUTION_TREE_H
 #define CORE_EVOLUTION_TREE_H
 
-#include "core/AbstractGP.h"
+#include "AbstractGP.h"
 #include "system/GenerateSystem.h"
 #include <fstream>
 class evolutionTree:public AbstractGP
