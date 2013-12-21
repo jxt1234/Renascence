@@ -1,0 +1,57 @@
+<main>
+
+<TrPackageCompse>
+	<output>TrBmp</output>
+
+	<inputs>TrPackageFilterMatrix, TrPackageFilterMatrix</inputs>
+	<inputs>TrPackageInput, TrPackageFilterMatrix</inputs>
+
+	<status>float</status>
+</TrPackageCompse>
+
+<TrPackageFilterMatrix>
+	<output>TrBmp</output>
+	<inputType>TrBmp</inputType>
+
+	<inputs>TrPackageInput</inputs>
+
+	<status>TrFilterMatrix</status>
+</TrPackageFilterMatrix>
+
+<TrPackageFitCompute>
+	<inputs>TrPackageFilterTransformFromRegress</inputs>
+</TrPackageFitCompute>
+
+<TrPackageFilterMatrixRegress>
+	<status>TrRegreeMode</status>
+	<inputs>TrPackageCompse, TrPackageInputTarget</inputs>
+	<inputs>TrPackageInput, TrPackageInputTarget</inputs>
+</TrPackageFilterMatrixRegress>
+
+
+<TrPackageFilterTransformFromRegress>
+	<inputs>TrPackageInput, TrPackageFilterMatrixRegress</inputs>
+	<inputs>TrPackageCompse, TrPackageFilterMatrixRegress</inputs>
+</TrPackageFilterTransformFromRegress>
+
+<functionTable>
+	TrPackageInput
+	TrPackageInputTarget
+	TrPackageFitCompute
+	TrPackageFilterMatrix
+	TrPackageCompse
+	TrPackageFilterMatrixRegress
+	TrPackageFilterTransformFromRegress
+</functionTable>
+
+<statusTable>
+	TrFilterMatrix
+	float
+	TrRegreeMode
+</statusTable>
+
+<output>TrWritePixels</output>
+<input>TrPackageInput</input>
+<fit>TrPackageFitCompute</fit>
+
+</main>
