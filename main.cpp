@@ -13,25 +13,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "api/evolution.h"
-#include "xml/xmlGPLoader.h"
-
-#include <iostream>
-using namespace std;
-
-void print(GP_Output& out)
-{
-    if (out.output.size()>0)
-    {
-        double* result = (double*)(out.output[0].content);
-        cout <<"result = "<<(*result)<<endl;
-    }
-}
-
-
+#include "test/GPTest.h"
 int main()
 {
-    GP_evolution(10, 1000, "func.xml", NULL, "result.xml");
-    GP_RunXml("result.xml", NULL, print);
+	GPTestSuit::run();
     return 1;
 }
