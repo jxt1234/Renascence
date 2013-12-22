@@ -219,16 +219,21 @@ GP_Output AbstractGP::up_compute(IFunctionDataBase* map)
             children.push_back(output_unit[j].content);
         }
     }
-    vector<void*> constValue;
+    //Get status
     if (-1 != mStatus)
     {
+        vector<void*> constValue;
         constValue = status_queryContent(mStatus);
+        for (int i=0; i<constValue.size(); ++i)
+        {
+            children.push_back(constValue[i]);
+        }
     }
     {
 #ifdef DEBUG_TIMES
         GP_Clock c(mFunc);
 #endif
-        result = comp(children, constValue);
+        result = comp(children);
     }
     //Free All children' memory
     for (int i=0; i < inputMap.size(); ++i)

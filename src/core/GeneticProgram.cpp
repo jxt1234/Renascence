@@ -293,12 +293,16 @@ GP_Output GeneticProgram::computeUnit(IFunctionDataBase* table, GeneticPoint* po
     if (-1 != point->statusId)
     {
         constValue = status_queryContent(point->statusId);
+        for (int i=0; i<constValue.size(); ++i)
+        {
+            children.push_back(constValue[i]);
+        }
     }
     {
 #ifdef DEBUG_TIMES
         GP_Clock c(point->functionId);
 #endif
-        result = comp(children, constValue);
+        result = comp(children);
     }
     //Free All children' memory
     for (int i=0; i < inputMap.size(); ++i)

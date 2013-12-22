@@ -49,11 +49,11 @@ class AbstractGP:public AbstractGPPoint, IGPRunner
         void reset();//Clear all mSave
         //If the functionIds is empty, it means to save all points
         void save(IFunctionDataBase* map, const std::vector<int>& functionIds);
+        //Output a xml string, which can be write into file directly
+        std::string xmlPrint(IDataBase* data);
         //The cur means from which element to use, it's assumed that the numbers is valid and the status has been alloc
         //FIXME: dangerous api
         void replacePoint(const std::vector<int> &numbers, int& cur);
-        //Output a xml string, which can be write into file directly
-        std::string xmlPrint(IDataBase* data);
     protected:
         GP_Output up_compute(IFunctionDataBase* map);
         void _reset();

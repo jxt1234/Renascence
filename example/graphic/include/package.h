@@ -23,20 +23,20 @@ extern "C"
 using namespace std;
 extern "C"
 {
-    GP_Output TrPackageFitCompute(vector<void*> inputs, vector<void*> constValue);
-    GP_Output TrPackageOutput(vector<void*> inputs, vector<void*> constValue);
-    GP_Output TrPackageInput(vector<void*> inputs, vector<void*> constValue);
-    GP_Output TrPackageInputTarget(vector<void*> inputs, vector<void*> constValue);
+    GP_Output TrPackageFitCompute(vector<void*> inputs);
+    GP_Output TrPackageOutput(vector<void*> inputs);
+    GP_Output TrPackageInput(vector<void*> inputs);
+    GP_Output TrPackageInputTarget(vector<void*> inputs);
     /*TrFilterMatrix is status*/
-    GP_Output TrPackageFilterMatrix(vector<void*> inputs, vector<void*> constValue);
+    GP_Output TrPackageFilterMatrix(vector<void*> inputs);
     /*TrFilterMatrix is inputs[1]*/
     /*Input TrBmp src, TrBmp dst, status: TrRegressMode, Output: TrFilterMatrix*/
-    GP_Output TrPackageFilterMatrixRegress(vector<void*> inputs, vector<void*> constValue);
+    GP_Output TrPackageFilterMatrixRegress(vector<void*> inputs);
     /*Input: TrBmp TrFilterMatrix, Output TrBmp*/
-    GP_Output TrPackageFilterTransformFromRegress(vector<void*> inputs, vector<void*> constValue);
-    GP_Output TrPackageCompse(vector<void*> inputs, vector<void*> constValue);
-    GP_Output TrPackageCompseFromRegress(vector<void*> inputs, vector<void*> constValue);
-    GP_Output TrPackageCompseRegress(vector<void*> inputs, vector<void*> constValue);
+    GP_Output TrPackageFilterTransformFromRegress(vector<void*> inputs);
+    GP_Output TrPackageCompse(vector<void*> inputs);
+    GP_Output TrPackageCompseFromRegress(vector<void*> inputs);
+    GP_Output TrPackageCompseRegress(vector<void*> inputs);
     /*Saturation*/
-    GP_Output TrPackageSaturation(vector<void*> inputs, vector<void*> constValue);
+    GP_Output TrPackageSaturation(vector<void*> inputs);
 }

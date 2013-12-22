@@ -22,7 +22,7 @@
 #include <string>
 #include "user/package.h"
 
-typedef GP_Output(*computeFunction)(std::vector<void*> inputs, std::vector<void*> constValue);
+typedef GP_Output(*computeFunction)(std::vector<void*> inputs);
 
 void GP_Output_clear(GP_Output& out);
 void GP_Output_collect(std::vector<void*>& output, GP_Output& out);
