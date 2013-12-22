@@ -39,24 +39,6 @@ xmlGenerateSystem::~xmlGenerateSystem()
     delete mComputeSystem;
 }
 
-std::string xmlGenerateSystem::xmlPrint(GeneticProgram* gp)
-{
-    assert(NULL!=gp);
-    vector<int> func = gp->getFuncId();
-    vector<int> saveFunc;
-    for (int i=0; i<func.size(); ++i)
-    {
-        vector<int> out;
-        mComputeSystem->vQueryOutput(func[i], out);
-        if (!out.empty())
-        {
-            saveFunc.push_back(func[i]);
-        }
-    }
-    gp->save(this, saveFunc);
-    return gp->xmlPrint(mComputeSystem);
-}
-
 std::string xmlGenerateSystem::xmlPrint(AbstractGP* gp)
 {
     assert(NULL!=gp);

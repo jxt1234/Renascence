@@ -18,9 +18,9 @@
 
 #include "xmlReader.h"
 #include "core/GP_XmlString.h"
-#include "core/GeneticProgram.h"
+#include "core/AbstractGP.h"
 
-class xmlGPLoader:public xmlReader, GeneticProgram, IFunctionDataBase
+class xmlGPLoader:public xmlReader, AbstractGP, IFunctionDataBase
 {
     public:
         xmlGPLoader(){mCurrentPoint = NULL;}
@@ -50,7 +50,7 @@ class xmlGPLoader:public xmlReader, GeneticProgram, IFunctionDataBase
         void _result(xmlReader::package* p);
         void load(int num, int type);
         void* mCurrentHandle;
-        GeneticPoint* mCurrentPoint;
+        AbstractGP* mCurrentPoint;
 };
 
 

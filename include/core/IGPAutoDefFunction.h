@@ -13,11 +13,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef CORE_IGPRUNNER_H
-#define CORE_IGPRUNNER_H
+#ifndef CORE_IGPAUTODEFFUNCTION_H
+#define CORE_IGPAUTODEFFUNCTION_H
 #include "IDataBase.h"
 #include "function.h"
-class IGPRunner
+class IGPAutoDefFunction
 {
     public:
         /*The combined function is implement by this circle: input--compute--output */
@@ -26,8 +26,8 @@ class IGPRunner
         virtual void compute(IFunctionDataBase* map)=0;
         virtual GP_Output output() = 0;
         //Basic Function
-        IGPRunner(){}
-        virtual ~IGPRunner(){}
+        IGPAutoDefFunction(){}
+        virtual ~IGPAutoDefFunction(){}
 };
 
 

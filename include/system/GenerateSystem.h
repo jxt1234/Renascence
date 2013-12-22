@@ -17,7 +17,6 @@
 #define GENERATE_SYSTEM_H
 
 #include "computeSystem.h"
-#include "core/GeneticProgram.h"
 #include <assert.h>
 
 #include "core/IDataBase.h"

@@ -19,7 +19,7 @@
 #include "algorithm/AbstractPoint.h"
 #include "function.h"
 #include "IDataBase.h"
-#include "IGPRunner.h"
+#include "IGPAutoDefFunction.h"
 #include "utils/GP_Clock.h"
 #include "utils/debug.h"
 #include "status.h"
@@ -33,7 +33,7 @@ class AbstractGPPoint:public AbstractPoint
         int mStatus;
 };
 
-class AbstractGP:public AbstractGPPoint, IGPRunner
+class AbstractGP:public AbstractGPPoint, IGPAutoDefFunction
 {
     public:
         //Basic Functions
@@ -53,6 +53,7 @@ class AbstractGP:public AbstractGPPoint, IGPRunner
         std::string xmlPrint(IDataBase* data);
         //The cur means from which element to use, it's assumed that the numbers is valid and the status has been alloc
         //FIXME: dangerous api
+        static void loadUnitFunction(std::vector<int>& result, int functionId, int statusId, int number);
         void replacePoint(const std::vector<int> &numbers, int& cur);
     protected:
         GP_Output up_compute(IFunctionDataBase* map);
@@ -63,6 +64,8 @@ class AbstractGP:public AbstractGPPoint, IGPRunner
                 virtual AbstractPoint* copy(AbstractPoint* src);
         };
         GP_Output* mSave;
+        //FIXME Reconstruct the xmlGPLoader
+        friend class xmlGPLoader;
 };
 
 

@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include "utils/debug.h"
 #include "system/recurse_tree.h"
+#include "core/AbstractGP.h"
 using namespace std;
 
 #define LIMIT_SIZE 100
@@ -123,11 +124,11 @@ vector<int> GenerateSystem::getRandSequenceWithOutput(int outputFunctionId)
         //Input information to result
         if (mComputeSystem)
         {
-            GeneticProgram::loadUnitFunction(result, functionId, mComputeSystem->allocateStatus(functionId), n);
+            AbstractGP::loadUnitFunction(result, functionId, mComputeSystem->allocateStatus(functionId), n);
         }
         else
         {
-            GeneticProgram::loadUnitFunction(result, functionId, -1, n);
+            AbstractGP::loadUnitFunction(result, functionId, -1, n);
         }
         cacheQueue.erase(cacheQueue.begin());
     }

@@ -33,13 +33,12 @@ void xmlGPLoader::attributeUnflatten()
 {
     if (NULL!=mAttributes)
     {
-        GeneticProgram::clear();
-        mCurrentPoint = new GeneticPoint;
-        mRoot = mCurrentPoint;
+        AbstractGP::reset();
+        mCurrentPoint = this;
         unFlattenUnit(mAttributes);
     }
-    vector<int> Queue = getPointQueue(mRoot);
 #ifdef DEBUG_XML_GP
+    vector<int> Queue = getPointQueue(mRoot);
     cout <<Queue.size()<<endl;
     for (int i=0; i<Queue.size(); ++i)
     {
@@ -51,7 +50,8 @@ void xmlGPLoader::attributeUnflatten()
 
 GP_Output xmlGPLoader::run()
 {
-    return compute(this);
+    compute(this);
+    return output();
 }
 
 void xmlGPLoader::reset()
@@ -106,7 +106,7 @@ void xmlGPLoader::_getStatusFunc(const string& name, statusLoadMethod& _load, st
 void xmlGPLoader::_result(xmlReader::package* p)
 {
     if (p->children.size() == 0) return;
-    mCurrentPoint->save = new GP_Output;
+    GP_Output* output_save = new GP_Output;
     for (int i=0; i<p->children.size(); ++i)
     {
         GP_Output::GP_Unit unit;
@@ -122,8 +122,9 @@ void xmlGPLoader::_result(xmlReader::package* p)
         }
         unit.content = _load(content);
         unit.freeCallBack = _free;
-        (mCurrentPoint->save->output).push_back(unit);
+        (output_save->output).push_back(unit);
     }
+    mCurrentPoint->mSave = (output_save);
 }
 void xmlGPLoader::_status(xmlReader::package* p)
 {
@@ -143,7 +144,7 @@ void xmlGPLoader::_status(xmlReader::package* p)
         types.push_back(type);
         contents.push_back(content);
     }
-    mCurrentPoint->statusId = status_loadSet(types, contents);
+    mCurrentPoint->mStatus = status_loadSet(types, contents);
 }
 
 int xmlGPLoader::findStatus(string name)
@@ -205,11 +206,11 @@ void xmlGPLoader::_lib(xmlReader::package* p)
 
 void xmlGPLoader::_children(xmlReader::package* p)
 {
-    GeneticPoint* back = mCurrentPoint;
+    AbstractGP* back = mCurrentPoint;
     for (int i=0; i<p->children.size(); ++i)
     {
-        mCurrentPoint = new GeneticPoint;
-        back->children.push_back(mCurrentPoint);
+        mCurrentPoint = new AbstractGP;
+        back->addPoint(mCurrentPoint);
         unFlattenUnit(p->children[i]);
     }
     mCurrentPoint = back;
@@ -218,5 +219,5 @@ void xmlGPLoader::_func(xmlReader::package* p)
 {
     string name = p->attr[0];
     int id = findFunc(name);
-    mCurrentPoint->functionId = id;
+    mCurrentPoint->mFunc = id;
 }

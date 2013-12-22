@@ -16,6 +16,7 @@
 #include "system/recurse_tree.h"
 #include <list>
 #include "system/GenerateSystem.h"
+#include "core/AbstractGP.h"
 
 computeSystem* computePoint::gSystem = NULL;
 vector<int> computePoint::filter(const vector<vector<int> >& combo, vector<int> output)
@@ -115,7 +116,7 @@ vector<int> computeSearchTree::output()
         }
         for (int i=0; i<data.size(); ++i)
         {
-            GeneticProgram::loadUnitFunction(result, data[i], 0,inputNumber[i]);
+            AbstractGP::loadUnitFunction(result, data[i], 0,inputNumber[i]);
         }
         queue.erase(queue.begin());
     }

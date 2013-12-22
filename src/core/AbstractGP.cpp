@@ -52,6 +52,12 @@ AbstractGP::AbstractGP(const AbstractGP& gp)
     }
 }
 
+void AbstractGP::loadUnitFunction(vector<int>& result, int functionId, int statusId, int number)
+{
+    result.push_back(functionId);
+    result.push_back(statusId);
+    result.push_back(number);
+}
 void AbstractGP::save(IFunctionDataBase* map, const std::vector<int>& functionIds)
 {
     if (functionIds.empty() || find(functionIds.begin(), functionIds.end(), mFunc)!=functionIds.end())
