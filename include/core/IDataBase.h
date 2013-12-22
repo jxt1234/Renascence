@@ -36,6 +36,7 @@ class IFunctionDataBase
         IFunctionDataBase(){}
         virtual ~IFunctionDataBase(){}
         virtual computeFunction vGetCompute(int id) = 0;
+        virtual int vQueryInputsNumber(int id){return 0;}
 };
 
 #endif

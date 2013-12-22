@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <sstream>
 #include "utils/debug.h"
+#include <assert.h>
 
 using namespace std;
 #define DO_CHILDREN_FUNC(func) \
@@ -40,6 +41,16 @@ void AbstractGP::reset()
 {
     _reset();
     DO_CHILDREN_FUNC(reset());
+}
+
+AbstractGP::~AbstractGP()
+{
+    if (NULL!=mSave)
+    {
+        delete mSave;
+        mSave = NULL;
+    }
+    status_freeSet(mStatus);
 }
 AbstractGP::AbstractGP(const AbstractGP& gp)
 {
@@ -173,9 +184,18 @@ void AbstractGP::_reset()
     }
 }
 
-void AbstractGP::input(GP_Input& input)
+void AbstractGP::input(GP_Input& input, int& cur)
 {
-    //TODO Add Input
+    assert(input.size() >= cur+mInputs.size());
+    for (int i=0; i<mInputs.size(); ++i)
+    {
+        mInputs[i] = input[cur++];
+    }
+    for (int i=0; i<mChildren.size(); ++i)
+    {
+        AbstractGP* p = dynamic_cast<AbstractGP*>(mChildren[i]);
+        p->input(input, cur);
+    }
 }
 
 GP_Output AbstractGP::output()
@@ -188,14 +208,29 @@ GP_Output AbstractGP::output()
     return result;
 }
 
-AbstractGP::~AbstractGP()
+vector<int> AbstractGP::setInputNumber(IFunctionDataBase* map)
 {
-    if (NULL!=mSave)
+    vector<int> funcId;
+    int num = map->vQueryInputsNumber(mFunc);
+    mInputs.clear();
+    if (num > 0)
     {
-        delete mSave;
-        mSave = NULL;
+        funcId.push_back(mFunc);
     }
-    status_freeSet(mStatus);
+    for (int i=0; i<num; ++i)
+    {
+        mInputs.push_back(NULL);
+    }
+    for (int i=0; i<mChildren.size(); ++i)
+    {
+        AbstractGP* p = dynamic_cast<AbstractGP*>(mChildren[i]);
+        vector<int> child = p->setInputNumber(map);
+        for (int j=0;j<child.size(); ++j)
+        {
+            funcId.push_back(child[j]);
+        }
+    }
+    return funcId;
 }
 
 GP_Output AbstractGP::up_compute(IFunctionDataBase* map)
@@ -226,20 +261,20 @@ GP_Output AbstractGP::up_compute(IFunctionDataBase* map)
         }
     }
     //Get status
+    vector<void*> constValue;
     if (-1 != mStatus)
     {
-        vector<void*> constValue;
         constValue = status_queryContent(mStatus);
-        for (int i=0; i<constValue.size(); ++i)
-        {
-            children.push_back(constValue[i]);
-        }
     }
+    vector<void*> totalInputs;
+    totalInputs.insert(totalInputs.begin(), constValue.begin(), constValue.end());
+    totalInputs.insert(totalInputs.begin(), mInputs.begin(), mInputs.end());
+    totalInputs.insert(totalInputs.begin(), children.begin(), children.end());
     {
 #ifdef DEBUG_TIMES
         GP_Clock c(mFunc);
 #endif
-        result = comp(children);
+        result = comp(totalInputs);
     }
     //Free All children' memory
     for (int i=0; i < inputMap.size(); ++i)

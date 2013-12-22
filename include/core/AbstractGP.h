@@ -29,6 +29,7 @@ class AbstractGPPoint:public AbstractPoint
         AbstractGPPoint():mFunc(-1), mStatus(-1){}
         virtual ~AbstractGPPoint(){}
     protected:
+        GP_Input mInputs;
         int mFunc;
         int mStatus;
 };
@@ -43,7 +44,7 @@ class AbstractGP:public AbstractGPPoint, IGPAutoDefFunction
         virtual ~AbstractGP();
         //Basic API
         virtual void compute(IFunctionDataBase* map);
-        virtual void input(GP_Input& input);
+        virtual void input(GP_Input& input, int& cur);
         virtual GP_Output output();
         /*Old API to cover GeneticProgram*/
         void reset();//Clear all mSave
@@ -55,6 +56,8 @@ class AbstractGP:public AbstractGPPoint, IGPAutoDefFunction
         //FIXME: dangerous api
         static void loadUnitFunction(std::vector<int>& result, int functionId, int statusId, int number);
         void replacePoint(const std::vector<int> &numbers, int& cur);
+        /*Return functions that need input*/
+        std::vector<int> setInputNumber(IFunctionDataBase* map);
     protected:
         GP_Output up_compute(IFunctionDataBase* map);
         void _reset();

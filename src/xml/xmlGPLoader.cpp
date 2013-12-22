@@ -50,8 +50,9 @@ void xmlGPLoader::attributeUnflatten()
 
 GP_Output xmlGPLoader::run()
 {
-    compute(this);
-    return output();
+    setDataBase(this);
+    GP_Input inp;
+    return IGPAutoDefFunction::run(inp);
 }
 
 void xmlGPLoader::reset()
