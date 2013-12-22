@@ -13,10 +13,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef EVOLUTIONTREE_V2_H
-#define EVOLUTIONTREE_V2_H
+#ifndef API_EVOLUTIONTREE_V2_H
+#define API_EVOLUTIONTREE_V2_H
 
-#include "GeneticProgram.h"
+#include "core/GeneticProgram.h"
 #include "system/GenerateSystem.h"
 
 class evolutionTreeV2:public GeneticProgram

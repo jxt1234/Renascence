@@ -15,8 +15,8 @@
 ******************************************************************/
 #include "api/evolution.h"
 
-#include "core/evolutionTreeV2.h"
-#include "core/evolutionTree.h"
+#include "api/evolutionTreeV2.h"
+#include "api/evolutionTree.h"
 #include "core/group.h"
 #include "system/xmlGenerateSystem.h"
 #include <iostream>

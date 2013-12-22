@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "core/evolutionTreeV2.h"
+#include "api/evolutionTreeV2.h"
 #include <assert.h>
 #include "utils/debug.h"
 #include <iostream>
