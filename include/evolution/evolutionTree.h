@@ -13,8 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef API_EVOLUTION_TREE_H
-#define API_EVOLUTION_TREE_H
+#ifndef EVOLUTION_EVOLUTIONTREE_H
+#define EVOLUTION_EVOLUTIONTREE_H
 
 #include "core/AbstractGP.h"
 #include "system/GenerateSystem.h"

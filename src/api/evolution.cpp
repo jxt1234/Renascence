@@ -15,7 +15,7 @@
 ******************************************************************/
 #include "api/evolution.h"
 
-#include "api/evolutionTree.h"
+#include "evolution/evolutionTree.h"
 #include "core/group.h"
 #include "system/xmlGenerateSystem.h"
 #include <iostream>

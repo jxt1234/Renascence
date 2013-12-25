@@ -53,7 +53,6 @@ class computeSystem:public IDataBase
         virtual ~computeSystem();
     protected:
         std::vector<int> loadStatus(const std::vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle);
-        void constructBasicTable();
     private:
         void _loadUnit(xmlFunctionLoader func);
         std::vector<function*> mFunctionTable;

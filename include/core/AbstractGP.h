@@ -16,7 +16,7 @@
 #ifndef CORE_ABSTRACTGP_H
 #define CORE_ABSTRACTGP_H
 #include <stdlib.h>
-#include "algorithm/AbstractPoint.h"
+#include "math/AbstractPoint.h"
 #include "function.h"
 #include "IDataBase.h"
 #include "IGPAutoDefFunction.h"

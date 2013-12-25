@@ -37,15 +37,6 @@ void xmlGPLoader::attributeUnflatten()
         mCurrentPoint = this;
         unFlattenUnit(mAttributes);
     }
-#ifdef DEBUG_XML_GP
-    vector<int> Queue = getPointQueue(mRoot);
-    cout <<Queue.size()<<endl;
-    for (int i=0; i<Queue.size(); ++i)
-    {
-        cout <<Queue[i]<<" ";
-    }
-    cout <<endl;
-#endif
 }
 
 GP_Output xmlGPLoader::run()
