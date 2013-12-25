@@ -20,6 +20,7 @@
 #include "xml/xmlFunctionLoader.h"
 #include <string>
 #include "core/IDataBase.h"
+#include "user/IFunctionTable.h"
 
 class computeSystem:public IDataBase
 {
@@ -36,7 +37,7 @@ class computeSystem:public IDataBase
             std::vector<std::vector<int> > fixTable;
         };
         computeFunction getFunction(int id);
-        void loadFuncXml(xmlFunctionLoader& loader, void* &handle);
+        void loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table);
         void clear();
         //Basic Api
         int allocateStatus(int id);
@@ -51,7 +52,7 @@ class computeSystem:public IDataBase
         computeSystem();
         virtual ~computeSystem();
     protected:
-        std::vector<int> loadStatus(const std::vector<xmlFunctionLoader::status>& sta, void* handle);
+        std::vector<int> loadStatus(const std::vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle);
         void constructBasicTable();
     private:
         void _loadUnit(xmlFunctionLoader func);

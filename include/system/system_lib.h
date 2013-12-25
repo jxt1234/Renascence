@@ -15,11 +15,35 @@
 ******************************************************************/
 #ifndef SYSTEM_LIB_H
 #define SYSTEM_LIB_H
+#include "user/IFunctionTable.h"
+#include <assert.h>
+
 void* system_load_lib(const char* libName);
 
 void* system_find_func(void* handle, const char* funcName);
 
 void system_unload_lib(void* handle);
+
+class system_lib:public IFunctionTable
+{
+    public:
+        system_lib(const std::string& libName)
+        {
+            mHandle = system_load_lib(libName.c_str());
+            assert(NULL!=mHandle);
+        }
+        virtual ~system_lib()
+        {
+            system_unload_lib(mHandle);
+        }
+        virtual void* vGetFunction(const std::string& name)
+        {
+            return system_find_func(mHandle, name.c_str());
+        }
+    private:
+        void* mHandle;
+};
+
 
 
 #endif

@@ -19,22 +19,29 @@
 
 using namespace std;
 
-xmlGenerateSystem::xmlGenerateSystem(const char* xmlFile, bool print)
+xmlGenerateSystem::xmlGenerateSystem()
 {
-    void* handle = NULL;
+    mComputeSystem = new computeSystem;
+}
+
+void xmlGenerateSystem::addXml(const char* xmlFile, IFunctionTable* table, bool print)
+{
     xmlFunctionLoader xmlLoader;
     xmlLoader.loadFile(xmlFile);
     if (print) xmlLoader.print();
-    mComputeSystem = new computeSystem;
-    mComputeSystem->loadFuncXml(xmlLoader, handle);
-    mHandle.push_back(handle);
+    if (NULL==table)
+    {
+        table = new system_lib(xmlLoader.libName);
+        mRemain.push_back(table);
+    }
+    mComputeSystem->loadFuncXml(xmlLoader, table);
 }
 
 xmlGenerateSystem::~xmlGenerateSystem()
 {
-    for (int i=0; i<mHandle.size(); ++i)
+    for (int i=0; i<mRemain.size(); ++i)
     {
-        if (NULL!=mHandle[i]) system_unload_lib(mHandle[i]);
+        delete mRemain[i];
     }
     delete mComputeSystem;
 }
@@ -46,6 +53,3 @@ std::string xmlGenerateSystem::xmlPrint(AbstractGP* gp)
     gp->save(this, nullVector);
     return gp->xmlPrint(mComputeSystem);
 }
-
-
-

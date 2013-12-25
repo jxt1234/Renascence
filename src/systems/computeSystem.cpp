@@ -18,7 +18,6 @@
 #include "system/computeSystem.h"
 #include "utils/debug.h"
 #include "math/carryArray.h"
-#include "system/system_lib.h"
 #include <assert.h>
 
 #define FUNCTION_TABLE_FILE_DEFAULT "db/function.table"
@@ -68,12 +67,12 @@ void computeSystem::clear()
     mFunctionTable.clear();
 }
 
-vector<int> computeSystem::loadStatus(const vector<xmlFunctionLoader::status>& sta, void* handle)
+vector<int> computeSystem::loadStatus(const vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle)
 {
     vector<int> typeId;
     for (int i=0; i<sta.size(); ++i)
     {
-#define FINDFUNC(type, subname) type subname = (type)system_find_func(handle, (sta[i].name+#subname).c_str());
+#define FINDFUNC(type, subname) type subname = (type)handle->vGetFunction(sta[i].name+#subname);
         FINDFUNC(statusAllocMethod, _alloc);
         FINDFUNC(statusVaryMethod, _free);
         FINDFUNC(statusVaryMethod, _vary);
@@ -87,14 +86,9 @@ vector<int> computeSystem::loadStatus(const vector<xmlFunctionLoader::status>& s
     return typeId;
 }
 
-void computeSystem::loadFuncXml(xmlFunctionLoader& loader, void* &handle)
+void computeSystem::loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table)
 {
-    if (NULL == handle)
-    {
-        handle = system_load_lib(loader.libName.c_str());
-    }
-    assert(NULL!=handle);
-    vector<int> statusTypeId = loadStatus(loader.getStatus(), handle);
+    vector<int> statusTypeId = loadStatus(loader.getStatus(), table);
     int offset = mFunctionTable.size();
     mOutputId.push_back(loader.mFit);
     const vector<xmlFunctionLoader::function>& functions = loader.getFunc();
@@ -105,7 +99,7 @@ void computeSystem::loadFuncXml(xmlFunctionLoader& loader, void* &handle)
         fc->name = f.name;
         fc->libName = loader.libName;
         /*Load function handle*/
-        computeFunction func = (computeFunction)system_find_func(handle, f.name.c_str());
+        computeFunction func = (computeFunction)table->vGetFunction(f.name);
         assert(NULL!=func);
         fc->basic = func;
         /*Load function status*/

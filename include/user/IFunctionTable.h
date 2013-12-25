@@ -13,25 +13,18 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef USER_PACKAGE_H
-#define USER_PACKAGE_H
-#include <vector>
+#ifndef USER_FUNCTIONTABLE_H
+#define USER_FUNCTIONTABLE_H
+#include <string>
 
-/*We can not define a destructor function and use freeCallBack for GP_Output, because the freeCallBack is called by the system outside*/
-struct GP_Output
+
+class IFunctionTable
 {
-    struct GP_Unit
-    {
-        void* content;
-        void(*freeCallBack)(void*);
-    };
-    std::vector<GP_Unit> output;
+    public:
+        virtual void* vGetFunction(const std::string& name)=0;
+        IFunctionTable(){}
+        virtual ~IFunctionTable(){}
 };
 
-typedef std::vector<void*> GP_Input;
 
-
-#define GP_OUTPUT_SINGLE_EXIT(x, result) GP_Output x;x.output.push_back(result);return x;
-
-typedef GP_Output(*computeFunction)(GP_Input inputs);
 #endif

@@ -18,15 +18,17 @@
 
 #include "GenerateSystem.h"
 #include "core/AbstractGP.h"
+#include "user/IFunctionTable.h"
 
 class xmlGenerateSystem:public GenerateSystem
 {
     public:
-        xmlGenerateSystem(const char* xmlFile, bool print= false);
+        xmlGenerateSystem();
         virtual ~xmlGenerateSystem();
+        void addXml(const char* xmlFile, IFunctionTable* table=NULL, bool print = false);
         std::string xmlPrint(AbstractGP* gp);
     private:
-        std::vector<void*> mHandle;
+        std::vector<IFunctionTable*> mRemain;
 };
 
 

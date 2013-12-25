@@ -30,7 +30,8 @@ using namespace std;
 void GP_evolution(int number, int times, const char* functionTable, const char* inputTable, const char* outputXml)
 {
     srand((unsigned) time(NULL));
-    xmlGenerateSystem gen(functionTable, false);
+    xmlGenerateSystem gen;
+    gen.addXml(functionTable, NULL, false);
 #if 0
     evolutionTreeV2::setGenSystem(&gen);
     evolution_group<evolutionTreeV2> group(number);
