@@ -32,17 +32,6 @@ void GP_evolution(int number, int times, const char* functionTable, const char* 
     srand((unsigned) time(NULL));
     xmlGenerateSystem gen;
     gen.addXml(functionTable, NULL, false);
-#if 0
-    evolutionTreeV2::setGenSystem(&gen);
-    evolution_group<evolutionTreeV2> group(number);
-    group.evolution(times);
-    evolutionTreeV2* best = group.get_best();
-    string result = gen.xmlPrint(best);
-    ofstream file;
-    file.open(outputXml);
-    file<<result;
-    file.close();
-#else
     evolutionTree::setGenSystem(&gen);
     evolution_group<evolutionTree> group(number);
     group.evolution(times);
@@ -52,7 +41,6 @@ void GP_evolution(int number, int times, const char* functionTable, const char* 
     file.open(outputXml);
     file<<result;
     file.close();
-#endif
 }
 
 void GP_RunXml(const char* functionXml, const char* input, void(*output)(GP_Output&))

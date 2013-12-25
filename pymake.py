@@ -1,36 +1,32 @@
 #!/usr/bin/python
 #Generate MakeFile
 
-#Const Values
-CFLAGS=""
-CFLAGS="-rdynamic "
-CFLAGS=" -O3 "
+import os
+import sys
+CFLAGS="-O3"
+CLINK=""
+MAIN_PROGRAM=['GP_MAIN', 'libGP.so']
+print MAIN_PROGRAM
+
 CPP="g++ "
 C="gcc "
 MIDPATH='build/'
-MAIN_PROGRAM='GP_MAIN'
-CLIBS=" -ldl "
 
-import os
-
-
-cmd = "find include/ -name \"*.h\""
+cmd = "find include -name \"*.h\""
 include_h = os.popen(cmd).read().split('\n');
-
-import sys
-sourceDir = 'src/'
-
-cmd = "find "+sourceDir+" -name \"*.cpp\""
+cmd = "find src -name \"*.cpp\""
 sources_cpp = os.popen(cmd).read().split('\n');
-cmd = "find " + sourceDir+" -name \"*.c\""
+sources_cpp.append('./main.cpp')
+cmd = "find src -name \"*.c\""
 sources_c = os.popen(cmd).read().split('\n');
 
-sources_cpp.append('./main.cpp')
+
+fileContents = 'include make.self\n'
 
 #Head Files
 include_Flag = '-Iinclude'
 include = "ALL_INCLUES"
-fileContents = include+'='
+fileContents += include+'='
 for h in include_h:
 	if len(h)>0:
 		fileContents+=(' '+h)
@@ -64,18 +60,25 @@ for c in sources_c:
 	if len(c)>0:
 		getSequencesAndAppend(c, C)
 
-#Main Program
-fileContents += ('all: ' + MAIN_PROGRAM + '\n')
-#objs
-fileContents += (MAIN_PROGRAM + ': ')
-for obj in objs:
-	fileContents+=' '+MIDPATH+obj
+fileContents+='all: '
+for main in MAIN_PROGRAM:
+	#Main Program
+	fileContents += (main + ' ')
 fileContents+='\n'
-#Program
-fileContents+=('\t' + CPP + CFLAGS + ' -o ' + MAIN_PROGRAM+' ')
-for obj in objs:
-	fileContents+=(' '+MIDPATH+obj)
-fileContents+=CLIBS+'\n'
+for main in MAIN_PROGRAM:
+	#objs
+	fileContents += (main + ': ')
+	for obj in objs:
+		fileContents+=' '+MIDPATH+obj
+	fileContents+='\n'
+	#Program
+	target = ''
+	if (main.find('.so')>-1):
+		target = ' --share '
+	fileContents+=('\t' + CPP + " " + CFLAGS +target+' -o ' + main+' ')
+	for obj in objs:
+		fileContents+=(' '+MIDPATH+obj)
+	fileContents+=(' '+ CLINK  + ' ${SELF_VARIABLES}' + '\n')
 
 #All objs' make 
 for sequence in sequences:
@@ -83,7 +86,8 @@ for sequence in sequences:
 
 #clean
 fileContents+='\nclean:\n\trm '+MIDPATH+'*.o'
-fileContents+='\n\trm '+MAIN_PROGRAM
+for main in MAIN_PROGRAM:
+	fileContents+='\n\trm '+main
 
 makeFile = open('Makefile','w')
 makeFile.write(fileContents)

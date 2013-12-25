@@ -15,6 +15,7 @@
 tags
 *.swp
 GP_MAIN
+libGP.so
 output/*
 output_fix.jpg
 result.xml
