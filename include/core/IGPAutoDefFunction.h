@@ -27,16 +27,16 @@ class IGPAutoDefFunction
             this->compute(mFuncDataBase);
             return this->output();
         }
-        inline void setDataBase(IFunctionDataBase* func){mFuncDataBase = func;}
+        inline void setDataBase(IRuntimeDataBase* func){mFuncDataBase = func;}
         /*The combined function is implement by this circle: input--compute--output */
         //The input function may delete the content of inp, so the inp must be reconstruct after input 
         virtual void input(GP_Input& inp, int& cur)=0;
-        virtual void compute(IFunctionDataBase* map)=0;
+        virtual void compute(IRuntimeDataBase* map)=0;
         virtual GP_Output output() = 0;
         //Basic Function
         IGPAutoDefFunction(){mFuncDataBase = NULL;}
         virtual ~IGPAutoDefFunction(){}
     private:
-        IFunctionDataBase* mFuncDataBase;
+        IRuntimeDataBase* mFuncDataBase;
 };
 #endif

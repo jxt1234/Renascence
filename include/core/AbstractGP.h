@@ -38,28 +38,29 @@ class AbstractGP:public AbstractGPPoint, IGPAutoDefFunction
 {
     public:
         //Basic Functions
+        AbstractGP(int func, int status):mSave(NULL){mFunc = func, mStatus = status;}
         AbstractGP():mSave(NULL){}
         AbstractGP(const AbstractGP& gp);
         void operator=(const AbstractGP& gp);
         virtual ~AbstractGP();
         //Basic API
-        virtual void compute(IFunctionDataBase* map);
+        virtual void compute(IRuntimeDataBase* map);
         virtual void input(GP_Input& input, int& cur);
         virtual GP_Output output();
         /*Old API to cover GeneticProgram*/
         void reset();//Clear all mSave
         //If the functionIds is empty, it means to save all points
-        void save(IFunctionDataBase* map, const std::vector<int>& functionIds);
+        void save(IRuntimeDataBase* map, const std::vector<int>& functionIds);
         //Output a xml string, which can be write into file directly
-        std::string xmlPrint(IDataBase* data);
+        std::string xmlPrint(IPrintDataBase* data);
         //The cur means from which element to use, it's assumed that the numbers is valid and the status has been alloc
         //FIXME: dangerous api
         static void loadUnitFunction(std::vector<int>& result, int functionId, int statusId, int number);
         void replacePoint(const std::vector<int> &numbers, int& cur);
         /*Return functions that need input*/
-        std::vector<int> setInputNumber(IFunctionDataBase* map);
+        std::vector<int> setInputNumber(IRuntimeDataBase* map);
     protected:
-        GP_Output up_compute(IFunctionDataBase* map);
+        GP_Output up_compute(IRuntimeDataBase* map);
         void _reset();
         class AbstractGPCopy:public AbstractPoint::IPointCopy
         {

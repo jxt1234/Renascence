@@ -22,7 +22,7 @@
 #include "core/IDataBase.h"
 #include "user/IFunctionTable.h"
 
-class computeSystem:public IDataBase
+class computeSystem:public IPrintDataBase, public IGenerateDataBase
 {
     public:
         struct function
@@ -46,6 +46,7 @@ class computeSystem:public IDataBase
         const std::vector<int>& getOutputFunctions(){return mOutputId;}
         void print();
         //DataBase
+        virtual int vQueryFuncId(const std::string& funcName);
         virtual void vQueryStatus(int id, std::string& name, std::string& libName){}
         virtual void vQueryFunction(int id, std::string& name, std::string& libName);
         virtual void vQueryOutput(int functionId, std::vector<int>& output);

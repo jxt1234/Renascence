@@ -17,14 +17,14 @@
 #include <list>
 #include <iostream>
 #include <fstream>
+#include <assert.h>
 
 using namespace std;
 
-xmlReader::xmlReader(const char* file)
+xmlReader::xmlReader()
 {
     mAttributes = NULL;
     mCurPackage = NULL;
-    if (NULL!=file) mFile = file;
 }
 xmlReader::~xmlReader(){clear();}
 
@@ -51,20 +51,21 @@ void xmlReader::clear()
     this->subClear();
 }
 
+XMLAPI void xmlReader::loadStream(istream& input)
+{
+    clear();
+    loadPackage(input);
+}
+
 XMLAPI void xmlReader::loadFile(const char* file)
 {
     if (NULL==file) return;
     ifstream read;
     read.open(file, ios::in);
-    if (!read.fail())
-    {
-        clear();
-        loadPackage(read);
-        this->attributeUnflatten();
-    }
-    else
-    {
-    }
+    assert(!read.fail());
+    clear();
+    loadPackage(read);
+    this->attributeUnflatten();
     read.close();
 }
 
@@ -72,7 +73,6 @@ XMLAPI void xmlReader::loadFile(const char* file)
 bool xmlReader_endPackage(const string& line, int pos)
 {
     bool result =  line.find("</")!=string::npos;
-    //cout <<line << " end "<<result<<endl;
     return result;
 }
 
@@ -187,10 +187,10 @@ void xmlReader::analysisLine(const string& line)
     }
 }
 
-xmlReader::package* xmlReader::loadPackage(ifstream& file)
+xmlReader::package* xmlReader::loadPackage(istream& input)
 {
     string tempLine;
-    while(getline(file, tempLine, '\n'))
+    while(getline(input, tempLine, '\n'))
     {
         analysisLine(tempLine);
     }

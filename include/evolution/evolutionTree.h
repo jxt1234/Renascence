@@ -19,6 +19,8 @@
 #include "core/AbstractGP.h"
 #include "system/GenerateSystem.h"
 #include <fstream>
+#include "xml/xmlTree.h"
+
 class evolutionTree:public AbstractGP
 {
     public:
@@ -27,6 +29,8 @@ class evolutionTree:public AbstractGP
         void operator=(const evolutionTree& tree);
         double fit_comput();
         double get_fit() const;
+        static evolutionTree* loadFromXml(const char* xmlFile);
+        static evolutionTree* loadXmlTree(xmlTree* tree);
         void mutate();
         void print_f(std::ofstream& file){}
         void print(){}//可选
@@ -34,6 +38,7 @@ class evolutionTree:public AbstractGP
         static void destroy(){}//Free data
         static void setGenSystem(GenerateSystem* gen){mGen = gen;}
     protected:
+        class xmlCopy;
         int _randDetermine();
         static GenerateSystem* mGen;
         static float gLargeVary;

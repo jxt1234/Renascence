@@ -25,6 +25,19 @@
 computeSystem::computeSystem()
 {
 }
+
+int computeSystem::vQueryFuncId(const std::string& funcName)
+{
+    int id = -1;
+    for (int i=0; i<mFunctionTable.size(); ++i)
+    {
+        if (mFunctionTable[i]->name == funcName)
+        {
+            id = i;
+        }
+    }
+    return id;
+}
 const std::vector<std::vector<int> >& computeSystem::getAvailableFunctionInputs(int functionId)
 {
     static vector<vector<int> > nullVector;

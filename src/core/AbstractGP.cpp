@@ -69,7 +69,7 @@ void AbstractGP::loadUnitFunction(vector<int>& result, int functionId, int statu
     result.push_back(statusId);
     result.push_back(number);
 }
-void AbstractGP::save(IFunctionDataBase* map, const std::vector<int>& functionIds)
+void AbstractGP::save(IRuntimeDataBase* map, const std::vector<int>& functionIds)
 {
     if (functionIds.empty() || find(functionIds.begin(), functionIds.end(), mFunc)!=functionIds.end())
     {
@@ -81,7 +81,7 @@ void AbstractGP::save(IFunctionDataBase* map, const std::vector<int>& functionId
     DO_CHILDREN_FUNC(save(map, functionIds));
 }
 
-string AbstractGP::xmlPrint(IDataBase* data)
+string AbstractGP::xmlPrint(IPrintDataBase* data)
 {
     string funcName, libName;
     ostringstream res;
@@ -166,7 +166,7 @@ void AbstractGP::operator=(const AbstractGP& gp)
     }
 }
 
-void AbstractGP::compute(IFunctionDataBase* map)
+void AbstractGP::compute(IRuntimeDataBase* map)
 {
     _reset();
     GP_Output result = up_compute(map);
@@ -208,7 +208,7 @@ GP_Output AbstractGP::output()
     return result;
 }
 
-vector<int> AbstractGP::setInputNumber(IFunctionDataBase* map)
+vector<int> AbstractGP::setInputNumber(IRuntimeDataBase* map)
 {
     vector<int> funcId;
     int num = map->vQueryInputsNumber(mFunc);
@@ -233,7 +233,7 @@ vector<int> AbstractGP::setInputNumber(IFunctionDataBase* map)
     return funcId;
 }
 
-GP_Output AbstractGP::up_compute(IFunctionDataBase* map)
+GP_Output AbstractGP::up_compute(IRuntimeDataBase* map)
 {
     GP_Output result;
     if (NULL!=mSave)

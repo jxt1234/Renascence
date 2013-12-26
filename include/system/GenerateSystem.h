@@ -21,7 +21,7 @@
 
 #include "core/IDataBase.h"
 
-class GenerateSystem:public IFunctionDataBase
+class GenerateSystem:public IRuntimeDataBase
 {
     public:
         GenerateSystem():mComputeSystem(NULL){}
@@ -33,6 +33,7 @@ class GenerateSystem:public IFunctionDataBase
         virtual std::vector<int> getRandSequence();
         virtual std::vector<int> getRandSequenceWithOutput(int outputFunctionId);
         inline void setComputeSystem(computeSystem* comsys){mComputeSystem = comsys;}
+        int getFuncId(const std::string& name){return mComputeSystem->vQueryFuncId(name);}
     protected:
         computeSystem* mComputeSystem;
 

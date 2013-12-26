@@ -25,20 +25,23 @@
 #include "utils/debug.h"
 using namespace std;
 
-void evolution(int number, int times, const char* functionTable, const char* inputTable, const char* outputXml)
+void randomGener(const char* functionTable, const char* outputXml1, const char* outputXml2)
 {
     srand((unsigned) time(NULL));
     xmlGenerateSystem gen;
     gen.addXml(functionTable, NULL, false);
     evolutionTree::setGenSystem(&gen);
-    evolution_group<evolutionTree> group(number);
-    group.evolution(times);
-    evolutionTree* best = group.get_best();
-    string result = gen.xmlPrint(best);
+	evolutionTree tree1;
+	evolutionTree tree2;
+    string result = gen.xmlPrint(&tree1);
     ofstream file;
-    file.open(outputXml);
+    file.open(outputXml1);
     file<<result;
+	result = gen.xmlPrint(&tree2);
     file.close();
+	file.open(outputXml2);
+	file << result;
+	file.close();
 }
 
 void runs(const char* functionXml, const char* input, void(*output)(GP_Output&))
@@ -60,6 +63,5 @@ void print(GP_Output& out)
 }
 int main()
 {
-    //evolution(10, 10, "../../func.xml", NULL, "../../result.xml");
-	runs("../../result.xml", NULL, print);
+    randomGener("../../func.xml", "result1.xml", "result2.xml");
 }

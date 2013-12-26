@@ -68,6 +68,20 @@ int status_allocType(int size, string name, statusAllocMethod alloc, statusVaryM
     return gStatusType.size()-1;
 }
 
+int status_queryId(const std::string& name)
+{
+    int id = -1;
+    for (int i=0; i<gStatusType.size(); ++i)
+    {
+        if (gStatusType[i].name == name)
+        {
+            id = i;
+            break;
+        }
+    }
+    return id;
+}
+
 int _findEmptySet()
 {
     int pos = -1;
@@ -117,7 +131,7 @@ int status_allocSet(const vector<int>& type)
 int status_loadSet(const std::vector<int>& type, std::vector<std::string>& contents)
 {
     assert(contents.size() == type.size());
-    assert(!contents.empty());
+    if (contents.empty()) return -1;
     statusSet set;
     set.type = type;
     for (int i=0; i<type.size(); ++i)

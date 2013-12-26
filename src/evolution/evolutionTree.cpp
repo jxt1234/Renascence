@@ -19,9 +19,46 @@
 
 #include "utils/debug.h"
 
+using namespace std;
+
 float evolutionTree::gLargeVary = 0.1;
 float evolutionTree::gStatusVary = 0.4;
 GenerateSystem* evolutionTree::mGen = NULL;
+
+class evolutionTree::xmlCopy:public AbstractPoint::IPointCopy
+{
+    public:
+        xmlCopy(GenerateSystem* sys):mSys(sys){}
+        virtual ~xmlCopy(){}
+        virtual AbstractPoint* copy(AbstractPoint* src)
+        {
+            xmlTree* t = dynamic_cast<xmlTree*>(src);
+            assert(NULL!=t);
+            int func = mSys->getFuncId(t->func());
+            int status = -1;
+            vector<int> types;
+            vector<string> contents;
+            const vector<xmlTree::type>& ttype = t->status();
+            for (int i=0; i<ttype.size(); ++i)
+            {
+                int _type = status_queryId(ttype[i].name);
+                types.push_back(_type);
+                contents.push_back(ttype[i].content);
+            }
+            status = status_loadSet(types, contents);
+            AbstractGP* p = new AbstractGP(func,status);
+            return p;
+        }
+    private:
+        GenerateSystem* mSys;
+};
+
+evolutionTree* evolutionTree::loadXmlTree(xmlTree* tree)
+{
+    evolutionTree::xmlCopy copy(mGen);
+    evolutionTree* res = (evolutionTree*)AbstractPoint::deepCopy(tree, &copy);
+    return res;
+}
 
 void evolutionTree::operator=(const evolutionTree& tree)
 {
@@ -79,3 +116,6 @@ void evolutionTree::mutate()
         p->mutate();
     }
 }
+
+
+

@@ -20,7 +20,7 @@
 #include "core/GP_XmlString.h"
 #include "core/AbstractGP.h"
 
-class xmlGPLoader:public xmlReader, AbstractGP, IFunctionDataBase
+class xmlGPLoader:public xmlReader, AbstractGP, IRuntimeDataBase
 {
     public:
         xmlGPLoader(){mCurrentPoint = NULL;}

@@ -40,6 +40,7 @@ int status_CopyAllocSet(int srcId);
 bool status_clear();
 /*Optional API*/
 bool status_varySet(int statusId);
+int status_queryId(const std::string& name);
 std::string status_printSet(int statusId);
 
 /*Not safe API*/

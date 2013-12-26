@@ -17,6 +17,7 @@
 #define XML_READER_H
 #include <string>
 #include <vector>
+#include <istream>
 
 #define XMLAPI
 
@@ -25,8 +26,9 @@ class xmlReader
 {
     public:
         XMLAPI void loadFile(const char* file);
+        XMLAPI void loadStream(std::istream& input);
         XMLAPI void writeFile(const char* file);
-        xmlReader(const char* file = NULL);
+        xmlReader();
         virtual ~xmlReader();
     protected:
         virtual void attributeUnflatten() = 0;
@@ -40,9 +42,8 @@ class xmlReader
             std::vector<package*> children;
         };
         void analysisLine(const std::string& line);
-        package* loadPackage(std::ifstream& file);
+        package* loadPackage(std::istream& input);
         package* mAttributes;
-        std::string mFile;
     private:
         std::vector<package*> mPackage;
         std::string mString;
@@ -53,7 +54,7 @@ class xmlReaderTest:public xmlReader
 {
     public:
         XMLAPI void print();
-        xmlReaderTest(const char* file = NULL):xmlReader(file){}
+        xmlReaderTest(){}
         virtual ~xmlReaderTest(){}
     protected:
         void printUnit(package* p);

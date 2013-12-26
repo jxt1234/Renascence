@@ -1,5 +1,6 @@
 /*AUTO-GENERATE*/
 #include "status_user.h"
+#include "debug.h"
 #include <sstream>
 #include <iostream>
 extern "C"

@@ -19,7 +19,7 @@
 #include "core/IDataBase.h"
 #include "xml/xmlFunctionLoader.h"
 
-class xmlDataBase:public IDataBase
+class xmlDataBase:public IPrintDataBase
 {
     public:
         /*API for GP*/

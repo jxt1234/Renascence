@@ -19,22 +19,30 @@
 #include <string>
 #include <vector>
 #include "function.h"
-class IDataBase
+class IPrintDataBase
 {
     public:
         virtual void vQueryStatus(int id, std::string& name, std::string& libName) = 0;
         virtual void vQueryFunction(int id, std::string& name, std::string& libName) = 0;
         virtual void vQueryOutput(int functionId, std::vector<int>& output)=0;
 
-        IDataBase(){}
-        virtual ~IDataBase(){}
+        IPrintDataBase(){}
+        virtual ~IPrintDataBase(){}
 };
 
-class IFunctionDataBase
+class IGenerateDataBase
 {
     public:
-        IFunctionDataBase(){}
-        virtual ~IFunctionDataBase(){}
+        virtual int vQueryFuncId(const std::string& funcName)=0;
+        IGenerateDataBase(){}
+        virtual ~IGenerateDataBase(){}
+};
+
+class IRuntimeDataBase
+{
+    public:
+        IRuntimeDataBase(){}
+        virtual ~IRuntimeDataBase(){}
         virtual computeFunction vGetCompute(int id) = 0;
         virtual int vQueryInputsNumber(int id){return 0;}
 };
