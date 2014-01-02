@@ -29,6 +29,7 @@ using namespace std;
 /*TODO Invalid Inputs treat*/
 void GP_evolution(int number, int times, const char* functionTable, const char* inputTable, const char* outputXml)
 {
+    status_init();
     srand((unsigned) time(NULL));
     xmlGenerateSystem gen;
     gen.addXml(functionTable, NULL, false);
@@ -36,11 +37,12 @@ void GP_evolution(int number, int times, const char* functionTable, const char* 
     evolution_group<evolutionTree> group(number);
     group.evolution(times);
     evolutionTree* best = group.get_best();
-    string result = gen.xmlPrint(best);
+    string result = gen.xmlPrint(best->get());
     ofstream file;
     file.open(outputXml);
     file<<result;
     file.close();
+    status_clear();
 }
 
 void GP_RunXml(const char* functionXml, const char* input, void(*output)(GP_Output&))

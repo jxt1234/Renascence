@@ -59,14 +59,14 @@ class AbstractGP:public AbstractGPPoint, IGPAutoDefFunction
         void replacePoint(const std::vector<int> &numbers, int& cur);
         /*Return functions that need input*/
         std::vector<int> setInputNumber(IRuntimeDataBase* map);
-    protected:
-        GP_Output up_compute(IRuntimeDataBase* map);
-        void _reset();
         class AbstractGPCopy:public AbstractPoint::IPointCopy
         {
             public:
                 virtual AbstractPoint* copy(AbstractPoint* src);
         };
+    protected:
+        GP_Output up_compute(IRuntimeDataBase* map);
+        void _reset();
         GP_Output* mSave;
         //FIXME Reconstruct the xmlGPLoader
         friend class xmlGPLoader;

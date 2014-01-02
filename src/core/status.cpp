@@ -195,11 +195,11 @@ vector<void*> status_queryContent(int statusId)
 
 bool status_clear()
 {
-    if (gStatusSet.empty()) return false;
     for (int i=0; i<gStatusSet.size(); ++i)
     {
         status_freeSet(i);
     }
+    gStatusSet.clear();
     return true;
 }
 

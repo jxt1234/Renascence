@@ -14,108 +14,89 @@
    limitations under the License.
 ******************************************************************/
 #include "evolution/evolutionTree.h"
-#include <assert.h>
-#include <stdlib.h>
-
-#include "utils/debug.h"
-
-using namespace std;
-
-float evolutionTree::gLargeVary = 0.1;
-float evolutionTree::gStatusVary = 0.4;
 GenerateSystem* evolutionTree::mGen = NULL;
+IFitComputer* evolutionTree::mFitComputer = NULL;
 
-class evolutionTree::xmlCopy:public AbstractPoint::IPointCopy
+/*Assum the output of gp is double and return the compute result, don't set any input*/
+class DefaultFitComputer:public IFitComputer
 {
     public:
-        xmlCopy(GenerateSystem* sys):mSys(sys){}
-        virtual ~xmlCopy(){}
-        virtual AbstractPoint* copy(AbstractPoint* src)
+        DefaultFitComputer(IRuntimeDataBase* data)
         {
-            xmlTree* t = dynamic_cast<xmlTree*>(src);
-            assert(NULL!=t);
-            int func = mSys->getFuncId(t->func());
-            int status = -1;
-            vector<int> types;
-            vector<string> contents;
-            const vector<xmlTree::type>& ttype = t->status();
-            for (int i=0; i<ttype.size(); ++i)
+            mRun = data;
+        }
+        virtual ~DefaultFitComputer(){}
+        virtual double fit_comput(AbstractGP* gp)
+        {
+            GP_Input nullinput;
+            int cur = 0;
+            gp->input(nullinput, cur);
+            gp->compute(mRun);
+            GP_Output output = gp->output();
+            double* result = (double*)(output.output[0].content);
+            double res = *result;
+            /*It has duty to free the output*/
+            if (output.output[0].freeCallBack)
             {
-                int _type = status_queryId(ttype[i].name);
-                types.push_back(_type);
-                contents.push_back(ttype[i].content);
+                output.output[0].freeCallBack(output.output[0].content);
             }
-            status = status_loadSet(types, contents);
-            AbstractGP* p = new AbstractGP(func,status);
-            return p;
+            return res;
         }
     private:
-        GenerateSystem* mSys;
+        IRuntimeDataBase* mRun;
 };
 
-evolutionTree* evolutionTree::loadXmlTree(xmlTree* tree)
-{
-    evolutionTree::xmlCopy copy(mGen);
-    evolutionTree* res = (evolutionTree*)AbstractPoint::deepCopy(tree, &copy);
-    return res;
-}
-
-void evolutionTree::operator=(const evolutionTree& tree)
-{
-    AbstractGP::operator=(tree);
-    mSave = NULL;
-    if (tree.mSave!=NULL)
-    {
-        mSave = new GP_Output;
-        *mSave = *(tree.mSave);
-        double *fit = new double;
-        (mSave->output[0]).content = fit;
-        *fit = tree.get_fit();
-    }
-}
 double evolutionTree::fit_comput()
 {
-    compute(mGen);
-    double result = get_fit();
-    return result;
+    if (NULL!=mFitComputer)
+    {
+        mFit = mFitComputer->fit_comput(mTree);
+    }
+    else
+    {
+        DefaultFitComputer c(mGen);
+        mFit = c.fit_comput(mTree);
+    }
+    return mFit;
 }
-
-evolutionTree::evolutionTree()
-{
-    assert(mGen!=NULL);
-    int cur = 0;
-    replacePoint(mGen->getRandSequence(), cur);
-}
-
 double evolutionTree::get_fit() const
 {
-    double* result;
-    result = (double*)((mSave->output[0]).content);
-    return *result;
+    return mFit;
 }
 
 void evolutionTree::mutate()
 {
     assert(NULL!=mGen);
-    const int scale = 100;
-    /*Little prob to totally changed*/
-    int _rand = rand()%scale;
-    if (_rand < gLargeVary*scale)
+    mTree->mutate(mGen);
+}
+evolutionTree::evolutionTree(mutateTree* self)
+{
+    assert(NULL!=mGen);
+    if (NULL==self)
     {
+        self = new mutateTree;
         int cur = 0;
-        replacePoint(mGen->getRandSequenceWithOutput(mFunc), cur);
-        return;
+        self->replacePoint(mGen->getRandSequence(), cur);
     }
-    else if (_rand < gStatusVary*scale)
-    {
-        status_varySet(mStatus);
-    }
-    for (int i=0; i<mChildren.size(); ++i)
-    {
-        evolutionTree* p = (evolutionTree*)(mChildren[i]);
-        p->mutate();
-    }
+    mTree = self;
+    mFit = 0;
+}
+evolutionTree::evolutionTree(const evolutionTree& tree)
+{
+    AbstractGP::AbstractGPCopy copy;
+    mTree = (mutateTree*)AbstractPoint::deepCopy(tree.mTree, &copy);
+    mFit = tree.mFit;
+}
+void evolutionTree::operator=(const evolutionTree& tree)
+{
+    AbstractGP::AbstractGPCopy copy;
+    mTree = (mutateTree*)AbstractPoint::deepCopy(tree.mTree, &copy);
+    mFit = tree.mFit;
 }
 
-
+evolutionTree::~evolutionTree()
+{
+    assert(NULL!=mTree);
+    delete mTree;
+}
 

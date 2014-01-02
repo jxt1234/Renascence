@@ -205,6 +205,9 @@ GP_Output AbstractGP::output()
     {
         result = *mSave;
     }
+    /*The memory of contents shoud be clean outside*/
+    delete mSave;
+    mSave = NULL;
     return result;
 }
 

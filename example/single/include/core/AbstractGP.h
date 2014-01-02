@@ -34,7 +34,7 @@ class AbstractGPPoint:public AbstractPoint
         int mStatus;
 };
 
-class AbstractGP:public AbstractGPPoint, IGPAutoDefFunction
+class AbstractGP:public AbstractGPPoint, public IGPAutoDefFunction
 {
     public:
         //Basic Functions

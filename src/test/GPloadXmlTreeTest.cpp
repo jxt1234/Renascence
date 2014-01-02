@@ -17,7 +17,7 @@ class GPloadXmlTreeTest:public GPTest
             evolutionTree::setGenSystem(&gen);
             xmlTree _tree;
             _tree.loadFile("result.xml");
-            evolutionTree* tree = evolutionTree::loadXmlTree(&_tree);
+            mutateTree* tree = mutateTree::loadXmlTree(&_tree, &gen);
             string result = gen.xmlPrint(tree);
             ofstream file;
             file.open("output/result_test2.xml");

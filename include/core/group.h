@@ -34,7 +34,7 @@ public:
     double fit_comput();
     inline double get_fit();
     void mutate();
-    void print_f(ofstream& file);
+    void print_f(ostream& output);
     void print();//可选
     static void data_input();//Load data
     static void destroy();//Free data

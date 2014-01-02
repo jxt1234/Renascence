@@ -15,34 +15,39 @@
 ******************************************************************/
 #ifndef EVOLUTION_EVOLUTIONTREE_H
 #define EVOLUTION_EVOLUTIONTREE_H
-
-#include "core/AbstractGP.h"
-#include "system/GenerateSystem.h"
-#include <fstream>
-#include "xml/xmlTree.h"
-
-class evolutionTree:public AbstractGP
+#include "mutateTree.h"
+class IFitComputer
 {
     public:
-        evolutionTree();
+        IFitComputer(){}
+        virtual ~IFitComputer(){}
+        virtual double fit_comput(AbstractGP* gp) = 0;
+};
+
+class evolutionTree
+{
+    public:
+        evolutionTree(mutateTree* self=NULL);
         evolutionTree(const evolutionTree& tree);
         void operator=(const evolutionTree& tree);
+        ~evolutionTree();
         double fit_comput();
         double get_fit() const;
-        static evolutionTree* loadFromXml(const char* xmlFile);
-        static evolutionTree* loadXmlTree(xmlTree* tree);
-        void mutate();
-        void print_f(std::ofstream& file){}
         void print(){}//可选
+        void mutate();
+        void print_f(std::ostream& file){}
         static void data_input(){}//Load data
         static void destroy(){}//Free data
         static void setGenSystem(GenerateSystem* gen){mGen = gen;}
+        static void setFitComputer(IFitComputer* com){mFitComputer = com;}
+        //FIXME Dangerous API, just for xmlPrint
+        inline mutateTree* get(){return mTree;}
     protected:
-        class xmlCopy;
-        int _randDetermine();
+        mutateTree* _copy(mutateTree* tree);
+        double mFit;
+        mutateTree* mTree;
         static GenerateSystem* mGen;
-        static float gLargeVary;
-        static float gStatusVary;
+        static IFitComputer* mFitComputer;
 };
 
 #endif

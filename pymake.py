@@ -4,6 +4,7 @@
 import os
 import sys
 CFLAGS="-O3"
+#CFLAGS="-rdynamic"
 CLINK=""
 MAIN_PROGRAM=['GP_MAIN', 'libGP.so']
 print MAIN_PROGRAM
