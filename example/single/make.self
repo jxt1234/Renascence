@@ -1,1 +1,2 @@
-SELF_VARIABLES= ../../libGP.so
+SELF_VARIABLES= ../../libGP.so ./libpics.so
+INCLUDE=../../include

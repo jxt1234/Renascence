@@ -24,7 +24,7 @@ sources_c = os.popen(cmd).read().split('\n');
 fileContents = 'include make.self\n'
 
 #Head Files
-include_Flag = '-Iinclude'
+include_Flag = '-I${INCLUDE}'
 include = "ALL_INCLUES"
 fileContents += include+'='
 for h in include_h:

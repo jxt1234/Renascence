@@ -13,7 +13,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "api/evolution.h"
 
 #include "evolution/evolutionTree.h"
 #include "core/group.h"
@@ -25,19 +24,44 @@
 #include "utils/debug.h"
 using namespace std;
 
+extern const char* Name[];
+extern void* f[]; 
+extern int gNumber;
+
+class selfFunc:public IFunctionTable
+{
+	public:
+		virtual void* vGetFunction(const std::string& name)
+		{
+			int n = gNumber;
+			void* result = NULL;
+			for (int i=0; i<n; ++i)
+			{
+				if (name == Name[i])
+				{
+					result = f[i];
+					break;
+				}
+			}
+			return result;
+		}
+};
+
+
 void randomGener(const char* functionTable, const char* outputXml1, const char* outputXml2)
 {
     srand((unsigned) time(NULL));
     xmlGenerateSystem gen;
-    gen.addXml(functionTable, NULL, false);
+	selfFunc funcTable;
+    gen.addXml(functionTable, &funcTable, false);
     evolutionTree::setGenSystem(&gen);
 	evolutionTree tree1;
 	evolutionTree tree2;
-    string result = gen.xmlPrint(&tree1);
+    string result = gen.xmlPrint(tree1.get());
     ofstream file;
     file.open(outputXml1);
     file<<result;
-	result = gen.xmlPrint(&tree2);
+	result = gen.xmlPrint(tree2.get());
     file.close();
 	file.open(outputXml2);
 	file << result;
