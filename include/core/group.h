@@ -50,13 +50,69 @@ private:
     mutation<individual> var;//The type of vary operator
     cross<individual> cro;//The type of crossover operator
 public:
-    evolution_group(const int scale=20,const int _s=0,const int _v=0,const int _c=0);
-    ~evolution_group();
+    evolution_group(const int scale=20,const int _s=0,const int _v=0,const int _c=0)
+    {
+        individual *temp;
+        individual::data_input();
+        for(int i=0;i<scale;++i)
+        {
+            temp=new individual;
+            group.push_back(temp);
+        }
+        best=new individual;
+        best->fit_comput();
+    }
+    ~evolution_group()
+    {
+        for(int i=0;i<group.size();++i)
+        {
+            delete group[i];
+        }
+        group.clear();
+        delete best;
+        individual::destroy();
+    }
+
     inline individual* get_best(){return best;}
-    bool best_decide();
-    bool evolution_s();
-    bool evolution(int genr=2000, const char* fit=DEFAULT_FIT_EVOLUTION_GROUP);
-    inline void fit_record(ofstream& file){file<<best->get_fit()<<endl;}
+    bool best_decide()
+    {
+        double temp;
+        int n=0;
+        for(int i=0;i<group.size();++i)
+        {
+            (group[i])->fit_comput();
+        }
+        temp=(group[0])->get_fit();
+        for(int i=1;i<group.size();++i)
+        {
+            if((group[i])->get_fit()>=temp) temp= (group[i])->get_fit(), n=i;
+        }
+        if(temp>=best->get_fit()) 
+        {
+            *best = *(group[n]);
+            output();
+        }
+        return true;
+    }
+    bool evolution_s()
+    {
+        best_decide();
+        sel.sel(group);
+        cro.cro(group);
+        var.var(group);
+        return true;
+    }
+
+    bool evolution(int genr=2000, ostream* os = NULL)
+    {
+        for(int i=0;i<genr;++i)
+        {
+            evolution_s();
+            if (NULL!=os) fit_record(*os);
+        }
+        return true;
+    }
+    inline void fit_record(ostream& file){file<<best->get_fit()<<endl;}
     inline void output(const char* file=DEFAULT_OUTPUT_EVOLUTION_GROUP)
     {
         ofstream f;
@@ -66,5 +122,5 @@ public:
         f.close();
     }
 };
-#include "group.tem"
+
 #endif

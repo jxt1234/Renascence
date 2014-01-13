@@ -31,8 +31,60 @@ public:
         for(int i=0;i<optimal.size();++i) delete (optimal[i]);
         optimal.clear();
     }
-    void sel(vector<individual*> &group);
-    void sel_ES(vector<individual*> &group);
+    void sel(vector<individual*> &group)
+    {
+        switch(type)
+        {
+            case 0:
+                sel_ES(group);
+                break;
+            default:
+                break;
+        }
+    }
+    void sel_ES(vector<individual*> &group)
+    {
+        int n=group.size()/part;
+        double temp;
+        int tem_n;
+        individual* tem_i;
+        if(optimal.size()<part)
+        {
+            for(int i=0;i<part;++i)
+            {
+                tem_i=new individual;
+                temp = (group[i*n])->get_fit();
+                tem_n=i*n;
+                for(int j=1;j<n;++j)
+                {
+                    if((group[j+i*n])->get_fit() >= temp)
+                    {
+                        temp = (group[j+i*n])->get_fit();
+                        tem_n = j+i*n;
+                    }
+                }
+                *tem_i = *(group[tem_n]);
+                optimal.push_back(tem_i);
+            }
+        }
+        else
+        {
+            for(int i=0;i<part;++i)
+            {
+                temp = (group[i*n])->get_fit();
+                tem_n=i*n;
+                for(int j=1;j<n;++j)
+                {
+                    if((group[j+i*n])->get_fit() >= temp)
+                    {
+                        temp = (group[j+i*n])->get_fit();
+                        tem_n = j+i*n;
+                    }
+                }
+                if( (group[tem_n])->get_fit() >=(optimal[i])->get_fit()) *(optimal[i])=*(group[tem_n]);
+            }
+        }
+    }
 };
 
 
@@ -56,9 +108,25 @@ private:
 public:
     mutation(int _t=0):type(_t){}
     virtual ~mutation(){}
-    inline void var(vector<individual*> &group);
-    inline void var_ES(vector<individual*> &group);
+    inline void var(vector<individual*> &group)
+    {
+        switch(type)
+        {
+            case 0:
+                var_ES(group);
+                break;
+            default:
+                break;
+        }
+    }
+    inline void var_ES(vector<individual*> &group)
+    {
+        for(int i=0;i<group.size();++i)
+        {
+            (group[i])->mutate();
+            //(group[i])->print();
+        }
+    }
 };
 
-#include "generic_operator.tem"
 #endif
