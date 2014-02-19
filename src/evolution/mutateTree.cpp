@@ -16,6 +16,7 @@
 #include "evolution/mutateTree.h"
 #include <assert.h>
 #include <stdlib.h>
+#include <sstream>
 
 #include "utils/debug.h"
 
@@ -40,11 +41,22 @@ class mutateTree::xmlCopy:public AbstractPoint::IPointCopy
             const vector<xmlTree::type>& ttype = t->status();
             for (int i=0; i<ttype.size(); ++i)
             {
-                int _type = status_queryId(ttype[i].name);
+                int _type = mSys->queryType(ttype[i].name);
                 types.push_back(_type);
                 contents.push_back(ttype[i].content);
             }
-            status = status_loadSet(types, contents);
+            /*Currently Only support one Status*/
+            if (contents.empty())
+            {
+                status = -1;
+            }
+            else
+            {
+                const IStatusType& t = mSys->queryType(types[0]);
+                istringstream in(contents[0]);
+                void* c = t.load(in);
+                status = mSys->allocSet(types[0], c);
+            }
             AbstractGP* p = new AbstractGP(func,status);
             return p;
         }
@@ -52,34 +64,34 @@ class mutateTree::xmlCopy:public AbstractPoint::IPointCopy
         GenerateSystem* mSys;
 };
 
-mutateTree* mutateTree::loadXmlTree(xmlTree* tree, GenerateSystem* mGen)
+mutateTree* mutateTree::loadXmlTree(xmlTree* tree, GenerateSystem* gen)
 {
-    mutateTree::xmlCopy copy(mGen);
+    mutateTree::xmlCopy copy(gen);
     mutateTree* res = (mutateTree*)AbstractPoint::deepCopy(tree, &copy);
     return res;
 }
 
 
-void mutateTree::mutate(GenerateSystem* mGen)
+void mutateTree::mutate(GenerateSystem* gen)
 {
-    assert(NULL!=mGen);
+    assert(NULL!=gen);
     const int scale = 100;
     /*Little prob to totally changed*/
     int _rand = rand()%scale;
     if (_rand < gLargeVary*scale)
     {
         int cur = 0;
-        replacePoint(mGen->getRandSequenceWithOutput(mFunc), cur);
+        gen->mutate(this);;
         return;
     }
     else if (_rand < gStatusVary*scale)
     {
-        status_varySet(mStatus);
+        gen->mutateSet(mStatus);
     }
     for (int i=0; i<mChildren.size(); ++i)
     {
         mutateTree* p = (mutateTree*)(mChildren[i]);
-        p->mutate(mGen);
+        p->mutate(gen);
     }
 }
 

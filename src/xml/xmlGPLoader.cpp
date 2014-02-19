@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <assert.h>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -29,6 +30,14 @@ struct pointData
     int childNumber;
 };
 
+xmlGPLoader::~xmlGPLoader()
+{
+    if (mTableDestroy) delete mTable;
+    for (int i=0; i<mStatusTypeFree.size(); ++i)
+    {
+        delete mStatusTypeFree[i];
+    }
+}
 void xmlGPLoader::attributeUnflatten()
 {
     if (NULL!=mAttributes)
@@ -41,18 +50,13 @@ void xmlGPLoader::attributeUnflatten()
 
 GP_Output xmlGPLoader::run()
 {
-    setDataBase(this);
+    IGPAutoDefFunction exe(this, this, this);
     GP_Input inp;
-    return IGPAutoDefFunction::run(inp);
+    return exe.run(inp);
 }
 
 void xmlGPLoader::reset()
 {
-    for (int i=0; i<mHandles.size(); ++i)
-    {
-        system_unload_lib(mHandles[i]);
-    }
-    mHandles.clear();
     mLibName.clear();
     mFuncName.clear();
     mFunctions.clear();
@@ -89,8 +93,8 @@ void xmlGPLoader::_getStatusFunc(const string& name, statusLoadMethod& _load, st
 {
     string loadName = name +"_load";
     string freeName = name +"_free";
-    _load = (statusLoadMethod)system_find_func(mCurrentHandle, loadName.c_str());
-    _free = (statusVaryMethod)system_find_func(mCurrentHandle, freeName.c_str());
+    _load = (statusLoadMethod)(mTable->vGetFunction(loadName));
+    _free = (statusVaryMethod)(mTable->vGetFunction(freeName));
     assert(NULL!=_load);
     assert(NULL!=_free);
 }
@@ -136,7 +140,10 @@ void xmlGPLoader::_status(xmlReader::package* p)
         types.push_back(type);
         contents.push_back(content);
     }
-    mCurrentPoint->mStatus = status_loadSet(types, contents);
+    const IStatusType& t = queryType(types[0]);
+    istringstream is(contents[0]);
+    void* c = t.load(is);
+    mCurrentPoint->mStatus = allocSet(types[0], c);
 }
 
 int xmlGPLoader::findStatus(string name)
@@ -149,29 +156,27 @@ int xmlGPLoader::findStatus(string name)
         }
     }
     /*Alloc status type*/
-    statusLoadMethod load;
-    statusVaryMethod _free;
-    _getStatusFunc(name, load, _free);
+    IStatusType* newType = new funcStatusType(name, mTable);
+    int type = addType(newType);
     mStatusName.push_back(name);
-    int type = status_allocType(0, name, NULL, _free, NULL, NULL, NULL, load);
     mStatusType.push_back(type);
+    mStatusTypeFree.push_back(newType);
     return type;
 }
 
-void* xmlGPLoader::findLib(string name)
+void xmlGPLoader::findLib(string name)
 {
+    /*Search If need to add this lib*/
     for (int i=0; i<mLibName.size(); ++i)
     {
         if (mLibName[i]==name)
         {
-            return mHandles[i];
+            return;
         }
     }
-    void* handle = system_load_lib(name.c_str());
-    assert(NULL!=handle);
-    mLibName.push_back(name);
-    mHandles.push_back(handle);
-    return handle;
+    system_multi_lib* table = dynamic_cast<system_multi_lib*>(mTable);
+    assert(NULL!=table);
+    table->addLib(name.c_str());
 }
 int xmlGPLoader::findFunc(string name)
 {
@@ -183,7 +188,7 @@ int xmlGPLoader::findFunc(string name)
         }
     }
     /*Add function*/
-    computeFunction func = (computeFunction)system_find_func(mCurrentHandle, name.c_str());
+    computeFunction func = (computeFunction)(mTable->vGetFunction(name));
     assert(NULL!=func);
     mFunctions.push_back(func);
     mFuncName.push_back(name);
@@ -192,7 +197,7 @@ int xmlGPLoader::findFunc(string name)
 void xmlGPLoader::_lib(xmlReader::package* p)
 {
     string libName = p->attr[0];
-    mCurrentHandle = findLib(libName);
+    findLib(libName);
 }
 
 

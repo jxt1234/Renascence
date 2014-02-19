@@ -20,32 +20,53 @@
 #include <string>
 #include <stdlib.h>
 
-typedef void*(*statusAllocMethod)();
-typedef void(*statusVaryMethod)(void*);
-typedef void(*statusCopyMethod)(void* src, void* dst);
-typedef std::string(*statusPrintMethod)(void*);
-typedef void*(*statusLoadMethod)(std::string);
 
 /*Basic API*/
-bool status_init();
-int status_allocSet(const std::vector<int>& type);
-int status_loadSet(const std::vector<int>& type, std::vector<std::string>& contents);
-int status_allocType(int size, std::string name, statusAllocMethod alloc=NULL, statusVaryMethod free=NULL, statusVaryMethod vary=NULL, 
-        statusCopyMethod copy=NULL, statusPrintMethod print=NULL, statusLoadMethod load = NULL);
-bool status_freeSet(int statusId);
-bool status_CopySet(int srcId, int dstId);
-std::vector<void*> status_queryContent(int statusId);
-const std::vector<int>& status_queryType(int statusId);
-int status_CopyAllocSet(int srcId);
-bool status_clear();
-/*Optional API*/
-bool status_varySet(int statusId);
-int status_queryId(const std::string& name);
-std::string status_printSet(int statusId);
 
-/*Not safe API*/
-void status_printSetWithType(std::vector<void*>& contents, std::vector<int>& types, std::ostringstream& output);
+class IStatusType
+{
+    public:
+        IStatusType(const std::string name):mName(name){}
+        virtual ~IStatusType(){}
+        inline std::string name() const {return mName;}
+        virtual void* salloc() const {return NULL;}
+        virtual void sfree(void* contents) const {}
+        virtual void mutate(void* contents) const {}
+        virtual void copy(void* src, void* dst) const {}
+        virtual void print(std::ostream& out, void* contents) const {}
+        virtual void* load(std::istream& in) const {return NULL;}
+    private:
+        std::string mName;
+};
 
 
+class statusBasic
+{
+    public:
+        struct content
+        {
+            IStatusType* type;
+            void* data;
+        };
+        statusBasic(){}
+        virtual ~statusBasic();
+        int addType(IStatusType* type);
+        //Firstly find the empty position and alloc in it, return the id
+        int allocSet(int type, void* content = NULL);
+        int allocSet(IStatusType* t, void* content = NULL);
+        //Return -1 if id not found, return id if success
+        int copySet(int id);
+        int mutateSet(int id);
+        int freeSet(int id);
+        //Return NULL if id not found
+        void* queryContent(int id);
+        //Return all NULL Type if not found
+        const IStatusType& queryType(int id);
+        int queryType(const std::string& name);
+    private:
+        //The content of IStatusType is assumed to be free outside
+        std::vector<IStatusType*> mType;
+        std::vector<content> mContents;
+};
 
 #endif

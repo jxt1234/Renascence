@@ -11,7 +11,6 @@ class GPloadXmlTreeTest:public GPTest
     public:
         virtual void run()
         {
-            status_init();
             xmlGenerateSystem gen;
             gen.addXml("func.xml", NULL, false);
             evolutionTree::setGenSystem(&gen);

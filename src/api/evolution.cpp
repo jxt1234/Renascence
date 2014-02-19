@@ -29,7 +29,6 @@ using namespace std;
 /*TODO Invalid Inputs treat*/
 void GP_evolution(int number, int times, const char* functionTable, const char* inputTable, const char* outputXml)
 {
-    status_init();
     srand((unsigned) time(NULL));
     xmlGenerateSystem gen;
     gen.addXml(functionTable, NULL, false);
@@ -42,7 +41,6 @@ void GP_evolution(int number, int times, const char* functionTable, const char* 
     file.open(outputXml);
     file<<result;
     file.close();
-    status_clear();
 }
 
 void GP_RunXml(const char* functionXml, const char* input, void(*output)(GP_Output&))

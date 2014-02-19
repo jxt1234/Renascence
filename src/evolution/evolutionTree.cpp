@@ -21,9 +21,10 @@ IFitComputer* evolutionTree::mFitComputer = NULL;
 class DefaultFitComputer:public IFitComputer
 {
     public:
-        DefaultFitComputer(IRuntimeDataBase* data)
+        DefaultFitComputer(IRuntimeDataBase* data, statusBasic* sta)
         {
             mRun = data;
+            mSta = sta;
         }
         virtual ~DefaultFitComputer(){}
         virtual double fit_comput(AbstractGP* gp)
@@ -31,7 +32,7 @@ class DefaultFitComputer:public IFitComputer
             GP_Input nullinput;
             int cur = 0;
             gp->input(nullinput, cur);
-            gp->compute(mRun);
+            gp->compute(mRun, mSta);
             GP_Output output = gp->output();
             double* result = (double*)(output.output[0].content);
             double res = *result;
@@ -44,6 +45,7 @@ class DefaultFitComputer:public IFitComputer
         }
     private:
         IRuntimeDataBase* mRun;
+        statusBasic* mSta;
 };
 
 double evolutionTree::fit_comput()
@@ -54,7 +56,7 @@ double evolutionTree::fit_comput()
     }
     else
     {
-        DefaultFitComputer c(mGen);
+        DefaultFitComputer c(mGen, mGen);
         mFit = c.fit_comput(mTree);
     }
     return mFit;
@@ -76,20 +78,22 @@ evolutionTree::evolutionTree(mutateTree* self)
     {
         self = new mutateTree;
         int cur = 0;
-        self->replacePoint(mGen->getRandSequence(), cur);
+        mGen->initGP(self);
     }
     mTree = self;
     mFit = 0;
 }
 evolutionTree::evolutionTree(const evolutionTree& tree)
 {
-    AbstractGP::AbstractGPCopy copy;
+    assert(NULL!=mGen);
+    AbstractGP::AbstractGPCopy copy(mGen);
     mTree = (mutateTree*)AbstractPoint::deepCopy(tree.mTree, &copy);
     mFit = tree.mFit;
 }
 void evolutionTree::operator=(const evolutionTree& tree)
 {
-    AbstractGP::AbstractGPCopy copy;
+    assert(NULL!=mGen);
+    AbstractGP::AbstractGPCopy copy(mGen);
     mTree = (mutateTree*)AbstractPoint::deepCopy(tree.mTree, &copy);
     mFit = tree.mFit;
 }
@@ -97,6 +101,7 @@ void evolutionTree::operator=(const evolutionTree& tree)
 evolutionTree::~evolutionTree()
 {
     assert(NULL!=mTree);
+    if (NULL!=mGen) mGen->freeStatus(mTree);
     delete mTree;
 }
 

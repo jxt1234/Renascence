@@ -1,6 +1,5 @@
 #include "test/GPTest.h"
 #include "api/evolution.h"
-#include "xml/xmlGPLoader.h"
 
 #include <iostream>
 using namespace std;

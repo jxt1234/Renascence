@@ -23,51 +23,59 @@
 #include "utils/GP_Clock.h"
 #include "utils/debug.h"
 #include "status.h"
+
 class AbstractGPPoint:public AbstractPoint
 {
     public:
         AbstractGPPoint():mFunc(-1), mStatus(-1){}
         virtual ~AbstractGPPoint(){}
+        inline int funcId(){return mFunc;}
+        inline int statusId(){return mStatus;}
     protected:
         GP_Input mInputs;
         int mFunc;
         int mStatus;
 };
 
-class AbstractGP:public AbstractGPPoint, IGPAutoDefFunction
+class AbstractGP:public AbstractGPPoint, IGPUnit
 {
     public:
         //Basic Functions
         AbstractGP(int func, int status):mSave(NULL){mFunc = func, mStatus = status;}
         AbstractGP():mSave(NULL){}
-        AbstractGP(const AbstractGP& gp);
-        void operator=(const AbstractGP& gp);
         virtual ~AbstractGP();
         //Basic API
-        virtual void compute(IRuntimeDataBase* map);
+        virtual void compute(IRuntimeDataBase* map, statusBasic* sta);
         virtual void input(GP_Input& input, int& cur);
         virtual GP_Output output();
+        /*For Status free and copy*/
+        std::vector<int> getStatus();
         /*Old API to cover GeneticProgram*/
         void reset();//Clear all mSave
         //If the functionIds is empty, it means to save all points
-        void save(IRuntimeDataBase* map, const std::vector<int>& functionIds);
+        void save(IRuntimeDataBase* map, statusBasic* sta, const std::vector<int>& functionIds);
         //Output a xml string, which can be write into file directly
-        std::string xmlPrint(IPrintDataBase* data);
+        std::string xmlPrint(IPrintDataBase* data, statusBasic* sta);
         //The cur means from which element to use, it's assumed that the numbers is valid and the status has been alloc
         //FIXME: dangerous api
         static void loadUnitFunction(std::vector<int>& result, int functionId, int statusId, int number);
-        void replacePoint(const std::vector<int> &numbers, int& cur);
         /*Return functions that need input*/
         std::vector<int> setInputNumber(IRuntimeDataBase* map);
         class AbstractGPCopy:public AbstractPoint::IPointCopy
         {
             public:
+                AbstractGPCopy(statusBasic* basic):mBasic(basic){}
+                virtual ~AbstractGPCopy(){}
                 virtual AbstractPoint* copy(AbstractPoint* src);
+            private:
+                statusBasic* mBasic;
         };
     protected:
-        GP_Output up_compute(IRuntimeDataBase* map);
+        void replacePoint(const std::vector<int> &numbers, int& cur);
+        GP_Output up_compute(IRuntimeDataBase* map, statusBasic* sta);
         void _reset();
         GP_Output* mSave;
+        friend class GPProducer;
         //FIXME Reconstruct the xmlGPLoader
         friend class xmlGPLoader;
 };

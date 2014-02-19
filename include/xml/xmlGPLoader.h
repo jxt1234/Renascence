@@ -19,19 +19,22 @@
 #include "xmlReader.h"
 #include "core/GP_XmlString.h"
 #include "core/AbstractGP.h"
+#include "core/status.h"
+#include "system/system_lib.h"
+#include "core/funcStatusType.h"
 
-class xmlGPLoader:public xmlReader, AbstractGP, IRuntimeDataBase
+class xmlGPLoader:public xmlReader, AbstractGP, IRuntimeDataBase, statusBasic
 {
     public:
-        xmlGPLoader(){mCurrentPoint = NULL;}
+        xmlGPLoader():mTableDestroy(true){mTable = new system_multi_lib;}
+        xmlGPLoader(IFunctionTable* table):mTable(table), mCurrentPoint(NULL), mTableDestroy(false){}
         virtual computeFunction vGetCompute(int id) {return mFunctions[id];}
-        virtual ~xmlGPLoader(){}
+        virtual ~xmlGPLoader();
         void reset();
         GP_Output run();
     protected:
         virtual void attributeUnflatten();
         std::vector<std::string> mLibName;
-        std::vector<void*> mHandles;
         std::vector<std::string> mFuncName;
         std::vector<computeFunction> mFunctions;
         std::vector<std::string> mStatusName;
@@ -39,7 +42,7 @@ class xmlGPLoader:public xmlReader, AbstractGP, IRuntimeDataBase
     private:
         void _getStatusFunc(const std::string& name, statusLoadMethod& _load, statusVaryMethod& _free);
         int findStatus(std::string name);
-        void* findLib(std::string name);
+        void findLib(std::string name);
         int findFunc(std::string name);
         void unFlattenUnit(xmlReader::package* p);
         void _node(xmlReader::package* p);
@@ -49,8 +52,10 @@ class xmlGPLoader:public xmlReader, AbstractGP, IRuntimeDataBase
         void _func(xmlReader::package* p);
         void _result(xmlReader::package* p);
         void load(int num, int type);
-        void* mCurrentHandle;
         AbstractGP* mCurrentPoint;
+        IFunctionTable* mTable;
+        bool mTableDestroy;
+        std::vector<IStatusType*> mStatusTypeFree;
 };
 
 

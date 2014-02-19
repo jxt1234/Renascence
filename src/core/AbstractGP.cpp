@@ -30,10 +30,11 @@ using namespace std;
 
 AbstractPoint* AbstractGP::AbstractGPCopy::copy(AbstractPoint* src)
 {
+    assert(NULL!=mBasic);
     AbstractGP* result = new AbstractGP;
     AbstractGP* s = dynamic_cast<AbstractGP*>(src);
     result->mFunc = s->mFunc;
-    result->mStatus = status_CopyAllocSet(s->mStatus);
+    result->mStatus = mBasic->copySet(s->mStatus);
     result->mSave = NULL;
     return result;
 }
@@ -50,17 +51,6 @@ AbstractGP::~AbstractGP()
         delete mSave;
         mSave = NULL;
     }
-    status_freeSet(mStatus);
-}
-AbstractGP::AbstractGP(const AbstractGP& gp)
-{
-    mFunc = gp.mFunc;
-    mStatus = gp.mStatus;
-    AbstractGPCopy c;
-    for (int i=0; i<gp.mChildren.size(); ++i)
-    {
-        addPoint(deepCopy((gp.mChildren[i]), &c));
-    }
 }
 
 void AbstractGP::loadUnitFunction(vector<int>& result, int functionId, int statusId, int number)
@@ -69,19 +59,19 @@ void AbstractGP::loadUnitFunction(vector<int>& result, int functionId, int statu
     result.push_back(statusId);
     result.push_back(number);
 }
-void AbstractGP::save(IRuntimeDataBase* map, const std::vector<int>& functionIds)
+void AbstractGP::save(IRuntimeDataBase* map, statusBasic* sta, const std::vector<int>& functionIds)
 {
     if (functionIds.empty() || find(functionIds.begin(), functionIds.end(), mFunc)!=functionIds.end())
     {
         _reset();
-        GP_Output output = up_compute(map);
+        GP_Output output = up_compute(map, sta);
         mSave = new GP_Output;
         *mSave = output;
     }
-    DO_CHILDREN_FUNC(save(map, functionIds));
+    DO_CHILDREN_FUNC(save(map, sta, functionIds));
 }
 
-string AbstractGP::xmlPrint(IPrintDataBase* data)
+string AbstractGP::xmlPrint(IPrintDataBase* data, statusBasic* statusData)
 {
     string funcName, libName;
     ostringstream res;
@@ -99,25 +89,49 @@ string AbstractGP::xmlPrint(IPrintDataBase* data)
         if (!outputType.empty())
         {
             res << "<"<<GP_XmlString::result<<">"<<endl;
-            status_printSetWithType(output, outputType, res);
+            const IStatusType& s = statusData->queryType(mStatus);
+            void* content = statusData->queryContent(mStatus);
+            s.print(res, content);
             res << "</"<<GP_XmlString::result<<">"<<endl;
         }
     }
     if (mStatus >= 0)
     {
         res<<"<"<<GP_XmlString::status<<">\n";
-        res<<status_printSet(mStatus);
+        const IStatusType& s = statusData->queryType(mStatus);
+        void* content = statusData->queryContent(mStatus);
+        s.print(res, content);
         res<<"</"<<GP_XmlString::status<<">\n";
     }
     res <<"<"<< GP_XmlString::children<<">"<<endl;
     for (int i=0; i<mChildren.size(); ++i)
     {
         AbstractGP* p = dynamic_cast<AbstractGP*>(mChildren[i]);
-        res << p->xmlPrint(data);
+        res << p->xmlPrint(data, statusData);
     }
     res <<"</"<< GP_XmlString::children<<">"<<endl;
     res << "</"<< GP_XmlString::node<<">"<<endl;
     return res.str();
+}
+
+std::vector<int> AbstractGP::getStatus()
+{
+    vector<int> res;
+    list<AbstractGP*> cacheQueue;
+    cacheQueue.push_back(this);
+    while(!cacheQueue.empty())
+    {
+        AbstractGP* current = cacheQueue.front();
+        res.push_back(current->mStatus);
+        for (int i=0; i<current->mChildren.size(); ++i)
+        {
+            AbstractGP* p = dynamic_cast<AbstractGP*>(current->mChildren[i]);
+            assert(NULL!=p);
+            cacheQueue.push_back(p);
+        }
+        cacheQueue.pop_front();
+    }
+    return res;
 }
 
 void AbstractGP::replacePoint(const std::vector<int> &numbers, int& cur)
@@ -129,7 +143,6 @@ void AbstractGP::replacePoint(const std::vector<int> &numbers, int& cur)
         delete mChildren[i];
     }
     mChildren.clear();
-    status_freeSet(mStatus);
     //Wide-search
     list<AbstractGP*> cacheQueue;
     cacheQueue.push_back(this);
@@ -149,27 +162,10 @@ void AbstractGP::replacePoint(const std::vector<int> &numbers, int& cur)
     }
 }
 
-void AbstractGP::operator=(const AbstractGP& gp)
-{
-    for (int i=0; i<mChildren.size(); ++i)
-    {
-        delete mChildren[i];
-    }
-    mChildren.clear();
-    mFunc = gp.mFunc;
-    mStatus = gp.mStatus;
-    mSave = NULL;
-    AbstractGPCopy c;
-    for (int i=0; i<gp.mChildren.size(); ++i)
-    {
-        addPoint(deepCopy((gp.mChildren[i]), &c));
-    }
-}
-
-void AbstractGP::compute(IRuntimeDataBase* map)
+void AbstractGP::compute(IRuntimeDataBase* map, statusBasic* sta)
 {
     _reset();
-    GP_Output result = up_compute(map);
+    GP_Output result = up_compute(map, sta);
     mSave = new GP_Output;
     *mSave = result;
 }
@@ -236,7 +232,7 @@ vector<int> AbstractGP::setInputNumber(IRuntimeDataBase* map)
     return funcId;
 }
 
-GP_Output AbstractGP::up_compute(IRuntimeDataBase* map)
+GP_Output AbstractGP::up_compute(IRuntimeDataBase* map, statusBasic* sta)
 {
     GP_Output result;
     if (NULL!=mSave)
@@ -255,7 +251,8 @@ GP_Output AbstractGP::up_compute(IRuntimeDataBase* map)
     for (int i=0; i<mChildren.size(); ++i)
     {
         AbstractGP* p = dynamic_cast<AbstractGP*>(mChildren[i]);
-        GP_Output out = p->up_compute(map);
+        assert(NULL!=p);
+        GP_Output out = p->up_compute(map, sta);
         vector<GP_Output::GP_Unit>& output_unit = out.output;
         for (int j=0; j<output_unit.size(); ++j)
         {
@@ -267,7 +264,7 @@ GP_Output AbstractGP::up_compute(IRuntimeDataBase* map)
     vector<void*> constValue;
     if (-1 != mStatus)
     {
-        constValue = status_queryContent(mStatus);
+        constValue.push_back(sta->queryContent(mStatus));
     }
     vector<void*> totalInputs;
     totalInputs.insert(totalInputs.begin(), constValue.begin(), constValue.end());

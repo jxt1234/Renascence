@@ -23,259 +23,109 @@
 #include <iostream>
 #include <assert.h>
 using namespace std;
-//Defines
-struct statusSet
-{
-    vector<int> type;
-    vector<void*> content;
-};
 
-//Private Values
-struct statusType
-{
-    int size;
-    string name;
-    statusAllocMethod alloc;
-    statusVaryMethod sfree;
-    statusVaryMethod mutate;
-    statusCopyMethod copy;
-    statusPrintMethod print;
-    statusLoadMethod load;
-};
+static IStatusType gEmptyType(string("NULL"));
 
-static vector<statusSet> gStatusSet;
-static vector<statusType> gStatusType;
-static vector<int> NULLVector;
-
-static bool static_validId(int statusId)
+int statusBasic::queryType(const std::string& name)
 {
-    if (gStatusSet.size()<=statusId || 0 > statusId) return false;
-    if (gStatusSet[statusId].content.empty()) return false;
-    return true;
-}
-
-//API
-bool status_init()
-{
-    status_clear();
-    gStatusType.clear();
-    return true;
-}
-int status_allocType(int size, string name, statusAllocMethod alloc, statusVaryMethod free, statusVaryMethod vary, statusCopyMethod copy, statusPrintMethod print, statusLoadMethod load)
-{
-    statusType t = {size, name, alloc, free, vary, copy, print, load};
-    gStatusType.push_back(t);
-    return gStatusType.size()-1;
-}
-
-int status_queryId(const std::string& name)
-{
-    int id = -1;
-    for (int i=0; i<gStatusType.size(); ++i)
+    int res = -1;
+    for (int i=0; i<mType.size(); ++i)
     {
-        if (gStatusType[i].name == name)
+        if (mType[i]->name() == name)
         {
-            id = i;
+            res = i;
             break;
         }
     }
+    return res;
+}
+
+statusBasic::~statusBasic()
+{
+    for (int i=0; i<mContents.size(); ++i)
+    {
+        statusBasic::content& c = mContents[i];
+        (c.type)->sfree(c.data);
+    }
+}
+
+/*Currently, I use assert to avoid the excepetion*/
+int statusBasic::addType(IStatusType* type)
+{
+    assert(NULL!=type);
+    int id = mType.size();
+    mType.push_back(type);
     return id;
 }
 
-int _findEmptySet()
+
+int statusBasic::allocSet(int type, void* content)
 {
-    int pos = -1;
-    //Find a position that can insert
-    for (int i=0; i<gStatusSet.size(); ++i)
+    assert(type >= 0 && type < mType.size());
+    IStatusType* t = mType[type];
+    return allocSet(t, content);
+}
+int statusBasic::allocSet(IStatusType* t, void* content)
+{
+    assert(NULL!=t);
+    /*Alloc status content*/
+    statusBasic::content c;
+    if (NULL == content) content = t->salloc();
+    c.type = t;
+    c.data = content;
+    /*Find position and put it*/
+    int pos;
+    for (pos = 0; pos < mContents.size(); ++pos)
     {
-        if (gStatusSet[i].content.empty())
+        if (mContents[pos].type == &gEmptyType)
         {
-            pos = i;
+            mContents[pos] = c;
             break;
         }
     }
-    return pos;
-}
-int status_allocSet(const vector<int>& type)
-{
-    int pos = -1;
-    if (type.empty()) return pos;
-    pos = _findEmptySet();
-    statusSet set;
-    set.type = type;
-    for (int i=0; i<type.size(); ++i)
+    //The End
+    if (pos == mContents.size())
     {
-        statusType& t = gStatusType[type[i]];
-        if (t.alloc)
-        {
-            set.content.push_back(t.alloc());
-        }
-        else
-        {
-            set.content.push_back(malloc(t.size));
-        }
-    }
-    //Not found, alloc a new one
-    if (-1==pos)
-    {
-        gStatusSet.push_back(set);
-        pos = gStatusSet.size()-1;
-    }
-    else
-    {
-        gStatusSet[pos] = set;
+        mContents.push_back(c);
     }
     return pos;
+
 }
 
-int status_loadSet(const std::vector<int>& type, std::vector<std::string>& contents)
+void* statusBasic::queryContent(int id)
 {
-    assert(contents.size() == type.size());
-    if (contents.empty()) return -1;
-    statusSet set;
-    set.type = type;
-    for (int i=0; i<type.size(); ++i)
-    {
-        statusType& t = gStatusType[type[i]];
-        if (t.load)
-        {
-            set.content.push_back(t.load(contents[i]));
-        }
-    }
-    int pos = _findEmptySet();
-    int result;
-    if (-1==pos)
-    {
-        gStatusSet.push_back(set);
-        result = gStatusSet.size() -1;
-    }
-    else
-    {
-        gStatusSet[pos] = set;
-        result = pos;
-    }
-    return result;
+    assert(id>=0&&id<mContents.size());
+    return mContents[id].data;
 }
 
-
-
-const vector<int>& status_queryType(int statusId)
+int statusBasic::copySet(int id)
 {
-    if (static_validId(statusId))
-    {
-        return (gStatusSet[statusId].type);
-    }
-    return NULLVector;
+    assert(id>=0&&id<mContents.size());
+    IStatusType* t = mContents[id].type;
+    void* src = mContents[id].data;
+    assert((&gEmptyType) != t);
+    int res = allocSet(t);
+    t->copy(src, mContents[res].data);
+}
+const IStatusType& statusBasic::queryType(int id)
+{
+    assert(id>=0&&id<mContents.size());
+    return *(mContents[id].type);
 }
 
-
-bool status_freeSet(int statusId)
+int statusBasic::freeSet(int id)
 {
-    if (!static_validId(statusId)) return false;
-    statusSet& set = gStatusSet[statusId];
-    for (int i=0; i< set.type.size(); ++i)
-    {
-        statusType& t = gStatusType[set.type[i]];
-        if (t.sfree)
-        {
-            t.sfree(set.content[i]);
-        }
-    }
-    set.type.clear();
-    set.content.clear();
-    return true;
+    assert(id>=0&&id<mContents.size());
+    statusBasic::content& c = mContents[id];
+    (c.type)->sfree(c.data);
+    c.type = &gEmptyType;
+    c.data = NULL;
+    return id;
 }
-
-vector<void*> status_queryContent(int statusId)
+int statusBasic::mutateSet(int id)
 {
-    vector<void*> NULLVoidVector;
-    if (!static_validId(statusId)) return NULLVoidVector;
-    return gStatusSet[statusId].content;
-}
-
-bool status_clear()
-{
-    for (int i=0; i<gStatusSet.size(); ++i)
-    {
-        status_freeSet(i);
-    }
-    gStatusSet.clear();
-    return true;
-}
-
-bool status_varySet(int statusId)
-{
-    if (!static_validId(statusId)) return false;
-    statusSet& s = gStatusSet[statusId];
-    for (int i=0; i<s.type.size(); ++i)
-    {
-        statusType& t = gStatusType[s.type[i]];
-        if(t.mutate)
-        {
-            t.mutate(s.content[i]);
-        }
-    }
-    return true;
-}
-string status_printSet(int statusId)
-{
-    ostringstream result;
-    if (!static_validId(statusId)) return "";
-    statusSet& s = gStatusSet[statusId];
-    for (int i=0; i<s.type.size(); ++i)
-    {
-        statusType& t = gStatusType[s.type[i]];
-        result <<"<"<<t.name <<">"<<endl;
-        if(t.print)
-        {
-            result << t.print(s.content[i]);
-        }
-        result <<endl<<"</"<<t.name <<">"<<endl;
-    }
-    return result.str();
-}
-int status_CopyAllocSet(int srcId)
-{
-    if (!static_validId(srcId)) return -1;
-    statusSet& s = gStatusSet[srcId];
-    int dstId = status_allocSet(s.type);
-    status_CopySet(srcId, dstId);
-    return dstId;
-}
-bool status_CopySet(int srcId, int dstId)
-{
-    if (!static_validId(srcId)) return false;
-    status_freeSet(dstId);
-    statusSet& s = gStatusSet[srcId];
-    statusSet& d = gStatusSet[dstId];
-    d.type = s.type;
-    for (int i=0; i<s.type.size(); ++i)
-    {
-        statusType& t = gStatusType[s.type[i]];
-        if (t.alloc)
-        {
-            d.content.push_back(t.alloc());
-            if (t.copy)
-            {
-                t.copy(s.content[i], d.content[i]);
-            }
-        }
-    }
-    return true;
-}
-void status_printSetWithType(std::vector<void*>& contents, std::vector<int>& types, std::ostringstream& output)
-{
-    if (types.empty()) return;
-    if (types.size()!=contents.size()) return;
-    output<<endl;
-    for (int i=0; i<types.size(); ++i)
-    {
-        statusType& t = gStatusType[types[i]];
-        output <<"<"<<t.name <<">"<<endl;
-        if(t.print)
-        {
-            output << t.print(contents[i]);
-        }
-        output <<endl<<"</"<<t.name <<">"<<endl;
-    }
+    assert(id>=0&&id<mContents.size());
+    statusBasic::content& c = mContents[id];
+    (c.type)->mutate(c.data);
+    return id;
 }

@@ -20,20 +20,20 @@
 #include <assert.h>
 
 #include "core/IDataBase.h"
+#include "core/GPProducer.h"
 
-class GenerateSystem:public IRuntimeDataBase
+class GenerateSystem:public GPProducer, public IRuntimeDataBase
 {
     public:
-        GenerateSystem():mComputeSystem(NULL){}
-        GenerateSystem(computeSystem* sys):mComputeSystem(sys){}
+        GenerateSystem():GPProducer(0), mComputeSystem(NULL){}
+        GenerateSystem(computeSystem* sys):GPProducer(0){setComputeSystem(sys);}
         virtual computeFunction vGetCompute(int id);
         virtual ~GenerateSystem(){}
-        std::vector<int> searchOneSequence();
-        std::vector<int> searchOneWithOutput(int out);
-        virtual std::vector<int> getRandSequence();
-        virtual std::vector<int> getRandSequenceWithOutput(int outputFunctionId);
-        inline void setComputeSystem(computeSystem* comsys){mComputeSystem = comsys;}
-        int getFuncId(const std::string& name){return mComputeSystem->vQueryFuncId(name);}
+        virtual std::vector<int> searchSequence(int output);
+        virtual std::vector<int> searchRandSequence(int output);
+        virtual int searchType(const std::string& type);
+        void setComputeSystem(computeSystem* comsys);
+        inline int getFuncId(const std::string& name){return mComputeSystem->vQueryFuncId(name);}
     protected:
         computeSystem* mComputeSystem;
 

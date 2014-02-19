@@ -19,6 +19,7 @@
 #include "utils/debug.h"
 #include "math/carryArray.h"
 #include <assert.h>
+#include "core/funcStatusType.h"
 
 #define FUNCTION_TABLE_FILE_DEFAULT "db/function.table"
 

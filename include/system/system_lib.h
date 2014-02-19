@@ -17,6 +17,8 @@
 #define SYSTEM_LIB_H
 #include "user/IFunctionTable.h"
 #include <assert.h>
+#include <map>
+#include <vector>
 
 void* system_load_lib(const char* libName);
 
@@ -42,6 +44,17 @@ class system_lib:public IFunctionTable
         }
     private:
         void* mHandle;
+};
+
+class system_multi_lib:public IFunctionTable
+{
+    public:
+        virtual void* vGetFunction(const std::string& name);
+        void addLib(const char* name);
+        system_multi_lib(){}
+        virtual ~system_multi_lib();
+    private:
+        std::vector<void*> mHandles;
 };
 
 

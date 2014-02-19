@@ -29,19 +29,8 @@ computeFunction GenerateSystem::vGetCompute(int id)
     return mComputeSystem->getFunction(id);
 }
 
-vector<int> GenerateSystem::getRandSequence()
-{
-    vector<int> result;
-    if (NULL==mComputeSystem)
-    {
-        return result;
-    }
-    const vector<int> outputs = mComputeSystem->getOutputFunctions();
-    int rootId = outputs[rand()%outputs.size()];
-    return getRandSequenceWithOutput(rootId);
-}
 
-vector<int> GenerateSystem::searchOneWithOutput(int out)
+vector<int> GenerateSystem::searchSequence(int out)
 {
     //Generate appointed output
     computePoint::setComputeSystem(mComputeSystem);
@@ -63,26 +52,8 @@ vector<int> GenerateSystem::searchOneWithOutput(int out)
     }
 }
 
-vector<int> GenerateSystem::searchOneSequence()
-{
-    vector<int> result;
-    if (NULL==mComputeSystem)
-    {
-        return result;
-    }
-    const vector<int>& outputs = mComputeSystem->getOutputFunctions();
-    for (int i=0; i<outputs.size(); ++i)
-    {
-        result = searchOneWithOutput(outputs[i]);
-        if (!result.empty())
-        {
-            break;
-        }
-    }
-    return result;
-}
 
-vector<int> GenerateSystem::getRandSequenceWithOutput(int outputFunctionId)
+vector<int> GenerateSystem::searchRandSequence(int outputFunctionId)
 {
     vector<int> result;
     list<int> cacheQueue;
@@ -103,7 +74,7 @@ vector<int> GenerateSystem::getRandSequenceWithOutput(int outputFunctionId)
             //Lenght Limit
             if (LIMIT_SIZE < result.size())
             {
-                inputFuncs = searchOneWithOutput(functionId);
+                inputFuncs = this->searchSequence(functionId);
                 for (int i=0; i<inputFuncs.size(); ++i)
                 {
                     result.push_back(inputFuncs[i]);
@@ -136,3 +107,17 @@ vector<int> GenerateSystem::getRandSequenceWithOutput(int outputFunctionId)
 }
 
 
+void GenerateSystem::setComputeSystem(computeSystem* comsys)
+{
+    mComputeSystem = comsys;
+    vector<int> output = mComputeSystem->getOutputFunctions();
+    if (!output.empty())
+    {
+        mDefaultOutput = output[0];
+    }
+}
+
+int GenerateSystem::searchType(const std::string& type)
+{
+    return -1;
+}
