@@ -26,6 +26,24 @@ using namespace std;
 
 static IStatusType gEmptyType(string("NULL"));
 
+void statusBasic::clearStatusSet()
+{
+    for (int i=0; i<mContents.size(); ++i)
+    {
+        statusBasic::content& c = mContents[i];
+        (c.type)->sfree(c.data);
+    }
+    mContents.clear();
+}
+
+statusBasic::~statusBasic()
+{
+    for (int i=0; i<mDeleteType.size(); ++i)
+    {
+        delete mDeleteType[i];
+    }
+}
+
 int statusBasic::queryType(const std::string& name)
 {
     int res = -1;
@@ -40,28 +58,21 @@ int statusBasic::queryType(const std::string& name)
     return res;
 }
 
-statusBasic::~statusBasic()
-{
-    for (int i=0; i<mContents.size(); ++i)
-    {
-        statusBasic::content& c = mContents[i];
-        (c.type)->sfree(c.data);
-    }
-}
 
 /*Currently, I use assert to avoid the excepetion*/
-int statusBasic::addType(IStatusType* type)
+int statusBasic::addType(IStatusType* type, bool del)
 {
     assert(NULL!=type);
     int id = mType.size();
     mType.push_back(type);
+    if (del) mDeleteType.push_back(type);
     return id;
 }
 
 
 int statusBasic::allocSet(int type, void* content)
 {
-    assert(type >= 0 && type < mType.size());
+    if(type < 0 || type >= mType.size()) return -1;
     IStatusType* t = mType[type];
     return allocSet(t, content);
 }
@@ -94,18 +105,19 @@ int statusBasic::allocSet(IStatusType* t, void* content)
 
 void* statusBasic::queryContent(int id)
 {
-    assert(id>=0&&id<mContents.size());
+    if(id < 0 || id >=mContents.size()) return NULL;
     return mContents[id].data;
 }
 
 int statusBasic::copySet(int id)
 {
-    assert(id>=0&&id<mContents.size());
+    if(id < 0 || id >=mContents.size()) return -1;
     IStatusType* t = mContents[id].type;
     void* src = mContents[id].data;
     assert((&gEmptyType) != t);
     int res = allocSet(t);
     t->copy(src, mContents[res].data);
+    return res;
 }
 const IStatusType& statusBasic::queryType(int id)
 {
@@ -115,7 +127,7 @@ const IStatusType& statusBasic::queryType(int id)
 
 int statusBasic::freeSet(int id)
 {
-    assert(id>=0&&id<mContents.size());
+    if(id < 0 || id >=mContents.size()) return -1;
     statusBasic::content& c = mContents[id];
     (c.type)->sfree(c.data);
     c.type = &gEmptyType;
@@ -124,7 +136,7 @@ int statusBasic::freeSet(int id)
 }
 int statusBasic::mutateSet(int id)
 {
-    assert(id>=0&&id<mContents.size());
+    if(id < 0 || id >=mContents.size()) return -1;
     statusBasic::content& c = mContents[id];
     (c.type)->mutate(c.data);
     return id;

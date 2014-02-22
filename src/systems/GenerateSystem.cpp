@@ -43,13 +43,14 @@ vector<int> GenerateSystem::searchSequence(int out)
     computePoint* start = new computePoint(warpOutput, avail);
     computeSearchTree tree(start);
     vector<int> result = tree.searchOne();
-    if (!mComputeSystem)
+    if (NULL!=mComputeSystem)
     {
         for (int i=0; i<result.size()/3; ++i)
         {
-            result[i*3+1] = mComputeSystem->allocateStatus(result[i*3]);
+            result[i*3+1] = allocSet(mComputeSystem->getStatusId(result[i*3]));
         }
     }
+    return result;
 }
 
 
@@ -95,7 +96,7 @@ vector<int> GenerateSystem::searchRandSequence(int outputFunctionId)
         //Input information to result
         if (mComputeSystem)
         {
-            AbstractGP::loadUnitFunction(result, functionId, mComputeSystem->allocateStatus(functionId), n);
+            AbstractGP::loadUnitFunction(result, functionId, allocSet(mComputeSystem->getStatusId(functionId)), n);
         }
         else
         {

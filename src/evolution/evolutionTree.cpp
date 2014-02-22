@@ -93,6 +93,7 @@ evolutionTree::evolutionTree(const evolutionTree& tree)
 void evolutionTree::operator=(const evolutionTree& tree)
 {
     assert(NULL!=mGen);
+    delete mTree;
     AbstractGP::AbstractGPCopy copy(mGen);
     mTree = (mutateTree*)AbstractPoint::deepCopy(tree.mTree, &copy);
     mFit = tree.mFit;

@@ -19,7 +19,7 @@
 
 void* system_multi_lib::vGetFunction(const std::string& name)
 {
-    computeFunction res = NULL;
+    void* res = NULL;
     for (int i=0; i<mHandles.size(); ++i)
     {
         res = system_find_func(mHandles[i], name.c_str());

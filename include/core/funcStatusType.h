@@ -30,7 +30,7 @@ class funcStatusType:public IStatusType
            The function is assert to be :
            type_alloc,
            type_free,
-           type_mutate,
+           type_vary,
            type_copy,
            type_print,
            type_load

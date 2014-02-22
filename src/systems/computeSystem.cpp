@@ -72,6 +72,18 @@ computeFunction computeSystem::getFunction(int id)
     return NULL;
 }
 
+int computeSystem::getStatusId(int id)
+{
+    if (id < mFunctionTable.size() && 0<=id)
+    {
+        if (!mFunctionTable[id]->statusType.empty())
+        {
+            return mFunctionTable[id]->statusType[0];
+        }
+    }
+    return -1;
+}
+
 void computeSystem::clear()
 {
     for (int i=0; i<mFunctionTable.size(); ++i)
@@ -81,28 +93,21 @@ void computeSystem::clear()
     mFunctionTable.clear();
 }
 
-vector<int> computeSystem::loadStatus(const vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle)
+vector<int> computeSystem::loadStatus(const vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle, statusBasic* stadata)
 {
     vector<int> typeId;
     for (int i=0; i<sta.size(); ++i)
     {
-#define FINDFUNC(type, subname) type subname = (type)handle->vGetFunction(sta[i].name+#subname);
-        FINDFUNC(statusAllocMethod, _alloc);
-        FINDFUNC(statusVaryMethod, _free);
-        FINDFUNC(statusVaryMethod, _vary);
-        FINDFUNC(statusCopyMethod, _copy);
-        FINDFUNC(statusPrintMethod, _print);
-        FINDFUNC(statusLoadMethod, _load);
-#undef FINDFUNC
-        int id = status_allocType(0, sta[i].name, _alloc, _free, _vary, _copy, _print, _load);
+        funcStatusType* type = new funcStatusType(sta[i].name, handle);
+        int id = stadata->addType(type, true);
         typeId.push_back(id);
     }
     return typeId;
 }
 
-void computeSystem::loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table)
+void computeSystem::loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table, statusBasic* stadata)
 {
-    vector<int> statusTypeId = loadStatus(loader.getStatus(), table);
+    vector<int> statusTypeId = loadStatus(loader.getStatus(), table, stadata);
     int offset = mFunctionTable.size();
     mOutputId.push_back(loader.mFit);
     const vector<xmlFunctionLoader::function>& functions = loader.getFunc();
@@ -149,12 +154,33 @@ void computeSystem::loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table
 }
 
 
-int computeSystem::allocateStatus(int id)
+void computeSystem::print(ostream& os)
 {
-    if (id < 0 || id >= mFunctionTable.size()) return -1;
-    return status_allocSet(mFunctionTable[id]->statusType);
-}
-
-void computeSystem::print()
-{
+    for (int i=0; i<mFunctionTable.size(); ++i)
+    {
+        computeSystem::function* fc = mFunctionTable[i];
+        os << i << ": "<<fc->name<<" : "<<fc->libName<<endl;
+        vector<vector<int> >& combo = fc->fixTable;
+        for (int x=0; x<combo.size(); ++x)
+        {
+            for (int y=0; y<combo[x].size(); ++y)
+            {
+                os << combo[x][y]<<" ";
+            }
+            os << endl;
+        }
+        os << endl;
+    }
+    os << "Output: ";
+    for (int i=0; i<mOutputId.size(); ++i)
+    {
+        os << mOutputId[i] <<" ";
+    }
+    os << endl;
+    os << "Input: ";
+    for (int i=0; i<mInputId.size(); ++i)
+    {
+        os << mInputId[i] <<" ";
+    }
+    os << endl;
 }

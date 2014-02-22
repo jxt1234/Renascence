@@ -16,6 +16,7 @@
 #include "system/xmlGenerateSystem.h"
 #include "system/system_lib.h"
 #include "utils/debug.h"
+#include <iostream>
 
 using namespace std;
 
@@ -28,13 +29,18 @@ void xmlGenerateSystem::addXml(const char* xmlFile, IFunctionTable* table, bool 
 {
     xmlFunctionLoader xmlLoader;
     xmlLoader.loadFile(xmlFile);
-    if (print) xmlLoader.print();
     if (NULL==table)
     {
         table = new system_lib(xmlLoader.libName);
         mRemain.push_back(table);
     }
-    mComputeSystem->loadFuncXml(xmlLoader, table);
+    mComputeSystem->loadFuncXml(xmlLoader, table, this);
+    if (print)
+    {
+        xmlLoader.print();
+        mComputeSystem->print(std::cout);
+    }
+    setComputeSystem(mComputeSystem);
 }
 
 xmlGenerateSystem::~xmlGenerateSystem()
@@ -50,6 +56,6 @@ std::string xmlGenerateSystem::xmlPrint(AbstractGP* gp)
 {
     assert(NULL!=gp);
     vector<int> nullVector;
-    gp->save(this, nullVector);
-    return gp->xmlPrint(mComputeSystem);
+    gp->save(this, this, nullVector);
+    return gp->xmlPrint(mComputeSystem, this);
 }

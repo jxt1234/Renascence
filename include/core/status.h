@@ -50,7 +50,8 @@ class statusBasic
         };
         statusBasic(){}
         virtual ~statusBasic();
-        int addType(IStatusType* type);
+        int addType(IStatusType* type, bool del=false);
+        void clearStatusSet();
         //Firstly find the empty position and alloc in it, return the id
         int allocSet(int type, void* content = NULL);
         int allocSet(IStatusType* t, void* content = NULL);
@@ -66,6 +67,7 @@ class statusBasic
     private:
         //The content of IStatusType is assumed to be free outside
         std::vector<IStatusType*> mType;
+        std::vector<IStatusType*> mDeleteType;
         std::vector<content> mContents;
 };
 

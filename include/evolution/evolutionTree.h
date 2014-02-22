@@ -37,7 +37,7 @@ class evolutionTree
         void mutate();
         void print_f(std::ostream& file){}
         static void data_input(){}//Load data
-        static void destroy(){}//Free data
+        static void destroy(){if (mGen) mGen -> clearStatusSet();}//Free data
         static void setGenSystem(GenerateSystem* gen){mGen = gen;}
         static void setFitComputer(IFitComputer* com){mFitComputer = com;}
         //FIXME Dangerous API, just for xmlPrint

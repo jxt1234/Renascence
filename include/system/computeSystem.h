@@ -21,6 +21,7 @@
 #include <string>
 #include "core/IDataBase.h"
 #include "user/IFunctionTable.h"
+#include <ostream>
 
 class computeSystem:public IPrintDataBase, public IGenerateDataBase
 {
@@ -37,14 +38,14 @@ class computeSystem:public IPrintDataBase, public IGenerateDataBase
             std::vector<std::vector<int> > fixTable;
         };
         computeFunction getFunction(int id);
-        void loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table);
+        int getStatusId(int id);
+        void loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table, statusBasic* stadata);
         void clear();
         //Basic Api
-        int allocateStatus(int id);
         inline const std::vector<int>& getInputFunctions(){return mInputId;}
         const std::vector<std::vector<int> >& getAvailableFunctionInputs(int functionId);
         const std::vector<int>& getOutputFunctions(){return mOutputId;}
-        void print();
+        void print(std::ostream& os);
         //DataBase
         virtual int vQueryFuncId(const std::string& funcName);
         virtual void vQueryStatus(int id, std::string& name, std::string& libName){}
@@ -53,7 +54,7 @@ class computeSystem:public IPrintDataBase, public IGenerateDataBase
         computeSystem();
         virtual ~computeSystem();
     protected:
-        std::vector<int> loadStatus(const std::vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle);
+        std::vector<int> loadStatus(const std::vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle, statusBasic* stadata);
     private:
         void _loadUnit(xmlFunctionLoader func);
         std::vector<function*> mFunctionTable;

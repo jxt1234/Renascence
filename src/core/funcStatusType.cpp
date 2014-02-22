@@ -13,9 +13,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
+#include "utils/debug.h"
 #include "core/funcStatusType.h"
 #include <assert.h>
 #include <sstream>
+#include <iostream>
 using namespace std;
 
 /*FIXME replace assert by exception*/
@@ -25,17 +27,22 @@ funcStatusType::funcStatusType(const std::string& name, IFunctionTable* table):I
     string func;
     func = name + "_alloc";
     allocf = (statusAllocMethod)(table->vGetFunction(func));
+
     func = name + "_free";
     freef = (statusVaryMethod)(table->vGetFunction(func));
-    func = name + "_mutate";
+
+    func = name + "_vary";
     mutatef = (statusVaryMethod)(table->vGetFunction(func));
+
     func = name + "_copy";
     copyf = (statusCopyMethod)(table->vGetFunction(func));
+
     func = name + "_print";
     printf = (statusPrintMethod)(table->vGetFunction(func));
+
     func = name + "_load";
     loadf = (statusLoadMethod)(table->vGetFunction(func));
-    /*TODO Print which function is NULL*/
+    /*TODO Print which function is NULL*/    
 }
 void* funcStatusType::salloc() const
 {

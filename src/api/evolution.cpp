@@ -27,11 +27,11 @@ using namespace std;
 
 /*TODO Support inputTable*/
 /*TODO Invalid Inputs treat*/
-void GP_evolution(int number, int times, const char* functionTable, const char* inputTable, const char* outputXml)
+void GP_evolution(int number, int times, const char* functionTable, const char* inputTable, const char* outputXml, bool xmlprint)
 {
     srand((unsigned) time(NULL));
     xmlGenerateSystem gen;
-    gen.addXml(functionTable, NULL, false);
+    gen.addXml(functionTable, NULL, xmlprint);
     evolutionTree::setGenSystem(&gen);
     evolution_group<evolutionTree> group(number);
     group.evolution(times);
