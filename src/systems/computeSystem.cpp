@@ -147,8 +147,15 @@ void computeSystem::loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table
         /*Load function status*/
         vector<int> statusType = f.statusType;
         vector<int> outputType = f.outputType;
+        vector<int> inputType = f.inputType;
         vector<int> newST;
         vector<int> newOT;
+        vector<int> newIT;
+        for (int j=0; j<inputType.size(); ++j)
+        {
+            int cur = inputType[j];
+            newIT.push_back(statusTypeId[cur]);
+        }
         for (int j=0; j<statusType.size(); ++j)
         {
             int cur = statusType[j];
@@ -161,6 +168,7 @@ void computeSystem::loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table
         }
         fc->statusType = newST;
         fc->outputType = newOT;
+        fc->inputType = newIT;
         /*Load function inputs*/
         vector<vector<int> > newCombo = f.inputs;
         for (int j=0; j<newCombo.size(); ++j)
@@ -183,6 +191,18 @@ void computeSystem::print(ostream& os)
     {
         computeSystem::function* fc = mFunctionTable[i];
         os << i << ": "<<fc->name<<" : "<<fc->libName<<endl;
+        os << "Required inputType is ";
+        for (int j=0; j<fc->inputType.size(); ++j)
+        {
+            os <<fc->inputType[j]<<" ";
+        }
+        os << endl;
+        os << "The outputType is ";
+        for (int j=0; j<fc->outputType.size(); ++j)
+        {
+            os <<fc->outputType[j]<<" ";
+        }
+        os << endl;
         vector<vector<int> >& combo = fc->fixTable;
         for (int x=0; x<combo.size(); ++x)
         {

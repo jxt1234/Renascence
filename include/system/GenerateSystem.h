@@ -27,15 +27,17 @@ class GenerateSystem:public GPProducer, public IRuntimeDataBase
     public:
         GenerateSystem():GPProducer(0), mComputeSystem(NULL){}
         GenerateSystem(computeSystem* sys):GPProducer(0){setComputeSystem(sys);}
+        virtual IGPAutoDefFunction* vCreateFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true, bool random = false);
         virtual computeFunction vGetCompute(int id);
+        virtual int vQueryInputsNumber(int id);
         virtual ~GenerateSystem(){}
-        virtual std::vector<int> searchSequence(int output);
-        virtual std::vector<int> searchRandSequence(int output);
-        virtual std::vector<int> searchType(const std::string& type);
         void setComputeSystem(computeSystem* comsys);
         inline int getFuncId(const std::string& name){return mComputeSystem->vQueryFuncId(name);}
     protected:
+        virtual std::vector<int> searchSequence(int output);
+        virtual std::vector<std::vector<int> > searchAllSequence(int output);
+        virtual std::vector<int> searchRandSequence(int output);
+        virtual std::vector<int> searchType(const std::string& type);
         computeSystem* mComputeSystem;
-
 };
 #endif

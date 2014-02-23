@@ -37,7 +37,7 @@ class AbstractGPPoint:public AbstractPoint
         int mStatus;
 };
 
-class AbstractGP:public AbstractGPPoint, IGPUnit
+class AbstractGP:public AbstractGPPoint, public IGPUnit
 {
     public:
         //Basic Functions
@@ -46,7 +46,7 @@ class AbstractGP:public AbstractGPPoint, IGPUnit
         virtual ~AbstractGP();
         //Basic API
         virtual void compute(IRuntimeDataBase* map, statusBasic* sta);
-        virtual void input(GP_Input& input, int& cur);
+        virtual void input(const GP_Input& input, int& cur);
         virtual GP_Output output();
         /*For Status free and copy*/
         std::vector<int> getStatus();
@@ -72,6 +72,7 @@ class AbstractGP:public AbstractGPPoint, IGPUnit
         };
     protected:
         void replacePoint(const std::vector<int> &numbers, int& cur);
+        void replacePoint(const std::vector<int> &numbers);
         GP_Output up_compute(IRuntimeDataBase* map, statusBasic* sta);
         void _reset();
         GP_Output* mSave;

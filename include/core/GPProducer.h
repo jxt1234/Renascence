@@ -21,16 +21,19 @@
 class GPProducer:public statusBasic
 {
     public:
-        GPProducer(int defaultOutput):mDefaultOutput(defaultOutput){}
+        GPProducer(int defaultOutput=0):mDefaultOutput(defaultOutput){}
         virtual ~GPProducer(){}
+        /*Create a IGPAutoDefFunction which use the inputType to output the same content in outputType, inputRepeat means the content of inputType can be used repeated*/
+        virtual IGPAutoDefFunction* vCreateFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true, bool random = false) = 0;
         /*The output is the target function Id*/
         bool initGP(AbstractGP* tree, int output = -1, bool random = true);
         bool initGP(AbstractGP* tree, const std::string& type, bool random = true);
         void mutate(AbstractGP* tree);
         void freeStatus(AbstractGP* tree);
     protected:
+        bool initGP(AbstractGP* tree, const std::vector<int>& queue);
         virtual std::vector<int> searchSequence(int output) = 0;
-        //virtual std::vector<std::vector<int> > searchAllSequence(int output) = 0;
+        virtual std::vector<std::vector<int> > searchAllSequence(int output) = 0;
         virtual std::vector<int> searchRandSequence(int output) = 0;
         virtual std::vector<int> searchType(const std::string& type) = 0;
         int mDefaultOutput;

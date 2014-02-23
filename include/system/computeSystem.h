@@ -26,6 +26,8 @@
 class computeSystem:public IPrintDataBase, public IGenerateDataBase
 {
     public:
+        std::vector<int> mOutputTypeId;//For search
+        std::vector<int> mInputTypeId;//For search
         struct function
         {
             //For print
@@ -33,6 +35,7 @@ class computeSystem:public IPrintDataBase, public IGenerateDataBase
             std::string libName;
             //For compute
             computeFunction basic;
+            std::vector<int> inputType;
             std::vector<int> outputType;
             std::vector<int> statusType;
             std::vector<std::vector<int> > fixTable;
@@ -40,10 +43,10 @@ class computeSystem:public IPrintDataBase, public IGenerateDataBase
         computeFunction getFunction(int id);
         int getStatusId(int id);
         const function& getDetailFunction(int id);
+        inline int getFunctionNumber(){return mFunctionTable.size();}
         void loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table, statusBasic* stadata);
         void clear();
         //Basic Api
-        inline const std::vector<int>& getInputFunctions(){return mInputId;}
         const std::vector<std::vector<int> >& getAvailableFunctionInputs(int functionId);
         std::vector<int> getOutputFunctions(int typeId = -1);
         void print(std::ostream& os);

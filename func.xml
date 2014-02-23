@@ -28,6 +28,7 @@
 </TrPackageFilterMatrix>
 
 <TrPackageFitCompute>
+	<output>double</output>>
 	<inputs>TrPackageCompse</inputs>
 	<inputs>TrPackageFilterTransformFromRegress</inputs>
 	<inputs>TrPackageSaturation</inputs>
@@ -62,6 +63,8 @@
 	TrFilterMatrix
 	float
 	TrRegreeMode
+	TrBmp
+	double
 </statusTable>
 
 <output>TrWritePixels</output>

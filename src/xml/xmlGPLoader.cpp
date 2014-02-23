@@ -50,7 +50,7 @@ void xmlGPLoader::attributeUnflatten()
 
 GP_Output xmlGPLoader::run()
 {
-    IGPAutoDefFunction exe(this, this, this);
+    IGPAutoDefFunction exe(this, this, this, false);
     GP_Input inp;
     return exe.run(inp);
 }
@@ -89,14 +89,14 @@ void xmlGPLoader::_node(xmlReader::package* p)
     }
 }
 
-void xmlGPLoader::_getStatusFunc(const string& name, statusLoadMethod& _load, statusVaryMethod& _free)
+bool xmlGPLoader::_getStatusFunc(const string& name, statusLoadMethod& _load, statusVaryMethod& _free)
 {
     string loadName = name +"_load";
     string freeName = name +"_free";
     _load = (statusLoadMethod)(mTable->vGetFunction(loadName));
     _free = (statusVaryMethod)(mTable->vGetFunction(freeName));
-    assert(NULL!=_load);
-    assert(NULL!=_free);
+    if (NULL == _load || NULL == _free) return false;
+    return true;
 }
 /*Generate GP_Output, freeCallBack is type's free method.Though it's something like status, but are not the same*/
 void xmlGPLoader::_result(xmlReader::package* p)
@@ -111,7 +111,13 @@ void xmlGPLoader::_result(xmlReader::package* p)
         string content;
         statusLoadMethod _load;
         statusVaryMethod _free;
-        _getStatusFunc(name, _load, _free);
+        bool res = _getStatusFunc(name, _load, _free);
+        if (!res)
+        {
+            GP_Output_clear(*output_save);
+            delete output_save;
+            return;
+        }
         for (int j=0; j<_p->attr.size(); ++j)
         {
             content = content +" "+ _p->attr[j];

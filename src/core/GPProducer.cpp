@@ -2,6 +2,14 @@
 #include <assert.h>
 using namespace std;
 
+bool GPProducer::initGP(AbstractGP* tree, const std::vector<int>& queue)
+{
+    assert(NULL!=tree);
+    int cur = 0;
+    tree->replacePoint(queue, cur);
+    return true;
+}
+
 void GPProducer::freeStatus(AbstractGP* tree)
 {
     vector<int> status = tree->getStatus();

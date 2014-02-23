@@ -40,7 +40,7 @@ class xmlGPLoader:public xmlReader, AbstractGP, IRuntimeDataBase, statusBasic
         std::vector<std::string> mStatusName;
         std::vector<int> mStatusType;
     private:
-        void _getStatusFunc(const std::string& name, statusLoadMethod& _load, statusVaryMethod& _free);
+        bool _getStatusFunc(const std::string& name, statusLoadMethod& _load, statusVaryMethod& _free);
         int findStatus(std::string name);
         void findLib(std::string name);
         int findFunc(std::string name);

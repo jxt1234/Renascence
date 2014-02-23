@@ -190,6 +190,17 @@ void xmlFunctionLoader::loadFunc(package* p)
                 }
             }
         }
+        else if (cur->name == "inputType")
+        {
+            for (int j=0; j<cur->attr.size(); ++j)
+            {
+                int sta = findStatus(cur->attr[j]);
+                if (sta != -1)
+                {
+                    func.inputType.push_back(sta);
+                }
+            }
+        }
     }
 }
 void xmlFunctionLoader::loadStatus(xmlReader::package* p)

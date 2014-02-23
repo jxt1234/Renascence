@@ -13,8 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef STATUS_H
-#define STATUS_H
+#ifndef CORE_STATUS_H
+#define CORE_STATUS_H
 
 #include <vector>
 #include <string>

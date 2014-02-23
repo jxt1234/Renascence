@@ -22,16 +22,15 @@ class computePoint:public carryPoint
 {
 friend class computeSearchTree;
 public:
-    computePoint(const vector<vector<int> >& data, const vector<int>& avail):mData(data), mAvail(avail), mCur(0){}
+    computePoint(const vector<vector<int> >& data, const vector<int>& avail, computeSystem* sys):mData(data), mAvail(avail), mCur(0), mSys(sys){}
     const vector<int>& getData() const{return mData[mAvail[mCur]];}
-    static vector<int> filter(const vector<vector<int> >& combo, vector<int> output);
-    static void setComputeSystem(computeSystem* sys){gSystem = sys;}
+    vector<int> filter(const vector<vector<int> >& combo, const vector<int>& output);
 protected:
     virtual bool vGrow();
     vector<int> getDependOutput();
     virtual bool vNext(){mCur++;return mCur<mAvail.size();}
-    static computeSystem* gSystem;
 private:
+    computeSystem* mSys;
     const vector<vector<int> >& mData;
     vector<int> mAvail;
     int mCur;

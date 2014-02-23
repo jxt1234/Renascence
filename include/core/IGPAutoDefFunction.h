@@ -25,14 +25,14 @@ class IGPUnit
         virtual ~IGPUnit(){}
         /*The combined function is implement by this circle: input--compute--output */
         //The input function may delete the content of inp, so the inp must be reconstruct after input 
-        virtual void input(GP_Input& inp, int& cur)=0;
+        virtual void input(const GP_Input& inp, int& cur)=0;
         virtual void compute(IRuntimeDataBase* map, statusBasic* sta)=0;
         virtual GP_Output output() = 0;
 };
 class IGPAutoDefFunction
 {
     public:
-        inline GP_Output run(GP_Input inputs)
+        inline GP_Output run(const GP_Input& inputs)
         {
             int cur = 0;
             mBase->input(inputs, cur);
@@ -40,11 +40,12 @@ class IGPAutoDefFunction
             return mBase->output();
         }
         //Basic Function
-        IGPAutoDefFunction(IRuntimeDataBase* runTime, statusBasic* status, IGPUnit* base):mFuncDataBase(runTime), mStausData(status), mBase(base){}
-        virtual ~IGPAutoDefFunction(){}
+        IGPAutoDefFunction(IRuntimeDataBase* runTime, statusBasic* status, IGPUnit* base, bool del=true):mFuncDataBase(runTime), mStausData(status), mBase(base), mDelBase(del){}
+        virtual ~IGPAutoDefFunction(){if (mDelBase && mBase) delete mBase;}
     private:
         IRuntimeDataBase* mFuncDataBase;
         statusBasic* mStausData;
         IGPUnit* mBase;
+        bool mDelBase;
 };
 #endif

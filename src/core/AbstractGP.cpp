@@ -137,6 +137,11 @@ std::vector<int> AbstractGP::getStatus()
     return res;
 }
 
+void AbstractGP::replacePoint(const std::vector<int> &numbers)
+{
+    int cur;
+    this->replacePoint(numbers, cur);
+}
 void AbstractGP::replacePoint(const std::vector<int> &numbers, int& cur)
 {
     //Clear all children, status and result
@@ -183,7 +188,7 @@ void AbstractGP::_reset()
     }
 }
 
-void AbstractGP::input(GP_Input& input, int& cur)
+void AbstractGP::input(const GP_Input& input, int& cur)
 {
     assert(input.size() >= cur+mInputs.size());
     for (int i=0; i<mInputs.size(); ++i)
@@ -265,9 +270,10 @@ GP_Output AbstractGP::up_compute(IRuntimeDataBase* map, statusBasic* sta)
     }
     //Get status
     vector<void*> constValue;
-    if (-1 != mStatus)
+    void* constValue_unit= sta->queryContent(mStatus);
+    if (NULL!=constValue_unit)
     {
-        constValue.push_back(sta->queryContent(mStatus));
+        constValue.push_back(constValue_unit);
     }
     vector<void*> totalInputs;
     totalInputs.insert(totalInputs.begin(), constValue.begin(), constValue.end());

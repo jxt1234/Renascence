@@ -15,6 +15,7 @@
 ******************************************************************/
 #include "system/GenerateSystem.h"
 #include <list>
+#include <algorithm>
 #include <stdlib.h>
 #include "utils/debug.h"
 #include "system/recurse_tree.h"
@@ -29,18 +30,23 @@ computeFunction GenerateSystem::vGetCompute(int id)
     return mComputeSystem->getFunction(id);
 }
 
+int GenerateSystem::vQueryInputsNumber(int id)
+{
+    assert(NULL!=mComputeSystem);
+    const computeSystem::function& f = mComputeSystem->getDetailFunction(id);
+    return f.inputType.size();
+}
 
 vector<int> GenerateSystem::searchSequence(int out)
 {
     //Generate appointed output
-    computePoint::setComputeSystem(mComputeSystem);
     vector<vector<int> > warpOutput;
     warpOutput.clear();
     vector<int> output_vector(1, out);
     warpOutput.push_back(output_vector);
     vector<int> avail(1,0);
     //Generate approciate recurse_vector
-    computePoint* start = new computePoint(warpOutput, avail);
+    computePoint* start = new computePoint(warpOutput, avail, mComputeSystem);
     computeSearchTree tree(start);
     vector<int> result = tree.searchOne();
     if (NULL!=mComputeSystem)
@@ -53,6 +59,28 @@ vector<int> GenerateSystem::searchSequence(int out)
     return result;
 }
 
+std::vector<std::vector<int> > GenerateSystem::searchAllSequence(int output)
+{
+    vector<vector<int> > warpOutput;
+    vector<int> output_vector(1, output);
+    warpOutput.push_back(output_vector);
+    vector<int> avail(1,0);
+    computePoint* start = new computePoint(warpOutput, avail, mComputeSystem);
+    computeSearchTree tree(start);
+    vector<vector<int> > queues = tree.searchAll();
+    if (NULL!=mComputeSystem)
+    {
+        for (int v=0; v<queues.size(); ++v)
+        {
+            vector<int>& result = queues[v];
+            for (int i=0; i<result.size()/3; ++i)
+            {
+                result[i*3+1] = allocSet(mComputeSystem->getStatusId(result[i*3]));
+            }
+        }
+    }
+    return queues;
+}
 
 vector<int> GenerateSystem::searchRandSequence(int outputFunctionId)
 {
@@ -123,4 +151,57 @@ vector<int> GenerateSystem::searchType(const std::string& type)
     assert(NULL!=mComputeSystem);
     int typeId = queryType(type);
     return mComputeSystem->getOutputFunctions(typeId);
+}
+
+/*FIXME Currently, we assume random be false and inputRepeat be true, just return the first short tree by algorithm*/
+IGPAutoDefFunction* GenerateSystem::vCreateFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat, bool random)
+{
+    if (NULL==mComputeSystem) return NULL;
+    /*TODO if mComputeSystem's inputType and outputType is the same, return the cached one*/
+    mComputeSystem->mOutputTypeId = outputType;
+    mComputeSystem->mInputTypeId = inputType;
+    AbstractGP* gp = NULL;
+    IGPAutoDefFunction* res = NULL;
+    /*Find all available output function*/
+    vector<vector<int> > warpOutput;
+    for (int i=0; i < mComputeSystem->getFunctionNumber(); ++i)
+    {
+        const computeSystem::function& f = mComputeSystem->getDetailFunction(i);
+        const vector<int>& out = f.outputType;
+        bool match = true;
+        for (int j=0; j<outputType.size(); ++j)
+        {
+            if (find(out.begin(), out.end(), outputType[j]) == out.end())
+            {
+                match = false;
+                break;
+            }
+        }
+        if (match)
+        {
+            vector<int> output;
+            output.push_back(i);
+            warpOutput.push_back(output);
+        }
+    }
+    assert(!warpOutput.empty());
+    //if (warpOutput.empty()) return NULL;
+    vector<int> avail(1,warpOutput.size()-1);
+    /*Get All sequence*/
+    computePoint* start = new computePoint(warpOutput, avail, mComputeSystem);
+    computeSearchTree tree(start);
+    vector<vector<int> > result = tree.searchAll();
+    assert(!result.empty());
+    //if (result.empty()) return NULL;
+    gp = new AbstractGP;
+    /*TODO random for result*/
+    vector<int> queue = result[0];
+    /*Alloc Status*/
+    for (int i=0; i<queue.size()/3; ++i)
+    {
+        queue[i*3+1] = allocSet(mComputeSystem->getStatusId(queue[i*3]));
+    }
+    initGP(gp, queue);
+    res = new IGPAutoDefFunction(this, this, gp);
+    return res;
 }

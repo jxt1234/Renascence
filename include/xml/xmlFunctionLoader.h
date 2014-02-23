@@ -26,6 +26,7 @@ class xmlFunctionLoader:public xmlReader
             std::vector<std::vector<int> > inputs;
             std::vector<int> statusType;
             std::vector<int> outputType;
+            std::vector<int> inputType;
         };
         struct status
         {
