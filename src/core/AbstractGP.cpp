@@ -79,7 +79,7 @@ string AbstractGP::xmlPrint(IPrintDataBase* data, statusBasic* statusData)
     data->vQueryFunction(mFunc, funcName, libName);
     res<<"<"<<GP_XmlString::lib<<">"<<libName<<"</"<<GP_XmlString::lib<<">\n";
     res<<"<"<<GP_XmlString::func<<">"<<funcName<<"</"<<GP_XmlString::func<<">\n";
-    /*If the point is saved, just print the value*/
+    /*If the point is saved, just print the value, assert that outputType's size should be empty or 1*/
     if (NULL!=mSave)
     {
         vector<void*> output;
@@ -89,18 +89,21 @@ string AbstractGP::xmlPrint(IPrintDataBase* data, statusBasic* statusData)
         if (!outputType.empty())
         {
             res << "<"<<GP_XmlString::result<<">"<<endl;
-            const IStatusType& s = statusData->queryType(mStatus);
-            void* content = statusData->queryContent(mStatus);
-            s.print(res, content);
+            const IStatusType& s = statusData->queryType(outputType[0]);
+            res << "<" << s.name() <<">"<<endl;
+            s.print(res, output[0]);
+            res << endl<<"</" << s.name() <<">"<<endl;
             res << "</"<<GP_XmlString::result<<">"<<endl;
         }
     }
     if (mStatus >= 0)
     {
         res<<"<"<<GP_XmlString::status<<">\n";
-        const IStatusType& s = statusData->queryType(mStatus);
+        const IStatusType& s = statusData->queryTypeBySetId(mStatus);
+        res << "<" << s.name() <<">"<<endl;
         void* content = statusData->queryContent(mStatus);
         s.print(res, content);
+        res << endl<<"</" << s.name() <<">"<<endl;
         res<<"</"<<GP_XmlString::status<<">\n";
     }
     res <<"<"<< GP_XmlString::children<<">"<<endl;

@@ -6,7 +6,7 @@ class GPEvolutionTest:public GPTest
     public:
         virtual void run()
         {
-            GP_evolution(10, 2, "func.xml", NULL, "result.xml", true);
+            GP_evolution(10, 20, "func.xml", NULL, "result.xml", false);
         }
         GPEvolutionTest(){}
         virtual ~GPEvolutionTest(){}

@@ -44,6 +44,14 @@ statusBasic::~statusBasic()
     }
 }
 
+const IStatusType& statusBasic::queryTypeBySetId(int id)
+{
+    if (id < 0 || id >= mContents.size())
+    {
+        return gEmptyType;
+    }
+    return *(mContents[id].type);
+}
 int statusBasic::queryType(const std::string& name)
 {
     int res = -1;
@@ -119,10 +127,11 @@ int statusBasic::copySet(int id)
     t->copy(src, mContents[res].data);
     return res;
 }
-const IStatusType& statusBasic::queryType(int id)
+const IStatusType& statusBasic::queryType(int typeId)
 {
-    assert(id>=0&&id<mContents.size());
-    return *(mContents[id].type);
+    int id = typeId;
+    if(id < 0 || id >=mType.size()) return gEmptyType;
+    return *(mType[typeId]);
 }
 
 int statusBasic::freeSet(int id)

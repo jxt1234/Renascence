@@ -62,7 +62,8 @@ class statusBasic
         //Return NULL if id not found
         void* queryContent(int id);
         //Return all NULL Type if not found
-        const IStatusType& queryType(int id);
+        const IStatusType& queryType(int typeId);
+        const IStatusType& queryTypeBySetId(int id);
         int queryType(const std::string& name);
     private:
         //The content of IStatusType is assumed to be free outside

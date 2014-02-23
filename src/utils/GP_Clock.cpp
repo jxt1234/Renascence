@@ -16,7 +16,6 @@
 #include "utils/GP_Clock.h"
 #include <time.h>
 #include "utils/debug.h"
-#include <stdio.h>
 
 GP_Clock::GP_Clock(int func)
 {
