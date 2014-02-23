@@ -118,7 +118,9 @@ void GenerateSystem::setComputeSystem(computeSystem* comsys)
     }
 }
 
-int GenerateSystem::searchType(const std::string& type)
+vector<int> GenerateSystem::searchType(const std::string& type)
 {
-    return -1;
+    assert(NULL!=mComputeSystem);
+    int typeId = queryType(type);
+    return mComputeSystem->getOutputFunctions(typeId);
 }

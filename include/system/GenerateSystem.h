@@ -31,7 +31,7 @@ class GenerateSystem:public GPProducer, public IRuntimeDataBase
         virtual ~GenerateSystem(){}
         virtual std::vector<int> searchSequence(int output);
         virtual std::vector<int> searchRandSequence(int output);
-        virtual int searchType(const std::string& type);
+        virtual std::vector<int> searchType(const std::string& type);
         void setComputeSystem(computeSystem* comsys);
         inline int getFuncId(const std::string& name){return mComputeSystem->vQueryFuncId(name);}
     protected:

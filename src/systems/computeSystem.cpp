@@ -20,13 +20,36 @@
 #include "math/carryArray.h"
 #include <assert.h>
 #include "core/funcStatusType.h"
+#include <algorithm>
 
-#define FUNCTION_TABLE_FILE_DEFAULT "db/function.table"
 
 computeSystem::computeSystem()
 {
 }
+const computeSystem::function& computeSystem::getDetailFunction(int id)
+{
+    assert(id >=0 && id < mFunctionTable.size());
+    return *(mFunctionTable[id]);
+}
 
+void computeSystem::vQueryStatus(int id, std::string& name, std::string& libName)
+{
+}
+
+std::vector<int> computeSystem::getOutputFunctions(int typeId)
+{
+    if (0>typeId) return mOutputId;
+    vector<int> res;
+    for (int i=0; i<mFunctionTable.size(); ++i)
+    {
+        const vector<int>& output = mFunctionTable[i]->outputType;
+        if (find(output.begin(), output.end(), typeId)!=output.end())
+        {
+            res.push_back(i);
+        }
+    }
+    return res;
+}
 int computeSystem::vQueryFuncId(const std::string& funcName)
 {
     int id = -1;

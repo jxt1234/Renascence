@@ -39,16 +39,18 @@ class computeSystem:public IPrintDataBase, public IGenerateDataBase
         };
         computeFunction getFunction(int id);
         int getStatusId(int id);
+        const function& getDetailFunction(int id);
         void loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table, statusBasic* stadata);
         void clear();
         //Basic Api
         inline const std::vector<int>& getInputFunctions(){return mInputId;}
         const std::vector<std::vector<int> >& getAvailableFunctionInputs(int functionId);
-        const std::vector<int>& getOutputFunctions(){return mOutputId;}
+        std::vector<int> getOutputFunctions(int typeId = -1);
         void print(std::ostream& os);
+        std::vector<int> searchOutputForType(const std::string& outputType);
         //DataBase
         virtual int vQueryFuncId(const std::string& funcName);
-        virtual void vQueryStatus(int id, std::string& name, std::string& libName){}
+        virtual void vQueryStatus(int id, std::string& name, std::string& libName);
         virtual void vQueryFunction(int id, std::string& name, std::string& libName);
         virtual void vQueryOutput(int functionId, std::vector<int>& output);
         computeSystem();

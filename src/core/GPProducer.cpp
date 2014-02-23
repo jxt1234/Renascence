@@ -10,31 +10,51 @@ void GPProducer::freeStatus(AbstractGP* tree)
         freeSet(status[i]);
     }
 }
-void GPProducer::initGP(AbstractGP* tree, int output, bool random)
+bool GPProducer::initGP(AbstractGP* tree, int output, bool random)
 {
     assert(NULL!=tree);
+    if (output < 0) output = mDefaultOutput;
+    vector<int> queue;
+    if (random)
+    {
+        queue = this->searchRandSequence(output);
+    }
+    else
+    {
+        queue = this->searchSequence(output);
+    }
+    if (queue.empty()) return false;
+    /*Replace*/
     vector<int> status = tree->getStatus();
     for (int i=0; i<status.size(); ++i)
     {
         freeSet(status[i]);
     }
     int cur = 0;
-    if (output < 0) output = mDefaultOutput;
-    if (random)
-    {
-        tree->replacePoint(this->searchRandSequence(output), cur);
-    }
-    else
-    {
-        tree->replacePoint(this->searchSequence(output), cur);
-    }
+    tree->replacePoint(queue, cur);
+    return true;
 }
 
 
-void GPProducer::initGP(AbstractGP* tree, const std::string& output, bool random)
+bool GPProducer::initGP(AbstractGP* tree, const std::string& output, bool random)
 {
-    int out = this->searchType(output);
-    initGP(tree, out, random);
+    vector<int> out = this->searchType(output);
+    if (out.empty()) return false;
+    if (random)
+    {
+        int outputFunc = rand()%out.size();
+        return initGP(tree, outputFunc, true);
+    }
+    /*TODO For random scene, wide search a available sequence*/
+    for (int i=0; i<out.size(); ++i)
+    {
+        bool res = initGP(tree, out[i], random);
+        if (res)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 void GPProducer::mutate(AbstractGP* tree)

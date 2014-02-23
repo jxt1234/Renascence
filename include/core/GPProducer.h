@@ -23,15 +23,16 @@ class GPProducer:public statusBasic
     public:
         GPProducer(int defaultOutput):mDefaultOutput(defaultOutput){}
         virtual ~GPProducer(){}
-        void initGP(AbstractGP* tree, int output = -1, bool random = true);
-        void initGP(AbstractGP* tree, const std::string& type, bool random = true);
+        /*The output is the target function Id*/
+        bool initGP(AbstractGP* tree, int output = -1, bool random = true);
+        bool initGP(AbstractGP* tree, const std::string& type, bool random = true);
         void mutate(AbstractGP* tree);
         void freeStatus(AbstractGP* tree);
     protected:
         virtual std::vector<int> searchSequence(int output) = 0;
         //virtual std::vector<std::vector<int> > searchAllSequence(int output) = 0;
         virtual std::vector<int> searchRandSequence(int output) = 0;
-        virtual int searchType(const std::string& type) = 0;
+        virtual std::vector<int> searchType(const std::string& type) = 0;
         int mDefaultOutput;
 };
 
