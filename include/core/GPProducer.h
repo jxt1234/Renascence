@@ -24,7 +24,11 @@ class GPProducer:public statusBasic
         GPProducer(int defaultOutput=0):mDefaultOutput(defaultOutput){}
         virtual ~GPProducer(){}
         /*Create a IGPAutoDefFunction which use the inputType to output the same content in outputType, inputRepeat means the content of inputType can be used repeated*/
+        /*The function can't be recursive, which can be modified by mutate(TODO)*/
         virtual IGPAutoDefFunction* vCreateFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true, bool random = false) = 0;
+        virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true) = 0;
+        virtual void vDestroyFunction(IGPAutoDefFunction* f);
+        virtual void vPrintFunction(std::ostream& out, IGPAutoDefFunction* f){}
         /*The output is the target function Id*/
         bool initGP(AbstractGP* tree, int output = -1, bool random = true);
         bool initGP(AbstractGP* tree, const std::string& type, bool random = true);

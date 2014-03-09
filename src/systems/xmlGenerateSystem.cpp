@@ -45,11 +45,12 @@ void xmlGenerateSystem::addXml(const char* xmlFile, IFunctionTable* table, bool 
 
 xmlGenerateSystem::~xmlGenerateSystem()
 {
+    clearStatusSet();
+    delete mComputeSystem;
     for (int i=0; i<mRemain.size(); ++i)
     {
         delete mRemain[i];
     }
-    delete mComputeSystem;
 }
 
 std::string xmlGenerateSystem::xmlPrint(AbstractGP* gp)

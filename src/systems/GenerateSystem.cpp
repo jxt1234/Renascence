@@ -156,7 +156,7 @@ vector<int> GenerateSystem::searchType(const std::string& type)
 /*FIXME Currently, we assume random be false and inputRepeat be true, just return the first short tree by algorithm*/
 IGPAutoDefFunction* GenerateSystem::vCreateFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat, bool random)
 {
-    if (NULL==mComputeSystem) return NULL;
+    assert(NULL!=mComputeSystem);
     /*TODO if mComputeSystem's inputType and outputType is the same, return the cached one*/
     mComputeSystem->mOutputTypeId = outputType;
     mComputeSystem->mInputTypeId = inputType;
@@ -164,6 +164,61 @@ IGPAutoDefFunction* GenerateSystem::vCreateFunction(const std::vector<int>& outp
     IGPAutoDefFunction* res = NULL;
     /*Find all available output function*/
     vector<vector<int> > warpOutput;
+    _findMatchedFuncton(warpOutput, outputType);
+    vector<int> avail(1,warpOutput.size()-1);
+    /*Get All sequence*/
+    computePoint* start = new computePoint(warpOutput, avail, mComputeSystem);
+    computeSearchTree tree(start);
+    /*TODO random for result*/
+    vector<int> queue = tree.searchOne();
+    //TODO Allow queue.empty()
+    assert(!queue.empty());
+    //if (result.empty()) return NULL;
+    _allocStatusForQueue(queue);
+    gp = new AbstractGP;
+    initGP(gp, queue);
+    res = new IGPAutoDefFunction(this, this, gp);
+    return res;
+}
+
+void GenerateSystem::_allocStatusForQueue(std::vector<int>& queue)
+{
+    /*Alloc Status*/
+    for (int i=0; i<queue.size()/3; ++i)
+    {
+        queue[i*3+1] = allocSet(mComputeSystem->getStatusId(queue[i*3]));
+    }
+}
+
+std::vector<IGPAutoDefFunction*> GenerateSystem::vCreateAllFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat)
+{
+    assert(NULL!=mComputeSystem);
+    /*TODO if mComputeSystem's inputType and outputType is the same, return the cached one*/
+    mComputeSystem->mOutputTypeId = outputType;
+    mComputeSystem->mInputTypeId = inputType;
+    AbstractGP* gp = NULL;
+    /*Find all available output function*/
+    vector<vector<int> > warpOutput;
+    _findMatchedFuncton(warpOutput, outputType);
+    vector<int> avail(1,warpOutput.size()-1);
+    /*Get All sequence*/
+    computePoint* start = new computePoint(warpOutput, avail, mComputeSystem);
+    computeSearchTree tree(start);
+    vector<vector<int> > queue = tree.searchAll();
+    vector<IGPAutoDefFunction*> res;
+    for (int i=0; i<queue.size(); ++i)
+    {
+        _allocStatusForQueue(queue[i]);
+        gp = new AbstractGP;
+        initGP(gp, queue[i]);
+        res.push_back(new IGPAutoDefFunction(this, this, gp));
+    }
+    return res;
+}
+
+
+void GenerateSystem::_findMatchedFuncton(std::vector<std::vector<int> >& warpOutput, const std::vector<int>& outputType)
+{
     for (int i=0; i < mComputeSystem->getFunctionNumber(); ++i)
     {
         const computeSystem::function& f = mComputeSystem->getDetailFunction(i);
@@ -186,22 +241,4 @@ IGPAutoDefFunction* GenerateSystem::vCreateFunction(const std::vector<int>& outp
     }
     assert(!warpOutput.empty());
     //if (warpOutput.empty()) return NULL;
-    vector<int> avail(1,warpOutput.size()-1);
-    /*Get All sequence*/
-    computePoint* start = new computePoint(warpOutput, avail, mComputeSystem);
-    computeSearchTree tree(start);
-    vector<vector<int> > result = tree.searchAll();
-    assert(!result.empty());
-    //if (result.empty()) return NULL;
-    gp = new AbstractGP;
-    /*TODO random for result*/
-    vector<int> queue = result[0];
-    /*Alloc Status*/
-    for (int i=0; i<queue.size()/3; ++i)
-    {
-        queue[i*3+1] = allocSet(mComputeSystem->getStatusId(queue[i*3]));
-    }
-    initGP(gp, queue);
-    res = new IGPAutoDefFunction(this, this, gp);
-    return res;
 }
