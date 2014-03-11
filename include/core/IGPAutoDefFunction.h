@@ -47,5 +47,17 @@ class IGPAutoDefFunction
         statusBasic* mStausData;
         IGPUnit* mBase;
         bool mDelBase;
+        /*FIXME use other proper method*/
+        friend class IADFCreator;
 };
+
+class IADFCreator
+{
+    public:
+        IADFCreator(){}
+        virtual ~IADFCreator(){}
+    protected:
+        inline IGPUnit* getBase(IGPAutoDefFunction* f) {return f->mBase;}
+};
+
 #endif

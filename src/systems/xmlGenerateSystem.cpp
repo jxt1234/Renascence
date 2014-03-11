@@ -53,10 +53,17 @@ xmlGenerateSystem::~xmlGenerateSystem()
     }
 }
 
-std::string xmlGenerateSystem::xmlPrint(AbstractGP* gp)
+void xmlGenerateSystem::xmlPrint(std::ostream& out, IGPAutoDefFunction* f)
+{
+    assert(NULL!=f);
+    AbstractGP* gp = loadGP(f);
+    xmlPrint(out, gp);
+}
+
+void xmlGenerateSystem::xmlPrint(std::ostream& out, AbstractGP* gp)
 {
     assert(NULL!=gp);
     vector<int> nullVector;
     gp->save(this, this, nullVector);
-    return gp->xmlPrint(mComputeSystem, this);
+    gp->xmlPrint(out, mComputeSystem, this);
 }

@@ -57,14 +57,12 @@ void randomGener(const char* functionTable, const char* outputXml1, const char* 
     evolutionTree::setGenSystem(&gen);
 	evolutionTree tree1;
 	evolutionTree tree2;
-    string result = gen.xmlPrint(tree1.get());
     ofstream file;
     file.open(outputXml1);
-    file<<result;
-	result = gen.xmlPrint(tree2.get());
+    gen.xmlPrint(file, tree1.get());
     file.close();
 	file.open(outputXml2);
-	file << result;
+	gen.xmlPrint(file, tree2.get());
 	file.close();
 }
 

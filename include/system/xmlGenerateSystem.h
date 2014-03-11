@@ -19,6 +19,7 @@
 #include "GenerateSystem.h"
 #include "core/AbstractGP.h"
 #include "user/IFunctionTable.h"
+#include <ostream>
 
 class xmlGenerateSystem:public GenerateSystem
 {
@@ -26,7 +27,8 @@ class xmlGenerateSystem:public GenerateSystem
         xmlGenerateSystem();
         virtual ~xmlGenerateSystem();
         void addXml(const char* xmlFile, IFunctionTable* table=NULL, bool print = false);
-        std::string xmlPrint(AbstractGP* gp);
+        void xmlPrint(std::ostream& out, AbstractGP* gp);
+        void xmlPrint(std::ostream& out, IGPAutoDefFunction* f);
     private:
         std::vector<IFunctionTable*> mRemain;
 };

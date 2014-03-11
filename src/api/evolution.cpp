@@ -36,10 +36,9 @@ void GP_evolution(int number, int times, const char* functionTable, const char* 
     evolution_group<evolutionTree> group(number);
     group.evolution(times);
     evolutionTree* best = group.get_best();
-    string result = gen.xmlPrint(best->get());
     ofstream file;
     file.open(outputXml);
-    file<<result;
+    gen.xmlPrint(file, best->get());
     file.close();
 }
 

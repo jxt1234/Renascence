@@ -71,10 +71,9 @@ void AbstractGP::save(IRuntimeDataBase* map, statusBasic* sta, const std::vector
     DO_CHILDREN_FUNC(save(map, sta, functionIds));
 }
 
-string AbstractGP::xmlPrint(IPrintDataBase* data, statusBasic* statusData)
+void AbstractGP::xmlPrint(std::ostream& res, IPrintDataBase* data, statusBasic* statusData)
 {
     string funcName, libName;
-    ostringstream res;
     res << "<"<< GP_XmlString::node<<">"<<endl;
     data->vQueryFunction(mFunc, funcName, libName);
     res<<"<"<<GP_XmlString::lib<<">"<<libName<<"</"<<GP_XmlString::lib<<">\n";
@@ -110,11 +109,10 @@ string AbstractGP::xmlPrint(IPrintDataBase* data, statusBasic* statusData)
     for (int i=0; i<mChildren.size(); ++i)
     {
         AbstractGP* p = dynamic_cast<AbstractGP*>(mChildren[i]);
-        res << p->xmlPrint(data, statusData);
+        p->xmlPrint(res, data, statusData);
     }
     res <<"</"<< GP_XmlString::children<<">"<<endl;
     res << "</"<< GP_XmlString::node<<">"<<endl;
-    return res.str();
 }
 
 std::vector<int> AbstractGP::getStatus()

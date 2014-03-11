@@ -17,6 +17,12 @@ void GPProducer::vDestroyFunction(IGPAutoDefFunction* f)
         delete f;
     }
 }
+AbstractGP* GPProducer::loadGP(IGPAutoDefFunction* f)
+{
+    assert(NULL!=f);
+    AbstractGP* gp = dynamic_cast<AbstractGP*>(getBase(f));
+    return gp;
+}
 void GPProducer::freeStatus(AbstractGP* tree)
 {
     vector<int> status = tree->getStatus();

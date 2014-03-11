@@ -55,7 +55,7 @@ class AbstractGP:public AbstractGPPoint, public IGPUnit
         //If the functionIds is empty, it means to save all points
         void save(IRuntimeDataBase* map, statusBasic* sta, const std::vector<int>& functionIds);
         //Output a xml string, which can be write into file directly
-        std::string xmlPrint(IPrintDataBase* data, statusBasic* sta);
+        void xmlPrint(std::ostream& res, IPrintDataBase* data, statusBasic* statusData);
         //The cur means from which element to use, it's assumed that the numbers is valid and the status has been alloc
         //FIXME: dangerous api
         static void loadUnitFunction(std::vector<int>& result, int functionId, int statusId, int number);
