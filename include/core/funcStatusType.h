@@ -48,7 +48,7 @@ class funcStatusType:public IStatusType
         statusVaryMethod freef;
         statusVaryMethod mutatef;
         statusCopyMethod copyf;
-        statusPrintMethod printf;
+        statusPrintMethod printvf;
         statusLoadMethod loadf;
 };
 #endif

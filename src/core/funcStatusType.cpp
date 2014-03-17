@@ -38,7 +38,7 @@ funcStatusType::funcStatusType(const std::string& name, IFunctionTable* table):I
     copyf = (statusCopyMethod)(table->vGetFunction(func));
 
     func = name + "_print";
-    printf = (statusPrintMethod)(table->vGetFunction(func));
+    printvf = (statusPrintMethod)(table->vGetFunction(func));
 
     func = name + "_load";
     loadf = (statusLoadMethod)(table->vGetFunction(func));
@@ -66,9 +66,9 @@ void funcStatusType::copy(void* src, void* dst) const
 }
 void funcStatusType::print(std::ostream& out, void* contents) const
 {
-    //assert(NULL!=printf);
-    if(NULL==printf) return;
-    string c = printf(contents);
+    //assert(NULL!=printvf);
+    if(NULL==printvf) return;
+    string c = printvf(contents);
     out << c;
 }
 void* funcStatusType::load(std::istream& in) const
