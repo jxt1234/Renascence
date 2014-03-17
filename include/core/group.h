@@ -1,30 +1,24 @@
 /******************************************************************
    Copyright 2013, Jiang Xiao-tang
-
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
-
      http://www.apache.org/licenses/LICENSE-2.0
-
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef EVOLUTION_GROUP
-#define EVOLUTION_GROUP
+#ifndef INCLUDE_GP_INCLUDE_CORE_GROUP_H
+#define INCLUDE_GP_INCLUDE_CORE_GROUP_H
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include "genetic_operator.h"
-using namespace std;
-
 #define DEFAULT_FIT_EVOLUTION_GROUP "cache/fit.txt"
 #define DEFAULT_OUTPUT_EVOLUTION_GROUP "output/result.txt"
 #define PART_EVOLU 4
-
 //Evolution group for general.
 /*
 class individual
@@ -44,7 +38,7 @@ template <class individual>
 class evolution_group
 {
 private:
-    vector<individual*> group; 
+	std::vector<individual*> group; 
     individual* best;
     group_select<individual> sel;//The type of group_select operator
     mutation<individual> var;//The type of vary operator
@@ -72,7 +66,6 @@ public:
         delete best;
         individual::destroy();
     }
-
     inline individual* get_best(){return best;}
     bool best_decide()
     {
@@ -102,7 +95,6 @@ public:
         var.var(group);
         return true;
     }
-
     bool evolution(int genr=2000, ostream* os = NULL)
     {
         for(int i=0;i<genr;++i)
@@ -122,5 +114,4 @@ public:
         f.close();
     }
 };
-
 #endif
