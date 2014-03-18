@@ -35,6 +35,7 @@ class GPProducer:public statusBasic, public IADFCreator
         void mutate(AbstractGP* tree);
         void freeStatus(AbstractGP* tree);
     protected:
+        virtual void vSetInputNumber(AbstractGP* gp) = 0;
         AbstractGP* loadGP(IGPAutoDefFunction* f);
         bool initGP(AbstractGP* tree, const std::vector<int>& queue);
         virtual std::vector<int> searchSequence(int output) = 0;

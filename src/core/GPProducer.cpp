@@ -7,6 +7,7 @@ bool GPProducer::initGP(AbstractGP* tree, const std::vector<int>& queue)
     assert(NULL!=tree);
     int cur = 0;
     tree->replacePoint(queue, cur);
+    this->vSetInputNumber(tree);
     return true;
 }
 

@@ -38,7 +38,7 @@ template <class individual>
 class evolution_group
 {
 private:
-	std::vector<individual*> group; 
+    std::vector<individual*> group;
     individual* best;
     group_select<individual> sel;//The type of group_select operator
     mutation<individual> var;//The type of vary operator

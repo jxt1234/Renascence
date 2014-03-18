@@ -66,21 +66,22 @@ void funcStatusType::copy(void* src, void* dst) const
 }
 void funcStatusType::print(std::ostream& out, void* contents) const
 {
-    //assert(NULL!=printvf);
     if(NULL==printvf) return;
     string c = printvf(contents);
     out << c;
 }
 void* funcStatusType::load(std::istream& in) const
 {
-    //assert(NULL!=loadf);
     if(NULL==loadf) return NULL;
     /*The divide is assumed to be " "*/
     ostringstream os;
     string c;
-    while(in >> c)
+    bool remain = in >> c;
+    os << c;
+    while(remain)
     {
-        os << c << " ";
+        remain = in >> c;
+        if(remain) os << " " << c;
     }
     return loadf(os.str());
 }
