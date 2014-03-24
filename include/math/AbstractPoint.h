@@ -19,7 +19,6 @@
 #include <vector>
 #include <list>
 #include <ostream>
-
 class AbstractPoint
 {
     public:

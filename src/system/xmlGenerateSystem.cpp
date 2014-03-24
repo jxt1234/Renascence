@@ -53,12 +53,6 @@ xmlGenerateSystem::~xmlGenerateSystem()
     }
 }
 
-void xmlGenerateSystem::xmlPrint(std::ostream& out, IGPAutoDefFunction* f)
-{
-    assert(NULL!=f);
-    AbstractGP* gp = loadGP(f);
-    xmlPrint(out, gp);
-}
 
 void xmlGenerateSystem::xmlPrint(std::ostream& out, AbstractGP* gp)
 {
@@ -66,4 +60,33 @@ void xmlGenerateSystem::xmlPrint(std::ostream& out, AbstractGP* gp)
     vector<int> nullVector;
     gp->save(this, this, nullVector);
     gp->xmlPrint(out, mComputeSystem, this);
+}
+
+IGPAutoDefFunction* xmlGenerateSystem::vCreateADFFromGP(AbstractGP* gp)
+{
+    return new xmlGPADF(this, gp);
+}
+
+xmlGPADF::xmlGPADF(xmlGenerateSystem* sys, AbstractGP* base):mSys(sys), mBase(base)
+{
+    if (NULL == mBase)
+    {
+        mBase = new AbstractGP;
+    }
+    else
+    {
+        mBase->addRef();
+    }
+}
+
+xmlGPADF::~xmlGPADF()
+{
+    mBase->decRef();
+}
+void xmlGPADF::save(std::ostream& os)
+{
+    mSys->xmlPrint(os, mBase);
+}
+void xmlGPADF::load(std::istream& is)
+{
 }

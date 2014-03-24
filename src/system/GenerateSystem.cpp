@@ -177,7 +177,8 @@ IGPAutoDefFunction* GenerateSystem::vCreateFunction(const std::vector<int>& outp
     _allocStatusForQueue(queue);
     gp = new AbstractGP;
     initGP(gp, queue);
-    res = new IGPAutoDefFunction(this, this, gp);
+    res = this->vCreateADFFromGP(gp);
+    gp->decRef();
     return res;
 }
 
@@ -211,7 +212,9 @@ std::vector<IGPAutoDefFunction*> GenerateSystem::vCreateAllFunction(const std::v
         _allocStatusForQueue(queue[i]);
         gp = new AbstractGP;
         initGP(gp, queue[i]);
-        res.push_back(new IGPAutoDefFunction(this, this, gp));
+        IGPAutoDefFunction* f = this->vCreateADFFromGP(gp);
+        gp->decRef();
+        res.push_back(f);
     }
     return res;
 }

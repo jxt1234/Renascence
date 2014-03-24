@@ -18,7 +18,8 @@
 #include "IDataBase.h"
 #include "function.h"
 #include "status.h"
-class IGPUnit
+#include "utils/RefCount.h"
+class IGPUnit:public RefCount
 {
     public:
         IGPUnit(){}
@@ -29,35 +30,21 @@ class IGPUnit
         virtual void compute(IRuntimeDataBase* map, statusBasic* sta)=0;
         virtual GP_Output output() = 0;
 };
-class IGPAutoDefFunction
+class IGPAutoDefFunction:public RefCount
 {
     public:
-        inline GP_Output run(const GP_Input& inputs)
-        {
-            int cur = 0;
-            mBase->input(inputs, cur);
-            mBase->compute(mFuncDataBase, mStausData);
-            return mBase->output();
-        }
+        virtual GP_Output run(const GP_Input& inputs) = 0;
+        /*Assume:
+          b.save(f); 
+          a.load(f); 
+          then  a == b
+          But a and b must be created by the same GPProducer firstly
+         */
+        virtual void save(std::ostream& os) {}
+        virtual void load(std::istream& is) {}
         //Basic Function
-        IGPAutoDefFunction(IRuntimeDataBase* runTime, statusBasic* status, IGPUnit* base, bool del=true):mFuncDataBase(runTime), mStausData(status), mBase(base), mDelBase(del){}
-        virtual ~IGPAutoDefFunction(){if (mDelBase && mBase) delete mBase;}
-    private:
-        IRuntimeDataBase* mFuncDataBase;
-        statusBasic* mStausData;
-        IGPUnit* mBase;
-        bool mDelBase;
-        /*FIXME use other proper method*/
-        friend class IADFCreator;
-};
-
-class IADFCreator
-{
-    public:
-        IADFCreator(){}
-        virtual ~IADFCreator(){}
-    protected:
-        inline IGPUnit* getBase(IGPAutoDefFunction* f) {return f->mBase;}
+        IGPAutoDefFunction(){}
+        virtual ~IGPAutoDefFunction(){}
 };
 
 #endif

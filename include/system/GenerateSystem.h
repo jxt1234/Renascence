@@ -35,6 +35,7 @@ class GenerateSystem:public GPProducer, public IRuntimeDataBase
         void setComputeSystem(computeSystem* comsys);
         inline int getFuncId(const std::string& name){return mComputeSystem->vQueryFuncId(name);}
     protected:
+        virtual IGPAutoDefFunction* vCreateADFFromGP(AbstractGP* gp) = 0;
         virtual void vSetInputNumber(AbstractGP* gp) {gp->setInputNumber(this);}
         virtual std::vector<int> searchSequence(int output);
         virtual std::vector<std::vector<int> > searchAllSequence(int output);

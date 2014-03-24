@@ -18,13 +18,14 @@
 #include "AbstractGP.h"
 #include "status.h"
 
-class GPProducer:public statusBasic, public IADFCreator
+class GPProducer:public statusBasic
 {
     public:
         GPProducer(int defaultOutput=0):mDefaultOutput(defaultOutput){}
         virtual ~GPProducer(){}
         /*Create a IGPAutoDefFunction which use the inputType to output the same content in outputType, inputRepeat means the content of inputType can be used repeated*/
         /*The function can't be recursive, which can be modified by mutate(TODO)*/
+        virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is) = 0;
         virtual IGPAutoDefFunction* vCreateFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true, bool random = false) = 0;
         virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true) = 0;
         virtual void vDestroyFunction(IGPAutoDefFunction* f);
@@ -36,7 +37,6 @@ class GPProducer:public statusBasic, public IADFCreator
         void freeStatus(AbstractGP* tree);
     protected:
         virtual void vSetInputNumber(AbstractGP* gp) = 0;
-        AbstractGP* loadGP(IGPAutoDefFunction* f);
         bool initGP(AbstractGP* tree, const std::vector<int>& queue);
         virtual std::vector<int> searchSequence(int output) = 0;
         virtual std::vector<std::vector<int> > searchAllSequence(int output) = 0;

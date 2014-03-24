@@ -50,7 +50,20 @@ void xmlGPLoader::attributeUnflatten()
 
 GP_Output xmlGPLoader::run()
 {
-    IGPAutoDefFunction exe(this, this, this, false);
+    class xmlGPLoader_ADF:public IGPAutoDefFunction
+    {
+        public:
+            xmlGPLoader_ADF(xmlGPLoader* _m):m(_m){}
+            ~xmlGPLoader_ADF(){}
+            virtual GP_Output run(const GP_Input& inputs)
+            {
+                m->compute(m, m);
+                return m->output();
+            }
+        private:
+            xmlGPLoader* m;
+    };
+    xmlGPLoader_ADF exe(this);
     GP_Input inp;
     return exe.run(inp);
 }

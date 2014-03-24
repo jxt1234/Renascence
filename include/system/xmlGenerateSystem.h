@@ -28,11 +28,32 @@ class xmlGenerateSystem:public GenerateSystem
         virtual ~xmlGenerateSystem();
         void addXml(const char* xmlFile, IFunctionTable* table=NULL, bool print = false);
         void xmlPrint(std::ostream& out, AbstractGP* gp);
-        void xmlPrint(std::ostream& out, IGPAutoDefFunction* f);
+        virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is){return this->vCreateADFFromGP(NULL);}
+    protected:
+        virtual IGPAutoDefFunction* vCreateADFFromGP(AbstractGP* gp);
     private:
         std::vector<IFunctionTable*> mRemain;
 };
 
+
+class xmlGPADF:public IGPAutoDefFunction
+{
+    public:
+        virtual GP_Output run(const GP_Input& inputs)
+        {
+            int cur = 0;
+            mBase->input(inputs, cur);
+            mBase->compute(mSys, mSys);
+            return mBase->output();
+        }
+        virtual void save(std::ostream& os);
+        virtual void load(std::istream& is);
+        xmlGPADF(xmlGenerateSystem* sys, AbstractGP* base = NULL);
+        virtual ~xmlGPADF();
+    private:
+        xmlGenerateSystem* mSys;
+        AbstractGP* mBase;
+};
 
 
 #endif
