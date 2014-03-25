@@ -42,6 +42,8 @@ class IGPAutoDefFunction:public RefCount
          */
         virtual void save(std::ostream& os) {}
         virtual void load(std::istream& is) {}
+        /*For evolution*/
+        virtual void mutate(){}
         //Basic Function
         IGPAutoDefFunction(){}
         virtual ~IGPAutoDefFunction(){}

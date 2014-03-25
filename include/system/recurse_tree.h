@@ -28,7 +28,17 @@ public:
 protected:
     virtual bool vGrow();
     vector<int> getDependOutput();
-    virtual bool vNext(){mCur++;return mCur<mAvail.size();}
+    virtual bool vNext()
+    {
+        mCur++;
+        bool res = true;
+        if (mCur >=mAvail.size())
+        {
+            res = false;
+            mCur = mAvail.size() - 1;
+        }
+        return res;
+    }
 private:
     computeSystem* mSys;
     const vector<vector<int> >& mData;

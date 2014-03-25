@@ -23,13 +23,18 @@ class GPProducer:public statusBasic
     public:
         GPProducer(int defaultOutput=0):mDefaultOutput(defaultOutput){}
         virtual ~GPProducer(){}
-        /*Create a IGPAutoDefFunction which use the inputType to output the same content in outputType, inputRepeat means the content of inputType can be used repeated*/
-        /*The function can't be recursive, which can be modified by mutate(TODO)*/
+        inline IGPAutoDefFunction* createFunction(int outputTypeId, int inputTypeId)
+        {
+            std::vector<int> out(1, outputTypeId);
+            std::vector<int> inp(1, inputTypeId);
+            return this->vCreateFunction(out, inp);
+        }
         virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is) = 0;
+        /*Create a IGPAutoDefFunction which use the inputType to output the same content in outputType, inputRepeat means the content of inputType can be used repeated*/
+        /*The function can't be recursive, which can be modified by mutate*/
         virtual IGPAutoDefFunction* vCreateFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true, bool random = false) = 0;
         virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true) = 0;
-        virtual void vDestroyFunction(IGPAutoDefFunction* f);
-        virtual void vPrintFunction(std::ostream& out, IGPAutoDefFunction* f){}
+        virtual IGPAutoDefFunction* vCreateFromADF(IGPAutoDefFunction* src) = 0;
         /*The output is the target function Id*/
         bool initGP(AbstractGP* tree, int output = -1, bool random = true);
         bool initGP(AbstractGP* tree, const std::string& type, bool random = true);

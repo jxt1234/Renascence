@@ -25,11 +25,16 @@ bool carryPoint::grow()
             return false;
         }
     }
+    bool res = true;
     for (int i=0; i<mChild.size(); ++i)
     {
-        mChild[i]->grow();
+        if (!mChild[i]->grow())
+        {
+            res = false;
+            break;
+        }
     }
-    return true;
+    return res;
 }
 bool carryPoint::next()
 {

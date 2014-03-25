@@ -11,13 +11,6 @@ bool GPProducer::initGP(AbstractGP* tree, const std::vector<int>& queue)
     return true;
 }
 
-void GPProducer::vDestroyFunction(IGPAutoDefFunction* f)
-{
-    if (NULL!=f)
-    {
-        delete f;
-    }
-}
 void GPProducer::freeStatus(AbstractGP* tree)
 {
     vector<int> status = tree->getStatus();

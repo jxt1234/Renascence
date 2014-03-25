@@ -57,14 +57,22 @@ xmlGenerateSystem::~xmlGenerateSystem()
 void xmlGenerateSystem::xmlPrint(std::ostream& out, AbstractGP* gp)
 {
     assert(NULL!=gp);
-    vector<int> nullVector;
-    gp->save(this, this, nullVector);
+    //vector<int> nullVector;
+    //gp->save(this, this, nullVector);
     gp->xmlPrint(out, mComputeSystem, this);
 }
 
 IGPAutoDefFunction* xmlGenerateSystem::vCreateADFFromGP(AbstractGP* gp)
 {
     return new xmlGPADF(this, gp);
+}
+
+IGPAutoDefFunction* xmlGenerateSystem::vCreateFromADF(IGPAutoDefFunction* src)
+{
+    xmlGPADF* s = dynamic_cast<xmlGPADF*>(src);
+    assert(NULL!=s);
+    IGPAutoDefFunction* res = new xmlGPADF(*s);
+    return res;
 }
 
 xmlGPADF::xmlGPADF(xmlGenerateSystem* sys, AbstractGP* base):mSys(sys), mBase(base)
@@ -78,9 +86,30 @@ xmlGPADF::xmlGPADF(xmlGenerateSystem* sys, AbstractGP* base):mSys(sys), mBase(ba
         mBase->addRef();
     }
 }
-
+xmlGPADF::xmlGPADF(const xmlGPADF& adf)
+{
+    mSys = adf.mSys;
+    assert(NULL!=mSys);
+    AbstractGP::AbstractGPCopy copy(mSys);
+    mBase = (AbstractGP*)AbstractPoint::deepCopy(adf.mBase, &copy);
+}
+void xmlGPADF::operator=(const xmlGPADF& adf)
+{
+    assert(mSys == adf.mSys);
+    if (mBase->count() == 1)
+    {
+        mSys->freeStatus(mBase);
+    }
+    mBase->decRef();
+    AbstractGP::AbstractGPCopy copy(mSys);
+    mBase = (AbstractGP*)AbstractPoint::deepCopy(adf.mBase, &copy);
+}
 xmlGPADF::~xmlGPADF()
 {
+    if (mBase->count() == 1)
+    {
+        mSys->freeStatus(mBase);
+    }
     mBase->decRef();
 }
 void xmlGPADF::save(std::ostream& os)
@@ -89,4 +118,8 @@ void xmlGPADF::save(std::ostream& os)
 }
 void xmlGPADF::load(std::istream& is)
 {
+}
+void xmlGPADF::mutate()
+{
+    mSys->mutate(mBase);
 }

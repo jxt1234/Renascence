@@ -29,6 +29,7 @@ class xmlGenerateSystem:public GenerateSystem
         void addXml(const char* xmlFile, IFunctionTable* table=NULL, bool print = false);
         void xmlPrint(std::ostream& out, AbstractGP* gp);
         virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is){return this->vCreateADFFromGP(NULL);}
+        virtual IGPAutoDefFunction* vCreateFromADF(IGPAutoDefFunction* src);
     protected:
         virtual IGPAutoDefFunction* vCreateADFFromGP(AbstractGP* gp);
     private:
@@ -48,7 +49,10 @@ class xmlGPADF:public IGPAutoDefFunction
         }
         virtual void save(std::ostream& os);
         virtual void load(std::istream& is);
+        virtual void mutate();
         xmlGPADF(xmlGenerateSystem* sys, AbstractGP* base = NULL);
+        xmlGPADF(const xmlGPADF& adf);
+        void operator=(const xmlGPADF& adf);
         virtual ~xmlGPADF();
     private:
         xmlGenerateSystem* mSys;

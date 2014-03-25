@@ -16,14 +16,13 @@
 #ifndef GENETIC_OPERTOR_H
 #define GENETIC_OPERTOR_H
 #include <vector>
-using namespace std;
 template <class individual>
 class group_select
 {
 private:
     int type;
     int part;
-    vector<individual*> optimal;
+    std::vector<individual*> optimal;
 public:
     group_select(int _t=0,int _p=4):type(_t),part(_p){}
     virtual ~group_select()
@@ -31,7 +30,7 @@ public:
         for(int i=0;i<optimal.size();++i) delete (optimal[i]);
         optimal.clear();
     }
-    void sel(vector<individual*> &group)
+    void sel(std::vector<individual*> &group)
     {
         switch(type)
         {
@@ -42,7 +41,7 @@ public:
                 break;
         }
     }
-    void sel_ES(vector<individual*> &group)
+    void sel_ES(std::vector<individual*> &group)
     {
         int n=group.size()/part;
         double temp;
@@ -96,8 +95,8 @@ private:
 public:
     cross(int _t=0):type(_t){}
     virtual ~cross(){}
-    inline void cro(vector<individual*> &group){}
-    inline void cro_ES(vector<individual*> &group){}
+    inline void cro(std::vector<individual*> &group){}
+    inline void cro_ES(std::vector<individual*> &group){}
 };
 
 template <class individual>
@@ -108,7 +107,7 @@ private:
 public:
     mutation(int _t=0):type(_t){}
     virtual ~mutation(){}
-    inline void var(vector<individual*> &group)
+    inline void var(std::vector<individual*> &group)
     {
         switch(type)
         {
@@ -119,7 +118,7 @@ public:
                 break;
         }
     }
-    inline void var_ES(vector<individual*> &group)
+    inline void var_ES(std::vector<individual*> &group)
     {
         for(int i=0;i<group.size();++i)
         {

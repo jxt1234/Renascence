@@ -1,7 +1,6 @@
 <libpics>
 
 <TrPackageCompse>
-	<output>TrBmp</output>
 
 	<inputs>TrPackageFilterMatrix, TrPackageFilterMatrix</inputs>
 	<inputs>TrPackageInput, TrPackageFilterMatrix</inputs>
@@ -11,6 +10,7 @@
 </TrPackageCompse>
 
 <TrPackageSaturation>
+
 	<inputs>TrPackageInput</inputs>
 	<inputs>TrPackageFilterMatrix</inputs>
 	<inputs>TrPackageCompse</inputs>
@@ -19,9 +19,6 @@
 </TrPackageSaturation>
 
 <TrPackageFilterMatrix>
-	<output>TrBmp</output>
-	<inputType>TrBmp</inputType>
-
 	<inputs>TrPackageInput</inputs>
 
 	<status>TrFilterMatrix</status>
@@ -29,9 +26,7 @@
 
 <TrPackageFitCompute>
 	<output>double</output>
-	<inputs>TrPackageCompse</inputs>
-	<inputs>TrPackageFilterTransformFromRegress</inputs>
-	<inputs>TrPackageSaturation</inputs>
+	<inputType>TrBmp</inputType>
 </TrPackageFitCompute>
 
 <TrPackageFilterMatrixRegress>
@@ -43,6 +38,7 @@
 
 
 <TrPackageFilterTransformFromRegress>
+	<output>TrBmp</output>
 	<inputs>TrPackageInput, TrPackageFilterMatrixRegress</inputs>
 	<inputs>TrPackageCompse, TrPackageFilterMatrixRegress</inputs>
 </TrPackageFilterTransformFromRegress>

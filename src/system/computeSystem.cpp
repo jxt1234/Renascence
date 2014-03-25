@@ -203,6 +203,12 @@ void computeSystem::print(ostream& os)
             os <<fc->outputType[j]<<" ";
         }
         os << endl;
+        os << "The statusType is ";
+        for (int j=0; j<fc->statusType.size(); ++j)
+        {
+            os <<fc->statusType[j]<<" ";
+        }
+        os << endl;
         vector<vector<int> >& combo = fc->fixTable;
         for (int x=0; x<combo.size(); ++x)
         {

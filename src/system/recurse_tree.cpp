@@ -62,13 +62,12 @@ vector<int> computePoint::getDependOutput()
 {
     vector<int> result;
     computePoint* cur = dynamic_cast<computePoint*>(mDepend);
+    computePoint* self = this;
     while(NULL!=cur)
     {
         const vector<int>& data = cur->getData();
-        for (int i=0; i<data.size(); ++i)
-        {
-            result.push_back(data[i]);
-        }
+        result.push_back(data[self->mParent]);
+        self = cur;
         cur = dynamic_cast<computePoint*>(cur->mDepend);
     }
     return result;

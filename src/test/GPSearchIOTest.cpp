@@ -23,9 +23,9 @@ class GPSearchIOTest:public GPTest
             GP_Output_collect(_output, GPout);
             assert(_output.size()==1);
             ist.print(cout, _output[0]);
+            cout <<endl;
             GP_Output_clear(GPout);
             f->decRef();
-            cout <<endl;
             /*Multi*/
             vector<IGPAutoDefFunction*> f_mul = gen.vCreateAllFunction(out, inp);
             assert(!f_mul.empty());
