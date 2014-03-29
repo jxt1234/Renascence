@@ -19,5 +19,6 @@ tags
 GP_MAIN
 libGP.so
 output/*
+temp/*
 output_fix.jpg
 result.xml

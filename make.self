@@ -1,1 +1,0 @@
-SELF_VARIABLES= -ldl

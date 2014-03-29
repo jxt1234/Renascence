@@ -75,32 +75,30 @@ vector<int> computePoint::getDependOutput()
 bool computePoint::vGrow()
 {
     bool success = true;
-    do
+    assert(NULL!=mSys);
+    const vector<int>& data = getData();
+    vector<int> currentOutputId = getDependOutput();
+    for (int i=0; i<data.size(); ++i)
     {
-        assert(NULL!=mSys);
-        const vector<int>& data = getData();
-        vector<int> currentOutputId = getDependOutput();
-        for (int i=0; i<data.size(); ++i)
+        const vector<vector<int> >& inputData = mSys->getAvailableFunctionInputs(data[i]);
+        currentOutputId.push_back(data[i]);
+        vector<int> avail = filter(inputData, currentOutputId);
+        currentOutputId.erase(currentOutputId.end()-1);
+        if (!avail.empty())
         {
-            const vector<vector<int> >& inputData = mSys->getAvailableFunctionInputs(data[i]);
-            currentOutputId.push_back(data[i]);
-            vector<int> avail = filter(inputData, currentOutputId);
-            currentOutputId.erase(currentOutputId.end()-1);
-            if (!avail.empty())
-            {
-                carryPoint* res=new computePoint(inputData, avail, mSys);
-                computePoint* midres = dynamic_cast<computePoint*>(res);
-                midres->mDepend = this;
-                midres->mParent = i;
-                mChild.push_back(res);
-            }
-            else if (!inputData.empty())
-            {
-                //This point is invalid, inform it
-                success = false;
-            }
+            carryPoint* res = new computePoint(inputData, avail, mSys);
+            computePoint* midres = dynamic_cast<computePoint*>(res);
+            midres->mDepend = this;
+            midres->mParent = i;
+            mChild.push_back(res);
         }
-    }while(false);
+        else if (!inputData.empty())
+        {
+            //This point is invalid, inform it
+            success = false;
+            break;
+        }
+    }
     return success;
 }
 vector<int> computeSearchTree::output()

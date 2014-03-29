@@ -21,6 +21,7 @@ class carryTree
 {
 public:
     carryTree(carryPoint* root=NULL):mRoot(root){}
+    ~carryTree(){if(NULL!=mRoot) delete mRoot;}
     virtual outputType output()=0;
     virtual bool readyToOutput()=0;
     vector<outputType> searchAll()

@@ -1,6 +1,7 @@
 #include "evolution/xmlEvolutionGroup.h"
 #include <assert.h>
 #include <fstream>
+#include <sstream>
 using namespace std;
 xmlEvolutionGroup::xmlEvolutionGroup(xmlGenerateSystem* sys, int time, int size):mSys(sys)
 {
@@ -64,9 +65,16 @@ void xmlEvolutionGroup::vSetInputStrategy(IInputStrategy* strategy)
 
 double xmlEvolutionGroup::_fitCompute(IGPAutoDefFunction* g, IGPAutoDefFunction* fit) const
 {
-    ofstream f("temp.xml");
+/*Debug */
+#if DEBUG_EVOLUTION
+    static int num =0;
+    ostringstream is;
+    is << "temp/"<<num<<"_"<<g<<".xml";
+    num++;
+    ofstream f(is.str().c_str());
     g->save(f);
     f.close();
+#endif
     GP_Output out = g->run(mStrategy->vCreate(g));
     GP_Input inp;
     GP_Output_collect(inp, out);

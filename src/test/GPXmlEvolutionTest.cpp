@@ -10,7 +10,6 @@ class GPXmlEvolutionTest:public GPTest
     public:
         virtual void run()
         {
-            return;
             xmlGenerateSystem gen;
             gen.addXml("funcV2.xml", NULL, false);
             int bmpId = gen.queryType(string("TrBmp"));

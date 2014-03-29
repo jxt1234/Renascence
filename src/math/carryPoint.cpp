@@ -17,6 +17,7 @@
 
 bool carryPoint::grow()
 {
+    clear();
     mGrow = true;
     while (!(this->vGrow()))
     {
@@ -39,11 +40,6 @@ bool carryPoint::grow()
 bool carryPoint::next()
 {
     if (!mGrow) return grow();
-    //Self next
-    if (mChild.empty())
-    {
-        return this->vNext();
-    }
     //Child next
     for (int i=0; i<mChild.size(); ++i)
     {
@@ -53,7 +49,6 @@ bool carryPoint::next()
         }
     }
     //If every child is next ok, it should delete all children and self next
-    clear();
     if (this->vNext())
     {
         mGrow = false;
