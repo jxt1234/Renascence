@@ -18,7 +18,7 @@ class GPXmlEvolutionTest:public GPTest
             eOut.push_back(bmpId);
             vector<int> eInp;
             GP_Input nullInput;
-            xmlEvolutionGroup* group = new xmlEvolutionGroup(&gen, 10, 10);
+            xmlEvolutionGroup* group = new xmlEvolutionGroup(&gen, 10, 2);
             group->vSetInputId(eInp);
             group->vSetOutputId(eOut);
             group->vSetFixInput(nullInput);

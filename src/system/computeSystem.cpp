@@ -79,6 +79,7 @@ computeSystem::~computeSystem()
 
 void computeSystem::vQueryFunction(int id, std::string& name, std::string& libName)
 {
+    assert(id < mFunctionTable.size());
     name = mFunctionTable[id]->name;
     libName = mFunctionTable[id]->libName;
 }

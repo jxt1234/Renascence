@@ -28,7 +28,7 @@ class xmlGenerateSystem:public GenerateSystem
         virtual ~xmlGenerateSystem();
         void addXml(const char* xmlFile, IFunctionTable* table=NULL, bool print = false);
         void xmlPrint(std::ostream& out, AbstractGP* gp);
-        virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is){return this->vCreateADFFromGP(NULL);}
+        virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is);
         virtual IGPAutoDefFunction* vCreateFromADF(IGPAutoDefFunction* src);
     protected:
         virtual IGPAutoDefFunction* vCreateADFFromGP(AbstractGP* gp);

@@ -17,8 +17,49 @@
 #include "system/system_lib.h"
 #include "utils/debug.h"
 #include <iostream>
+#include <sstream>
+#include "xml/xmlTree.h"
 
 using namespace std;
+
+class xmlCopy:public AbstractPoint::IPointCopy
+{
+    public:
+        xmlCopy(GenerateSystem* sys):mSys(sys){}
+        virtual ~xmlCopy(){}
+        virtual AbstractPoint* copy(AbstractPoint* src)
+        {
+            xmlTree* t = dynamic_cast<xmlTree*>(src);
+            assert(NULL!=t);
+            int func = mSys->getFuncId(t->func());
+            int status = -1;
+            vector<int> types;
+            vector<string> contents;
+            const vector<xmlTree::type>& ttype = t->status();
+            for (int i=0; i<ttype.size(); ++i)
+            {
+                int _type = mSys->queryType(ttype[i].name);
+                types.push_back(_type);
+                contents.push_back(ttype[i].content);
+            }
+            /*Currently Only support one Status*/
+            if (contents.empty())
+            {
+                status = -1;
+            }
+            else
+            {
+                const IStatusType& t = mSys->queryType(types[0]);
+                istringstream in(contents[0]);
+                void* c = t.load(in);
+                status = mSys->allocSet(types[0], c);
+            }
+            AbstractGP* p = new AbstractGP(func,status);
+            return p;
+        }
+    private:
+        GenerateSystem* mSys;
+};
 
 xmlGenerateSystem::xmlGenerateSystem()
 {
@@ -53,6 +94,16 @@ xmlGenerateSystem::~xmlGenerateSystem()
     }
 }
 
+IGPAutoDefFunction* xmlGenerateSystem::vCreateFunctionFromIS(std::istream& is)
+{
+    xmlTree tree;
+    tree.loadStream(is);
+    xmlCopy c(this);
+    AbstractGP* gp = (AbstractGP*)AbstractPoint::deepCopy(&tree, &c);
+    IGPAutoDefFunction* f = this->vCreateADFFromGP(gp);
+    gp->decRef();
+    return f;
+}
 
 void xmlGenerateSystem::xmlPrint(std::ostream& out, AbstractGP* gp)
 {

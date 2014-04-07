@@ -55,6 +55,7 @@ XMLAPI void xmlReader::loadStream(istream& input)
 {
     clear();
     loadPackage(input);
+    this->attributeUnflatten();
 }
 
 XMLAPI void xmlReader::loadFile(const char* file)

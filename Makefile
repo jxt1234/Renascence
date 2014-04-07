@@ -61,10 +61,12 @@ build/utils_debug.o : src/utils/debug.c ${ALL_INCLUESlibGP.so}
 
 ALL_INCLUESGP_MAIN= include/test/GPTest.h
 
-GP_MAIN:  build/test_AbstractPointTest.o build/test_GPXmlEvolutionTest.o build/test_GPEvolutionTest.o build/test_GPloadXmlTreeTest.o build/test_GPTest.o build/test_GPxmlTreeTest.o build/test_GPSearchIOTest.o build/test_GPRunTest.o build/main.o libGP.so
-	g++  -O3 -o GP_MAIN  build/test_AbstractPointTest.o build/test_GPXmlEvolutionTest.o build/test_GPEvolutionTest.o build/test_GPloadXmlTreeTest.o build/test_GPTest.o build/test_GPxmlTreeTest.o build/test_GPSearchIOTest.o build/test_GPRunTest.o build/main.o  ./libGP.so -ldl -lpthread  ${SELF_VARIABLES}
+GP_MAIN:  build/test_AbstractPointTest.o build/test_GPloadXmlTreeTest2.o build/test_GPXmlEvolutionTest.o build/test_GPEvolutionTest.o build/test_GPloadXmlTreeTest.o build/test_GPTest.o build/test_GPxmlTreeTest.o build/test_GPSearchIOTest.o build/test_GPRunTest.o build/main.o libGP.so
+	g++  -O3 -o GP_MAIN  build/test_AbstractPointTest.o build/test_GPloadXmlTreeTest2.o build/test_GPXmlEvolutionTest.o build/test_GPEvolutionTest.o build/test_GPloadXmlTreeTest.o build/test_GPTest.o build/test_GPxmlTreeTest.o build/test_GPSearchIOTest.o build/test_GPRunTest.o build/main.o  ./libGP.so -ldl -lpthread  ${SELF_VARIABLES}
 build/test_AbstractPointTest.o : src/test/AbstractPointTest.cpp ${ALL_INCLUESGP_MAIN}
 	g++ -O3 -o build/test_AbstractPointTest.o -c src/test/AbstractPointTest.cpp -Iinclude 
+build/test_GPloadXmlTreeTest2.o : src/test/GPloadXmlTreeTest2.cpp ${ALL_INCLUESGP_MAIN}
+	g++ -O3 -o build/test_GPloadXmlTreeTest2.o -c src/test/GPloadXmlTreeTest2.cpp -Iinclude 
 build/test_GPXmlEvolutionTest.o : src/test/GPXmlEvolutionTest.cpp ${ALL_INCLUESGP_MAIN}
 	g++ -O3 -o build/test_GPXmlEvolutionTest.o -c src/test/GPXmlEvolutionTest.cpp -Iinclude 
 build/test_GPEvolutionTest.o : src/test/GPEvolutionTest.cpp ${ALL_INCLUESGP_MAIN}

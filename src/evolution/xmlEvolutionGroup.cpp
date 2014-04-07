@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 using namespace std;
 xmlEvolutionGroup::xmlEvolutionGroup(xmlGenerateSystem* sys, int time, int size):mSys(sys)
 {
@@ -122,7 +123,7 @@ void xmlEvolutionGroup::_best(IGPAutoDefFunction* fit)
 void xmlEvolutionGroup::_expand()
 {
     _clearGroup();
-    for (int i=0; i<mTime; ++i)
+    for (int i=0; i<mSize; ++i)
     {
         mGroup.push_back(mSys->vCreateFromADF(mBest));
     }
@@ -147,6 +148,7 @@ void xmlEvolutionGroup::vEvolution(IGPAutoDefFunction* fit)
     {
         mGroup.push_back(group[i]);
     }
+
     /*Evolution*/
     for (int i=0; i<mTime; ++i)
     {
