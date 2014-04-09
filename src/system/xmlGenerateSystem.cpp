@@ -14,6 +14,8 @@
    limitations under the License.
 ******************************************************************/
 #include "system/xmlGenerateSystem.h"
+/*FIXME chaos in model, the mutateTree shouln't be include here*/
+#include "evolution/mutateTree.h"
 #include "system/system_lib.h"
 #include "utils/debug.h"
 #include <iostream>
@@ -172,5 +174,6 @@ void xmlGPADF::load(std::istream& is)
 }
 void xmlGPADF::mutate()
 {
-    mSys->mutate(mBase);
+    mutateTree* tree = (mutateTree*)mBase;
+    tree->mutate(mSys);
 }
