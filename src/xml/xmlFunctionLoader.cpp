@@ -20,6 +20,15 @@
 
 using namespace std;
 
+static bool blackName(const string& func)
+{
+    if ("output" == func || "input" == func || "functionTable" == func || "statusTable" == func || "fit" == func)
+    {
+        return true;
+    }
+    return false;
+}
+
 vector<vector<int> > xmlFunctionLoader::getCombo(int funcId)
 {
     vector<vector<int> > result;
@@ -65,24 +74,30 @@ vector<xmlReader::package*> xmlFunctionLoader::loadMain(package* p)
     for (int i=0; i<children.size(); ++i)
     {
         xmlReader::package* cur = children[i];
-        if (cur->name == "functionTable" )
+        if (!blackName(cur->name))
         {
-            for (int j=0; j<cur->attr.size(); ++j)
-            {
-                xmlFunctionLoader::function func;
-                func.name = cur->attr[j];
-                mFunctions.push_back(func);
-            }
+            xmlFunctionLoader::function func;
+            func.name = cur->name;
+            mFunctions.push_back(func);
         }
-        else if(cur->name == "statusTable")
-        {
-            for (int j=0; j<cur->attr.size(); ++j)
-            {
-                status s;
-                s.name = cur->attr[j];
-                mStatus.push_back(s);
-            }
-        }
+        //if (cur->name == "functionTable" )
+        //{
+        //    for (int j=0; j<cur->attr.size(); ++j)
+        //    {
+        //        xmlFunctionLoader::function func;
+        //        func.name = cur->attr[j];
+        //        mFunctions.push_back(func);
+        //    }
+        //}
+        //else if(cur->name == "statusTable")
+        //{
+        //    for (int j=0; j<cur->attr.size(); ++j)
+        //    {
+        //        status s;
+        //        s.name = cur->attr[j];
+        //        mStatus.push_back(s);
+        //    }
+        //}
     }
     //Load fit and output, collent function
     for(int i=0; i<children.size(); ++i)
@@ -104,6 +119,10 @@ vector<xmlReader::package*> xmlFunctionLoader::loadMain(package* p)
             {
                 mInputs.push_back(findFunction(cur->attr[j]));
             }
+        }
+        else if (cur->name == "statusTable" || cur->name == "functionTable")
+        {
+            //Do nothing, black name
         }
         else
         {
@@ -135,6 +154,13 @@ int xmlFunctionLoader::findStatus(string name)
             result = i;
             break;
         }
+    }
+    if (-1 == result)
+    {
+        status s;
+        s.name = name;
+        mStatus.push_back(s);
+        result = mStatus.size() - 1;
     }
     return result;
 }

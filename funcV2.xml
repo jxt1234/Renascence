@@ -42,25 +42,12 @@
 	<inputs>TrPackageCompse, TrPackageFilterMatrixRegress</inputs>
 </TrPackageFilterTransformFromRegress>
 
-<functionTable>
-	TrPackageInput
-	TrPackageInputTarget
-	TrPackageFitCompute
-	TrPackageFilterMatrix
-	TrPackageFilterMatrixRegress
-	TrPackageFilterTransformFromRegress
-	TrPackageCompse
-	TrPackageOutput
-	TrPackageSaturation
-</functionTable>
+<TrPackageInput>
+</TrPackageInput>
 
-<statusTable>
-	TrFilterMatrix
-	float
-	TrRegreeMode
-	TrBmp
-	double
-</statusTable>
+<TrPackageInputTarget>
+</TrPackageInputTarget>
+
 
 <output>TrWritePixels</output>
 <input>TrPackageInput</input>
