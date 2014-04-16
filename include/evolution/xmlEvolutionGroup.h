@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef EVOLUTION_XMLEVOLUTIONGROUP_H
 #define EVOLUTION_XMLEVOLUTIONGROUP_H
-#include "system/xmlGenerateSystem.h"
+#include "core/GPProducer.h"
 #include "core/IGPAutoDefFunction.h"
 #include <list>
 #include <vector>
@@ -31,7 +31,7 @@ class xmlEvolutionGroup
                 IInputStrategy(){}
                 virtual ~IInputStrategy(){}
         };
-        xmlEvolutionGroup(xmlGenerateSystem* sys, int time = 10, int size = 10);
+        xmlEvolutionGroup(GPProducer* sys, int time = 10, int size = 10);
         ~xmlEvolutionGroup();
         virtual void vSetInputId(const std::vector<int>& inputId){mInputId = inputId;}
         virtual void vSetOutputId(const std::vector<int>& outputId){mOutputId = outputId;}
@@ -47,11 +47,14 @@ class xmlEvolutionGroup
         void _expand();
         void _mutate();
         void _clearGroup();
+        void _clearBackup();
+        void _restoreBackup();
 
-        xmlGenerateSystem* mSys;
+        GPProducer* mSys;
         IGPAutoDefFunction* mBest;
         double mBestFit;
         std::list<IGPAutoDefFunction*> mGroup;
+        std::vector<IGPAutoDefFunction*> mBackup;
         std::vector<int> mInputId;
         std::vector<int> mOutputId;
         IInputStrategy* mStrategy;

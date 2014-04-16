@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iostream>
 using namespace std;
-xmlEvolutionGroup::xmlEvolutionGroup(xmlGenerateSystem* sys, int time, int size):mSys(sys)
+xmlEvolutionGroup::xmlEvolutionGroup(GPProducer* sys, int time, int size):mSys(sys)
 {
     assert(NULL!=sys);
     mBest = NULL;
@@ -24,7 +24,36 @@ xmlEvolutionGroup::~xmlEvolutionGroup()
         mStrategy->decRef();
     }
     _clearGroup();
+    _clearBackup();
 }
+
+void xmlEvolutionGroup::_clearBackup()
+{
+    vector<IGPAutoDefFunction*>::iterator iter = mBackup.begin();
+    for (; iter!=mBackup.end(); iter++)
+    {
+        if (NULL != *iter)
+        {
+            (*iter)->decRef();
+        }
+    }
+    mBackup.clear();
+}
+
+void xmlEvolutionGroup::_restoreBackup()
+{
+    _clearBackup();
+    list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
+    for (; iter!=mGroup.end(); iter++)
+    {
+        if (NULL != *iter)
+        {
+            (*iter)->addRef();
+            mBackup.push_back(*iter);
+        }
+    }
+}
+
 void xmlEvolutionGroup::_clearGroup()
 {
     list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
@@ -32,7 +61,7 @@ void xmlEvolutionGroup::_clearGroup()
     {
         if (NULL != *iter)
         {
-            delete *iter;
+            (*iter)->decRef();
         }
     }
     mGroup.clear();
@@ -108,15 +137,15 @@ void xmlEvolutionGroup::_best(IGPAutoDefFunction* fit)
         {
             mBest->decRef();
             mBest = *bestIter;
+            (*bestIter)->addRef();
             mBestFit = max;
-            mGroup.erase(bestIter);
         }
     }
     else
     {
         mBest = *bestIter;
         mBestFit = max;
-        mGroup.erase(bestIter);
+        (*bestIter)->addRef();
     }
 }
 
@@ -134,6 +163,14 @@ void xmlEvolutionGroup::_mutate()
     list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
     for (;iter!=mGroup.end();iter++)
     {
+        int r = rand()%10;
+        if (r < 1)
+        {
+            (*iter)->decRef();
+            int n = rand()%mBackup.size();
+            mBackup[n]->addRef();
+            *iter = mBackup[n];
+        }
         (*iter)->mutate();
     }
 }
@@ -148,6 +185,7 @@ void xmlEvolutionGroup::vEvolution(IGPAutoDefFunction* fit)
     {
         mGroup.push_back(group[i]);
     }
+    _restoreBackup();
 
     /*Evolution*/
     for (int i=0; i<mTime; ++i)
