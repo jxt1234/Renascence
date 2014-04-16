@@ -30,6 +30,28 @@ computeFunction GenerateSystem::vGetCompute(int id)
     return mComputeSystem->getFunction(id);
 }
 
+IGPAutoDefFunction* GenerateSystem::vCreateFunctionFromName(const std::string& name)
+{
+    assert(NULL!=mComputeSystem);
+    int id = mComputeSystem->vQueryFuncId(name);
+    const computeSystem::function& f = mComputeSystem->getDetailFunction(id);
+    class simpleADF:public IGPAutoDefFunction
+    {
+        public:
+            simpleADF(computeFunction f):mF(f){}
+            ~simpleADF(){}
+
+            virtual GP_Output run(const GP_Input& input)
+            {
+                return mF(input);
+            }
+        private:
+            computeFunction mF;
+    };
+    IGPAutoDefFunction* result = new simpleADF(f.basic);
+    return result;
+}
+
 int GenerateSystem::vQueryInputsNumber(int id)
 {
     assert(NULL!=mComputeSystem);

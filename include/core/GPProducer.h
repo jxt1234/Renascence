@@ -29,12 +29,14 @@ class GPProducer:public statusBasic
             std::vector<int> inp(1, inputTypeId);
             return this->vCreateFunction(out, inp);
         }
+        /*Create GP from xml files*/
         virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is) = 0;
         /*Create a IGPAutoDefFunction which use the inputType to output the same content in outputType, inputRepeat means the content of inputType can be used repeated*/
         /*The function can't be recursive, which can be modified by mutate*/
         virtual IGPAutoDefFunction* vCreateFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true, bool random = false) = 0;
         virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true) = 0;
         virtual IGPAutoDefFunction* vCreateFromADF(IGPAutoDefFunction* src) = 0;
+        virtual IGPAutoDefFunction* vCreateFunctionFromName(const std::string& name) = 0;
         /*The output is the target function Id*/
         bool initGP(AbstractGP* tree, int output = -1, bool random = true);
         bool initGP(AbstractGP* tree, const std::string& type, bool random = true);
