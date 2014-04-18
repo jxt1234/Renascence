@@ -59,7 +59,6 @@ void xmlFunctionLoader::attributeUnflatten()
         for (int i=0; i<funcs.size(); ++i)
         {
             loadFunc(funcs[i]);
-            loadStatus(funcs[i]);
         }
     }
 }

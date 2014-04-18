@@ -223,7 +223,11 @@ std::vector<IGPAutoDefFunction*> GenerateSystem::vCreateAllFunction(const std::v
     /*Find all available output function*/
     vector<vector<int> > warpOutput;
     _findMatchedFuncton(warpOutput, outputType);
-    vector<int> avail(1,warpOutput.size()-1);
+    vector<int> avail;
+    for (int i=0; i<warpOutput.size(); ++i)
+    {
+        avail.push_back(i);
+    }
     /*Get All sequence*/
     computePoint* start = new computePoint(warpOutput, avail, mComputeSystem);
     computeSearchTree tree(start);

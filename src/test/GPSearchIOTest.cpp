@@ -1,6 +1,8 @@
 #include "test/GPTest.h"
 #include "system/xmlGenerateSystem.h"
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <assert.h>
 using namespace std;
 class GPSearchIOTest:public GPTest
@@ -32,6 +34,9 @@ class GPSearchIOTest:public GPTest
             cout <<"Multi function's size = "<< f_mul.size() << endl;
             for (int i=0; i<f_mul.size(); ++i)
             {
+                ostringstream fileName;
+                fileName << "output/GPSearchIOTest"<<i<<".xml";
+                ofstream output(fileName.str().c_str());
                 f = f_mul[i];
                 GPout = f->run(GPinp);
                 vector<void*> _output2;
@@ -40,7 +45,9 @@ class GPSearchIOTest:public GPTest
                 ist.print(cout, _output2[0]);
                 cout << endl;
                 GP_Output_clear(GPout);
+                f->save(output);
                 f->decRef();
+                output.close();
             }
         }
         GPSearchIOTest(){}
