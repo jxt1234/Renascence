@@ -19,6 +19,7 @@
 #include "core/IGPAutoDefFunction.h"
 #include <list>
 #include <vector>
+#include <istream>
 
 /*ES strategy*/
 class xmlEvolutionGroup
@@ -41,6 +42,7 @@ class xmlEvolutionGroup
         virtual void vEvolution(IGPAutoDefFunction* fit);
         inline IGPAutoDefFunction* getBest(){return mBest;}
         inline double getBestFit() const {return mBestFit;}
+        void loadBest(std::istream& input);
     private:
         double _fitCompute(IGPAutoDefFunction* g, IGPAutoDefFunction* fit) const;
         void _best(IGPAutoDefFunction* fit);

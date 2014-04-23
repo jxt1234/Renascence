@@ -175,8 +175,22 @@ void xmlEvolutionGroup::_mutate()
     }
 }
 
+void xmlEvolutionGroup::loadBest(istream& input)
+{
+    assert(NULL!=mSys);
+    if (NULL!=mBest)
+    {
+        mBest->decRef();
+    }
+    mBest = mSys->vCreateFunctionFromIS(input);
+}
+
 void xmlEvolutionGroup::vEvolution(IGPAutoDefFunction* fit)
 {
+    if (NULL!=mBest)
+    {
+        mBestFit = _fitCompute(mBest, fit);
+    }
     /*Create the initial group*/
     _clearGroup();
     vector<IGPAutoDefFunction*> group = mSys->vCreateAllFunction(mOutputId, mInputId);
