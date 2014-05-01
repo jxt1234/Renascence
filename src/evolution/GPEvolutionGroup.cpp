@@ -1,10 +1,10 @@
-#include "evolution/xmlEvolutionGroup.h"
+#include "evolution/GPEvolutionGroup.h"
 #include <assert.h>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 using namespace std;
-xmlEvolutionGroup::xmlEvolutionGroup(GPProducer* sys, int time, int size):mSys(sys)
+GPEvolutionGroup::GPEvolutionGroup(GPProducer* sys, int time, int size):mSys(sys)
 {
     assert(NULL!=sys);
     mBest = NULL;
@@ -13,7 +13,7 @@ xmlEvolutionGroup::xmlEvolutionGroup(GPProducer* sys, int time, int size):mSys(s
     mSize = size;
 }
 
-xmlEvolutionGroup::~xmlEvolutionGroup()
+GPEvolutionGroup::~GPEvolutionGroup()
 {
     if (NULL!=mBest)
     {
@@ -27,7 +27,7 @@ xmlEvolutionGroup::~xmlEvolutionGroup()
     _clearBackup();
 }
 
-void xmlEvolutionGroup::_clearBackup()
+void GPEvolutionGroup::_clearBackup()
 {
     vector<IGPAutoDefFunction*>::iterator iter = mBackup.begin();
     for (; iter!=mBackup.end(); iter++)
@@ -40,7 +40,7 @@ void xmlEvolutionGroup::_clearBackup()
     mBackup.clear();
 }
 
-void xmlEvolutionGroup::_restoreBackup()
+void GPEvolutionGroup::_restoreBackup()
 {
     _clearBackup();
     list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
@@ -54,7 +54,7 @@ void xmlEvolutionGroup::_restoreBackup()
     }
 }
 
-void xmlEvolutionGroup::_clearGroup()
+void GPEvolutionGroup::_clearGroup()
 {
     list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
     for (; iter!=mGroup.end(); iter++)
@@ -66,9 +66,9 @@ void xmlEvolutionGroup::_clearGroup()
     }
     mGroup.clear();
 }
-void xmlEvolutionGroup::vSetFixInput(const GP_Input& input)
+void GPEvolutionGroup::vSetFixInput(const GP_Input& input)
 {
-    class fixStrategy:public xmlEvolutionGroup::IInputStrategy
+    class fixStrategy:public GPEvolutionGroup::IInputStrategy
     {
         public:
             fixStrategy(const GP_Input& input):mInput(input){}
@@ -83,7 +83,7 @@ void xmlEvolutionGroup::vSetFixInput(const GP_Input& input)
     }
     mStrategy = new fixStrategy(input);
 }
-void xmlEvolutionGroup::vSetInputStrategy(IInputStrategy* strategy)
+void GPEvolutionGroup::vSetInputStrategy(IInputStrategy* strategy)
 {
     if (NULL!=mStrategy)
     {
@@ -93,7 +93,7 @@ void xmlEvolutionGroup::vSetInputStrategy(IInputStrategy* strategy)
     strategy->addRef();
 }
 
-double xmlEvolutionGroup::_fitCompute(IGPAutoDefFunction* g, IGPAutoDefFunction* fit) const
+double GPEvolutionGroup::_fitCompute(IGPAutoDefFunction* g, IGPAutoDefFunction* fit) const
 {
 /*Debug */
 #if DEBUG_EVOLUTION
@@ -116,7 +116,7 @@ double xmlEvolutionGroup::_fitCompute(IGPAutoDefFunction* g, IGPAutoDefFunction*
     return res;
 }
 
-void xmlEvolutionGroup::_best(IGPAutoDefFunction* fit)
+void GPEvolutionGroup::_best(IGPAutoDefFunction* fit)
 {
     int bestId = 0;
     double max = _fitCompute(*(mGroup.begin()), fit);
@@ -149,7 +149,7 @@ void xmlEvolutionGroup::_best(IGPAutoDefFunction* fit)
     }
 }
 
-void xmlEvolutionGroup::_expand()
+void GPEvolutionGroup::_expand()
 {
     _clearGroup();
     for (int i=0; i<mSize; ++i)
@@ -158,7 +158,7 @@ void xmlEvolutionGroup::_expand()
     }
 }
 
-void xmlEvolutionGroup::_mutate()
+void GPEvolutionGroup::_mutate()
 {
     list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
     for (;iter!=mGroup.end();iter++)
@@ -175,7 +175,7 @@ void xmlEvolutionGroup::_mutate()
     }
 }
 
-void xmlEvolutionGroup::loadBest(istream& input)
+void GPEvolutionGroup::loadBest(istream& input)
 {
     assert(NULL!=mSys);
     if (NULL!=mBest)
@@ -185,7 +185,7 @@ void xmlEvolutionGroup::loadBest(istream& input)
     mBest = mSys->vCreateFunctionFromIS(input);
 }
 
-void xmlEvolutionGroup::vEvolution(IGPAutoDefFunction* fit)
+void GPEvolutionGroup::vEvolution(IGPAutoDefFunction* fit)
 {
     if (NULL!=mBest)
     {

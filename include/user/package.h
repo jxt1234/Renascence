@@ -18,6 +18,7 @@
 #include <vector>
 
 /*We can not define a destructor function and use freeCallBack for GP_Output, because the freeCallBack is called by the system outside*/
+#pragma pack(4)
 struct GP_Output
 {
     struct GP_Unit
@@ -26,6 +27,29 @@ struct GP_Output
         void(*freeCallBack)(void*);
     };
     std::vector<GP_Unit> output;
+    //Function for convinent
+    void push(void* content, void(*freeCallBack)(void*))
+    {
+        GP_Unit p;
+        p.content = content;
+        p.freeCallBack = freeCallBack;
+        output.push_back(p);
+    }
+    void clear()
+    {
+        for (int i=0; i<output.size(); ++i)
+        {
+            if (output[i].freeCallBack)
+            {
+                output[i].freeCallBack(output[i].content);
+            }
+        }
+        output.clear();
+    }
+    void* operator[](int n)
+    {
+        return output[n].content;
+    }
 };
 
 typedef std::vector<void*> GP_Input;

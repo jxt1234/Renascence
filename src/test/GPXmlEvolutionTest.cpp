@@ -1,6 +1,6 @@
 #include "test/GPTest.h"
 #include "system/xmlGenerateSystem.h"
-#include "evolution/xmlEvolutionGroup.h"
+#include "evolution/GPEvolutionGroup.h"
 #include <fstream>
 
 using namespace std;
@@ -18,7 +18,7 @@ class GPXmlEvolutionTest:public GPTest
             eOut.push_back(bmpId);
             vector<int> eInp;
             GP_Input nullInput;
-            xmlEvolutionGroup* group = new xmlEvolutionGroup(&gen, 10, 2);
+            GPEvolutionGroup* group = new GPEvolutionGroup(&gen, 10, 2);
             group->vSetInputId(eInp);
             group->vSetOutputId(eOut);
             group->vSetFixInput(nullInput);

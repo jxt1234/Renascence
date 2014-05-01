@@ -22,7 +22,7 @@
 #include <istream>
 
 /*ES strategy*/
-class xmlEvolutionGroup
+class GPEvolutionGroup
 {
     public:
         class IInputStrategy:public RefCount
@@ -32,8 +32,8 @@ class xmlEvolutionGroup
                 IInputStrategy(){}
                 virtual ~IInputStrategy(){}
         };
-        xmlEvolutionGroup(GPProducer* sys, int time = 10, int size = 10);
-        ~xmlEvolutionGroup();
+        GPEvolutionGroup(GPProducer* sys, int time = 10, int size = 10);
+        ~GPEvolutionGroup();
         virtual void vSetInputId(const std::vector<int>& inputId){mInputId = inputId;}
         virtual void vSetOutputId(const std::vector<int>& outputId){mOutputId = outputId;}
         virtual void vSetFixInput(const GP_Input& input);
