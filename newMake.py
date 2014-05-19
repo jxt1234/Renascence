@@ -9,11 +9,11 @@ CPP="g++ "
 C="gcc "
 MIDPATH='build/'
 
-MAIN_PROGRAM=['libGP.so', 'GP_MAIN']
-gDepends = ['', 'libGP.so']
-gDirs = [['core', 'system','platform','api', 'evolution', 'math', 'utils', 'xml'], ['test']]
-gSrcFiles = [[], ['./main.cpp']]
-gLinks = [' -lpthread -ldl', ' ./libGP.so -ldl -lpthread ']
+MAIN_PROGRAM=['libGP.so', 'TEST', 'GP_SUIT']
+gDepends = ['', 'libGP.so', 'libGP.so']
+gDirs = [['core', 'system','platform','api', 'evolution', 'math', 'utils', 'xml'], ['test'], ['GPSuit']]
+gSrcFiles = [[], ['./main.cpp'], []]
+gLinks = [' -lpthread -ldl', ' ./libGP.so -ldl -lpthread ', ' ./libGP.so']
 include_Flag = '-Iinclude'
 
 def Generate_Output(outName, srcDirs, srcFiles, CLINK, depend):

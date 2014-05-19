@@ -17,6 +17,8 @@
 tags
 *.swp
 GP_MAIN
+TEST
+GP_SUIT
 libGP.so
 output/*
 temp/*
