@@ -13,10 +13,44 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
+#include "core/GPData.h"
 
-GPData::GPData()
+GPData::GPData(const std::string& name):mName(name)
 {
 }
 GPData::~GPData()
 {
+    for (int i=0; i<mData.size(); ++i)
+    {
+        delete mData[i];
+    }
+}
+
+void GPData::addData(void* content, const IStatusType& type)
+{
+    GPData::data* d = new GPData::data(content, type);
+    mData.push_back(d);
+}
+
+GP_Input GPData::expand() const
+{
+    GP_Input res;
+    for (int i=0; i<mData.size(); ++i)
+    {
+        res.push_back(mData[i]->content);
+    }
+    return res;
+}
+
+void GPData::print(std::ostream& out) const
+{
+    out << "<"<<mName<<">\n";
+    for (int i=0; i<mData.size(); ++i)
+    {
+        GPData::data* d = mData[i];
+        out << "<"<<(d->type).name()<<">\n";
+        (d->type).print(out, d->content);
+        out << "\n</"<<(d->type).name()<<">\n";
+    }
+    out << "</"<<mName<<">\n";
 }

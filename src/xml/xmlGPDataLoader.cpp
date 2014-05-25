@@ -13,11 +13,40 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
+#include "xml/xmlGPDataLoader.h"
+#include <assert.h>
+#include <sstream>
 
-xmlGPDataLoader::xmlGPDataLoader(IFunctionTable& table):mTable(table)
+xmlGPDataLoader::xmlGPDataLoader(statusBasic& sys):mSys(sys)
 {
+    mData = NULL;
 }
 
 xmlGPDataLoader::~xmlGPDataLoader()
 {
+    if (NULL!=mData)
+    {
+        mData->decRef();
+    }
+}
+
+void xmlGPDataLoader::attributeUnflatten()
+{
+    assert(NULL!=mAttributes);
+    mData = new GPData(mAttributes->name);
+    for (int i=0; i<mAttributes->children.size(); ++i)
+    {
+        xmlReader::package* cur = mAttributes->children[i];
+        std::string& name = cur->name;
+        int id = mSys.queryType(name);
+        const IStatusType& t = mSys.queryType(id);
+        std::ostringstream os;
+        for (int j=0; j<cur->attr.size(); ++j)
+        {
+            os << cur->attr[j] << " ";
+        }
+        std::istringstream is(os.str());
+        void* content = t.load(is);
+        mData->addData(content, t);
+    }
 }

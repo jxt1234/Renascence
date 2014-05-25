@@ -15,10 +15,31 @@
 ******************************************************************/
 #ifndef CORE_GPDATA_H
 #define CORE_GPDATA_H
-class GPData
+#include "utils/RefCount.h"
+#include "user/package.h"
+#include "core/status.h"
+#include <ostream>
+#include <string>
+class GPData:public RefCount
 {
     public:
-        GPData();
+        GPData(const std::string& name);
         ~GPData();
+        GP_Input expand() const;
+        void addData(void* content, const IStatusType& type);
+        void print(std::ostream& out) const;
+    private:
+        struct data
+        {
+            void* content;
+            const IStatusType& type;
+            data(void* c, const IStatusType& s):content(c), type(s){}
+            ~data()
+            {
+                type.sfree(content);
+            }
+        };
+        std::vector<data*> mData;
+        std::string mName;
 };
 #endif

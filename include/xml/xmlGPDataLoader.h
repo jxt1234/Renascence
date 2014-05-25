@@ -16,17 +16,18 @@
 #ifndef XML_XMLGPDATALOADER_H
 #define XML_XMLGPDATALOADER_H
 #include "xmlReader.h"
-#include "user/IFunctionTable.h"
 #include "core/GPData.h"
+#include "core/status.h"
 class xmlGPDataLoader:public xmlReader
 {
     public:
-        xmlGPDataLoader(IFunctionTable& table);
+        xmlGPDataLoader(statusBasic& sys);
         virtual ~xmlGPDataLoader();
-        GPData load();
+        inline const GPData& get() const{return *mData;}
     protected:
-        virtual void attributeUnflatten(){}
+        virtual void attributeUnflatten();
     private:
-        IFunctionTable& mTable;
+        statusBasic& mSys;
+        GPData* mData;
 };
 #endif
