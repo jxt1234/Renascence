@@ -16,6 +16,7 @@
 #ifndef CORE_GP_XMLSTRING_H
 #define CORE_GP_XMLSTRING_H
 #include <string>
+#include <ostream>
 class GP_XmlString
 {
     public:
@@ -25,6 +26,11 @@ class GP_XmlString
         static const std::string status;
         static const std::string children;
         static const std::string result;
+
+        static const std::string file;
+
+        static void warpStart(const std::string& head, std::ostream& os);
+        static void warpEnd(const std::string& head, std::ostream& os);
 };
 
 #endif

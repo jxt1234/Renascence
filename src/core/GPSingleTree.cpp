@@ -37,13 +37,10 @@ GPSinglePoint::~GPSinglePoint()
 
 GPFLOAT GPSinglePoint::compute()
 {
-    //TODO delete assert and use force point changer here
     assert(mChildren.size() == mF->size());
     for (int i=0; i<mChildren.size(); ++i)
     {
-        GPSinglePoint* p = dynamic_cast<GPSinglePoint*>(mChildren[i]);
-        assert(NULL!=p);
-        //GPSinglePoint* p = (GPSinglePoint*)(mChildren[i]);
+        GPSinglePoint* p = (GPSinglePoint*)(mChildren[i]);
         mCache[i] = p->compute();
     }
     return mF->compute(mCache);

@@ -21,3 +21,12 @@ const string GP_XmlString::status("status");
 const string GP_XmlString::lib("libName");
 const string GP_XmlString::children("childern");
 const string GP_XmlString::result("result");
+const string GP_XmlString::file("File:");
+void GP_XmlString::warpStart(const std::string& head, ostream& os)
+{
+    os << "<"<<head<<">/n";
+}
+void GP_XmlString::warpEnd(const std::string& head, ostream& os)
+{
+    os << "</"<<head<<">/n";
+}

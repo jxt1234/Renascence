@@ -16,6 +16,8 @@
 #include "xml/xmlGPDataLoader.h"
 #include <assert.h>
 #include <sstream>
+#include <fstream>
+#include "core/GP_XmlString.h"
 
 xmlGPDataLoader::xmlGPDataLoader(statusBasic& sys):mSys(sys)
 {
@@ -39,14 +41,31 @@ void xmlGPDataLoader::attributeUnflatten()
         xmlReader::package* cur = mAttributes->children[i];
         std::string& name = cur->name;
         int id = mSys.queryType(name);
+        std::vector<std::string>& attr = cur->attr;
+        if (attr.empty()) continue;
         const IStatusType& t = mSys.queryType(id);
-        std::ostringstream os;
-        for (int j=0; j<cur->attr.size(); ++j)
+        void* content = NULL;
+        if (attr[0] == GP_XmlString::file && attr.size() >=2)//Load from file
         {
-            os << cur->attr[j] << " ";
+            std::ifstream is(attr[1].c_str());
+            content = t.load(is);
+            is.close();
         }
-        std::istringstream is(os.str());
-        void* content = t.load(is);
+        else
+        {
+            std::ostringstream os;
+            int l = attr.size();
+            for (int j=0; j<l-1; ++j)
+            {
+                os << attr[j] << " ";
+            }
+            if (l >= 1)
+            {
+                os << cur->attr[l-1];
+            }
+            std::istringstream is(os.str());
+            content = t.load(is);
+        }
         mData->addData(content, t);
     }
 }
