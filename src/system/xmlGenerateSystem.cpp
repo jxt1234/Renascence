@@ -20,6 +20,7 @@
 #include "utils/debug.h"
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include "xml/xmlTree.h"
 
 using namespace std;
@@ -68,10 +69,22 @@ xmlGenerateSystem::xmlGenerateSystem()
     mComputeSystem = new computeSystem;
 }
 
+void xmlGenerateSystem::vAddContent(std::istream& is, IFunctionTable* table)
+{
+    addXml(is, table, false);
+}
+
 void xmlGenerateSystem::addXml(const char* xmlFile, IFunctionTable* table, bool print)
 {
+    ifstream is(xmlFile);
+    assert(!is.fail());
+    addXml(is, table, print);
+    is.close();
+}
+void xmlGenerateSystem::addXml(std::istream& is, IFunctionTable* table, bool print)
+{
     xmlFunctionLoader xmlLoader;
-    xmlLoader.loadFile(xmlFile);
+    xmlLoader.loadStream(is);
     if (NULL==table)
     {
         table = new system_lib(xmlLoader.libName);

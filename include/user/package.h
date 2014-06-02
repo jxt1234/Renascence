@@ -46,7 +46,8 @@ struct GP_Output
         }
         output.clear();
     }
-    void* operator[](int n)
+    inline int size() const {return output.size();}
+    void* operator[](int n) const
     {
         return output[n].content;
     }

@@ -13,27 +13,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "FilePath.h"
 #include "core/GPProducerFactory.h"
-#include <fstream>
-#include "utils/AutoClean.h"
-#include <assert.h>
-using namespace std;
+#include "system/xmlGenerateSystem.h"
 
-int main(int argc, char** argv)
+GPProducer* GPProducerFactory::create()
 {
-    /*Prepare Runtime*/
-    GPProducer* sys = GPProducerFactory::create();
-    AutoClean<GPProducer> __clean_sys(sys);
-    ifstream is;
-    assert(FilePath::open(FilePath::RUNTIME, is));
-    sys->vAddContent(is, NULL);
-    is.close();
-    /*Load Standard function*/
-    assert(FilePath::open(FilePath::STANDARD, is));
-    IGPAutoDefFunction* function = sys->vCreateFunctionFromIS(is);
-    AutoClean<IGPAutoDefFunction> __clean_funtion(function);
-    /*Find all input and output file*/
-
-    return 1;
+    return new xmlGenerateSystem;
 }

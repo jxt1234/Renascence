@@ -13,27 +13,18 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "FilePath.h"
-#include "core/GPProducerFactory.h"
-#include <fstream>
-#include "utils/AutoClean.h"
-#include <assert.h>
-using namespace std;
-
-int main(int argc, char** argv)
+#ifndef UTILS_AUTOCLEAN_H
+#define UTILS_AUTOCLEAN_H
+template <class T>
+class AutoClean
 {
-    /*Prepare Runtime*/
-    GPProducer* sys = GPProducerFactory::create();
-    AutoClean<GPProducer> __clean_sys(sys);
-    ifstream is;
-    assert(FilePath::open(FilePath::RUNTIME, is));
-    sys->vAddContent(is, NULL);
-    is.close();
-    /*Load Standard function*/
-    assert(FilePath::open(FilePath::STANDARD, is));
-    IGPAutoDefFunction* function = sys->vCreateFunctionFromIS(is);
-    AutoClean<IGPAutoDefFunction> __clean_funtion(function);
-    /*Find all input and output file*/
-
-    return 1;
-}
+    public:
+        AutoClean(T* t):mT(t){}
+        ~AutoClean()
+        {
+            mT->decRef();
+        }
+    private:
+        T* mT;
+};
+#endif

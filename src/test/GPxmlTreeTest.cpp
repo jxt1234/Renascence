@@ -2,6 +2,7 @@
 #include "xml/xmlTree.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 using namespace std;
 class GPxmlTreeTest:public GPTest
 {

@@ -20,13 +20,16 @@
 #include "core/AbstractGP.h"
 #include "user/IFunctionTable.h"
 #include <ostream>
+#include <istream>
 
 class xmlGenerateSystem:public GenerateSystem
 {
     public:
         xmlGenerateSystem();
         virtual ~xmlGenerateSystem();
+        virtual void vAddContent(std::istream& is, IFunctionTable* table);
         void addXml(const char* xmlFile, IFunctionTable* table=NULL, bool print = false);
+        void addXml(std::istream& is, IFunctionTable* table=NULL, bool print = false);
         void xmlPrint(std::ostream& out, AbstractGP* gp);
         virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is);
         virtual IGPAutoDefFunction* vCreateFromADF(IGPAutoDefFunction* src);

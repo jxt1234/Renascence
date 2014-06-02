@@ -17,8 +17,10 @@
 #define CORE_GPPRODUCER_H
 #include "AbstractGP.h"
 #include "status.h"
+#include "utils/RefCount.h"
+#include "user/IFunctionTable.h"
 
-class GPProducer:public statusBasic
+class GPProducer:public statusBasic, public RefCount
 {
     public:
         GPProducer(int defaultOutput=0):mDefaultOutput(defaultOutput){}
@@ -29,6 +31,8 @@ class GPProducer:public statusBasic
             std::vector<int> inp(1, inputTypeId);
             return this->vCreateFunction(out, inp);
         }
+        /*Set up environment*/
+        virtual void vAddContent(std::istream& is, IFunctionTable* table) = 0;
         /*Create GP from xml files*/
         virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is) = 0;
         /*Create a IGPAutoDefFunction which use the inputType to output the same content in outputType, inputRepeat means the content of inputType can be used repeated*/

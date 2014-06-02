@@ -14,6 +14,11 @@
    limitations under the License.
 ******************************************************************/
 #include "core/GPData.h"
+#include <sstream>
+
+using namespace std;
+
+#define DIVIDE_LITTLE 0.00001
 
 GPData::GPData(const std::string& name):mName(name)
 {
@@ -53,4 +58,44 @@ void GPData::print(std::ostream& out) const
         out << "\n</"<<(d->type).name()<<">\n";
     }
     out << "</"<<mName<<">\n";
+}
+/*Default Compare method, assume that all values is double*/
+double GPData::compare(const GP_Output& output)
+{
+    double res = 0;
+    do
+    {
+        if (output.size()!=mData.size())
+        {
+            res = 1;
+            break;
+        }
+        for (int i=0; i<mData.size(); ++i)
+        {
+            GPData::data* d = mData[i];
+            const IStatusType& t = d->type;
+            ostringstream _data, _out;
+            t.print(_data, d->content);
+            t.print(_out, output[i]);
+            istringstream data(_data.str());
+            istringstream out(_out.str());
+            bool hasContent = true;
+            double _d;
+            double _o;
+            double sum = 0;
+            int n = 0;
+            while(hasContent)
+            {
+                hasContent = data >> _d;
+                out >> _o;
+                double err = (_o-_d)*(_o-_d);
+                double div = (_o*_o+_d*_d+DIVIDE_LITTLE)*2;
+                ++n;
+                sum += err/div;
+            }
+            res += sum/n;
+        }
+        res = res/(double)(mData.size());
+    }while(0);
+    return res;
 }

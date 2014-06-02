@@ -13,34 +13,28 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef CORE_GPDATA_H
-#define CORE_GPDATA_H
-#include "utils/RefCount.h"
-#include "user/package.h"
-#include "core/status.h"
-#include <ostream>
+#ifndef FILE_PATH_H
+#define FILE_PATH_H
 #include <string>
-class GPData:public RefCount
+#include <fstream>
+/*Using to construct filename*/
+class FilePath
 {
     public:
-        GPData(const std::string& name);
-        ~GPData();
-        GP_Input expand() const;
-        void addData(void* content, const IStatusType& type);
-        void print(std::ostream& out) const;
-        double compare(const GP_Output& output);
-    private:
-        struct data
+        typedef enum
         {
-            void* content;
-            const IStatusType& type;
-            data(void* c, const IStatusType& s):content(c), type(s){}
-            ~data()
-            {
-                type.sfree(content);
-            }
-        };
-        std::vector<data*> mData;
-        std::string mName;
+            RUNTIME,
+            COMPARE,
+            INPUT,
+            OUTPUT,
+            AUTOMACHINE,
+            STANDARD
+        }TYPE;
+        static void setEnvPath(const char* str);
+        static std::string file(TYPE t);
+        static bool open(FilePath::TYPE t, std::ifstream& is);
+    private:
+        static std::string gEnvPath;
 };
+
 #endif
