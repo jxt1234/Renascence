@@ -21,7 +21,7 @@ void dump_stack()
     void* buffer[SIZE];
     char** strings;
     nptrs = backtrace(buffer, SIZE);
-    printf("backtrace() returned %d, addresses \n", nptrs);
+    GPPRINT("backtrace() returned %d, addresses \n", nptrs);
     strings = (char**)backtrace_symbols(buffer, nptrs);
     if (strings==NULL)
     {
@@ -29,7 +29,7 @@ void dump_stack()
     }
     for (j=0; j<nptrs; ++j)
     {
-        printf("%s\n", strings[j]);
+        GPPRINT("%s\n", strings[j]);
     }
     free(strings);
 }

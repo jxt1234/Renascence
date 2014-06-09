@@ -13,8 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef CORE_GPSINGLETREE_H
-#define CORE_GPSINGLETREE_H
+#ifndef MATH_GPSINGLETREE_H
+#define MATH_GPSINGLETREE_H
 
 #include <string>
 #include "utils/RefCount.h"
@@ -54,6 +54,11 @@ class GPSinglePoint:public AbstractPoint
         GPSinglePoint(GPIFloatFunction* f);
         virtual ~GPSinglePoint();
         GPFLOAT compute();
+        class GPSinglePointCopy:public AbstractPoint::IPointCopy
+        {
+            public:
+                virtual AbstractPoint* copy(AbstractPoint* src);
+        };
     protected:
         virtual void printBefore(std::ostream& out){}
         virtual void printAfter(std::ostream& out){}
@@ -70,6 +75,7 @@ class GPSingleTree:public RefCount
         void operator=(const GPSingleTree& tree);
         virtual ~GPSingleTree();
         inline GPFLOAT compute(){return mRoot->compute();}
+        int len();
     protected:
         GPSinglePoint* mRoot;
         const GPIFloatFunctionSet& mSet;

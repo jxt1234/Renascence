@@ -13,9 +13,9 @@ class GPGPDataTest:public GPTest
             gen.addXml("func.xml");
             xmlGPDataLoader* l=new xmlGPDataLoader(gen);
             l->loadFile("test/GPGPDataTest.xml");
-            const GPData& data = l->get();
+            GPData* data = l->get();
             ofstream of("output/GPGPDataTestResult.xml");
-            data.print(of);
+            data->print(of);
             of.close();
             delete l;
         }

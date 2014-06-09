@@ -31,7 +31,14 @@ void GP_evolution(int number, int times, const char* functionTable, const char* 
 {
     srand((unsigned) time(NULL));
     xmlGenerateSystem gen;
-    gen.addXml(functionTable, NULL, xmlprint);
+    if (xmlprint)
+    {
+        gen.addXml(functionTable, NULL, &cout);
+    }
+    else
+    {
+        gen.addXml(functionTable, NULL, NULL);
+    }
     evolutionTree::setGenSystem(&gen);
     evolution_group<evolutionTree> group(number);
     group.evolution(times);

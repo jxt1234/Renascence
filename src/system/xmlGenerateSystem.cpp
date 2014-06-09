@@ -71,17 +71,17 @@ xmlGenerateSystem::xmlGenerateSystem()
 
 void xmlGenerateSystem::vAddContent(std::istream& is, IFunctionTable* table)
 {
-    addXml(is, table, false);
+    addXml(is, table, NULL);
 }
 
-void xmlGenerateSystem::addXml(const char* xmlFile, IFunctionTable* table, bool print)
+void xmlGenerateSystem::addXml(const char* xmlFile, IFunctionTable* table, ostream* print)
 {
     ifstream is(xmlFile);
     assert(!is.fail());
     addXml(is, table, print);
     is.close();
 }
-void xmlGenerateSystem::addXml(std::istream& is, IFunctionTable* table, bool print)
+void xmlGenerateSystem::addXml(std::istream& is, IFunctionTable* table, ostream* print)
 {
     xmlFunctionLoader xmlLoader;
     xmlLoader.loadStream(is);
@@ -91,10 +91,10 @@ void xmlGenerateSystem::addXml(std::istream& is, IFunctionTable* table, bool pri
         mRemain.push_back(table);
     }
     mComputeSystem->loadFuncXml(xmlLoader, table, this);
-    if (print)
+    if (NULL != print)
     {
-        xmlLoader.print();
-        mComputeSystem->print(std::cout);
+        xmlLoader.print(*print);
+        mComputeSystem->print(*print);
     }
     setComputeSystem(mComputeSystem);
 }

@@ -12,7 +12,7 @@ class GPloadXmlTreeTest:public GPTest
         virtual void run()
         {
             xmlGenerateSystem gen;
-            gen.addXml("func.xml", NULL, false);
+            gen.addXml("func.xml", NULL, NULL);
             evolutionTree::setGenSystem(&gen);
             xmlTree _tree;
             _tree.loadFile("result.xml");

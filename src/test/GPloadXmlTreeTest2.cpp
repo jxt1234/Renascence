@@ -12,7 +12,7 @@ class GPloadXmlTreeTest2:public GPTest
         virtual void run()
         {
             xmlGenerateSystem gen;
-            gen.addXml("func.xml", NULL, true);
+            gen.addXml("func.xml", NULL, NULL);
             ifstream f("result.xml");
             IGPAutoDefFunction* gp = gen.vCreateFunctionFromIS(f);
             f.close();

@@ -16,7 +16,6 @@
 #include "xml/xmlFunctionLoader.h"
 #include <vector>
 #include <list>
-#include <iostream>
 
 using namespace std;
 
@@ -242,62 +241,62 @@ void xmlFunctionLoader::subClear()
     mInputs.clear();
 }
 
-void xmlFunctionLoader::printFunc(xmlFunctionLoader::function& func)
+void xmlFunctionLoader::printFunc(xmlFunctionLoader::function& func, ostream& output)
 {
     for (int j=0; j<func.inputs.size(); ++j)
     {
-        cout <<"The "<<j << " combo:  ";
+        output <<"The "<<j << " combo:  ";
         vector<int>& input = func.inputs[j];
         for (int k=0; k<input.size(); ++k)
         {
-            cout <<" "<<input[k];
+            output <<" "<<input[k];
         }
-        cout <<endl;
+        output <<endl;
     }
-    cout <<"status = ";
+    output <<"status = ";
     for (int j=0; j <func.statusType.size(); ++j)
     {
-        cout <<" "<<func.statusType[j];
+        output <<" "<<func.statusType[j];
     }
-    cout << "output = ";
+    output << "output = ";
     for (int j=0; j <func.outputType.size(); ++j)
     {
-        cout <<" "<<func.outputType[j];
+        output <<" "<<func.outputType[j];
     }
-    cout << endl;
+    output << endl;
 }
 
-void xmlFunctionLoader::printStatus(status& sta)
+void xmlFunctionLoader::printStatus(status& sta, ostream& output)
 {
-    cout << "Alloc: " << sta._alloc << endl;
-    cout << "Free: " << sta._free << endl;
-    cout << "Print: " << sta._print << endl;
-    cout << "Load: " << sta._load << endl;
-    cout << "Copy: " << sta._copy << endl;
-    cout << "Vary: " << sta._vary << endl;
+    output << "Alloc: " << sta._alloc << endl;
+    output << "Free: " << sta._free << endl;
+    output << "Print: " << sta._print << endl;
+    output << "Load: " << sta._load << endl;
+    output << "Copy: " << sta._copy << endl;
+    output << "Vary: " << sta._vary << endl;
 }
 
-void xmlFunctionLoader::print()
+void xmlFunctionLoader::print(ostream& output)
 {
-    cout << "Inputs = ";
+    output << "Inputs = ";
     for (int i=0; i < mInputs.size(); ++i)
     {
-        cout << mInputs[i]<<" ";
+        output << mInputs[i]<<" ";
     }
-    cout <<endl;
-    cout << "output = "<<mOutput<<"    fit = "<<mFit<<endl<<endl;
-    cout <<" Function Amount = "<<mFunctions.size()<<endl;
+    output <<endl;
+    output << "output = "<<mOutput<<"    fit = "<<mFit<<endl<<endl;
+    output <<" Function Amount = "<<mFunctions.size()<<endl;
     for (int i=0; i<mFunctions.size(); ++i)
     {
         xmlFunctionLoader::function& func = mFunctions[i];
-        cout << "name = "<<func.name <<"    id = "<<i<<endl;
-        printFunc(func);
+        output << "name = "<<func.name <<"    id = "<<i<<endl;
+        printFunc(func, output);
     }
-    cout << " Status Types Amount = "<<mStatus.size()<<endl;
+    output << " Status Types Amount = "<<mStatus.size()<<endl;
     for (int i=0; i<mStatus.size(); ++i)
     {
         xmlFunctionLoader::status& sta = mStatus[i];
-        cout << "name = "<<sta.name <<"    id = "<<i<<endl;
-        printStatus(sta);
+        output << "name = "<<sta.name <<"    id = "<<i<<endl;
+        printStatus(sta, output);
     }
 }

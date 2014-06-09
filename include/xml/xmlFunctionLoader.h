@@ -16,6 +16,7 @@
 #ifndef XML_READER_FUNCTION_H
 #define XML_READER_FUNCTION_H
 #include "xmlReader.h"
+#include <ostream>
 
 class xmlFunctionLoader:public xmlReader
 {
@@ -49,7 +50,7 @@ class xmlFunctionLoader:public xmlReader
         const std::vector<status>& getStatus(){return mStatus;}
         std::string getFuncName(int funcId){return mFunctions[funcId].name;}
         std::string getStatusName(int statusId){return mStatus[statusId].name;}
-        void print();
+        void print(std::ostream& output);
         xmlFunctionLoader(){}
         ~xmlFunctionLoader(){}
     protected:
@@ -62,8 +63,8 @@ class xmlFunctionLoader:public xmlReader
         int findFunction(std::string name);
         int findStatus(std::string name);
         inline bool validId(int funcId){return funcId < mFunctions.size() && funcId>=0;}
-        void printFunc(function& func);
-        void printStatus(status& sta);
+        void printFunc(function& func, std::ostream& output);
+        void printStatus(status& sta, std::ostream& output);
         std::vector<function> mFunctions;
         std::vector<status> mStatus;
 };

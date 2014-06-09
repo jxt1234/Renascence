@@ -26,5 +26,5 @@ GP_Clock::GP_Clock(int func)
 GP_Clock::~GP_Clock()
 {
     int inter = clock()-mStart;
-    printf("Function Id = %d, times = %dms+%dus\n", mId, inter/1000, inter%1000);
+    GPPRINT("Function Id = %d, times = %dms+%dus\n", mId, inter/1000, inter%1000);
 }

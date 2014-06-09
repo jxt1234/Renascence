@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "core/GPSingleTree.h"
+#include "math/GPSingleTree.h"
 #include <assert.h>
 #include <stdlib.h>
 using namespace std;
@@ -26,6 +26,7 @@ GPSinglePoint::GPSinglePoint(GPIFloatFunction* f)
     if (0 < mF->size())
     {
         mCache = new GPFLOAT[mF->size()];
+        assert(NULL!=mCache);
     }
 }
 
@@ -45,6 +46,14 @@ GPFLOAT GPSinglePoint::compute()
     }
     return mF->compute(mCache);
 }
+
+AbstractPoint* GPSinglePoint::GPSinglePointCopy::copy(AbstractPoint* src)
+{
+    GPSinglePoint* s = (GPSinglePoint*)src;
+    GPSinglePoint* res = new GPSinglePoint(s->mF);
+    return (AbstractPoint*)res;
+}
+
 
 GPIFloatFunction* GPIFloatFunctionSet::randomSelect()
 {
@@ -69,17 +78,40 @@ void GPIFloatFunctionSet::add(GPIFloatFunction* func)
 
 GPSingleTree::GPSingleTree(const GPIFloatFunctionSet& set):mSet(set)
 {
+    mRoot = NULL;
 }
 
 GPSingleTree::GPSingleTree(const GPSingleTree& tree):mSet(tree.mSet)
 {
+    if (NULL !=tree.mRoot)
+    {
+        GPSinglePoint::GPSinglePointCopy c;
+        mRoot = (GPSinglePoint*)AbstractPoint::deepCopy(tree.mRoot, &c);
+    }
 }
 
 void GPSingleTree::operator=(const GPSingleTree& tree)
 {
+    assert(&mSet == &(tree.mSet));
+    if (NULL!=mRoot)
+    {
+        delete mRoot;
+        mRoot = NULL;
+    }
+    if (NULL !=tree.mRoot)
+    {
+        GPSinglePoint::GPSinglePointCopy c;
+        mRoot = (GPSinglePoint*)AbstractPoint::deepCopy(tree.mRoot, &c);
+    }
 }
 
 GPSingleTree::~GPSingleTree()
 {
     delete mRoot;
+}
+int GPSingleTree::len()
+{
+    if (NULL == mRoot) return 0;
+    vector<AbstractPoint*> list = mRoot->display();
+    return list.size();
 }

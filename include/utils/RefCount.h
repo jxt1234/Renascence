@@ -1,6 +1,5 @@
 #ifndef INCLUDE_UTILS_REFCOUNT_H
 #define INCLUDE_UTILS_REFCOUNT_H
-#include <iostream>
 class RefCount
 {
     public:

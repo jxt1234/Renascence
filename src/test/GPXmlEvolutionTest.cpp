@@ -2,6 +2,7 @@
 #include "system/xmlGenerateSystem.h"
 #include "evolution/GPEvolutionGroup.h"
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 
@@ -11,7 +12,7 @@ class GPXmlEvolutionTest:public GPTest
         virtual void run()
         {
             xmlGenerateSystem gen;
-            gen.addXml("funcV2.xml", NULL, false);
+            gen.addXml("funcV2.xml", NULL, &cout);
             int bmpId = gen.queryType(string("TrBmp"));
             int doubleId = gen.queryType(string("double"));
             vector<int> eOut;
@@ -29,7 +30,7 @@ class GPXmlEvolutionTest:public GPTest
 
             IGPAutoDefFunction* result = group->getBest();
             result->addRef();
-            cout << "Best Fit is "<<group->getBestFit()<<endl;
+            GPPRINT_FL("Best Fit is %f", group->getBestFit());
 
             delete group;
             ofstream outputF("output/result.xml");
