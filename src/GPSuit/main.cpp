@@ -18,6 +18,7 @@
 #include <fstream>
 #include "utils/AutoClean.h"
 #include <assert.h>
+#include "xml/xmlGPDataLoader.h"
 using namespace std;
 
 int main(int argc, char** argv)
@@ -33,7 +34,43 @@ int main(int argc, char** argv)
     assert(FilePath::open(FilePath::STANDARD, is));
     IGPAutoDefFunction* function = sys->vCreateFunctionFromIS(is);
     AutoClean<IGPAutoDefFunction> __clean_funtion(function);
+    is.close();
     /*Find all input and output file*/
+    vector<string> inputFiles;
+    vector<string> outputFiles;
+    assert(FilePath::open(FilePath::INPUT, is));
+    string temp;
+    while (is >> temp)
+    {
+        inputFiles.push_back(temp);
+    }
+    is.close();
+    assert(FilePath::open(FilePath::OUTPUT, is));
+    while (is >> temp)
+    {
+        outputFiles.push_back(temp);
+    }
+    is.close();
+    assert(inputFiles.size() == outputFiles.size());
+    /*TODO Load Compare function*/
+    /*Start to compare*/
+    int n = inputFiles.size();
+    ofstream result_os(FilePath::file(FilePath::RESULT).c_str());
+    for (int i=0; i<n; ++i)
+    {
+        xmlGPDataLoader lin(*sys);
+        xmlGPDataLoader lout(*sys);
+        lin.loadFile(inputFiles[i].c_str());
+        lout.loadFile(outputFiles[i].c_str());
+        GPData* inp = lin.get();
+        GPData* out = lout.get();
+        GP_Input gp_inp = inp->expand();
+        GP_Output gp_out = function->run(gp_inp);
+        double res = out->compare(gp_out);
+        result_os <<res <<"\n";
+        gp_out.clear();
+    }
+    result_os.close();
 
     return 1;
 }

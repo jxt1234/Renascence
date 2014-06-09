@@ -23,7 +23,7 @@ class xmlGPDataLoader:public xmlReader
     public:
         xmlGPDataLoader(statusBasic& sys);
         virtual ~xmlGPDataLoader();
-        inline const GPData& get() const{return *mData;}
+        inline GPData* get() const{return mData;}
     protected:
         virtual void attributeUnflatten();
     private:

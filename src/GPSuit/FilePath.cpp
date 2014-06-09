@@ -33,12 +33,13 @@ struct typeString
 };
 
 static typeString gMap[] = {
-    {FilePath::RUNTIME, string("runtime")},
-    {FilePath::COMPARE, string("compare")},
-    {FilePath::INPUT, string("inputTable")},
-    {FilePath::OUTPUT, string("outputTable")},
-    {FilePath::AUTOMACHINE, string("autoMachine")},
-    {FilePath::STANDARD, string("standard")}
+    {FilePath::RUNTIME, string("runtime.xml")},
+    {FilePath::COMPARE, string("compare.xml")},
+    {FilePath::INPUT, string("inputTable.txt")},
+    {FilePath::OUTPUT, string("outputTable.txt")},
+    {FilePath::AUTOMACHINE, string("autoMachine.xml")},
+    {FilePath::STANDARD, string("standard.xml")},
+    {FilePath::RESULT, string("result.txt")}
 };
 
 
@@ -55,7 +56,6 @@ string FilePath::file(FilePath::TYPE t)
             break;
         }
     }
-    os <<".xml";
     return os.str();
 }
 

@@ -28,7 +28,8 @@ class FilePath
             INPUT,
             OUTPUT,
             AUTOMACHINE,
-            STANDARD
+            STANDARD,
+            RESULT
         }TYPE;
         static void setEnvPath(const char* str);
         static std::string file(TYPE t);
