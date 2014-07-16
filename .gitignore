@@ -4,6 +4,7 @@
 *.o
 *.so
 *.jpg
+*.out
 
 # Compiled Dynamic libraries
 #*.so
@@ -16,9 +17,6 @@
 
 tags
 *.swp
-GP_MAIN
-TEST
-GP_SUIT
 libGP.so
 output/*
 temp/*

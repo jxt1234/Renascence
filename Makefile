@@ -1,4 +1,4 @@
-all:libGP.so TEST GP_SUIT 
+all:libGP.so test.out gpsuit.out 
 
 ALL_INCLUESlibGP.so= include/core/status.h include/core/AbstractGP.h include/core/GPProducerFactory.h include/core/funcStatusType.h include/core/genetic_operator.h include/core/GP_XmlString.h include/core/IDataBase.h include/core/function.h include/core/GPData.h include/core/IGPAutoDefFunction.h include/core/group.h include/core/GPProducer.h include/core/computeTree.h include/system/xmlDataBase.h include/system/GenerateSystem.h include/system/recurse_tree.h include/system/computeSystem.h include/system/system_lib.h include/system/xmlGenerateSystem.h include/api/evolution.h include/evolution/GPEvolutionGroup.h include/evolution/mutateTree.h include/evolution/AbstractEvolutionGroup.h include/evolution/evolutionTree.h include/math/AbstractPoint.h include/math/carryTree.h include/math/carryArray.h include/math/carryPoint.h include/math/GPSingleTree.h include/utils/statusMachine.h include/utils/RefCount.h include/utils/AutoClean.h include/utils/BasicTree.h include/utils/debug.h include/utils/GP_Clock.h include/xml/xmlGPDataLoader.h include/xml/xmlFunctionLoader.h include/xml/xmlGPLoader.h include/xml/xmlReader.h include/xml/xmlTree.h
 
@@ -67,46 +67,46 @@ build/xml_xmlTree.o : src/xml/xmlTree.cpp ${ALL_INCLUESlibGP.so}
 build/utils_debug.o : src/utils/debug.c ${ALL_INCLUESlibGP.so}
 	gcc -O3 -o build/utils_debug.o -c src/utils/debug.c -Iinclude 
 
-ALL_INCLUESTEST= include/test/GPTest.h
+ALL_INCLUEStest.out= include/test/GPTest.h
 
-TEST:  build/test_AbstractPointTest.o build/test_GPloadXmlTreeTest2.o build/test_GPXmlEvolutionTest.o build/test_GPEvolutionTest.o build/test_GPSingleTreeTest.o build/test_GPloadXmlTreeTest.o build/test_GPGPDataTest.o build/test_GPTest.o build/test_GPxmlTreeTest.o build/test_GPSearchIOTest.o build/test_GPRunTest.o build/main.o libGP.so
-	g++  -O3 -o TEST  build/test_AbstractPointTest.o build/test_GPloadXmlTreeTest2.o build/test_GPXmlEvolutionTest.o build/test_GPEvolutionTest.o build/test_GPSingleTreeTest.o build/test_GPloadXmlTreeTest.o build/test_GPGPDataTest.o build/test_GPTest.o build/test_GPxmlTreeTest.o build/test_GPSearchIOTest.o build/test_GPRunTest.o build/main.o  ./libGP.so -ldl -lpthread  ${SELF_VARIABLES}
-build/test_AbstractPointTest.o : src/test/AbstractPointTest.cpp ${ALL_INCLUESTEST}
+test.out:  build/test_main.o build/test_AbstractPointTest.o build/test_GPloadXmlTreeTest2.o build/test_GPXmlEvolutionTest.o build/test_GPEvolutionTest.o build/test_GPSingleTreeTest.o build/test_GPloadXmlTreeTest.o build/test_GPGPDataTest.o build/test_GPTest.o build/test_GPxmlTreeTest.o build/test_GPSearchIOTest.o build/test_GPRunTest.o libGP.so
+	g++  -O3 -o test.out  build/test_main.o build/test_AbstractPointTest.o build/test_GPloadXmlTreeTest2.o build/test_GPXmlEvolutionTest.o build/test_GPEvolutionTest.o build/test_GPSingleTreeTest.o build/test_GPloadXmlTreeTest.o build/test_GPGPDataTest.o build/test_GPTest.o build/test_GPxmlTreeTest.o build/test_GPSearchIOTest.o build/test_GPRunTest.o  ./libGP.so -ldl -lpthread  ${SELF_VARIABLES}
+build/test_main.o : src/test/main.cpp ${ALL_INCLUEStest.out}
+	g++ -O3 -o build/test_main.o -c src/test/main.cpp -Iinclude 
+build/test_AbstractPointTest.o : src/test/AbstractPointTest.cpp ${ALL_INCLUEStest.out}
 	g++ -O3 -o build/test_AbstractPointTest.o -c src/test/AbstractPointTest.cpp -Iinclude 
-build/test_GPloadXmlTreeTest2.o : src/test/GPloadXmlTreeTest2.cpp ${ALL_INCLUESTEST}
+build/test_GPloadXmlTreeTest2.o : src/test/GPloadXmlTreeTest2.cpp ${ALL_INCLUEStest.out}
 	g++ -O3 -o build/test_GPloadXmlTreeTest2.o -c src/test/GPloadXmlTreeTest2.cpp -Iinclude 
-build/test_GPXmlEvolutionTest.o : src/test/GPXmlEvolutionTest.cpp ${ALL_INCLUESTEST}
+build/test_GPXmlEvolutionTest.o : src/test/GPXmlEvolutionTest.cpp ${ALL_INCLUEStest.out}
 	g++ -O3 -o build/test_GPXmlEvolutionTest.o -c src/test/GPXmlEvolutionTest.cpp -Iinclude 
-build/test_GPEvolutionTest.o : src/test/GPEvolutionTest.cpp ${ALL_INCLUESTEST}
+build/test_GPEvolutionTest.o : src/test/GPEvolutionTest.cpp ${ALL_INCLUEStest.out}
 	g++ -O3 -o build/test_GPEvolutionTest.o -c src/test/GPEvolutionTest.cpp -Iinclude 
-build/test_GPSingleTreeTest.o : src/test/GPSingleTreeTest.cpp ${ALL_INCLUESTEST}
+build/test_GPSingleTreeTest.o : src/test/GPSingleTreeTest.cpp ${ALL_INCLUEStest.out}
 	g++ -O3 -o build/test_GPSingleTreeTest.o -c src/test/GPSingleTreeTest.cpp -Iinclude 
-build/test_GPloadXmlTreeTest.o : src/test/GPloadXmlTreeTest.cpp ${ALL_INCLUESTEST}
+build/test_GPloadXmlTreeTest.o : src/test/GPloadXmlTreeTest.cpp ${ALL_INCLUEStest.out}
 	g++ -O3 -o build/test_GPloadXmlTreeTest.o -c src/test/GPloadXmlTreeTest.cpp -Iinclude 
-build/test_GPGPDataTest.o : src/test/GPGPDataTest.cpp ${ALL_INCLUESTEST}
+build/test_GPGPDataTest.o : src/test/GPGPDataTest.cpp ${ALL_INCLUEStest.out}
 	g++ -O3 -o build/test_GPGPDataTest.o -c src/test/GPGPDataTest.cpp -Iinclude 
-build/test_GPTest.o : src/test/GPTest.cpp ${ALL_INCLUESTEST}
+build/test_GPTest.o : src/test/GPTest.cpp ${ALL_INCLUEStest.out}
 	g++ -O3 -o build/test_GPTest.o -c src/test/GPTest.cpp -Iinclude 
-build/test_GPxmlTreeTest.o : src/test/GPxmlTreeTest.cpp ${ALL_INCLUESTEST}
+build/test_GPxmlTreeTest.o : src/test/GPxmlTreeTest.cpp ${ALL_INCLUEStest.out}
 	g++ -O3 -o build/test_GPxmlTreeTest.o -c src/test/GPxmlTreeTest.cpp -Iinclude 
-build/test_GPSearchIOTest.o : src/test/GPSearchIOTest.cpp ${ALL_INCLUESTEST}
+build/test_GPSearchIOTest.o : src/test/GPSearchIOTest.cpp ${ALL_INCLUEStest.out}
 	g++ -O3 -o build/test_GPSearchIOTest.o -c src/test/GPSearchIOTest.cpp -Iinclude 
-build/test_GPRunTest.o : src/test/GPRunTest.cpp ${ALL_INCLUESTEST}
+build/test_GPRunTest.o : src/test/GPRunTest.cpp ${ALL_INCLUEStest.out}
 	g++ -O3 -o build/test_GPRunTest.o -c src/test/GPRunTest.cpp -Iinclude 
-build/main.o : ./main.cpp ${ALL_INCLUESTEST}
-	g++ -O3 -o build/main.o -c ./main.cpp -Iinclude 
 
-ALL_INCLUESGP_SUIT=
+ALL_INCLUESgpsuit.out=
 
-GP_SUIT:  build/GPSuit_main.o build/GPSuit_FilePath.o libGP.so
-	g++  -O3 -o GP_SUIT  build/GPSuit_main.o build/GPSuit_FilePath.o  ./libGP.so ${SELF_VARIABLES}
-build/GPSuit_main.o : src/GPSuit/main.cpp ${ALL_INCLUESGP_SUIT}
+gpsuit.out:  build/GPSuit_main.o build/GPSuit_FilePath.o libGP.so
+	g++  -O3 -o gpsuit.out  build/GPSuit_main.o build/GPSuit_FilePath.o  ./libGP.so ${SELF_VARIABLES}
+build/GPSuit_main.o : src/GPSuit/main.cpp ${ALL_INCLUESgpsuit.out}
 	g++ -O3 -o build/GPSuit_main.o -c src/GPSuit/main.cpp -Iinclude 
-build/GPSuit_FilePath.o : src/GPSuit/FilePath.cpp ${ALL_INCLUESGP_SUIT}
+build/GPSuit_FilePath.o : src/GPSuit/FilePath.cpp ${ALL_INCLUESgpsuit.out}
 	g++ -O3 -o build/GPSuit_FilePath.o -c src/GPSuit/FilePath.cpp -Iinclude 
 
 clean:
 	rm build/*.o
 	rm libGP.so
-	rm TEST
-	rm GP_SUIT
+	rm test.out
+	rm gpsuit.out

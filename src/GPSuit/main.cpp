@@ -24,34 +24,41 @@ using namespace std;
 int main(int argc, char** argv)
 {
     /*Prepare Runtime*/
+    assert(argc>=2);
+    FilePath::setEnvPath(argv[1]);
     GPProducer* sys = GPProducerFactory::create();
     AutoClean<GPProducer> __clean_sys(sys);
     ifstream is;
-    assert(FilePath::open(FilePath::RUNTIME, is));
+    bool res = FilePath::open(FilePath::RUNTIME, is);
+    assert(true == res);
     sys->vAddContent(is, NULL);
     is.close();
     /*Load Standard function*/
-    assert(FilePath::open(FilePath::STANDARD, is));
+    res = FilePath::open(FilePath::STANDARD, is);
+    assert(true == res);
     IGPAutoDefFunction* function = sys->vCreateFunctionFromIS(is);
     AutoClean<IGPAutoDefFunction> __clean_funtion(function);
     is.close();
     /*Find all input and output file*/
     vector<string> inputFiles;
     vector<string> outputFiles;
-    assert(FilePath::open(FilePath::INPUT, is));
+    res = (FilePath::open(FilePath::INPUT, is));
+    assert(true == res);
     string temp;
     while (is >> temp)
     {
         inputFiles.push_back(temp);
     }
     is.close();
-    assert(FilePath::open(FilePath::OUTPUT, is));
+    res = (FilePath::open(FilePath::OUTPUT, is));
+    assert(true == res);
     while (is >> temp)
     {
         outputFiles.push_back(temp);
     }
     is.close();
-    assert(inputFiles.size() == outputFiles.size());
+    res = (inputFiles.size() == outputFiles.size());
+    assert(true == res);
     /*TODO Load Compare function*/
     /*Start to compare*/
     int n = inputFiles.size();

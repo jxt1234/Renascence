@@ -15,6 +15,7 @@
 ******************************************************************/
 
 #include "FilePath.h"
+#include "utils/debug.h"
 #include <sstream>
 
 using namespace std;
@@ -50,7 +51,7 @@ string FilePath::file(FilePath::TYPE t)
     os << gEnvPath;
     for (int i=0; i<l; ++i)
     {
-        if (gMap[i].type = t)
+        if (gMap[i].type == t)
         {
             os << gMap[i].content;
             break;
@@ -62,6 +63,7 @@ string FilePath::file(FilePath::TYPE t)
 bool FilePath::open(FilePath::TYPE t, ifstream& is)
 {
     string name = file(t);
+    FUNC_PRINT_ALL(name.c_str(), s);
     is.open(name.c_str());
     if (is.fail())
     {

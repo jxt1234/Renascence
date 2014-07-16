@@ -16,6 +16,6 @@
 #include "test/GPTest.h"
 int main()
 {
-	GPTestSuit::run();
+    GPTestSuit::run();
     return 1;
 }

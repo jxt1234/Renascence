@@ -9,10 +9,10 @@ CPP="g++ "
 C="gcc "
 MIDPATH='build/'
 
-MAIN_PROGRAM=['libGP.so', 'TEST', 'GP_SUIT']
+MAIN_PROGRAM=['libGP.so', 'test.out', 'gpsuit.out']
 gDepends = ['', 'libGP.so', 'libGP.so']
 gDirs = [['core', 'system','platform','api', 'evolution', 'math', 'utils', 'xml'], ['test'], ['GPSuit']]
-gSrcFiles = [[], ['./main.cpp'], []]
+gSrcFiles = [[], [], []]
 gLinks = [' -lpthread -ldl', ' ./libGP.so -ldl -lpthread ', ' ./libGP.so']
 include_Flag = '-Iinclude'
 
