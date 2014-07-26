@@ -60,6 +60,9 @@ GP_Output xmlGPLoader::run()
                 m->compute(m, m);
                 return m->output();
             }
+
+            virtual int inputNumber() const {return m->inputNumber(m);} 
+            virtual int outputNumber() const {return m->outputNumber(m);}
         private:
             xmlGPLoader* m;
     };

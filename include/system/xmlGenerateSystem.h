@@ -57,6 +57,8 @@ class xmlGPADF:public IGPAutoDefFunction
         xmlGPADF(const xmlGPADF& adf);
         void operator=(const xmlGPADF& adf);
         virtual ~xmlGPADF();
+        virtual int inputNumber() const {return mBase->inputNumber(mSys);}
+        virtual int outputNumber() const {return mBase->outputNumber(mSys);}
     private:
         xmlGenerateSystem* mSys;
         AbstractGP* mBase;

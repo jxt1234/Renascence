@@ -213,6 +213,31 @@ GP_Output AbstractGP::output()
     return result;
 }
 
+int AbstractGP::outputNumber(IRuntimeDataBase* map)
+{
+    return map->vQueryOutputNumber(mFunc);
+}
+
+int AbstractGP::inputNumber(IRuntimeDataBase* map)
+{
+    list<AbstractGP*> cacheQueue;
+    cacheQueue.push_back(this);
+    int res = 0;
+    while(!cacheQueue.empty())
+    {
+        AbstractGP* current = cacheQueue.front();
+        res += map->vQueryInputsNumber(current->mFunc);
+        for (int i=0; i<current->mChildren.size(); ++i)
+        {
+            AbstractGP* p = dynamic_cast<AbstractGP*>(current->mChildren[i]);
+            assert(NULL!=p);
+            cacheQueue.push_back(p);
+        }
+        cacheQueue.pop_front();
+    }
+    return res;
+}
+
 vector<int> AbstractGP::setInputNumber(IRuntimeDataBase* map)
 {
     vector<int> funcId;

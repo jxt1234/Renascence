@@ -45,6 +45,7 @@ class IRuntimeDataBase
         virtual ~IRuntimeDataBase(){}
         virtual computeFunction vGetCompute(int id) = 0;
         virtual int vQueryInputsNumber(int id){return 0;}
+        virtual int vQueryOutputNumber(int id){return 0;}
 };
 
 #endif

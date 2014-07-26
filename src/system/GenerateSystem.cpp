@@ -38,17 +38,22 @@ IGPAutoDefFunction* GenerateSystem::vCreateFunctionFromName(const std::string& n
     class simpleADF:public IGPAutoDefFunction
     {
         public:
-            simpleADF(computeFunction f):mF(f){}
+            simpleADF(computeFunction f, int i, int o):mF(f), mInp(i), mOut(o){}
             ~simpleADF(){}
 
             virtual GP_Output run(const GP_Input& input)
             {
                 return mF(input);
             }
+
+            virtual int inputNumber() const {return mInp;}
+            virtual int outputNumber() const {return mOut;}
         private:
             computeFunction mF;
+            int mInp;
+            int mOut;
     };
-    IGPAutoDefFunction* result = new simpleADF(f.basic);
+    IGPAutoDefFunction* result = new simpleADF(f.basic, f.inputType.size(), f.outputType.size());
     return result;
 }
 
@@ -57,6 +62,13 @@ int GenerateSystem::vQueryInputsNumber(int id)
     assert(NULL!=mComputeSystem);
     const computeSystem::function& f = mComputeSystem->getDetailFunction(id);
     return f.inputType.size();
+}
+
+int GenerateSystem::vQueryOutputNumber(int id)
+{
+    assert(NULL!=mComputeSystem);
+    const computeSystem::function& f = mComputeSystem->getDetailFunction(id);
+    return f.outputType.size();
 }
 
 vector<int> GenerateSystem::searchSequence(int out)

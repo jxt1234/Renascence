@@ -25,7 +25,7 @@ class GPProducer:public statusBasic, public RefCount
     public:
         GPProducer(int defaultOutput=0):mDefaultOutput(defaultOutput){}
         virtual ~GPProducer(){}
-        inline IGPAutoDefFunction* createFunction(int outputTypeId, int inputTypeId)
+        inline IGPAutoDefFunction* createFunction(int outputTypeId, int inputTypeId = -1)
         {
             std::vector<int> out(1, outputTypeId);
             std::vector<int> inp(1, inputTypeId);

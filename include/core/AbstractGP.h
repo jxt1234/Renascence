@@ -50,6 +50,8 @@ class AbstractGP:public AbstractGPPoint, public IGPUnit
         virtual GP_Output output();
         /*For Status free and copy*/
         std::vector<int> getStatus();
+        virtual int inputNumber(IRuntimeDataBase* map);
+        virtual int outputNumber(IRuntimeDataBase* map);
         /*Old API to cover GeneticProgram*/
         void reset();//Clear all mSave
         //If the functionIds is empty, it means to save all points

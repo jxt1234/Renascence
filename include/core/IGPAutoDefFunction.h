@@ -19,6 +19,8 @@
 #include "function.h"
 #include "status.h"
 #include "utils/RefCount.h"
+#include <istream>
+#include <ostream>
 class IGPUnit:public RefCount
 {
     public:
@@ -30,6 +32,7 @@ class IGPUnit:public RefCount
         virtual void compute(IRuntimeDataBase* map, statusBasic* sta)=0;
         virtual GP_Output output() = 0;
 };
+
 class IGPAutoDefFunction:public RefCount
 {
     public:
@@ -44,6 +47,12 @@ class IGPAutoDefFunction:public RefCount
         virtual void load(std::istream& is) {}
         /*For evolution*/
         virtual void mutate(){}
+
+        /*If the function support variable input/output, return -1*/
+        //virtual int inputNumber() const {return -1;}
+        //virtual int outputNumber() const {return -1;}
+        virtual int inputNumber() const = 0; 
+        virtual int outputNumber() const = 0;
         //Basic Function
         IGPAutoDefFunction(){}
         virtual ~IGPAutoDefFunction(){}

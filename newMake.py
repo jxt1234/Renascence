@@ -4,7 +4,7 @@
 import os
 import sys
 CFLAGS="-O3"
-#CFLAGS="-rdynamic "
+#CFLAGS="-rdynamic -g"
 CPP="g++ "
 C="gcc "
 MIDPATH='build/'

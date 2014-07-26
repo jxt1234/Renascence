@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef CORE_GPPRODUCERFACTORY_H
 #define CORE_GPPRODUCERFACTORY_H
-#include "GPProducer.h"
+class GPProducer;
 class GPProducerFactory
 {
     public:

@@ -15,6 +15,7 @@
 ******************************************************************/
 #include "FilePath.h"
 #include "core/GPProducerFactory.h"
+#include "core/GPProducer.h"
 #include <fstream>
 #include "utils/AutoClean.h"
 #include <assert.h>

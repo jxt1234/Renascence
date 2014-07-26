@@ -32,6 +32,7 @@ class GenerateSystem:public GPProducer, public IRuntimeDataBase
         virtual IGPAutoDefFunction* vCreateFunctionFromName(const std::string& name);
         virtual computeFunction vGetCompute(int id);
         virtual int vQueryInputsNumber(int id);
+        virtual int vQueryOutputNumber(int id);
         virtual ~GenerateSystem(){}
         void setComputeSystem(computeSystem* comsys);
         inline int getFuncId(const std::string& name){return mComputeSystem->vQueryFuncId(name);}
