@@ -29,10 +29,13 @@ funcStatusType::funcStatusType(const std::string& name, IFunctionTable* table):I
     allocf = (statusAllocMethod)(table->vGetFunction(func));
 
     func = name + "_free";
-    freef = (statusVaryMethod)(table->vGetFunction(func));
+    freef = (statusFreeMethod)(table->vGetFunction(func));
 
     func = name + "_vary";
     mutatef = (statusVaryMethod)(table->vGetFunction(func));
+
+    func = name + "_map";
+    mapf = (statusMapMethod)(table->vGetFunction(func));
 
     func = name + "_copy";
     copyf = (statusCopyMethod)(table->vGetFunction(func));
@@ -42,7 +45,7 @@ funcStatusType::funcStatusType(const std::string& name, IFunctionTable* table):I
 
     func = name + "_load";
     loadf = (statusLoadMethod)(table->vGetFunction(func));
-    /*TODO Print which function is NULL*/    
+    /*TODO Print which function is NULL*/
 }
 void* funcStatusType::salloc() const
 {
@@ -56,8 +59,16 @@ void funcStatusType::sfree(void* contents) const
 }
 void funcStatusType::mutate(void* contents) const
 {
-    assert(NULL!=mutatef);
-    mutatef(contents);
+    assert(NULL!=mutatef || NULL!=mapf);
+    if (NULL != mutatef)
+    {
+        mutatef(contents);
+    }
+    else if(NULL!=mapf)
+    {
+        double f = (rand() % 10000)/1000.0;
+        mapf(contents, f);
+    }
 }
 void funcStatusType::copy(void* src, void* dst) const
 {
@@ -67,21 +78,10 @@ void funcStatusType::copy(void* src, void* dst) const
 void funcStatusType::print(std::ostream& out, void* contents) const
 {
     if(NULL==printvf) return;
-    string c = printvf(contents);
-    out << c;
+    printvf(out, contents);
 }
 void* funcStatusType::load(std::istream& in) const
 {
     if(NULL==loadf) return NULL;
-    /*The divide is assumed to be " "*/
-    ostringstream os;
-    string c;
-    bool remain = in >> c;
-    os << c;
-    while(remain)
-    {
-        remain = in >> c;
-        if(remain) os << " " << c;
-    }
-    return loadf(os.str());
+    return loadf(in);
 }

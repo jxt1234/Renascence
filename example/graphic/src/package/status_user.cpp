@@ -57,22 +57,21 @@ void TrFilterMatrix_copy(void* src, void* dst)
     memcpy(d->data, s->data, sizeof(float)*DEFAULT_DIM*DEFAULT_DIM);
 }
 
-std::string TrFilterMatrix_print(void* src)
+void TrFilterMatrix_print(std::ostream& out, void* src)
 {
-    std::ostringstream res;
+    std::ostream& res = out;
     TrFilterMatrix* m = (TrFilterMatrix*)src;
     res << m->dim<<" "<<m->offset<<" ";
     for (int i=0; i<(m->dim)*(m->dim); ++i)
     {
         res << m->data[i]<<" ";
     }
-    return res.str();
 }
 
-void* TrFilterMatrix_load(std::string src)
+void* TrFilterMatrix_load(std::istream& src)
 {
     //std::cout << src<<std::endl;
-    std::istringstream inp(src);
+	std::istream& inp = src;
     int dim;
     inp>>dim;
     TrFilterMatrix* m = TrFilterMatrixAlloc(dim);
@@ -116,24 +115,21 @@ void float_copy(void* src, void* dst)
     memcpy(dst, src, sizeof(float)*MAX_GRAPHIC_NUM);
 }
 
-std::string float_print(void* src)
+void float_print(std::ostream& out, void* src)
 {
-    std::ostringstream res;
     float* f = (float*)src;
     for (int i=0; i<MAX_GRAPHIC_NUM; ++i)
     {
-        res << f[i] <<" ";
+        out << f[i] <<" ";
     }
-    return res.str();
 }
 
-void* float_load(std::string src)
+void* float_load(std::istream& src)
 {
-    std::istringstream inp(src);
     float* f = (float*)malloc(sizeof(float)*MAX_GRAPHIC_NUM);
     for (int i=0; i<MAX_GRAPHIC_NUM; ++i)
     {
-        inp >> f[i];
+        src >> f[i];
     }
     return (void*)f;
 }
@@ -166,27 +162,24 @@ void TrRegreeMode_copy(void* src, void* dst)
     TrRegreeModeCopy(s,d);
 }
 
-std::string TrRegreeMode_print(void* src)
+void TrRegreeMode_print(std::ostream& out, void* src)
 {
-    std::ostringstream res;
     TrRegreeMode* m = (TrRegreeMode*)src;
-    res << m->dim<<" ";
+    out << m->dim<<" ";
     for (int i=0; i<m->dim*m->dim; ++i)
     {
-        res << m->mode[i]<<" ";
+        out << m->mode[i]<<" ";
     }
-    return res.str();
 }
 
-void* TrRegreeMode_load(std::string src)
+void* TrRegreeMode_load(std::istream& src)
 {
-    std::istringstream inp(src);
     int dim;
-    inp >> dim;
+    src >> dim;
     TrRegreeMode* mode = TrRegreeModeAlloc(dim);
     for(int i=0; i<dim*dim; ++i)
     {
-        inp >> mode->mode[i];
+        src >> mode->mode[i];
     }
     return (void*)mode;
 }

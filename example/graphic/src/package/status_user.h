@@ -9,9 +9,9 @@ void TrFilterMatrix_vary(void* src);
 
 void TrFilterMatrix_copy(void* src, void* dst);
 
-std::string TrFilterMatrix_print(void* src);
+void TrFilterMatrix_print(std::ostream& out, void* src);
 
-void* TrFilterMatrix_load(std::string src);
+void* TrFilterMatrix_load(std::istream& src);
 
 void* float_alloc();
 
@@ -21,9 +21,9 @@ void float_vary(void* src);
 
 void float_copy(void* src, void* dst);
 
-std::string float_print(void* src);
+void float_print(std::ostream& out, void* src);
 
-void* float_load(std::string src);
+void* float_load(std::istream& src);
 
 void* TrRegreeMode_alloc();
 
@@ -33,8 +33,8 @@ void TrRegreeMode_vary(void* src);
 
 void TrRegreeMode_copy(void* src, void* dst);
 
-std::string TrRegreeMode_print(void* src);
+void TrRegreeMode_print(std::ostream& out, void* src);
 
-void* TrRegreeMode_load(std::string src);
+void* TrRegreeMode_load(std::istream& src);
 
 }

@@ -138,7 +138,8 @@ void xmlGPLoader::_result(xmlReader::package* p)
         {
             content = content +" "+ _p->attr[j];
         }
-        unit.content = _load(content);
+        istringstream is(content);
+        unit.content = _load(is);
         unit.freeCallBack = _free;
         (output_save->output).push_back(unit);
     }

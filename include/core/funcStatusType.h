@@ -17,11 +17,20 @@
 #define CORE_FUNCSTATUSTYPE_H
 #include "status.h"
 #include "user/IFunctionTable.h"
+//NAME_alloc Alloc and initialize the status
 typedef void*(*statusAllocMethod)();
+//NAME_free Denitialize the status and free memory
+typedef void(*statusFreeMethod)(void*);
+//NAME_vary Randomly vary the status
 typedef void(*statusVaryMethod)(void*);
+//NAME_map Map (0,1) value to a status
+typedef void(*statusMapMethod)(void*, double);
+//NAME_copy Copy the status from src to dst, then the mutate of src will not affect dst
 typedef void(*statusCopyMethod)(void* src, void* dst);
-typedef std::string(*statusPrintMethod)(void*);
-typedef void*(*statusLoadMethod)(std::string);
+//NAME_print Print the status to outputstream
+typedef void(*statusPrintMethod)(std::ostream&, void*);
+//NAME_load Load the status from inputstream
+typedef void*(*statusLoadMethod)(std::istream&);
 
 class funcStatusType:public IStatusType
 {
@@ -45,8 +54,9 @@ class funcStatusType:public IStatusType
         virtual void* load(std::istream& in) const;
     private:
         statusAllocMethod allocf;
-        statusVaryMethod freef;
+        statusFreeMethod freef;
         statusVaryMethod mutatef;
+        statusMapMethod mapf;
         statusCopyMethod copyf;
         statusPrintMethod printvf;
         statusLoadMethod loadf;

@@ -5,7 +5,7 @@ import os
 import sys
 CFLAGS="-O3"
 CLINK=""
-MAIN_PROGRAM=['GP_MAIN']
+MAIN_PROGRAM=['GP_MAIN', 'libpics.so']
 if len(sys.argv)>=1:
 	for i in range(1, len(sys.argv)):
 		MAIN_PROGRAM.append(sys.argv[i])
@@ -17,9 +17,9 @@ MIDPATH='build/'
 
 cmd = "find include -name \"*.h\""
 include_h = os.popen(cmd).read().split('\n');
-cmd = "find src -name \"*.cpp\""
+cmd = "find src third_party -name \"*.cpp\""
 sources_cpp = os.popen(cmd).read().split('\n');
-cmd = "find src -name \"*.c\""
+cmd = "find src third_party -name \"*.c\""
 sources_c = os.popen(cmd).read().split('\n');
 
 sources_c.append('./main.c')
@@ -27,7 +27,7 @@ sources_c.append('./main.c')
 fileContents = 'include make.self\n'
 
 #Head Files
-include_Flag = '-Iinclude'
+include_Flag = '-Iinclude -Ithird_party/libjpeg'
 include = "ALL_INCLUES"
 fileContents += include+'='
 for h in include_h:
