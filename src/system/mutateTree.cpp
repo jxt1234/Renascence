@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "evolution/mutateTree.h"
+#include "system/mutateTree.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <sstream>

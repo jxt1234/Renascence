@@ -23,7 +23,7 @@
 class GPProducer:public statusBasic, public RefCount
 {
     public:
-        GPProducer(int defaultOutput=0):mDefaultOutput(defaultOutput){}
+        GPProducer(){}
         virtual ~GPProducer(){}
         inline IGPAutoDefFunction* createFunction(int outputTypeId, int inputTypeId = -1)
         {
@@ -41,19 +41,6 @@ class GPProducer:public statusBasic, public RefCount
         virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true) = 0;
         virtual IGPAutoDefFunction* vCreateFromADF(IGPAutoDefFunction* src) = 0;
         virtual IGPAutoDefFunction* vCreateFunctionFromName(const std::string& name) = 0;
-        /*The output is the target function Id*/
-        bool initGP(AbstractGP* tree, int output = -1, bool random = true);
-        bool initGP(AbstractGP* tree, const std::string& type, bool random = true);
-        void mutate(AbstractGP* tree);
-        void freeStatus(AbstractGP* tree);
-    protected:
-        virtual void vSetInputNumber(AbstractGP* gp) = 0;
-        bool initGP(AbstractGP* tree, const std::vector<int>& queue);
-        virtual std::vector<int> searchSequence(int output) = 0;
-        virtual std::vector<std::vector<int> > searchAllSequence(int output) = 0;
-        virtual std::vector<int> searchRandSequence(int output) = 0;
-        virtual std::vector<int> searchType(const std::string& type) = 0;
-        int mDefaultOutput;
 };
 
 #endif

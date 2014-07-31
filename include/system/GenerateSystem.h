@@ -25,8 +25,8 @@
 class GenerateSystem:public GPProducer, public IRuntimeDataBase
 {
     public:
-        GenerateSystem():GPProducer(0), mComputeSystem(NULL){}
-        GenerateSystem(computeSystem* sys):GPProducer(0){setComputeSystem(sys);}
+        GenerateSystem():mComputeSystem(NULL){}
+        GenerateSystem(computeSystem* sys){setComputeSystem(sys);}
         virtual IGPAutoDefFunction* vCreateFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true, bool random = false);
         virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true);
         virtual IGPAutoDefFunction* vCreateFunctionFromName(const std::string& name);
@@ -36,6 +36,8 @@ class GenerateSystem:public GPProducer, public IRuntimeDataBase
         virtual ~GenerateSystem(){}
         void setComputeSystem(computeSystem* comsys);
         inline int getFuncId(const std::string& name){return mComputeSystem->vQueryFuncId(name);}
+        void mutate(AbstractGP* tree);
+        void freeStatus(AbstractGP* tree);
     protected:
         virtual IGPAutoDefFunction* vCreateADFFromGP(AbstractGP* gp) = 0;
         virtual void vSetInputNumber(AbstractGP* gp) {gp->setInputNumber(this);}
@@ -47,5 +49,9 @@ class GenerateSystem:public GPProducer, public IRuntimeDataBase
     private:
         void _allocStatusForQueue(std::vector<int>& queue);
         void _findMatchedFuncton(std::vector<std::vector<int> >& warpOutput, const std::vector<int>& outputType);
+        /*The output is the target function Id*/
+        bool initGP(AbstractGP* tree, int output, bool random = true);
+        bool initGP(AbstractGP* tree, const std::string& type, bool random = true);
+        bool initGP(AbstractGP* tree, const std::vector<int>& queue);
 };
 #endif

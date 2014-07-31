@@ -1,30 +1,28 @@
 #include "test/GPTest.h"
-#include "evolution/evolutionTree.h"
 #include "system/xmlGenerateSystem.h"
 
 #include <fstream>
 
 using namespace std;
 
-class GPloadXmlTreeTest:public GPTest
+class GPloadXmlTreeTest2:public GPTest
 {
     public:
         virtual void run()
         {
             xmlGenerateSystem gen;
             gen.addXml("func.xml", NULL, NULL);
-            evolutionTree::setGenSystem(&gen);
-            xmlTree _tree;
-            _tree.loadFile("result.xml");
-            mutateTree* tree = mutateTree::loadXmlTree(&_tree, &gen);
+            ifstream f("result.xml");
+            IGPAutoDefFunction* gp = gen.vCreateFunctionFromIS(f);
+            f.close();
             ofstream file;
-            file.open("output/result_test2.xml");
-            gen.xmlPrint(file, tree);
+            file.open("output/GPloadXmlTreeTest.xml");
+            gp->save(file);
             file.close();
-            delete tree;
+            gp->decRef();
         }
-        GPloadXmlTreeTest(){}
-        virtual ~GPloadXmlTreeTest(){}
+        GPloadXmlTreeTest2(){}
+        virtual ~GPloadXmlTreeTest2(){}
 };
 
-static GPTestRegister<GPloadXmlTreeTest> a("GPloadXmlTreeTest");
+static GPTestRegister<GPloadXmlTreeTest2> a("GPloadXmlTreeTest");

@@ -72,13 +72,12 @@ class AbstractGP:public AbstractGPPoint, public IGPUnit
             private:
                 statusBasic* mBasic;
         };
-    protected:
         void replacePoint(const std::vector<int> &numbers, int& cur);
         void replacePoint(const std::vector<int> &numbers);
+    protected:
         GP_Output up_compute(IRuntimeDataBase* map, statusBasic* sta);
         void _reset();
         GP_Output* mSave;
-        friend class GPProducer;
         //FIXME Reconstruct the xmlGPLoader
         friend class xmlGPLoader;
 };

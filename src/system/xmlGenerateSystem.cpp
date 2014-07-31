@@ -15,7 +15,7 @@
 ******************************************************************/
 #include "system/xmlGenerateSystem.h"
 /*FIXME chaos in model, the mutateTree shouln't be include here*/
-#include "evolution/mutateTree.h"
+#include "system/mutateTree.h"
 #include "system/system_lib.h"
 #include "utils/debug.h"
 #include <iostream>
