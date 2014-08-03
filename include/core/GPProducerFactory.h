@@ -16,9 +16,11 @@
 #ifndef CORE_GPPRODUCERFACTORY_H
 #define CORE_GPPRODUCERFACTORY_H
 class GPProducer;
+class IFunctionTable;
 class GPProducerFactory
 {
     public:
         static GPProducer* create();
+        static GPProducer* create(const char* file, IFunctionTable* t);
 };
 #endif

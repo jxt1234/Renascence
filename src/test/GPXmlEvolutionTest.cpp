@@ -1,6 +1,8 @@
 #include "test/GPTest.h"
-#include "system/xmlGenerateSystem.h"
+#include "core/GPProducer.h"
+#include "core/GPProducerFactory.h"
 #include "evolution/GPEvolutionGroup.h"
+#include "utils/AutoClean.h"
 #include <fstream>
 #include <iostream>
 
@@ -11,8 +13,9 @@ class GPXmlEvolutionTest:public GPTest
     public:
         virtual void run()
         {
-            xmlGenerateSystem gen;
-            gen.addXml("funcV2.xml", NULL, &cout);
+            GPProducer* sys = GPProducerFactory::create("funcV2.xml", NULL);
+            GPProducer& gen = *sys;
+            AUTOCLEAN(sys);
             int bmpId = gen.queryType(string("TrBmp"));
             int doubleId = gen.queryType(string("double"));
             vector<int> eOut;

@@ -20,3 +20,9 @@ GPProducer* GPProducerFactory::create()
 {
     return new xmlGenerateSystem;
 }
+GPProducer* GPProducerFactory::create(const char* file, IFunctionTable* t)
+{
+    xmlGenerateSystem* g = new xmlGenerateSystem;
+    g->addXml(file, t);
+    return g;
+}

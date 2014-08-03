@@ -15,16 +15,18 @@
 ******************************************************************/
 #ifndef UTILS_AUTOCLEAN_H
 #define UTILS_AUTOCLEAN_H
-template <class T>
+#include "RefCount.h"
 class AutoClean
 {
     public:
-        AutoClean(T* t):mT(t){}
+        AutoClean(RefCount* t):mT(t){}
         ~AutoClean()
         {
             mT->decRef();
         }
     private:
-        T* mT;
+        RefCount* mT;
 };
+
+#define AUTOCLEAN(t) AutoClean __##t(t);
 #endif

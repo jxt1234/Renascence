@@ -14,13 +14,8 @@ class GPcombineTest:public GPTest
     public:
         virtual void run()
         {
-            GPProducer* sys = GPProducerFactory::create();
-            AutoClean<GPProducer> __sys(sys);
-            {
-                ifstream os("funcV2.xml");
-                sys->vAddContent(os, NULL);
-                os.close();
-            }
+            GPProducer* sys = GPProducerFactory::create("funcV2.xml", NULL);
+            AUTOCLEAN(sys);
             int bmpId = sys->queryType(string("TrBmp"));
             const IStatusType& bmp = sys->queryType(bmpId);
             int doubleId = sys->queryType(string("double"));
@@ -33,13 +28,6 @@ class GPcombineTest:public GPTest
             GP_Output bmpoutput;//For input
             GP_Input bmpinput;
             IGPAutoDefFunction* c1 = sys->createFunction(matrixId);
-            //{
-            //    //Test for c1
-            //    GP_Input inp;
-            //    GP_Output out = c1->run(inp);
-            //    matrix.print(cout, out[0]);
-            //    out.clear();
-            //}
             funcs.push_back(c1);
             {
                 vector<int> input;

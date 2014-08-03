@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     assert(argc>=2);
     FilePath::setEnvPath(argv[1]);
     GPProducer* sys = GPProducerFactory::create();
-    AutoClean<GPProducer> __clean_sys(sys);
+    AutoClean __clean_sys(sys);
     ifstream is;
     bool res = FilePath::open(FilePath::RUNTIME, is);
     assert(true == res);
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
     res = FilePath::open(FilePath::STANDARD, is);
     assert(true == res);
     IGPAutoDefFunction* function = sys->vCreateFunctionFromIS(is);
-    AutoClean<IGPAutoDefFunction> __clean_funtion(function);
+    AutoClean __clean_funtion(function);
     is.close();
     /*Find all input and output file*/
     vector<string> inputFiles;

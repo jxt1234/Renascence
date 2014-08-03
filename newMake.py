@@ -63,7 +63,7 @@ def Generate_Output(outName, srcDirs, srcFiles, CLINK, depend):
 	def getSequencesAndAppend(src, program):
 		obj = getNameWithofO(src)
 		objs.append(obj)
-		sequence = MIDPATH + obj + ' : ' + src + ' ${'+include + '}\n'
+		sequence = MIDPATH + obj + ' : ' + src + " "+depend+" "+' ${'+include + '}\n'
 		sequence += '\t' + program + CFLAGS + ' -o ' + MIDPATH + obj + ' -c ' + src + ' '+include_Flag+' \n'
 		sequences.append(sequence)
 	for cpp in sources_cpp:

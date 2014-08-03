@@ -1,5 +1,7 @@
 #include "test/GPTest.h"
-#include "system/xmlGenerateSystem.h"
+#include "core/GPProducer.h"
+#include "core/GPProducerFactory.h"
+#include "utils/AutoClean.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -11,8 +13,9 @@ class GPSearchIOTest:public GPTest
         virtual void run()
         {
             /*Single*/
-            xmlGenerateSystem gen;
-            gen.addXml("func.xml", NULL);
+            GPProducer* sys = GPProducerFactory::create("func.xml", NULL);
+            AUTOCLEAN(sys);
+            GPProducer& gen = *sys;
             int outId = gen.queryType(string("TrFilterMatrix"));
             const IStatusType& ist = gen.queryType(outId);
             vector<int> out;
