@@ -1,4 +1,7 @@
+extern "C"
+{
 #include "regress/graphic_regress.h"
+}
 #include <assert.h>
 #include <string.h>
 #include "debug.h"
