@@ -71,7 +71,7 @@ void TrFilterMatrix_print(std::ostream& out, void* src)
 void* TrFilterMatrix_load(std::istream& src)
 {
     //std::cout << src<<std::endl;
-	std::istream& inp = src;
+    std::istream& inp = src;
     int dim;
     inp>>dim;
     TrFilterMatrix* m = TrFilterMatrixAlloc(dim);

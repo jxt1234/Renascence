@@ -6,7 +6,28 @@ extern "C"
 #include <string.h>
 #include "debug.h"
 
-void TrRegressExpand(TrBmp* src, TrRegreeMode* mode, float* X, integer* M, integer* N, int hasConst)
+#include "regress/ALFloatMatrix.h"
+
+static int getRegressNumber(TrRegreeMode* mode)
+{
+    int i, j;
+    int selectNumber = 0;
+    int dim = mode->dim;
+    assert(NULL!=mode);
+    for(i=0; i<dim; ++i)
+    {
+        for (j=0; j<dim; ++j)
+        {
+            if (1 == (mode->mode)[i*dim+j])
+            {
+                selectNumber++;
+            }
+        }
+    }
+    return selectNumber;
+}
+
+void TrRegressExpand(TrBmp* src, TrRegreeMode* mode, ALFloatMatrix* M, int hasConst)
 {
     assert(TrValidBmp(src));
     assert(NULL!=mode);
@@ -19,10 +40,10 @@ void TrRegressExpand(TrBmp* src, TrRegreeMode* mode, float* X, integer* M, integ
     const int lossPixels = (dim/2)*2;
     const int width = src->width-lossPixels;
     const int height = src->height -lossPixels;
+    int area = width*height;
     TrPixels* srcBase = src->pixels + staPos*src->width+staPos;
     select = (int*)malloc(sizeof(int)*dim*dim);
     assert(NULL!=select);
-    *M = width*height;
     /*Determine which value is used*/
     selectNumber = 0;
     for(i=0; i<dim; ++i)
@@ -35,26 +56,26 @@ void TrRegressExpand(TrBmp* src, TrRegreeMode* mode, float* X, integer* M, integ
             }
         }
     }
-    *N=selectNumber+hasConst;
     //Do Expanding
-    assert(NULL!=X);
-    for (k=0; k<selectNumber; ++k)
+    float* X = (float*)M->vGetAddr();
+    int stride = M->vRowByte()/M->vUnit();
+    for (i=0; i<height; ++i)
     {
-        for (i=0; i<height; ++i)
+        for (j=0; j<width; ++j)
         {
-            for (j=0; j<width; ++j)
+            for (k=0; k<selectNumber; ++k)
             {
                 TrPixels* p = srcBase+(i*src->width+j+ select[k]);
-                *(X+(i*width+j)+(width*height*k)) = (float)((int)p->r + (int)p->b +(int)p->g)/3.0;
+                *(X+(i*width+j)*stride+k) = (float)((int)p->r + (int)p->b +(int)p->g)/3.0;
             }
         }
     }
     if (hasConst)
     {
         //Add Const column, which is 1.0 for all
-        for (i=0; i<height*width; ++i)
+        for (i=0; i<area; ++i)
         {
-            *(X+i+k*height*width) = 1.0;
+            *(X+i*stride+stride-1) = 1.0;
         }
     }
     free(select);
@@ -133,36 +154,38 @@ TrFilterMatrix* TrRegressMatrix(TrBmp* src, TrBmp* target, TrRegreeMode* mode)
     assert(src->width*src->height == target->width*target->height);
     TrFilterMatrix* result;
     TrRegreeMode* oriMode;
-    int area = src->height*src->width;
+    const int lossPixels = (mode->dim/2)*2;
+    int area = (src->height-lossPixels)*(src->width-lossPixels);
     int i;
     const int dim = mode->dim;
-    //For lapack
-    float* parameters;
-    float* X;
-    float* Y;
-    float* WORK;
-    integer M, N, P=0;
-    integer LDB = 1;
-    integer LWORK;
-    integer INFO;
-
     result = TrFilterMatrixAlloc(mode->dim);
     /*Expand*/
     oriMode = TrRegreeSingleModeAlloc(mode->dim);
-    Y = (float*)malloc(area*sizeof(float));
-    assert(NULL!=Y);
-    X = (float*)malloc(area*sizeof(float)*(TrRegreeModeNumberCompute(mode)+1));
-    assert(NULL!=X);
-    TrRegressExpand(target, oriMode, Y, &M, &N, 0);
-    TrRegressExpand(src, mode, X, &M, &N, 1);
-    parameters = (float*)malloc(sizeof(float)*(N));
-    /*Run regress*/
-    LWORK = M+N+P;
-    WORK = (float*)malloc(sizeof(float)*LWORK);
-    assert(NULL!=WORK);
-    sgglse_(&M, &N, &P, X, &M, NULL, &LDB, Y, NULL, parameters, WORK, &LWORK, &INFO);
+    int x_w = getRegressNumber(mode);
+    ALFloatMatrix* X = new ALFloatMatrix(x_w+1, area);//Add constant
+    ALFloatMatrix* Y = new ALFloatMatrix(1, area);
+    TrRegressExpand(target, oriMode, Y, 0);
+    TrRegressExpand(src, mode, X, 1);
+    //Compute
+    ALMatrix* XT = new ALFloatMatrix;
+    XT->vTranspose(X);
+    delete X;//Not used in future
+    ALMatrix* XTX=new ALFloatMatrix;
+    XTX->vSTS(XT, true);
+    /*Result = (XTX)-1 * XT * Y, P, Q for mid compute*/
+    ALMatrix* P = new ALFloatMatrix;
+    ALMatrix* Q = new ALFloatMatrix;
+    P->vInverse(XTX);
+    Q->vProduct(P, XT);
+    P->vProduct(Q, Y);
+    //P is the result, delete other value
+    delete Q;
+    delete Y;
+    delete XTX;
+	delete XT;
     //Load value from parameters
     {
+        float* parameters = (float*)P->vGetAddr();
         int* mod = mode->mode;
         float* matrix = result->data;
         int cur = 0;
@@ -176,51 +199,9 @@ TrFilterMatrix* TrRegressMatrix(TrBmp* src, TrBmp* target, TrRegreeMode* mode)
         //The last parameters is offset
         result->offset = (int)parameters[cur];
     }
+	delete P;
 
     TrRegreeModeFree(oriMode);
-    //Free lapack parameters
-    free(parameters);
-    free(X);
-    free(Y);
-    free(WORK);
 
     return result;
-}
-void TrRegressMixFactor(TrBmp* dst, TrBmp** src, int inputNumber, float* parameters)
-{
-    assert(NULL!=src);
-    assert(NULL!=dst);
-    assert(NULL!=parameters);
-    int i;
-    int area = dst->width*dst->height;
-    for (i=0; i<inputNumber; ++i)
-    {
-        TrBmp* src_u = src[i];
-        assert(NULL!=src_u);
-        assert(area == src_u->width * src_u->height);
-    }
-    /*Allocate memory*/
-    TrRegreeMode* mode = TrRegreeModeAlloc(1);
-    float* X = (float*)malloc(sizeof(float)*area*inputNumber);
-    assert(NULL!=X);
-    float* Y = (float*)malloc(sizeof(float)*area);
-    assert(NULL!=Y);
-    integer M,N,LWORK,LDB=1,INFO, P=0;
-    float* WORK;
-    TrRegressExpand(dst, mode, Y, &M, &N, 0);
-    for (i=0; i<inputNumber; ++i)
-    {
-        TrRegressExpand(src[i], mode, X+i*area, &M, &N, 0);
-    }
-    N = inputNumber;
-    /*Run regress*/
-    LWORK = M+N+P;
-    WORK = (float*)malloc(sizeof(float)*LWORK);
-    assert(NULL!=WORK);
-    sgglse_(&M, &N, &P, X, &M, NULL, &LDB, Y, NULL, parameters, WORK, &LWORK, &INFO);
-    /*Free all mid memory*/
-    free(X);
-    free(Y);
-    free(WORK);
-    TrRegreeModeFree(mode);
 }

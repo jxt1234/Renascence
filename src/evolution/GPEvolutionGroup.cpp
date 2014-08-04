@@ -46,11 +46,7 @@ void GPEvolutionGroup::_restoreBackup()
     list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
     for (; iter!=mGroup.end(); iter++)
     {
-        if (NULL != *iter)
-        {
-            (*iter)->addRef();
-            mBackup.push_back(*iter);
-        }
+        mBackup.push_back(mSys->vCreateFromADF(*iter));
     }
 }
 
@@ -119,32 +115,33 @@ double GPEvolutionGroup::_fitCompute(IGPAutoDefFunction* g, IGPAutoDefFunction* 
 void GPEvolutionGroup::_best(IGPAutoDefFunction* fit)
 {
     int bestId = 0;
-    double max = _fitCompute(*(mGroup.begin()), fit);
+    double _max = _fitCompute(*(mGroup.begin()), fit);
     list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
     list<IGPAutoDefFunction*>::iterator bestIter = mGroup.begin();
     for (iter++; iter!=mGroup.end(); iter++)
     {
         double _f = _fitCompute(*iter, fit);
-        if (_f > max)
+        //FUNC_PRINT_ALL(_f, f);
+        if (_f > _max)
         {
             bestIter = iter;
-            max = _f;
+            _max = _f;
         }
     }
     if (mBest!=NULL)
     {
-        if (mBestFit <= max)
+        if (mBestFit <= _max)
         {
             mBest->decRef();
             mBest = *bestIter;
             (*bestIter)->addRef();
-            mBestFit = max;
+            mBestFit = _max;
         }
     }
     else
     {
         mBest = *bestIter;
-        mBestFit = max;
+        mBestFit = _max;
         (*bestIter)->addRef();
     }
 }
@@ -168,8 +165,7 @@ void GPEvolutionGroup::_mutate()
         {
             (*iter)->decRef();
             int n = rand()%mBackup.size();
-            mBackup[n]->addRef();
-            *iter = mBackup[n];
+            *iter = mSys->vCreateFromADF(mBackup[n]);
         }
         (*iter)->mutate();
     }
