@@ -26,8 +26,6 @@
 class computeSystem:public IPrintDataBase, public IGenerateDataBase
 {
     public:
-        std::vector<int> mOutputTypeId;//For search
-        std::vector<int> mInputTypeId;//For search
         struct function
         {
             //For print

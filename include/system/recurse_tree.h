@@ -16,13 +16,13 @@
 #ifndef VECTOR_POINT_TREE_H
 #define VECTOR_POINT_TREE_H
 #include "math/carryTree.h"
-#include "computeSystem.h"
 #include "utils/debug.h"
+class computeSystem;
 class computePoint:public carryPoint
 {
 friend class computeSearchTree;
 public:
-    computePoint(const vector<vector<int> >& data, const vector<int>& avail, computeSystem* sys):mData(data), mAvail(avail), mCur(0), mSys(sys){}
+    computePoint(const vector<vector<int> >& data, const vector<int>& avail, const vector<int>& input, computeSystem* sys):mData(data), mAvail(avail), mCur(0), mInput(input), mSys(sys){}
     const vector<int>& getData() const{return mData[mAvail[mCur]];}
     vector<int> filter(const vector<vector<int> >& combo, const vector<int>& output);
 protected:
@@ -40,11 +40,12 @@ protected:
         return res;
     }
 private:
-    computeSystem* mSys;
+    const vector<int>& mInput;
     const vector<vector<int> >& mData;
     vector<int> mAvail;
     int mCur;
     int mParent;
+    computeSystem* mSys;
 };
 
 

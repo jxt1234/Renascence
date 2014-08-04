@@ -71,7 +71,7 @@ int GenerateSystem::vQueryOutputNumber(int id)
     return f.outputType.size();
 }
 
-vector<int> GenerateSystem::searchSequence(int out)
+vector<int> GenerateSystem::searchSequence(int out, const vector<int>& input)
 {
     //Generate appointed output
     vector<vector<int> > warpOutput;
@@ -80,7 +80,7 @@ vector<int> GenerateSystem::searchSequence(int out)
     warpOutput.push_back(output_vector);
     vector<int> avail(1,0);
     //Generate approciate recurse_vector
-    computePoint* start = new computePoint(warpOutput, avail, mComputeSystem);
+    computePoint* start = new computePoint(warpOutput, avail, input, mComputeSystem);
     computeSearchTree tree(start);
     vector<int> result = tree.searchOne();
     if (NULL!=mComputeSystem)
@@ -93,13 +93,13 @@ vector<int> GenerateSystem::searchSequence(int out)
     return result;
 }
 
-std::vector<std::vector<int> > GenerateSystem::searchAllSequence(int output)
+std::vector<std::vector<int> > GenerateSystem::searchAllSequence(int output, const vector<int>& input)
 {
     vector<vector<int> > warpOutput;
     vector<int> output_vector(1, output);
     warpOutput.push_back(output_vector);
     vector<int> avail(1,0);
-    computePoint* start = new computePoint(warpOutput, avail, mComputeSystem);
+    computePoint* start = new computePoint(warpOutput, avail, input, mComputeSystem);
     computeSearchTree tree(start);
     vector<vector<int> > queues = tree.searchAll();
     if (NULL!=mComputeSystem)
@@ -116,7 +116,7 @@ std::vector<std::vector<int> > GenerateSystem::searchAllSequence(int output)
     return queues;
 }
 
-vector<int> GenerateSystem::searchRandSequence(int outputFunctionId)
+vector<int> GenerateSystem::searchRandSequence(int outputFunctionId, const vector<int>& input)
 {
     vector<int> result;
     list<int> cacheQueue;
@@ -137,7 +137,7 @@ vector<int> GenerateSystem::searchRandSequence(int outputFunctionId)
             //Lenght Limit
             if (LIMIT_SIZE < result.size())
             {
-                inputFuncs = this->searchSequence(functionId);
+                inputFuncs = this->searchSequence(functionId, input);
                 for (int i=0; i<inputFuncs.size(); ++i)
                 {
                     result.push_back(inputFuncs[i]);
@@ -187,9 +187,7 @@ vector<int> GenerateSystem::searchType(const std::string& type)
 IGPAutoDefFunction* GenerateSystem::vCreateFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat, bool random)
 {
     assert(NULL!=mComputeSystem);
-    /*TODO if mComputeSystem's inputType and outputType is the same, return the cached one*/
-    mComputeSystem->mOutputTypeId = outputType;
-    mComputeSystem->mInputTypeId = inputType;
+    /*TODO if inputType and outputType is the same as last one, return the cached one*/
     AbstractGP* gp = NULL;
     IGPAutoDefFunction* res = NULL;
     /*Find all available output function*/
@@ -197,7 +195,7 @@ IGPAutoDefFunction* GenerateSystem::vCreateFunction(const std::vector<int>& outp
     _findMatchedFuncton(warpOutput, outputType);
     vector<int> avail(1,warpOutput.size()-1);
     /*Get All sequence*/
-    computePoint* start = new computePoint(warpOutput, avail, mComputeSystem);
+    computePoint* start = new computePoint(warpOutput, avail, inputType, mComputeSystem);
     computeSearchTree tree(start);
     /*TODO random for result*/
     vector<int> queue = tree.searchOne();
@@ -224,9 +222,7 @@ void GenerateSystem::_allocStatusForQueue(std::vector<int>& queue)
 std::vector<IGPAutoDefFunction*> GenerateSystem::vCreateAllFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat)
 {
     assert(NULL!=mComputeSystem);
-    /*TODO if mComputeSystem's inputType and outputType is the same, return the cached one*/
-    mComputeSystem->mOutputTypeId = outputType;
-    mComputeSystem->mInputTypeId = inputType;
+    /*TODO if the inputType and outputType is the same as the last one, return the cached one*/
     AbstractGP* gp = NULL;
     /*Find all available output function*/
     vector<vector<int> > warpOutput;
@@ -237,7 +233,7 @@ std::vector<IGPAutoDefFunction*> GenerateSystem::vCreateAllFunction(const std::v
         avail.push_back(i);
     }
     /*Get All sequence*/
-    computePoint* start = new computePoint(warpOutput, avail, mComputeSystem);
+    computePoint* start = new computePoint(warpOutput, avail, inputType, mComputeSystem);
     computeSearchTree tree(start);
     vector<vector<int> > queue = tree.searchAll();
     vector<IGPAutoDefFunction*> res;
@@ -296,17 +292,17 @@ void GenerateSystem::freeStatus(AbstractGP* tree)
         freeSet(status[i]);
     }
 }
-bool GenerateSystem::initGP(AbstractGP* tree, int output, bool random)
+bool GenerateSystem::initGP(AbstractGP* tree, int output, const vector<int>& input, bool random)
 {
     assert(NULL!=tree);
     vector<int> queue;
     if (random)
     {
-        queue = this->searchRandSequence(output);
+        queue = this->searchRandSequence(output, input);
     }
     else
     {
-        queue = this->searchSequence(output);
+        queue = this->searchSequence(output, input);
     }
     if (queue.empty()) return false;
     /*Replace*/
@@ -321,30 +317,10 @@ bool GenerateSystem::initGP(AbstractGP* tree, int output, bool random)
 }
 
 
-bool GenerateSystem::initGP(AbstractGP* tree, const std::string& output, bool random)
-{
-    vector<int> out = this->searchType(output);
-    if (out.empty()) return false;
-    if (random)
-    {
-        int outputFunc = rand()%out.size();
-        return initGP(tree, outputFunc, true);
-    }
-    /*TODO For random scene, wide search a available sequence*/
-    for (int i=0; i<out.size(); ++i)
-    {
-        bool res = initGP(tree, out[i], random);
-        if (res)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
 void GenerateSystem::mutate(AbstractGP* tree)
 {
     assert(NULL!=tree);
     int out = tree->funcId();
-    initGP(tree, out, true);
+    vector<int> input = tree->setInputNumber(this);
+    initGP(tree, out, input, true);
 }

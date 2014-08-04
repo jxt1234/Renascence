@@ -41,16 +41,16 @@ class GenerateSystem:public GPProducer, public IRuntimeDataBase
     protected:
         virtual IGPAutoDefFunction* vCreateADFFromGP(AbstractGP* gp) = 0;
         virtual void vSetInputNumber(AbstractGP* gp) {gp->setInputNumber(this);}
-        virtual std::vector<int> searchSequence(int output);
-        virtual std::vector<std::vector<int> > searchAllSequence(int output);
-        virtual std::vector<int> searchRandSequence(int output);
+        virtual std::vector<int> searchSequence(int output, const std::vector<int>& input);
+        virtual std::vector<std::vector<int> > searchAllSequence(int output, const std::vector<int>& input);
+        virtual std::vector<int> searchRandSequence(int output, const std::vector<int>& input);
         virtual std::vector<int> searchType(const std::string& type);
         computeSystem* mComputeSystem;
     private:
         void _allocStatusForQueue(std::vector<int>& queue);
         void _findMatchedFuncton(std::vector<std::vector<int> >& warpOutput, const std::vector<int>& outputType);
         /*The output is the target function Id*/
-        bool initGP(AbstractGP* tree, int output, bool random = true);
+        bool initGP(AbstractGP* tree, int output, const std::vector<int>& input, bool random = true);
         bool initGP(AbstractGP* tree, const std::string& type, bool random = true);
         bool initGP(AbstractGP* tree, const std::vector<int>& queue);
 };

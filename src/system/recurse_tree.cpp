@@ -27,7 +27,7 @@ vector<int> computePoint::filter(const vector<vector<int> >& combo, const vector
     {
         const vector<int>& comboUnit = combo[i];
         bool fit = true;
-        const vector<int>& input_obtained = mSys->mInputTypeId;
+        const vector<int>& input_obtained = mInput;
         for (int j=0; j<comboUnit.size(); ++j)
         {
             /*Check if it contained old output*/
@@ -61,14 +61,14 @@ vector<int> computePoint::filter(const vector<vector<int> >& combo, const vector
 vector<int> computePoint::getDependOutput()
 {
     vector<int> result;
-    computePoint* cur = dynamic_cast<computePoint*>(mDepend);
+    computePoint* cur = (computePoint*)(mDepend);
     computePoint* self = this;
     while(NULL!=cur)
     {
         const vector<int>& data = cur->getData();
         result.push_back(data[self->mParent]);
         self = cur;
-        cur = dynamic_cast<computePoint*>(cur->mDepend);
+        cur = (computePoint*)(cur->mDepend);
     }
     return result;
 }
@@ -86,8 +86,8 @@ bool computePoint::vGrow()
         currentOutputId.erase(currentOutputId.end()-1);
         if (!avail.empty())
         {
-            carryPoint* res = new computePoint(inputData, avail, mSys);
-            computePoint* midres = dynamic_cast<computePoint*>(res);
+            carryPoint* res = new computePoint(inputData, avail, mInput, mSys);
+            computePoint* midres = (computePoint*)(res);
             midres->mDepend = this;
             midres->mParent = i;
             mChild.push_back(res);
@@ -109,7 +109,7 @@ vector<int> computeSearchTree::output()
     queue.push_back(mRoot);
     while(!queue.empty())
     {
-        cur = dynamic_cast<computePoint*>(*(queue.begin()));
+        cur = (computePoint*)(*(queue.begin()));
         //Construct search queue
         for (int i=0; i<cur->mChild.size(); ++i)
         {
@@ -120,7 +120,7 @@ vector<int> computeSearchTree::output()
         vector<int> inputNumber(data.size(),0);
         for (int i=0; i<cur->mChild.size(); ++i)
         {
-            computePoint* child = dynamic_cast<computePoint*>(cur->mChild[i]);
+            computePoint* child = (computePoint*)(cur->mChild[i]);
             inputNumber[child->mParent] = child->getData().size();
         }
         //Construct queue, without status
