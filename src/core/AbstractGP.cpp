@@ -19,6 +19,7 @@
 #include <sstream>
 #include "utils/debug.h"
 #include <assert.h>
+//#define DEBUG_TIMES
 
 using namespace std;
 #define DO_CHILDREN_FUNC(func) \
@@ -304,7 +305,7 @@ GP_Output AbstractGP::up_compute(IRuntimeDataBase* map, statusBasic* sta)
     totalInputs.insert(totalInputs.begin(), children.begin(), children.end());
     {
 #ifdef DEBUG_TIMES
-        GP_Clock c(mFunc);
+        GP_Clock c(mFunc, "Compute");
 #endif
         result = comp(totalInputs);
     }

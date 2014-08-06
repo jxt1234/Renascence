@@ -14,7 +14,6 @@
    limitations under the License.
 ******************************************************************/
 #include "system/xmlGenerateSystem.h"
-/*FIXME chaos in model, the mutateTree shouln't be include here*/
 #include "system/mutateTree.h"
 #include "system/system_lib.h"
 #include "utils/debug.h"
@@ -22,6 +21,8 @@
 #include <sstream>
 #include <fstream>
 #include "xml/xmlTree.h"
+
+#include "utils/GP_Clock.h"
 
 using namespace std;
 

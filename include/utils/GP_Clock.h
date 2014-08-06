@@ -19,12 +19,13 @@
 class GP_Clock
 {
     public:
-        GP_Clock(int func);
+        GP_Clock(int func, const char* name);
+        ~GP_Clock();
         int reset();
-        virtual ~GP_Clock();
     protected:
         int mStart;
         int mId;
+        char* mName;
 };
 
 

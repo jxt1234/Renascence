@@ -13,18 +13,24 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "utils/GP_Clock.h"
 #include <time.h>
 #include "utils/debug.h"
+#include "utils/GP_Clock.h"
+#include "string.h"
 
-GP_Clock::GP_Clock(int func)
+GP_Clock::GP_Clock(int func, const char* name)
 {
     mStart = clock();
     mId = func;
+    int l = strlen(name);
+    mName = new char[l+1];
+    memcpy(mName, name, l);
+    mName[l] = '\0';
 }
 
 GP_Clock::~GP_Clock()
 {
     int inter = clock()-mStart;
-    GPPRINT("Function Id = %d, times = %dms+%dus\n", mId, inter/1000, inter%1000);
+    GPPRINT("%s __ %d, times = %dms+%dus\n", mName, mId, inter/1000, inter%1000);
+    delete [] mName;
 }
