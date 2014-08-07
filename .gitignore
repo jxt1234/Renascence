@@ -5,6 +5,7 @@
 *.so
 *.jpg
 *.out
+*.pyc
 
 # Compiled Dynamic libraries
 #*.so
