@@ -67,7 +67,7 @@ class xmlCopy:public AbstractPoint::IPointCopy
 
 xmlGenerateSystem::xmlGenerateSystem()
 {
-    mComputeSystem = new computeSystem;
+    mComputeSystem = new GPFunctionDataBase;
 }
 
 void xmlGenerateSystem::vAddContent(std::istream& is, IFunctionTable* table)

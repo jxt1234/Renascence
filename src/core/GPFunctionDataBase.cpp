@@ -15,28 +15,30 @@
 ******************************************************************/
 #include <iostream>
 #include <fstream>
-#include "system/computeSystem.h"
+#include "core/GPFunctionDataBase.h"
 #include "utils/debug.h"
 #include "math/carryArray.h"
 #include <assert.h>
 #include "core/funcStatusType.h"
 #include <algorithm>
 
+using namespace std;
 
-computeSystem::computeSystem()
+
+GPFunctionDataBase::GPFunctionDataBase()
 {
 }
-const computeSystem::function& computeSystem::getDetailFunction(int id)
+const GPFunctionDataBase::function& GPFunctionDataBase::getDetailFunction(int id)
 {
     assert(id >=0 && id < mFunctionTable.size());
     return *(mFunctionTable[id]);
 }
 
-void computeSystem::vQueryStatus(int id, std::string& name, std::string& libName)
+void GPFunctionDataBase::vQueryStatus(int id, std::string& name, std::string& libName)
 {
 }
 
-std::vector<int> computeSystem::getOutputFunctions(int typeId)
+std::vector<int> GPFunctionDataBase::getOutputFunctions(int typeId)
 {
     if (0>typeId) return mOutputId;
     vector<int> res;
@@ -50,7 +52,7 @@ std::vector<int> computeSystem::getOutputFunctions(int typeId)
     }
     return res;
 }
-int computeSystem::vQueryFuncId(const std::string& funcName)
+int GPFunctionDataBase::vQueryFuncId(const std::string& funcName)
 {
     int id = -1;
     for (int i=0; i<mFunctionTable.size(); ++i)
@@ -62,7 +64,7 @@ int computeSystem::vQueryFuncId(const std::string& funcName)
     }
     return id;
 }
-const std::vector<std::vector<int> >& computeSystem::getAvailableFunctionInputs(int functionId)
+const std::vector<std::vector<int> >& GPFunctionDataBase::getAvailableFunctionInputs(int functionId)
 {
     static vector<vector<int> > nullVector;
     if (functionId >=0 && functionId < mFunctionTable.size())
@@ -72,22 +74,22 @@ const std::vector<std::vector<int> >& computeSystem::getAvailableFunctionInputs(
     return nullVector;
 }
 
-computeSystem::~computeSystem()
+GPFunctionDataBase::~GPFunctionDataBase()
 {
     clear();
 }
 
-void computeSystem::vQueryFunction(int id, std::string& name, std::string& libName)
+void GPFunctionDataBase::vQueryFunction(int id, std::string& name, std::string& libName)
 {
     assert(id < mFunctionTable.size());
     name = mFunctionTable[id]->name;
     libName = mFunctionTable[id]->libName;
 }
-void computeSystem::vQueryOutput(int functionId, std::vector<int>& output)
+void GPFunctionDataBase::vQueryOutput(int functionId, std::vector<int>& output)
 {
     output = mFunctionTable[functionId]->outputType;
 }
-computeFunction computeSystem::getFunction(int id)
+computeFunction GPFunctionDataBase::getFunction(int id)
 {
     if (id < mFunctionTable.size() && 0<=id)
     {
@@ -96,7 +98,7 @@ computeFunction computeSystem::getFunction(int id)
     return NULL;
 }
 
-int computeSystem::getStatusId(int id)
+int GPFunctionDataBase::getStatusId(int id)
 {
     if (id < mFunctionTable.size() && 0<=id)
     {
@@ -108,7 +110,7 @@ int computeSystem::getStatusId(int id)
     return -1;
 }
 
-void computeSystem::clear()
+void GPFunctionDataBase::clear()
 {
     for (int i=0; i<mFunctionTable.size(); ++i)
     {
@@ -117,7 +119,7 @@ void computeSystem::clear()
     mFunctionTable.clear();
 }
 
-vector<int> computeSystem::loadStatus(const vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle, statusBasic* stadata)
+vector<int> GPFunctionDataBase::loadStatus(const vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle, statusBasic* stadata)
 {
     vector<int> typeId;
     for (int i=0; i<sta.size(); ++i)
@@ -129,7 +131,7 @@ vector<int> computeSystem::loadStatus(const vector<xmlFunctionLoader::status>& s
     return typeId;
 }
 
-void computeSystem::loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table, statusBasic* stadata)
+void GPFunctionDataBase::loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table, statusBasic* stadata)
 {
     vector<int> statusTypeId = loadStatus(loader.getStatus(), table, stadata);
     int offset = mFunctionTable.size();
@@ -138,7 +140,7 @@ void computeSystem::loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table
     for (int i=0; i<functions.size(); ++i)
     {
         const xmlFunctionLoader::function& f = functions[i];
-        computeSystem::function* fc = new computeSystem::function;
+        GPFunctionDataBase::function* fc = new GPFunctionDataBase::function;
         fc->name = f.name;
         fc->libName = loader.libName;
         /*Load function handle*/
@@ -186,11 +188,11 @@ void computeSystem::loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table
 }
 
 
-void computeSystem::print(ostream& os)
+void GPFunctionDataBase::print(ostream& os)
 {
     for (int i=0; i<mFunctionTable.size(); ++i)
     {
-        computeSystem::function* fc = mFunctionTable[i];
+        GPFunctionDataBase::function* fc = mFunctionTable[i];
         os << i << ": "<<fc->name<<" : "<<fc->libName<<endl;
         os << "Required inputType is ";
         for (int j=0; j<fc->inputType.size(); ++j)

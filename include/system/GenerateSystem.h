@@ -16,7 +16,7 @@
 #ifndef GENERATE_SYSTEM_H
 #define GENERATE_SYSTEM_H
 
-#include "computeSystem.h"
+#include "core/GPFunctionDataBase.h"
 #include <assert.h>
 
 #include "core/IDataBase.h"
@@ -26,7 +26,7 @@ class GenerateSystem:public GPProducer, public IRuntimeDataBase
 {
     public:
         GenerateSystem():mComputeSystem(NULL){}
-        GenerateSystem(computeSystem* sys){setComputeSystem(sys);}
+        GenerateSystem(GPFunctionDataBase* sys){setComputeSystem(sys);}
         virtual IGPAutoDefFunction* vCreateFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true, bool random = false);
         virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true);
         virtual IGPAutoDefFunction* vCreateFunctionFromName(const std::string& name);
@@ -34,7 +34,7 @@ class GenerateSystem:public GPProducer, public IRuntimeDataBase
         virtual int vQueryInputsNumber(int id);
         virtual int vQueryOutputNumber(int id);
         virtual ~GenerateSystem(){}
-        void setComputeSystem(computeSystem* comsys);
+        void setComputeSystem(GPFunctionDataBase* comsys);
         inline int getFuncId(const std::string& name){return mComputeSystem->vQueryFuncId(name);}
         void mutate(AbstractGP* tree);
         void freeStatus(AbstractGP* tree);
@@ -45,7 +45,7 @@ class GenerateSystem:public GPProducer, public IRuntimeDataBase
         virtual std::vector<std::vector<int> > searchAllSequence(int output, const std::vector<int>& input);
         virtual std::vector<int> searchRandSequence(int output, const std::vector<int>& input);
         virtual std::vector<int> searchType(const std::string& type);
-        computeSystem* mComputeSystem;
+        GPFunctionDataBase* mComputeSystem;
     private:
         void _allocStatusForQueue(std::vector<int>& queue);
         void _findMatchedFuncton(std::vector<std::vector<int> >& warpOutput, const std::vector<int>& outputType);

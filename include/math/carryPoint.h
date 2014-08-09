@@ -17,7 +17,6 @@
 #define CARRY_POINT_H
 #include <vector>
 #include <stdlib.h>
-using namespace std;
 class carryPoint
 {
 public:
@@ -29,7 +28,7 @@ public:
     bool next();
     void clear();
     carryPoint* mDepend;
-    vector<carryPoint*> mChild;
+	std::vector<carryPoint*> mChild;
     bool mGrow;
 };
 

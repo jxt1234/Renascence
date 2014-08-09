@@ -37,7 +37,7 @@ vector<int> computePoint::filter(const vector<vector<int> >& combo, const vector
                 break;
             }
             /*Check if it contained unobtained input*/
-            const computeSystem::function& f = mSys->getDetailFunction(comboUnit[j]);
+            const GPFunctionDataBase::function& f = mSys->getDetailFunction(comboUnit[j]);
             for (int k=0; k<f.inputType.size(); ++k)
             {
                 int inpId = f.inputType[k];

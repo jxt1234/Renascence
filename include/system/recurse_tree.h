@@ -17,17 +17,17 @@
 #define VECTOR_POINT_TREE_H
 #include "math/carryTree.h"
 #include "utils/debug.h"
-class computeSystem;
+class GPFunctionDataBase;
 class computePoint:public carryPoint
 {
 friend class computeSearchTree;
 public:
-    computePoint(const vector<vector<int> >& data, const vector<int>& avail, const vector<int>& input, computeSystem* sys):mData(data), mAvail(avail), mCur(0), mInput(input), mSys(sys){}
-    const vector<int>& getData() const{return mData[mAvail[mCur]];}
-    vector<int> filter(const vector<vector<int> >& combo, const vector<int>& output);
+    computePoint(const std::vector<std::vector<int> >& data, const std::vector<int>& avail, const std::vector<int>& input, GPFunctionDataBase* sys):mData(data), mAvail(avail), mCur(0), mInput(input), mSys(sys){}
+    const std::vector<int>& getData() const{return mData[mAvail[mCur]];}
+    std::vector<int> filter(const std::vector<std::vector<int> >& combo, const std::vector<int>& output);
 protected:
     virtual bool vGrow();
-    vector<int> getDependOutput();
+    std::vector<int> getDependOutput();
     virtual bool vNext()
     {
         mCur++;
@@ -40,20 +40,20 @@ protected:
         return res;
     }
 private:
-    const vector<int>& mInput;
-    const vector<vector<int> >& mData;
-    vector<int> mAvail;
+    const std::vector<int>& mInput;
+    const std::vector<std::vector<int> >& mData;
+    std::vector<int> mAvail;
     int mCur;
     int mParent;
-    computeSystem* mSys;
+    GPFunctionDataBase* mSys;
 };
 
 
-class computeSearchTree:public carryTree<vector<int> >
+class computeSearchTree:public carryTree<std::vector<int> >
 {
 public:
     computeSearchTree(computePoint* point){mRoot = point;}
-    virtual vector<int> output();
+    virtual std::vector<int> output();
     virtual bool readyToOutput();
 };
 

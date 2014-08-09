@@ -14,7 +14,7 @@ class GPcombineTest:public GPTest
     public:
         virtual void run()
         {
-            GPProducer* sys = GPProducerFactory::create("funcV2.xml", NULL);
+            GPProducer* sys = GPProducerFactory::create("func.xml", NULL);
             AUTOCLEAN(sys);
             int bmpId = sys->queryType(string("TrBmp"));
             const IStatusType& bmp = sys->queryType(bmpId);

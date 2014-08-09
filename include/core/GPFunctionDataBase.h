@@ -23,7 +23,7 @@
 #include "user/IFunctionTable.h"
 #include <ostream>
 
-class computeSystem:public IPrintDataBase, public IGenerateDataBase
+class GPFunctionDataBase:public IPrintDataBase, public IGenerateDataBase
 {
     public:
         struct function
@@ -54,8 +54,8 @@ class computeSystem:public IPrintDataBase, public IGenerateDataBase
         virtual void vQueryStatus(int id, std::string& name, std::string& libName);
         virtual void vQueryFunction(int id, std::string& name, std::string& libName);
         virtual void vQueryOutput(int functionId, std::vector<int>& output);
-        computeSystem();
-        virtual ~computeSystem();
+        GPFunctionDataBase();
+        virtual ~GPFunctionDataBase();
     protected:
         std::vector<int> loadStatus(const std::vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle, statusBasic* stadata);
     private:

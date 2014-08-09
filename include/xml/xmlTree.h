@@ -16,8 +16,8 @@
 #ifndef XML_XMLTREE_H
 #define XML_XMLTREE_H
 
-#include <xml/xmlReader.h>
-#include <math/AbstractPoint.h>
+#include "xmlReader.h"
+#include "math/AbstractPoint.h"
 #include <string>
 #include <vector>
 

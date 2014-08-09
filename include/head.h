@@ -1,5 +1,5 @@
 /******************************************************************
-   Copyright 2013, Jiang Xiao-tang
+   Copyright 2014, Jiang Xiao-tang
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,26 +13,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef MATH_CARRY_ARRAY_H
-#define MATH_CARRY_ARRAY_H
-#include <vector>
-
-class carryArray
-{
-    public:
-        carryArray(int size=0, int maxNumber=0);
-        ~carryArray(){}
-        carryArray& operator++();
-        void reset();
-        bool reachEnd();
-        const std::vector<int>& getCurrent(){return mQueue;}
-    protected:
-        void runCarry();
-    private:
-		std::vector<int> mQueue;
-        int mCarryNumber;
-};
-
-
-
+#ifndef HEAD_H
+#define HEAD_H
+#include "utils/debug.h"
+#include "utils/RefCount.h"
+#include "utils/AutoClean.h"
 #endif

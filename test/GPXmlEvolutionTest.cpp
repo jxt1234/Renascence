@@ -13,7 +13,7 @@ class GPXmlEvolutionTest:public GPTest
     public:
         virtual void run()
         {
-            GPProducer* sys = GPProducerFactory::create("funcV2.xml", NULL);
+            GPProducer* sys = GPProducerFactory::create("func.xml", NULL);
             GPProducer& gen = *sys;
             AUTOCLEAN(sys);
             int bmpId = gen.queryType(string("TrBmp"));

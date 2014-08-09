@@ -34,7 +34,7 @@ IGPAutoDefFunction* GenerateSystem::vCreateFunctionFromName(const std::string& n
 {
     assert(NULL!=mComputeSystem);
     int id = mComputeSystem->vQueryFuncId(name);
-    const computeSystem::function& f = mComputeSystem->getDetailFunction(id);
+    const GPFunctionDataBase::function& f = mComputeSystem->getDetailFunction(id);
     class simpleADF:public IGPAutoDefFunction
     {
         public:
@@ -60,14 +60,14 @@ IGPAutoDefFunction* GenerateSystem::vCreateFunctionFromName(const std::string& n
 int GenerateSystem::vQueryInputsNumber(int id)
 {
     assert(NULL!=mComputeSystem);
-    const computeSystem::function& f = mComputeSystem->getDetailFunction(id);
+    const GPFunctionDataBase::function& f = mComputeSystem->getDetailFunction(id);
     return f.inputType.size();
 }
 
 int GenerateSystem::vQueryOutputNumber(int id)
 {
     assert(NULL!=mComputeSystem);
-    const computeSystem::function& f = mComputeSystem->getDetailFunction(id);
+    const GPFunctionDataBase::function& f = mComputeSystem->getDetailFunction(id);
     return f.outputType.size();
 }
 
@@ -170,7 +170,7 @@ vector<int> GenerateSystem::searchRandSequence(int outputFunctionId, const vecto
 }
 
 
-void GenerateSystem::setComputeSystem(computeSystem* comsys)
+void GenerateSystem::setComputeSystem(GPFunctionDataBase* comsys)
 {
     mComputeSystem = comsys;
     vector<int> output = mComputeSystem->getOutputFunctions();
@@ -254,7 +254,7 @@ void GenerateSystem::_findMatchedFuncton(std::vector<std::vector<int> >& warpOut
 {
     for (int i=0; i < mComputeSystem->getFunctionNumber(); ++i)
     {
-        const computeSystem::function& f = mComputeSystem->getDetailFunction(i);
+        const GPFunctionDataBase::function& f = mComputeSystem->getDetailFunction(i);
         const vector<int>& out = f.outputType;
         bool match = true;
         for (int j=0; j<outputType.size(); ++j)

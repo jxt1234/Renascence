@@ -24,21 +24,21 @@ public:
     ~carryTree(){if(NULL!=mRoot) delete mRoot;}
     virtual outputType output()=0;
     virtual bool readyToOutput()=0;
-    vector<outputType> searchAll()
+    std::vector<outputType> searchAll()
     {
-        vector<outputType> result;
+        std::vector<outputType> result;
         searchUnit(result, 0);
         return result;
     }
     outputType searchOne()
     {
-        vector<outputType> result;
+        std::vector<outputType> result;
         searchUnit(result, 1);
         return *(result.begin());
     }
 protected:
     carryPoint* mRoot;
-    void searchUnit(vector<outputType>& result, int maxNumber)
+    void searchUnit(std::vector<outputType>& result, int maxNumber)
     {
         if (NULL == mRoot) return;
         int num = 0;

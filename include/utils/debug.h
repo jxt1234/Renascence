@@ -18,10 +18,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 /*Print method*/
 #define GPPRINT(format, ...) printf(format,##__VA_ARGS__)
 #define GPPRINT_FL(format,...) printf("FUNC: %s, LINE: %d: "format"\n", __func__, __LINE__,##__VA_ARGS__)
 
+#define GPASSERT(x) assert(x)
 
 /*Add with line and function*/
 #define FUNC_PRINT(x) GPPRINT_FL(#x"=%d in %s, %d \n",x,  __func__, __LINE__);
