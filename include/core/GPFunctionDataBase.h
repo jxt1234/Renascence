@@ -21,9 +21,8 @@
 #include <string>
 #include "core/IDataBase.h"
 #include "user/IFunctionTable.h"
-#include <ostream>
 
-class GPFunctionDataBase:public IPrintDataBase, public IGenerateDataBase
+class GPFunctionDataBase:public RefCount
 {
     public:
         struct function
@@ -33,36 +32,33 @@ class GPFunctionDataBase:public IPrintDataBase, public IGenerateDataBase
             std::string libName;
             //For compute
             computeFunction basic;
-            std::vector<int> inputType;
-            std::vector<int> outputType;
-            std::vector<int> statusType;
+            std::vector<const IStatusType*> inputType;
+            std::vector<const IStatusType*> outputType;
+            std::vector<const IStatusType*> statusType;
             std::vector<std::vector<int> > fixTable;
         };
-        computeFunction getFunction(int id);
-        int getStatusId(int id);
-        const function& getDetailFunction(int id);
-        inline int getFunctionNumber(){return mFunctionTable.size();}
-        void loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table, statusBasic* stadata);
+        computeFunction getFunction (int id) const;
+        const function* getDetailFunction (int id) const;
+        const function* getDetailFunction (const std::string& name) const;
+        inline int getFunctionNumber() const{return mFunctionTable.size();}
+        void loadXml(const char* file, IFunctionTable* table=NULL, std::ostream* print = NULL);
+        void loadXml(std::istream& is, IFunctionTable* table=NULL, std::ostream* print = NULL);
         void clear();
         //Basic Api
-        const std::vector<std::vector<int> >& getAvailableFunctionInputs(int functionId);
-        std::vector<int> getOutputFunctions(int typeId = -1);
+        const std::vector<std::vector<int> >& getAvailableFunctionInputs(int functionId) const;
+        std::vector<int> getOutputFunctions(const IStatusType* t) const;
         void print(std::ostream& os);
-        std::vector<int> searchOutputForType(const std::string& outputType);
-        //DataBase
-        virtual int vQueryFuncId(const std::string& funcName);
-        virtual void vQueryStatus(int id, std::string& name, std::string& libName);
-        virtual void vQueryFunction(int id, std::string& name, std::string& libName);
-        virtual void vQueryOutput(int functionId, std::vector<int>& output);
+        const IStatusType* queryType(const std::string& name) const;
         GPFunctionDataBase();
         virtual ~GPFunctionDataBase();
     protected:
-        std::vector<int> loadStatus(const std::vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle, statusBasic* stadata);
+        void loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table);
+        std::vector<const IStatusType*> loadStatus(const std::vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle);
     private:
         void _loadUnit(xmlFunctionLoader func);
         std::vector<function*> mFunctionTable;
-        std::vector<int> mOutputId;//可做为根结点的函数Id
-        std::vector<int> mInputId;//作为叶结点的函数Id
+        std::vector<IFunctionTable*> mHandle;
+        std::vector<IStatusType*> mTypes;
 };
 
 #endif

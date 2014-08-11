@@ -37,7 +37,7 @@ class GPData:public RefCount
             data(void* c, const IStatusType& s):content(c), type(s){}
             ~data()
             {
-                type.sfree(content);
+                type.Free(content);
             }
         };
         std::vector<data*> mData;

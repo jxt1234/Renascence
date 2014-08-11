@@ -21,6 +21,7 @@
 #include <assert.h>
 #include "core/funcStatusType.h"
 #include <algorithm>
+#include "system/system_lib.h"
 
 using namespace std;
 
@@ -28,43 +29,48 @@ using namespace std;
 GPFunctionDataBase::GPFunctionDataBase()
 {
 }
-const GPFunctionDataBase::function& GPFunctionDataBase::getDetailFunction(int id)
+const GPFunctionDataBase::function* GPFunctionDataBase::getDetailFunction(int id) const
 {
     assert(id >=0 && id < mFunctionTable.size());
-    return *(mFunctionTable[id]);
+    return (mFunctionTable[id]);
 }
 
-void GPFunctionDataBase::vQueryStatus(int id, std::string& name, std::string& libName)
+void GPFunctionDataBase::loadXml(const char* file, IFunctionTable* table, std::ostream* print)
 {
+    ifstream is(file);
+    assert(!is.fail());
+    loadXml(is, table, print);
 }
-
-std::vector<int> GPFunctionDataBase::getOutputFunctions(int typeId)
+void GPFunctionDataBase::loadXml(std::istream& is, IFunctionTable* table, std::ostream* print)
 {
-    if (0>typeId) return mOutputId;
+    xmlFunctionLoader xmlLoader;
+    xmlLoader.loadStream(is);
+    if (NULL==table)
+    {
+        table = new system_lib(xmlLoader.libName);
+        mHandle.push_back(table);
+    }
+    if (NULL!=print)
+    {
+        xmlLoader.print(*print);
+    }
+    this->loadFuncXml(xmlLoader, table);
+}
+std::vector<int> GPFunctionDataBase::getOutputFunctions(const IStatusType* t) const
+{
     vector<int> res;
     for (int i=0; i<mFunctionTable.size(); ++i)
     {
-        const vector<int>& output = mFunctionTable[i]->outputType;
-        if (find(output.begin(), output.end(), typeId)!=output.end())
+        const vector<const IStatusType*>& output = mFunctionTable[i]->outputType;
+        if (find(output.begin(), output.end(), t)!=output.end())
         {
             res.push_back(i);
         }
     }
     return res;
 }
-int GPFunctionDataBase::vQueryFuncId(const std::string& funcName)
-{
-    int id = -1;
-    for (int i=0; i<mFunctionTable.size(); ++i)
-    {
-        if (mFunctionTable[i]->name == funcName)
-        {
-            id = i;
-        }
-    }
-    return id;
-}
-const std::vector<std::vector<int> >& GPFunctionDataBase::getAvailableFunctionInputs(int functionId)
+
+const std::vector<std::vector<int> >& GPFunctionDataBase::getAvailableFunctionInputs(int functionId) const
 {
     static vector<vector<int> > nullVector;
     if (functionId >=0 && functionId < mFunctionTable.size())
@@ -76,38 +82,28 @@ const std::vector<std::vector<int> >& GPFunctionDataBase::getAvailableFunctionIn
 
 GPFunctionDataBase::~GPFunctionDataBase()
 {
-    clear();
+    for (int i=0; i<mFunctionTable.size(); ++i)
+    {
+        delete mFunctionTable[i];
+    }
+    mFunctionTable.clear();
+    for (int i=0; i<mTypes.size(); ++i)
+    {
+        delete mTypes[i];
+    }
+    for (int i=0; i<mHandle.size(); ++i)
+    {
+        delete mHandle[i];
+    }
 }
 
-void GPFunctionDataBase::vQueryFunction(int id, std::string& name, std::string& libName)
-{
-    assert(id < mFunctionTable.size());
-    name = mFunctionTable[id]->name;
-    libName = mFunctionTable[id]->libName;
-}
-void GPFunctionDataBase::vQueryOutput(int functionId, std::vector<int>& output)
-{
-    output = mFunctionTable[functionId]->outputType;
-}
-computeFunction GPFunctionDataBase::getFunction(int id)
+computeFunction GPFunctionDataBase::getFunction(int id) const
 {
     if (id < mFunctionTable.size() && 0<=id)
     {
         return mFunctionTable[id]->basic;
     }
     return NULL;
-}
-
-int GPFunctionDataBase::getStatusId(int id)
-{
-    if (id < mFunctionTable.size() && 0<=id)
-    {
-        if (!mFunctionTable[id]->statusType.empty())
-        {
-            return mFunctionTable[id]->statusType[0];
-        }
-    }
-    return -1;
 }
 
 void GPFunctionDataBase::clear()
@@ -119,23 +115,22 @@ void GPFunctionDataBase::clear()
     mFunctionTable.clear();
 }
 
-vector<int> GPFunctionDataBase::loadStatus(const vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle, statusBasic* stadata)
+vector<const IStatusType*> GPFunctionDataBase::loadStatus(const vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle)
 {
-    vector<int> typeId;
+    vector<const IStatusType*> types;
     for (int i=0; i<sta.size(); ++i)
     {
         funcStatusType* type = new funcStatusType(sta[i].name, handle);
-        int id = stadata->addType(type, true);
-        typeId.push_back(id);
+        mTypes.push_back(type);
+        types.push_back(type);
     }
-    return typeId;
+    return types;
 }
 
-void GPFunctionDataBase::loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table, statusBasic* stadata)
+void GPFunctionDataBase::loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table)
 {
-    vector<int> statusTypeId = loadStatus(loader.getStatus(), table, stadata);
+    vector<const IStatusType*> statusTypeId = loadStatus(loader.getStatus(), table);
     int offset = mFunctionTable.size();
-    mOutputId.push_back(loader.mFit);
     const vector<xmlFunctionLoader::function>& functions = loader.getFunc();
     for (int i=0; i<functions.size(); ++i)
     {
@@ -151,9 +146,9 @@ void GPFunctionDataBase::loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* 
         vector<int> statusType = f.statusType;
         vector<int> outputType = f.outputType;
         vector<int> inputType = f.inputType;
-        vector<int> newST;
-        vector<int> newOT;
-        vector<int> newIT;
+        vector<const IStatusType*> newST;
+        vector<const IStatusType*> newOT;
+        vector<const IStatusType*> newIT;
         for (int j=0; j<inputType.size(); ++j)
         {
             int cur = inputType[j];
@@ -184,7 +179,6 @@ void GPFunctionDataBase::loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* 
         fc->fixTable = newCombo;
         mFunctionTable.push_back(fc);
     }
-    mInputId = loader.mInputs;
 }
 
 
@@ -197,19 +191,19 @@ void GPFunctionDataBase::print(ostream& os)
         os << "Required inputType is ";
         for (int j=0; j<fc->inputType.size(); ++j)
         {
-            os <<fc->inputType[j]<<" ";
+            os <<fc->inputType[j]->name()<<" ";
         }
         os << endl;
         os << "The outputType is ";
         for (int j=0; j<fc->outputType.size(); ++j)
         {
-            os <<fc->outputType[j]<<" ";
+            os <<fc->outputType[j]->name()<<" ";
         }
         os << endl;
         os << "The statusType is ";
         for (int j=0; j<fc->statusType.size(); ++j)
         {
-            os <<fc->statusType[j]<<" ";
+            os <<fc->statusType[j]->name()<<" ";
         }
         os << endl;
         vector<vector<int> >& combo = fc->fixTable;
@@ -223,16 +217,29 @@ void GPFunctionDataBase::print(ostream& os)
         }
         os << endl;
     }
-    os << "Output: ";
-    for (int i=0; i<mOutputId.size(); ++i)
-    {
-        os << mOutputId[i] <<" ";
-    }
     os << endl;
-    os << "Input: ";
-    for (int i=0; i<mInputId.size(); ++i)
+}
+const IStatusType* GPFunctionDataBase::queryType(const std::string& name) const
+{
+    const IStatusType* res = NULL;
+    for (int i=0; i<mTypes.size(); ++i)
     {
-        os << mInputId[i] <<" ";
+        if (mTypes[i]->name() == name)
+        {
+            res = mTypes[i];
+            break;
+        }
     }
-    os << endl;
+    return res;
+}
+const GPFunctionDataBase::function* GPFunctionDataBase::getDetailFunction (const string& name) const
+{
+    for (int i=0; i<mFunctionTable.size(); ++i)
+    {
+        if (mFunctionTable[i]->name == name)
+        {
+            return mFunctionTable[i];
+        }
+    }
+    return NULL;
 }

@@ -13,13 +13,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "xml/xmlGPDataLoader.h"
+#include "core/xmlGPDataLoader.h"
 #include <assert.h>
 #include <sstream>
 #include <fstream>
 #include "core/GP_XmlString.h"
 
-xmlGPDataLoader::xmlGPDataLoader(statusBasic& sys):mSys(sys)
+xmlGPDataLoader::xmlGPDataLoader(const GPFunctionDataBase& sys):mSys(sys)
 {
     mData = NULL;
 }
@@ -40,10 +40,9 @@ void xmlGPDataLoader::attributeUnflatten()
     {
         xmlReader::package* cur = mAttributes->children[i];
         std::string& name = cur->name;
-        int id = mSys.queryType(name);
         std::vector<std::string>& attr = cur->attr;
         if (attr.empty()) continue;
-        const IStatusType& t = mSys.queryType(id);
+        const IStatusType& t = *(mSys.queryType(name));
         void* content = NULL;
         if (attr[0] == GP_XmlString::file && attr.size() >=2)//Load from file
         {

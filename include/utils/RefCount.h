@@ -30,4 +30,6 @@ class RefCount
     private:
         int mNum;
 };
+#define SAFE_UNREF(x)\
+    if (NULL!=(x)) (x)->decRef();
 #endif

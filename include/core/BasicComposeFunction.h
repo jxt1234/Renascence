@@ -42,10 +42,9 @@ class GPCombineADF:public IGPAutoDefFunction
         virtual GP_Output run(const GP_Input& inputs);
         virtual void save(std::ostream& os);
         virtual void load(std::istream& is);
-        virtual void mutate();
         virtual ~GPCombineADF();
-        virtual int inputNumber() const;
-        virtual int outputNumber() const;
+        virtual std::vector<const IStatusType*> vGetInputs() const;
+        virtual std::vector<const IStatusType*> vGetOutputs() const;
     private:
         std::vector<IGPAutoDefFunction*> mFunctions;
 };
@@ -59,10 +58,9 @@ class GPSwitchADF:public IGPAutoDefFunction
         virtual GP_Output run(const GP_Input& inputs);
         virtual void save(std::ostream& os);
         virtual void load(std::istream& is);
-        virtual void mutate();
-    
-        virtual int inputNumber() const;
-        virtual int outputNumber() const;
+        /*TODO Complete these two*/
+        virtual std::vector<const IStatusType*> vGetInputs() const;
+        virtual std::vector<const IStatusType*> vGetOutputs() const;
     private:
         IGPAutoDefFunction* a;
         IGPAutoDefFunction* b;

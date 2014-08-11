@@ -40,15 +40,17 @@ class funcStatusType:public IStatusType
            type_alloc,
            type_free,
            type_vary,
+           type_map,
            type_copy,
            type_print,
            type_load
          */
         funcStatusType(const std::string& name, IFunctionTable* table);
         virtual ~funcStatusType(){}
-        virtual void* salloc() const;
-        virtual void sfree(void* contents) const;
+        virtual void* Alloc() const;
+        virtual void Free(void* contents) const;
         virtual void mutate(void* contents) const;
+        virtual void mapValue(void* contents, double value) const;
         virtual void copy(void* src, void* dst) const;
         virtual void print(std::ostream& out, void* contents) const;
         virtual void* load(std::istream& in) const;

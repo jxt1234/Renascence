@@ -182,7 +182,7 @@ TrFilterMatrix* TrRegressMatrix(TrBmp* src, TrBmp* target, TrRegreeMode* mode)
     delete Q;
     delete Y;
     delete XTX;
-	delete XT;
+    delete XT;
     //Load value from parameters
     {
         float* parameters = (float*)P->vGetAddr();
@@ -199,7 +199,7 @@ TrFilterMatrix* TrRegressMatrix(TrBmp* src, TrBmp* target, TrRegreeMode* mode)
         //The last parameters is offset
         result->offset = (int)parameters[cur];
     }
-	delete P;
+    delete P;
 
     TrRegreeModeFree(oriMode);
 

@@ -15,32 +15,39 @@
 ******************************************************************/
 #ifndef CORE_GPPRODUCER_H
 #define CORE_GPPRODUCER_H
-#include "AbstractGP.h"
 #include "status.h"
+#include "function.h"
 #include "utils/RefCount.h"
 #include "user/IFunctionTable.h"
+#include "user/package.h"
+#include "IGPAutoDefFunction.h"
 
-class GPProducer:public statusBasic, public RefCount
+class GPProducer:public RefCount
 {
     public:
         GPProducer(){}
         virtual ~GPProducer(){}
-        inline IGPAutoDefFunction* createFunction(int outputTypeId, int inputTypeId = -1)
+        inline IGPAutoDefFunction* createFunction(const IStatusType* output, const IStatusType* input = NULL)
         {
-            std::vector<int> out(1, outputTypeId);
-            std::vector<int> inp(1, inputTypeId);
+            std::vector<const IStatusType*> out(1, output);
+            std::vector<const IStatusType*> inp(1, input);
             return this->vCreateFunction(out, inp);
         }
-        /*Set up environment*/
-        virtual void vAddContent(std::istream& is, IFunctionTable* table) = 0;
+        virtual void vPrint(std::ostream& os) const{}
         /*Create GP from xml files*/
         virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is) = 0;
+        /*For evolution*/
+        virtual void vMutate(IGPAutoDefFunction* f) const {}
         /*Create a IGPAutoDefFunction which use the inputType to output the same content in outputType, inputRepeat means the content of inputType can be used repeated*/
         /*The function can't be recursive, which can be modified by mutate*/
-        virtual IGPAutoDefFunction* vCreateFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true, bool random = false) = 0;
-        virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<int>& outputType, const std::vector<int>& inputType, bool inputRepeat = true) = 0;
-        virtual IGPAutoDefFunction* vCreateFromADF(IGPAutoDefFunction* src) = 0;
+        virtual IGPAutoDefFunction* vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true, bool random = false) = 0;
+        virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true) = 0;
+        /*Copy src to a new ADF*/
+        virtual IGPAutoDefFunction* vCopyADF(IGPAutoDefFunction* src) = 0;
+        /*Construct ADF by a function name, just package the function to be an ADF, the inputFuncs of this function will be ignored*/
         virtual IGPAutoDefFunction* vCreateFunctionFromName(const std::string& name) = 0;
+        /*Construct ADF by formula such as [ f3(f1(x0), f2(x1), f4(f5(x2))) ], +,-,* will be supported later*/
+        virtual IGPAutoDefFunction* vCreateFunctionFromFormula(const std::string& formula) = 0;
 };
 
 #endif

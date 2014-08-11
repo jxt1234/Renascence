@@ -29,7 +29,7 @@ class carryArray
     protected:
         void runCarry();
     private:
-		std::vector<int> mQueue;
+        std::vector<int> mQueue;
         int mCarryNumber;
 };
 

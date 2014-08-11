@@ -1,0 +1,259 @@
+/******************************************************************
+   Copyright 2013, Jiang Xiao-tang
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+******************************************************************/
+#include "core/GPTreeADF.h"
+#include "producer/GPTreeProducer.h"
+#include <list>
+#include <algorithm>
+#include <sstream>
+#include <stdlib.h>
+#include "utils/debug.h"
+#include "recurse_tree.h"
+#include "xml/xmlTree.h"
+using namespace std;
+
+#define LIMIT_SIZE 100
+class xmlCopy:public AbstractPoint::IPointCopy
+{
+    public:
+        xmlCopy(const GPFunctionDataBase* sys):mSys(sys){}
+        virtual ~xmlCopy(){}
+        virtual AbstractPoint* copy(AbstractPoint* src)
+        {
+            GPTreeADFPoint* p = new GPTreeADFPoint;
+            xmlTree* t = dynamic_cast<xmlTree*>(src);
+            assert(NULL!=t);
+            const GPFunctionDataBase::function* f = mSys->getDetailFunction(t->func());
+            p->mFunc = f;
+            vector<const IStatusType*> types;
+            vector<string> contents;
+            const vector<xmlTree::type>& ttype = t->status();
+            for (int i=0; i<ttype.size(); ++i)
+            {
+                const IStatusType* _type = mSys->queryType(ttype[i].name);
+                types.push_back(_type);
+                contents.push_back(ttype[i].content);
+            }
+            for (int i=0; i<contents.size(); ++i)
+            {
+                const IStatusType* t = types[0];
+                istringstream in(contents[0]);
+                GPStatusContent* c = new GPStatusContent(t, in);
+                (p->mStatus).push_back(c);
+            }
+            return p;
+        }
+    private:
+        const GPFunctionDataBase* mSys;
+};
+
+//TODO
+IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromFormula(const std::string& formula)
+{
+    vector<int> function;
+    vector<int> childrenNumber;
+    return NULL;
+}
+
+
+IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromName(const std::string& name)
+{
+    assert(NULL!=mDataBase);
+    const GPFunctionDataBase::function* f = mDataBase->getDetailFunction(name);
+    class simpleADF:public IGPAutoDefFunction
+    {
+        public:
+            simpleADF(const GPFunctionDataBase::function& f):mFunc(f){}
+            ~simpleADF(){}
+
+            virtual GP_Output run(const GP_Input& input)
+            {
+                return mFunc.basic(input);
+            }
+            virtual std::vector<const IStatusType*> vGetInputs() const
+            {
+                //FIXME: add status inputs
+                return mFunc.inputType;
+            }
+            /*Return all outputTypes in order*/
+            virtual std::vector<const IStatusType*> vGetOutputs() const
+            {
+                return mFunc.outputType;
+            }
+
+        private:
+            const GPFunctionDataBase::function& mFunc;
+    };
+    IGPAutoDefFunction* result = new simpleADF(*f);
+    return result;
+}
+
+
+void GPTreeProducer::setFunctionDataBase(const GPFunctionDataBase* comsys)
+{
+    mDataBase = comsys;
+}
+
+
+/*FIXME Currently, we assume random be false and inputRepeat be true, just return the first short tree by algorithm*/
+IGPAutoDefFunction* GPTreeProducer::vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, bool random)
+{
+    assert(NULL!=mDataBase);
+    /*TODO if inputType and outputType is the same as last one, return the cached one*/
+    GPTreeADF* gp = NULL;
+    IGPAutoDefFunction* res = NULL;
+    /*Find all available output function*/
+    vector<vector<int> > warpOutput;
+    _findMatchedFuncton(warpOutput, outputType);
+    vector<int> avail(1,warpOutput.size()-1);
+    /*Get All sequence*/
+    computePoint* start = new computePoint(warpOutput, avail, inputType, mDataBase);
+    computeSearchTree tree(start);
+    /*TODO random for result*/
+    vector<int> queue = tree.searchOne();
+    //TODO Allow queue.empty()
+    assert(!queue.empty());
+    //if (result.empty()) return NULL;
+    gp = new GPTreeADF;
+    initGP(gp, queue);
+    return gp;
+}
+
+void GPTreeProducer::_searchAllSequences(std::vector<std::vector<int> >& res, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat) const
+{
+    /*TODO if the inputType and outputType is the same as the last one, return the cached one*/
+    /*Find all available output function*/
+    vector<vector<int> > warpOutput;
+    _findMatchedFuncton(warpOutput, outputType);
+    vector<int> avail;
+    for (int i=0; i<warpOutput.size(); ++i)
+    {
+        avail.push_back(i);
+    }
+    /*Get All sequence*/
+    computePoint* start = new computePoint(warpOutput, avail, inputType, mDataBase);
+    computeSearchTree tree(start);
+    res = tree.searchAll();
+}
+
+std::vector<IGPAutoDefFunction*> GPTreeProducer::vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat)
+{
+    assert(NULL!=mDataBase);
+    GPTreeADF* gp = NULL;
+    vector<IGPAutoDefFunction*> res;
+    vector<vector<int> >queue;
+    _searchAllSequences(queue, outputType, inputType, inputRepeat);
+    for (int i=0; i<queue.size(); ++i)
+    {
+        gp = new GPTreeADF;
+        initGP(gp, queue[i]);
+        res.push_back(gp);
+    }
+    return res;
+}
+
+
+void GPTreeProducer::_findMatchedFuncton(std::vector<std::vector<int> >& warpOutput, const std::vector<const IStatusType*>& outputType) const
+{
+    for (int i=0; i < mDataBase->getFunctionNumber(); ++i)
+    {
+        const GPFunctionDataBase::function* f = mDataBase->getDetailFunction(i);
+        const vector<const IStatusType*>& out = f->outputType;
+        bool match = true;
+        for (int j=0; j<outputType.size(); ++j)
+        {
+            if (find(out.begin(), out.end(), outputType[j]) == out.end())
+            {
+                match = false;
+                break;
+            }
+        }
+        if (match)
+        {
+            vector<int> output;
+            output.push_back(i);
+            warpOutput.push_back(output);
+        }
+    }
+    assert(!warpOutput.empty());
+    //if (warpOutput.empty()) return NULL;
+}
+bool GPTreeProducer::initGP(GPTreeADF* tree, const std::vector<int>& queue)
+{
+    assert(NULL!=tree);
+    GPTreeADFPoint* p = tree->find(0.0);//Root
+    p->replacePoint(queue, mDataBase);
+    return true;
+}
+
+
+void GPTreeProducer::vMutate(IGPAutoDefFunction* tree) const
+{
+    //TODO find better way of RTTI
+    GPTreeADF* t = dynamic_cast<GPTreeADF*>(tree);
+    assert(NULL!=t);
+    const int scale = 100;
+    /*find random pos*/
+    //FIXME Create a random class and replace using rand() immediatly
+    float pos = (rand()%scale)/(float)scale;
+    GPTreeADFPoint* p = t->find(pos);
+    /*Replace or mutate status*/
+    int _rand = rand()%scale;
+    if (_rand < mLargeVary*scale)
+    {
+        vector<const IStatusType*> outputs = p->mFunc->outputType;
+        //TODO If outputs is empty, Use function name to vary
+        if (!outputs.empty())
+        {
+            vector<const IStatusType*> inputs;
+            p->getinput(inputs);
+            vector<vector<int> > queue;
+            _searchAllSequences(queue, outputs, inputs);
+            assert(!queue.empty());
+            int n = rand()%queue.size();
+            p->replacePoint(queue[n], mDataBase);
+        }
+    }
+    std::vector<GPStatusContent*>& mStatus = p->mStatus;
+    for (int i=0; i<mStatus.size(); ++i)
+    {
+        mStatus[i]->mutate();
+    }
+}
+
+void GPTreeProducer::_init()
+{
+    mLargeVary = 0.1;
+    mStatusVary = 0.4;
+}
+IGPAutoDefFunction* GPTreeProducer::vCopyADF(IGPAutoDefFunction* src)
+{
+    GPTreeADFPoint::GPTreeADFCopy c;
+    GPTreeADF* tree = dynamic_cast<GPTreeADF*>(src);
+    assert(NULL!=tree);
+    GPTreeADFPoint* root = tree->find(0.0);
+    GPTreeADFPoint* p = (GPTreeADFPoint*)AbstractPoint::deepCopy(root, &c);
+    return new GPTreeADF(p);
+}
+IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromIS(std::istream& is)
+{
+    xmlTree tree;
+    tree.loadStream(is);
+    xmlCopy c(mDataBase);
+    GPTreeADFPoint* p = (GPTreeADFPoint*)AbstractPoint::deepCopy(&tree, &c);
+    return new GPTreeADF(p);
+}
+
+

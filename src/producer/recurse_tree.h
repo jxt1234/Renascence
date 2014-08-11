@@ -22,7 +22,7 @@ class computePoint:public carryPoint
 {
 friend class computeSearchTree;
 public:
-    computePoint(const std::vector<std::vector<int> >& data, const std::vector<int>& avail, const std::vector<int>& input, GPFunctionDataBase* sys):mData(data), mAvail(avail), mCur(0), mInput(input), mSys(sys){}
+    computePoint(const std::vector<std::vector<int> >& data, const std::vector<int>& avail, const std::vector<const IStatusType*>& input, const GPFunctionDataBase* sys):mData(data), mAvail(avail), mCur(0), mInput(input), mSys(sys){}
     const std::vector<int>& getData() const{return mData[mAvail[mCur]];}
     std::vector<int> filter(const std::vector<std::vector<int> >& combo, const std::vector<int>& output);
 protected:
@@ -40,12 +40,12 @@ protected:
         return res;
     }
 private:
-    const std::vector<int>& mInput;
+    const std::vector<const IStatusType*>& mInput;
     const std::vector<std::vector<int> >& mData;
     std::vector<int> mAvail;
     int mCur;
     int mParent;
-    GPFunctionDataBase* mSys;
+    const GPFunctionDataBase* mSys;
 };
 
 

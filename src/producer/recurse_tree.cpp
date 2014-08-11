@@ -13,11 +13,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "system/recurse_tree.h"
 #include <list>
 #include <algorithm>
-#include "system/GenerateSystem.h"
-#include "core/AbstractGP.h"
+#include "core/GPTreeADF.h"
+#include "producer/GPTreeProducer.h"
+#include "recurse_tree.h"
 using namespace std;
 
 vector<int> computePoint::filter(const vector<vector<int> >& combo, const vector<int>& output)
@@ -27,7 +27,7 @@ vector<int> computePoint::filter(const vector<vector<int> >& combo, const vector
     {
         const vector<int>& comboUnit = combo[i];
         bool fit = true;
-        const vector<int>& input_obtained = mInput;
+        const vector<const IStatusType*>& input_obtained = mInput;
         for (int j=0; j<comboUnit.size(); ++j)
         {
             /*Check if it contained old output*/
@@ -37,16 +37,19 @@ vector<int> computePoint::filter(const vector<vector<int> >& combo, const vector
                 break;
             }
             /*Check if it contained unobtained input*/
-            const GPFunctionDataBase::function& f = mSys->getDetailFunction(comboUnit[j]);
-            for (int k=0; k<f.inputType.size(); ++k)
+            const GPFunctionDataBase::function* f = mSys->getDetailFunction(comboUnit[j]);
+            for (int k=0; k<f->inputType.size(); ++k)
             {
-                int inpId = f.inputType[k];
-                /*TODO break circle outside*/
+                const IStatusType* inpId = f->inputType[k];
                 if (find(input_obtained.begin(), input_obtained.end(), inpId) == input_obtained.end())
                 {
                     fit = false;
                     break;
                 }
+            }
+            if (!fit)
+            {
+                break;
             }
         }
         if (fit)
@@ -126,7 +129,7 @@ vector<int> computeSearchTree::output()
         //Construct queue, without status
         for (int i=0; i<data.size(); ++i)
         {
-            AbstractGP::loadUnitFunction(result, data[i], -1, inputNumber[i]);
+            GPTreeADF::loadUnitFunction(result, data[i], -1, inputNumber[i]);
         }
         queue.erase(queue.begin());
     }

@@ -28,7 +28,7 @@ public:
     bool next();
     void clear();
     carryPoint* mDepend;
-	std::vector<carryPoint*> mChild;
+    std::vector<carryPoint*> mChild;
     bool mGrow;
 };
 

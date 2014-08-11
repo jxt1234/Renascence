@@ -47,12 +47,12 @@ funcStatusType::funcStatusType(const std::string& name, IFunctionTable* table):I
     loadf = (statusLoadMethod)(table->vGetFunction(func));
     /*TODO Print which function is NULL*/
 }
-void* funcStatusType::salloc() const
+void* funcStatusType::Alloc() const
 {
     assert(NULL!=allocf);
     return allocf();
 }
-void funcStatusType::sfree(void* contents) const
+void funcStatusType::Free(void* contents) const
 {
     assert(NULL!=freef);
     freef(contents);
@@ -68,6 +68,14 @@ void funcStatusType::mutate(void* contents) const
     {
         double f = (rand() % 10000)/1000.0;
         mapf(contents, f);
+    }
+}
+
+void funcStatusType::mapValue(void* contents, double value) const
+{
+    if (NULL!=mapf)
+    {
+        mapf(contents, value);
     }
 }
 void funcStatusType::copy(void* src, void* dst) const

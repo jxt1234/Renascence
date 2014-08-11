@@ -13,16 +13,22 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "core/GPProducerFactory.h"
-#include "system/xmlGenerateSystem.h"
-
-GPProducer* GPProducerFactory::create()
+#ifndef XML_XMLGPDATALOADER_H
+#define XML_XMLGPDATALOADER_H
+#include "xml/xmlReader.h"
+#include "GPData.h"
+#include "status.h"
+#include "GPFunctionDataBase.h"
+class xmlGPDataLoader:public xmlReader
 {
-    return new xmlGenerateSystem;
-}
-GPProducer* GPProducerFactory::create(const char* file, IFunctionTable* t)
-{
-    xmlGenerateSystem* g = new xmlGenerateSystem;
-    g->addXml(file, t);
-    return g;
-}
+    public:
+        xmlGPDataLoader(const GPFunctionDataBase& sys);
+        virtual ~xmlGPDataLoader();
+        inline GPData* get() const{return mData;}
+    protected:
+        virtual void attributeUnflatten();
+    private:
+        const GPFunctionDataBase& mSys;
+        GPData* mData;
+};
+#endif

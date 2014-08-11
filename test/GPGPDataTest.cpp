@@ -1,7 +1,8 @@
 #include "test/GPTest.h"
-#include "system/xmlGenerateSystem.h"
-#include "xml/xmlGPDataLoader.h"
 #include <fstream>
+#include "core/GPFunctionDataBase.h"
+#include "core/GPFactory.h"
+#include "core/xmlGPDataLoader.h"
 using namespace std;
 
 class GPGPDataTest:public GPTest
@@ -9,9 +10,9 @@ class GPGPDataTest:public GPTest
     public:
         virtual void run()
         {
-            xmlGenerateSystem gen;
-            gen.addXml("func.xml");
-            xmlGPDataLoader* l=new xmlGPDataLoader(gen);
+            GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
+            AUTOCLEAN(base);
+            xmlGPDataLoader* l=new xmlGPDataLoader(*base);
             l->loadFile("test/GPGPDataTest.xml");
             GPData* data = l->get();
             ofstream of("output/GPGPDataTestResult.xml");

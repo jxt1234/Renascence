@@ -1,48 +1,95 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include "regress/f2c.h"
-#include "regress/clapack.h"
-#include "regress/graphic_regress.h"
+#include <jpeglib.h>
+#include <setjmp.h>
 
-void test_TrRegressMatrix(const char* srcP, const char* dstP)
+
+
+#include "transform.h"
+#include "transform_high.h"
+
+void rgswap(TrPixels* pixel)
 {
-	char* result;
-	TrRegreeMode* mode = TrRegreeModeAlloc(3);
-	TrBmp* src = TrLoadPixels(srcP);
-	TrBmp* dst = TrLoadPixels(dstP);
-	TrFilterMatrix* matrix;
-	mode->mode[2] = 0;
-	mode->mode[4] = 0;
-	matrix = TrRegressMatrix(src, dst, mode);
-	result = TrFilterMatrixPrint(matrix);
-	printf("%s\n", result);
-	free(result);
+	uchar temp;
+	temp = pixel->r;
+	pixel->r = pixel->g;
+	pixel->g = temp;
+}
 
-	TrBmp* fact = TrFilterMatrixTransform(src, matrix);
-	printf("\nerror = %f\n", TrCompareBmp(dst, fact));
+void r_2(TrPixels* pixel)
+{
+	pixel->r/=2;
+}
+void r_g_b_equal_r(TrPixels* pixel)
+{
+	pixel->g= pixel->r;
+	pixel->b = pixel->r;
+}
 
-	TrWritePixels(fact, "test_regress.jpg");
-	TrFreeBmp(fact);
-	TrFreeBmp(src);
-	TrFreeBmp(dst);
-	TrFilterMatrixFree(matrix);
-	TrRegreeModeFree(mode);
+void grayer(TrPixels* pixel)
+{
+	float gray = 0;
+	gray = 0.31*pixel->r + 0.44*pixel->g + 0.25*pixel->b;
+	uchar _gray = Tr_FLOAT_LIMIT_TO_CHAR(gray);
+	pixel->r = _gray;
+	pixel->g = _gray;
+	pixel->b = _gray;
 }
 
 
-void test_satu(const char* input, const char* output, float value)
-{
-	TrBmp* src = TrLoadPixels(input);
-	TrBmp* dst = TrSaturation(src, value);
-	TrFreeBmp(src);
-	TrWritePixels(dst, output);
-	TrFreeBmp(dst);
-}
 
+float matrix[9] = {0.0,0.0,0.0,-1.0,1.0,0.0,0.0,0.0,0.0};
+//float matrix[9] = {0.1,0.1,0.1,0.1,0.2,0.1,0.1,0.1,0.1};
 
 int main()
 {
-	//test_lapack();
-	test_TrRegressMatrix("test.jpg", "test_relif.jpg");
-	test_satu("input.jpg", "input_satu.jpg", 1.5);
+	TrBmp* src = TrLoadPixels("../../input.jpg");
+	TrBmp* dst;
+	//TrBmp* dst = TrScaleBmp(src, src->width*2, src->height*2);
+	dst=TrColorSwap(src, grayer);
+	TrWritePixels(dst, "test_colorswap.jpg");
+	TrFreeBmp(dst);
+
+	TrBmp* dst2;
+	dst2 = TrNormalBlur(src);
+	TrWritePixels(dst2, "test_blur.jpg");
+	TrFreeBmp(dst2);
+
+	TrBmp* dst3 = TrSimpleSharp(src, 100,0);
+	TrWritePixels(dst3, "test_sharp.jpg");
+	TrFreeBmp(dst3);
+	
+	TrBmp* dst4 = TrColorReverse(src);
+	TrWritePixels(dst4, "test_reverse.jpg");
+	TrFreeBmp(dst4);
+
+	dst4 = TrFilterRelief(src);
+	TrWritePixels(dst4, "test_relif.jpg");
+	TrFreeBmp(dst4);
+
+	TrBmp* dst5 = TrFilterRainbow(src);
+	TrWritePixels(dst5, "test_rainbow.jpg");
+	TrFreeBmp(dst5);
+
+	TrFilterMatrix* m = TrFilterMatrixCopyAlloc(matrix, 3);
+	m->offset = 128;
+	dst5 = TrFilterMatrixTransform(src, m);
+	TrWritePixels(dst5, "test_filter_matrix.jpg");
+	TrFilterMatrixFree(m);
+
+	TrBmp* pics[] = {src, dst5};
+	float factor[] = {0.3, 0.7};
+	TrBmp* dst6 = TrMixPicture(pics, factor, 2, src->width, src->height);
+	TrWritePixels(dst6, "test_mix.jpg");
+
+	printf("\nvalue=%f\n",TrCompareBmp(dst5, dst6));
+
+	TrBmp* dst7 = TrSaturation(src, 2.0);
+	TrWritePixels(dst7, "test_saturation.jpg");
+
+
+	TrFreeBmp(dst7);
+	TrFreeBmp(dst5);
+	TrFreeBmp(dst6);
+	TrFreeBmp(src);
+	return 0;
 }

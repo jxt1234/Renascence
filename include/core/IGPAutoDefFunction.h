@@ -15,23 +15,11 @@
 ******************************************************************/
 #ifndef CORE_IGPAUTODEFFUNCTION_H
 #define CORE_IGPAUTODEFFUNCTION_H
-#include "IDataBase.h"
-#include "function.h"
-#include "status.h"
-#include "utils/RefCount.h"
+#include "user/package.h"
+#include "GPFunctionDataBase.h"
 #include <istream>
 #include <ostream>
-class IGPUnit:public RefCount
-{
-    public:
-        IGPUnit(){}
-        virtual ~IGPUnit(){}
-        /*The combined function is implement by this circle: input--compute--output */
-        //The input function may delete the content of inp, so the inp must be reconstruct after input 
-        virtual void input(const GP_Input& inp, int& cur)=0;
-        virtual void compute(IRuntimeDataBase* map, statusBasic* sta)=0;
-        virtual GP_Output output() = 0;
-};
+#include "head.h"
 
 class IGPAutoDefFunction:public RefCount
 {
@@ -45,14 +33,10 @@ class IGPAutoDefFunction:public RefCount
          */
         virtual void save(std::ostream& os) {}
         virtual void load(std::istream& is) {}
-        /*For evolution*/
-        virtual void mutate(){}
-
-        /*If the function support variable input/output, return -1*/
-        //virtual int inputNumber() const {return -1;}
-        //virtual int outputNumber() const {return -1;}
-        virtual int inputNumber() const = 0; 
-        virtual int outputNumber() const = 0;
+        /*Return all inputTypes in order*/
+        virtual std::vector<const IStatusType*> vGetInputs() const = 0;
+        /*Return all outputTypes in order*/
+        virtual std::vector<const IStatusType*> vGetOutputs() const = 0;
         //Basic Function
         IGPAutoDefFunction(){}
         virtual ~IGPAutoDefFunction(){}

@@ -1,6 +1,6 @@
 #include "transform.h"
 #include <stdio.h>
-#include "jpeglib.h"
+#include "../third_party/libjpeg/jpeglib.h"
 static inline void TrmultiPixels(TrPixels* p, int alpha)
 {
     p->r = Tr_MULTI(p->r, alpha);

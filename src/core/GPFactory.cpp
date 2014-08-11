@@ -13,14 +13,20 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef CORE_GPPRODUCERFACTORY_H
-#define CORE_GPPRODUCERFACTORY_H
-class GPProducer;
-class IFunctionTable;
-class GPProducerFactory
+#include "core/GPFactory.h"
+#include "core/GPFunctionDataBase.h"
+#include "producer/GPTreeProducer.h"
+
+GPProducer* GPFactory::createProducer(const GPFunctionDataBase* base, GPFactory::TYPE t)
 {
-    public:
-        static GPProducer* create();
-        static GPProducer* create(const char* file, IFunctionTable* t);
-};
-#endif
+    return new GPTreeProducer(base);
+}
+GPFunctionDataBase* GPFactory::createDataBase(const char* file, IFunctionTable* t)
+{
+    GPFunctionDataBase* base = new GPFunctionDataBase;
+    if (file!=NULL)
+    {
+        base->loadXml(file, t);
+    }
+    return base;
+}

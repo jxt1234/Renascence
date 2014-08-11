@@ -24,129 +24,46 @@
 #include <assert.h>
 using namespace std;
 
-static IStatusType gEmptyType(string("NULL"));
-
-void statusBasic::clearStatusSet()
+GPStatusContent::GPStatusContent(const IStatusType* t)
 {
-    for (int i=0; i<mContents.size(); ++i)
+    mType = t;
+    mContent = t->Alloc();
+}
+GPStatusContent::GPStatusContent(const IStatusType* t, istream& is)
+{
+    mType = t;
+    mContent = t->load(is);
+}
+
+GPStatusContent::GPStatusContent(const GPStatusContent& c)
+{
+    mType = c.mType;
+    mContent = mType->Alloc();
+    mType->copy(mContent, c.mContent);
+}
+
+void GPStatusContent::operator=(const GPStatusContent& c)
+{
+    if (mType != c.mType)
     {
-        statusBasic::content& c = mContents[i];
-        (c.type)->sfree(c.data);
+        mType = c.mType;
+        mType->Free(mContent);
+        mContent = mType->Alloc();
     }
-    mContents.clear();
+    mType->copy(mContent, c.mContent);
 }
 
-statusBasic::~statusBasic()
+GPStatusContent::~GPStatusContent()
 {
-    for (int i=0; i<mDeleteType.size(); ++i)
-    {
-        delete mDeleteType[i];
-    }
+    mType->Free(mContent);
 }
 
-const IStatusType& statusBasic::queryTypeBySetId(int id)
+void GPStatusContent::mutate()
 {
-    if (id < 0 || id >= mContents.size())
-    {
-        return gEmptyType;
-    }
-    return *(mContents[id].type);
-}
-int statusBasic::queryType(const std::string& name)
-{
-    int res = -1;
-    for (int i=0; i<mType.size(); ++i)
-    {
-        if (mType[i]->name() == name)
-        {
-            res = i;
-            break;
-        }
-    }
-    return res;
+    mType->mutate(mContent);
 }
 
-
-/*Currently, I use assert to avoid the excepetion*/
-int statusBasic::addType(IStatusType* type, bool del)
+void GPStatusContent::mapValue(double value)
 {
-    assert(NULL!=type);
-    int id = mType.size();
-    mType.push_back(type);
-    if (del) mDeleteType.push_back(type);
-    return id;
-}
-
-
-int statusBasic::allocSet(int type, void* content)
-{
-    if(type < 0 || type >= mType.size()) return -1;
-    IStatusType* t = mType[type];
-    return allocSet(t, content);
-}
-int statusBasic::allocSet(IStatusType* t, void* content)
-{
-    assert(NULL!=t);
-    /*Alloc status content*/
-    statusBasic::content c;
-    if (NULL == content) content = t->salloc();
-    c.type = t;
-    c.data = content;
-    /*Find position and put it*/
-    int pos;
-    for (pos = 0; pos < mContents.size(); ++pos)
-    {
-        if (mContents[pos].type == &gEmptyType)
-        {
-            mContents[pos] = c;
-            break;
-        }
-    }
-    //The End
-    if (pos == mContents.size())
-    {
-        mContents.push_back(c);
-    }
-    return pos;
-
-}
-
-void* statusBasic::queryContent(int id)
-{
-    if(id < 0 || id >=mContents.size()) return NULL;
-    return mContents[id].data;
-}
-
-int statusBasic::copySet(int id)
-{
-    if(id < 0 || id >=mContents.size()) return -1;
-    IStatusType* t = mContents[id].type;
-    void* src = mContents[id].data;
-    assert((&gEmptyType) != t);
-    int res = allocSet(t);
-    t->copy(src, mContents[res].data);
-    return res;
-}
-const IStatusType& statusBasic::queryType(int typeId)
-{
-    int id = typeId;
-    if(id < 0 || id >=mType.size()) return gEmptyType;
-    return *(mType[typeId]);
-}
-
-int statusBasic::freeSet(int id)
-{
-    if(id < 0 || id >=mContents.size()) return -1;
-    statusBasic::content& c = mContents[id];
-    (c.type)->sfree(c.data);
-    c.type = &gEmptyType;
-    c.data = NULL;
-    return id;
-}
-int statusBasic::mutateSet(int id)
-{
-    if(id < 0 || id >=mContents.size()) return -1;
-    statusBasic::content& c = mContents[id];
-    (c.type)->mutate(c.data);
-    return id;
+    mType->mapValue(mContent, value);
 }

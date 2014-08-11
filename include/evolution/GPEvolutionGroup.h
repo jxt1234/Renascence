@@ -34,8 +34,8 @@ class GPEvolutionGroup
         };
         GPEvolutionGroup(GPProducer* sys, int time = 10, int size = 10);
         ~GPEvolutionGroup();
-        virtual void vSetInputId(const std::vector<int>& inputId){mInputId = inputId;}
-        virtual void vSetOutputId(const std::vector<int>& outputId){mOutputId = outputId;}
+        virtual void vSetInput(const std::vector<const IStatusType*>& input){mInput = input;}
+        virtual void vSetOutput(const std::vector<const IStatusType*>& output){mOutput = output;}
         virtual void vSetFixInput(const GP_Input& input);
         virtual void vSetInputStrategy(IInputStrategy* strategy);
         /*The fit function is assume to output only one double value*/
@@ -57,8 +57,8 @@ class GPEvolutionGroup
         double mBestFit;
         std::list<IGPAutoDefFunction*> mGroup;
         std::vector<IGPAutoDefFunction*> mBackup;
-        std::vector<int> mInputId;
-        std::vector<int> mOutputId;
+        std::vector<const IStatusType*> mInput;
+        std::vector<const IStatusType*> mOutput;
         IInputStrategy* mStrategy;
         int mTime;
         int mSize;

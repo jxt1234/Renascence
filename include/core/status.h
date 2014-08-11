@@ -19,6 +19,7 @@
 #include <vector>
 #include <string>
 #include <stdlib.h>
+#include "head.h"
 
 
 /*Basic API*/
@@ -29,9 +30,10 @@ class IStatusType
         IStatusType(const std::string name):mName(name){}
         virtual ~IStatusType(){}
         inline std::string name() const {return mName;}
-        virtual void* salloc() const {return NULL;}
-        virtual void sfree(void* contents) const {}
+        virtual void* Alloc() const {return NULL;}
+        virtual void Free(void* contents) const {}
         virtual void mutate(void* contents) const {}
+        virtual void mapValue(void* contents, double value) const {}
         virtual void copy(void* src, void* dst) const {}
         virtual void print(std::ostream& out, void* contents) const {}
         virtual void* load(std::istream& in) const {return NULL;}
@@ -39,7 +41,28 @@ class IStatusType
         std::string mName;
 };
 
+class GPStatusContent:public RefCount
+{
+    public:
+        GPStatusContent(const IStatusType* t);
+        GPStatusContent(const IStatusType* t, std::istream& is);
+        GPStatusContent(const GPStatusContent& c);
+        void operator=(const GPStatusContent& c);
+        ~GPStatusContent();
 
+        //Mutate
+        void mutate();
+        void mapValue(double value);
+
+        inline void* content() const {return mContent;}
+        inline const IStatusType& type() const {return *mType;}
+    private:
+        const IStatusType* mType;
+        void* mContent;
+};
+
+
+/*
 class statusBasic
 {
     public:
@@ -71,5 +94,5 @@ class statusBasic
         std::vector<IStatusType*> mDeleteType;
         std::vector<content> mContents;
 };
-
+*/
 #endif

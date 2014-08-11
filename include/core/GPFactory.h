@@ -13,21 +13,20 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef XML_XMLGPDATALOADER_H
-#define XML_XMLGPDATALOADER_H
-#include "xmlReader.h"
-#include "core/GPData.h"
-#include "core/status.h"
-class xmlGPDataLoader:public xmlReader
+#ifndef CORE_GPFACTORY_H
+#define CORE_GPFACTORY_H
+class GPProducer;
+class GPFunctionDataBase;
+class IFunctionTable;
+class GPFactory
 {
     public:
-        xmlGPDataLoader(statusBasic& sys);
-        virtual ~xmlGPDataLoader();
-        inline GPData* get() const{return mData;}
-    protected:
-        virtual void attributeUnflatten();
-    private:
-        statusBasic& mSys;
-        GPData* mData;
+        typedef enum
+        {
+            TREE,
+            UNKNOWN
+        }TYPE;
+        static GPProducer* createProducer(const GPFunctionDataBase* base, TYPE t = TREE);
+        static GPFunctionDataBase* createDataBase(const char* file, IFunctionTable* t);
 };
 #endif
