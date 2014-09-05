@@ -39,18 +39,18 @@ GPStatusContent::GPStatusContent(const GPStatusContent& c)
 {
     mType = c.mType;
     mContent = mType->Alloc();
-    mType->copy(mContent, c.mContent);
+    mType->copy(c.mContent, mContent);
 }
 
 void GPStatusContent::operator=(const GPStatusContent& c)
 {
     if (mType != c.mType)
     {
-        mType = c.mType;
         mType->Free(mContent);
+        mType = c.mType;
         mContent = mType->Alloc();
     }
-    mType->copy(mContent, c.mContent);
+    mType->copy(c.mContent, mContent);
 }
 
 GPStatusContent::~GPStatusContent()

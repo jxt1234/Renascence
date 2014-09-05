@@ -30,13 +30,13 @@ class IStatusType
         IStatusType(const std::string name):mName(name){}
         virtual ~IStatusType(){}
         inline std::string name() const {return mName;}
-        virtual void* Alloc() const {return NULL;}
-        virtual void Free(void* contents) const {}
-        virtual void mutate(void* contents) const {}
-        virtual void mapValue(void* contents, double value) const {}
-        virtual void copy(void* src, void* dst) const {}
-        virtual void print(std::ostream& out, void* contents) const {}
-        virtual void* load(std::istream& in) const {return NULL;}
+        virtual void* Alloc() const = 0;
+        virtual void Free(void* contents) const = 0;
+        virtual void mutate(void* contents) const = 0;
+        virtual void mapValue(void* contents, double value) const = 0;
+        virtual void copy(void* src, void* dst) const = 0;
+        virtual void print(std::ostream& out, void* contents) const = 0;
+        virtual void* load(std::istream& in) const = 0;
     private:
         std::string mName;
 };
