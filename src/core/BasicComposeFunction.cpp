@@ -4,6 +4,8 @@
 
 using namespace std;
 
+//TODO Optimization these
+
 GPBoolADF::GPBoolADF(IGPAutoDefFunction* gp)
 {
     assert(NULL!=gp);
@@ -79,18 +81,31 @@ void GPCombineADF::save(std::ostream& os)
     }
     os << "</Combine>\n";
 }
-void GPCombineADF::load(std::istream& is)
+
+IGPAutoDefFunction* GPCombineADF::copy() const
 {
+    return new GPCombineADF(mFunctions);
 }
+
 
 vector<const IStatusType*> GPCombineADF::vGetInputs() const
 {
     vector<const IStatusType*> t;
+    for (int i=0; i<mFunctions.size(); ++i)
+    {
+        vector<const IStatusType*> _t = mFunctions[i]->vGetInputs();
+        t.insert(t.end(), _t.begin(), _t.end());
+    }
     return t;
 }
 vector<const IStatusType*> GPCombineADF::vGetOutputs() const
 {
     vector<const IStatusType*> t;
+    for (int i=0; i<mFunctions.size(); ++i)
+    {
+        vector<const IStatusType*> _t = mFunctions[i]->vGetOutputs();
+        t.insert(t.end(), _t.begin(), _t.end());
+    }
     return t;
 }
 GPSwitchADF::GPSwitchADF(IGPAutoDefFunction* _s, IGPAutoDefFunction* _a, IGPAutoDefFunction* _b)
@@ -127,6 +142,12 @@ GPSwitchADF::~GPSwitchADF()
     s->decRef();
     a->decRef();
     b->decRef();
+}
+
+IGPAutoDefFunction* GPSwitchADF::copy() const
+{
+    IGPAutoDefFunction* r = new GPSwitchADF(s,a,b);
+    return r;
 }
 GP_Output GPSwitchADF::run(const GP_Input& inputs)
 {
@@ -176,9 +197,6 @@ void GPSwitchADF::save(std::ostream& os)
     b->save(os);
     os << "</Option_2>\n";
     os << "</Switch>\n";
-}
-void GPSwitchADF::load(std::istream& is)
-{
 }
 
 /*TODO Complete these*/

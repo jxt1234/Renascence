@@ -93,6 +93,12 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromName(const std::string& n
                 return mFunc.outputType;
             }
 
+            virtual IGPAutoDefFunction* copy() const
+            {
+                IGPAutoDefFunction* r = new simpleADF(mFunc);
+                return r;
+            }
+
         private:
             const GPFunctionDataBase::function& mFunc;
     };
@@ -237,15 +243,6 @@ void GPTreeProducer::_init()
 {
     mLargeVary = 0.1;
     mStatusVary = 0.4;
-}
-IGPAutoDefFunction* GPTreeProducer::vCopyADF(IGPAutoDefFunction* src)
-{
-    GPTreeADFPoint::GPTreeADFCopy c;
-    GPTreeADF* tree = dynamic_cast<GPTreeADF*>(src);
-    assert(NULL!=tree);
-    GPTreeADFPoint* root = tree->find(0.0);
-    GPTreeADFPoint* p = (GPTreeADFPoint*)AbstractPoint::deepCopy(root, &c);
-    return new GPTreeADF(p);
 }
 IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromIS(std::istream& is)
 {

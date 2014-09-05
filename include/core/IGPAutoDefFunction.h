@@ -25,14 +25,9 @@ class IGPAutoDefFunction:public RefCount
 {
     public:
         virtual GP_Output run(const GP_Input& inputs) = 0;
-        /*Assume:
-          b.save(f); 
-          a.load(f); 
-          then  a == b
-          But a and b must be created by the same GPProducer firstly
-         */
-        virtual void save(std::ostream& os) {}
-        virtual void load(std::istream& is) {}
+        virtual void save(std::ostream& os) const{}
+        /*Return a new copy of this Function*/
+        virtual IGPAutoDefFunction* copy() const= 0;
         /*Return all inputTypes in order*/
         virtual std::vector<const IStatusType*> vGetInputs() const = 0;
         /*Return all outputTypes in order*/

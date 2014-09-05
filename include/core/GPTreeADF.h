@@ -34,7 +34,7 @@ class GPTreeADFPoint:public AbstractPoint
         const GPFunctionDataBase::function* mFunc;
         std::vector<GPStatusContent*> mStatus;
         /*Function needed*/
-        void xmlPrint(std::ostream& res);
+        void xmlPrint(std::ostream& res) const;
         //The cur means from which element to use, it's assumed that the numbers is valid and the status has been alloc
         GP_Output compute(const GP_Input& input, int& cur);
         //For recursive
@@ -61,6 +61,7 @@ class GPTreeADF:public IGPAutoDefFunction
         GPTreeADF();
         GPTreeADF(GPTreeADFPoint* root);
         virtual ~GPTreeADF();
+        virtual IGPAutoDefFunction* copy() const;
         //Basic API
         GPTreeADFPoint* find(float rate);/*rate must be [0,1), return n*rate's element*/
         virtual GP_Output run(const GP_Input& inputs);
@@ -68,8 +69,7 @@ class GPTreeADF:public IGPAutoDefFunction
         virtual std::vector<const IStatusType*> vGetInputs() const;
         virtual std::vector<const IStatusType*> vGetOutputs() const;
         //Output a xml string, which can be write into file directly
-        virtual void save(std::ostream& os);
-        virtual void load(std::istream& is);
+        virtual void save(std::ostream& os) const;
         //FIXME: dangerous api
         static void loadUnitFunction(std::vector<int>& result, int functionId, int statusId, int number);
     protected:

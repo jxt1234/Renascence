@@ -38,7 +38,7 @@ GPTreeADFPoint::~GPTreeADFPoint()
 }
 
 
-void GPTreeADFPoint::xmlPrint(std::ostream& res)
+void GPTreeADFPoint::xmlPrint(std::ostream& res) const
 {
     res << "<"<< GP_XmlString::node<<">"<<endl;
     res<<"<"<<GP_XmlString::lib<<">"<<mFunc->libName<<"</"<<GP_XmlString::lib<<">\n";
@@ -233,15 +233,12 @@ void GPTreeADF::loadUnitFunction(vector<int>& result, int functionId, int status
     result.push_back(number);
 }
 
-void GPTreeADF::save(std::ostream& res)
+void GPTreeADF::save(std::ostream& res) const
 {
     assert(NULL!=mRoot);
     mRoot->xmlPrint(res);
 }
 
-void GPTreeADF::load(std::istream& is)
-{
-}
 GP_Output GPTreeADF::run(const GP_Input& inputs)
 {
     assert(NULL!=mRoot);
@@ -252,4 +249,12 @@ GP_Output GPTreeADF::run(const GP_Input& inputs)
 #endif
     int cur = 0;
     return mRoot->compute(inputs, cur);
+}
+
+IGPAutoDefFunction* GPTreeADF::copy() const
+{
+    GPTreeADFPoint::GPTreeADFCopy c;
+    GPTreeADFPoint* root = mRoot;
+    GPTreeADFPoint* p = (GPTreeADFPoint*)AbstractPoint::deepCopy(root, &c);
+    return new GPTreeADF(p);
 }

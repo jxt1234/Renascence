@@ -27,7 +27,6 @@ class GPTreeProducer:public GPProducer
         virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true);
         virtual IGPAutoDefFunction* vCreateFunctionFromName(const std::string& name);
         virtual IGPAutoDefFunction* vCreateFunctionFromFormula(const std::string& formula);
-        virtual IGPAutoDefFunction* vCopyADF(IGPAutoDefFunction* src);
         virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is);
 
         GPTreeProducer():mDataBase(NULL){_init();}

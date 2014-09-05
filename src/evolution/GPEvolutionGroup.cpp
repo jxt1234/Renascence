@@ -46,7 +46,7 @@ void GPEvolutionGroup::_restoreBackup()
     list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
     for (; iter!=mGroup.end(); iter++)
     {
-        mBackup.push_back(mSys->vCopyADF(*iter));
+        mBackup.push_back((*iter)->copy());
     }
 }
 
@@ -151,7 +151,7 @@ void GPEvolutionGroup::_expand()
     _clearGroup();
     for (int i=0; i<mSize; ++i)
     {
-        mGroup.push_back(mSys->vCopyADF(mBest));
+        mGroup.push_back(mBest->copy());
     }
 }
 
@@ -165,7 +165,7 @@ void GPEvolutionGroup::_mutate()
         {
             (*iter)->decRef();
             int n = rand()%mBackup.size();
-            *iter = mSys->vCopyADF(mBackup[n]);
+            *iter = (mBackup[n])->copy();
         }
         mSys->vMutate(*iter);
     }
