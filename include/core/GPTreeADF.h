@@ -27,8 +27,15 @@ class GPTreeADFPoint:public AbstractPoint
 {
     public:
         GPTreeADFPoint();
+        GPTreeADFPoint(const GPFunctionDataBase::function* func, bool initStatus = true);
         virtual ~GPTreeADFPoint();
         void replacePoint(const std::vector<int> &numbers, const GPFunctionDataBase* base);
+        inline const GPFunctionDataBase::function* func() const {return mFunc;}
+        inline std::vector<GPStatusContent*>& status() {return mStatus;}
+        inline void pGetInputs(std::vector<const IStatusType*>& tlist) const
+        {
+            getinput(tlist);
+        }
     private:
         /*Attributes*/
         const GPFunctionDataBase::function* mFunc;
@@ -48,10 +55,7 @@ class GPTreeADFPoint:public AbstractPoint
                 virtual AbstractPoint* copy(AbstractPoint* src);
         };
         void _replacePoint(const std::vector<int> &numbers, int& cur, const GPFunctionDataBase* base);
-        /*FIXME Avoid friend class*/
         friend class GPTreeADF;
-        friend class GPTreeProducer;
-        friend class xmlCopy;
 };
 
 class GPTreeADF:public IGPAutoDefFunction
@@ -63,6 +67,7 @@ class GPTreeADF:public IGPAutoDefFunction
         virtual ~GPTreeADF();
         virtual IGPAutoDefFunction* copy() const;
         //Basic API
+        inline GPTreeADFPoint* root() const {return mRoot;}
         GPTreeADFPoint* find(float rate);/*rate must be [0,1), return n*rate's element*/
         virtual GP_Output run(const GP_Input& inputs);
         /*Return all inputTypes in order*/

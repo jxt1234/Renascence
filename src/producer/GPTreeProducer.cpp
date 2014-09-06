@@ -32,11 +32,10 @@ class xmlCopy:public AbstractPoint::IPointCopy
         virtual ~xmlCopy(){}
         virtual AbstractPoint* copy(AbstractPoint* src)
         {
-            GPTreeADFPoint* p = new GPTreeADFPoint;
             xmlTree* t = dynamic_cast<xmlTree*>(src);
             assert(NULL!=t);
             const GPFunctionDataBase::function* f = mSys->getDetailFunction(t->func());
-            p->mFunc = f;
+            GPTreeADFPoint* p = new GPTreeADFPoint(f, false);
             vector<const IStatusType*> types;
             vector<string> contents;
             const vector<xmlTree::type>& ttype = t->status();
@@ -46,12 +45,13 @@ class xmlCopy:public AbstractPoint::IPointCopy
                 types.push_back(_type);
                 contents.push_back(ttype[i].content);
             }
+            vector<GPStatusContent*>& mStatus = p->status();
             for (int i=0; i<contents.size(); ++i)
             {
                 const IStatusType* t = types[0];
                 istringstream in(contents[0]);
                 GPStatusContent* c = new GPStatusContent(t, in);
-                (p->mStatus).push_back(c);
+                mStatus.push_back(c);
             }
             return p;
         }
@@ -219,12 +219,13 @@ void GPTreeProducer::vMutate(IGPAutoDefFunction* tree) const
     int _rand = rand()%scale;
     if (_rand < mLargeVary*scale)
     {
-        vector<const IStatusType*> outputs = p->mFunc->outputType;
+        const vector<const IStatusType*> outputs = p->func()->outputType;
         //TODO If outputs is empty, Use function name to vary
         if (!outputs.empty())
         {
+            const GPFunctionDataBase::function* f = p->func();
             vector<const IStatusType*> inputs;
-            p->getinput(inputs);
+            p->pGetInputs(inputs);
             vector<vector<int> > queue;
             _searchAllSequences(queue, outputs, inputs);
             assert(!queue.empty());
@@ -232,7 +233,7 @@ void GPTreeProducer::vMutate(IGPAutoDefFunction* tree) const
             p->replacePoint(queue[n], mDataBase);
         }
     }
-    std::vector<GPStatusContent*>& mStatus = p->mStatus;
+    std::vector<GPStatusContent*>& mStatus = p->status();
     for (int i=0; i<mStatus.size(); ++i)
     {
         mStatus[i]->mutate();

@@ -24,10 +24,24 @@
 //#define DEBUG_XML
 
 using namespace std;
+typedef const IStatusType* TYPEP;
 
 GPTreeADFPoint::GPTreeADFPoint()
 {
     mFunc = NULL;
+}
+GPTreeADFPoint::GPTreeADFPoint(const GPFunctionDataBase::function* func, bool initStatus)
+{
+    assert(NULL!=func);
+    mFunc = func;
+    if (initStatus)
+    {
+        vector<TYPEP> s = func->statusType;
+        for (int i=0; i<s.size(); ++i)
+        {
+            mStatus.push_back(new GPStatusContent(s[i]));
+        }
+    }
 }
 GPTreeADFPoint::~GPTreeADFPoint()
 {

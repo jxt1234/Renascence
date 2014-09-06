@@ -21,14 +21,25 @@ class GPloadXmlTreeTest2:public GPTest
             {
                 GPProducer* gen = GPFactory::createProducer(base);
                 AUTOCLEAN(gen);
-                ifstream f("result.xml");
-                IGPAutoDefFunction* gp = gen->vCreateFunctionFromIS(f);
-                f.close();
-                ofstream file;
-                file.open("output/GPloadXmlTreeTest.xml");
-                gp->save(file);
-                file.close();
-                gp->decRef();
+                {
+                    ifstream f("result.xml");
+                    IGPAutoDefFunction* gp = gen->vCreateFunctionFromIS(f);
+                    AUTOCLEAN(gp);
+                    f.close();
+                    ofstream file;
+                    file.open("output/GPloadXmlTreeTest.xml");
+                    gp->save(file);
+                    file.close();
+                    IGPAutoDefFunction* gp2 = gp->copy();
+                    AUTOCLEAN(gp2);
+                    file.open("output/GPloadXmlTreeTest_copy.xml");
+                    gp2->save(file);
+                    file.close();
+                    file.open("output/GPloadXmlTreeTest_mutate.xml");
+                    gen->vMutate(gp2);
+                    gp2->save(file);
+                    file.close();
+                }
             }
         }
         GPloadXmlTreeTest2(){}

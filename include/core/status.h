@@ -41,6 +41,7 @@ class IStatusType
         std::string mName;
 };
 
+
 class GPStatusContent:public RefCount
 {
     public:
