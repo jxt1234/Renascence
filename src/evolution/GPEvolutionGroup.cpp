@@ -1,8 +1,24 @@
+/******************************************************************
+   Copyright 2014, Jiang Xiao-tang
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+******************************************************************/
 #include "evolution/GPEvolutionGroup.h"
 #include <assert.h>
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include "utils/GPRandom.h"
 using namespace std;
 GPEvolutionGroup::GPEvolutionGroup(GPProducer* sys, int time, int size):mSys(sys)
 {
@@ -11,6 +27,7 @@ GPEvolutionGroup::GPEvolutionGroup(GPProducer* sys, int time, int size):mSys(sys
     mStrategy = NULL;
     mTime = time;
     mSize = size;
+    GPRandom::init();
 }
 
 GPEvolutionGroup::~GPEvolutionGroup()
@@ -160,11 +177,10 @@ void GPEvolutionGroup::_mutate()
     list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
     for (;iter!=mGroup.end();iter++)
     {
-        int r = rand()%10;
-        if (r < 1)
+        if (GPRandom::rate() < 0.1)
         {
             (*iter)->decRef();
-            int n = rand()%mBackup.size();
+            int n = GPRandom::mid(0,mBackup.size());
             *iter = (mBackup[n])->copy();
         }
         mSys->vMutate(*iter);

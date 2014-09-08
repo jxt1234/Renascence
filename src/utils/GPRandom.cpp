@@ -13,18 +13,32 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef MATH_GPFORMULA_H
-#define MATH_GPFORMULA_H
-#include <vector>
-#include <string>
-class GPFormula
+#include "utils/GPRandom.h"
+#include <stdlib.h>
+#include <time.h>
+namespace GPRandom
 {
-    public:
-        GPFormula(const std::string& formula);
-        ~GPFormula();
-        static void analysis(std::vector<int>& func, std::vector<int>& number, const std::string& formula);
-        inline const std::vector<int>& get() const {return mQueue;}
-    private:
-        std::vector<int> mQueue;
+    static const int inc = 10000;
+    float rate()
+    {
+        int r = rand()%inc;
+        float p = (float)r/(float)inc;
+        return p;
+    }
+
+    bool init()
+    {
+        srand((unsigned) time(NULL));
+        return true;
+    }
+    int mid(int min_, int max_)
+    {
+        int r = rand()%(max_-min_);
+        return r+min_;
+    }
+
+    bool reset()
+    {
+        return true;
+    }
 };
-#endif

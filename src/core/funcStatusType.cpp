@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <sstream>
 #include <iostream>
+#include "utils/GPRandom.h"
 using namespace std;
 
 /*FIXME replace assert by exception*/
@@ -66,7 +67,7 @@ void funcStatusType::mutate(void* contents) const
     }
     else if(NULL!=mapf)
     {
-        double f = (rand() % 10000)/1000.0;
+        double f = GPRandom::rate();
         mapf(contents, f);
     }
 }

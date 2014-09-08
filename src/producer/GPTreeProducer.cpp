@@ -22,6 +22,7 @@
 #include "utils/debug.h"
 #include "recurse_tree.h"
 #include "xml/xmlTree.h"
+#include "utils/GPRandom.h"
 using namespace std;
 
 #define LIMIT_SIZE 100
@@ -62,6 +63,7 @@ class xmlCopy:public AbstractPoint::IPointCopy
 //TODO
 IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromFormula(const std::string& formula)
 {
+    GPTreeADFPoint* root = NULL;
     vector<int> function;
     vector<int> childrenNumber;
     return NULL;
@@ -210,14 +212,11 @@ void GPTreeProducer::vMutate(IGPAutoDefFunction* tree) const
     //TODO find better way of RTTI
     GPTreeADF* t = dynamic_cast<GPTreeADF*>(tree);
     assert(NULL!=t);
-    const int scale = 100;
     /*find random pos*/
-    //FIXME Create a random class and replace using rand() immediatly
-    float pos = (rand()%scale)/(float)scale;
+    float pos = GPRandom::rate();
     GPTreeADFPoint* p = t->find(pos);
     /*Replace or mutate status*/
-    int _rand = rand()%scale;
-    if (_rand < mLargeVary*scale)
+    if (GPRandom::rate() < mLargeVary)
     {
         const vector<const IStatusType*> outputs = p->func()->outputType;
         //TODO If outputs is empty, Use function name to vary
@@ -229,7 +228,7 @@ void GPTreeProducer::vMutate(IGPAutoDefFunction* tree) const
             vector<vector<int> > queue;
             _searchAllSequences(queue, outputs, inputs);
             assert(!queue.empty());
-            int n = rand()%queue.size();
+            int n = GPRandom::mid(0, queue.size());
             p->replacePoint(queue[n], mDataBase);
         }
     }
