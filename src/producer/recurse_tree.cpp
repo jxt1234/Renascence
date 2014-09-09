@@ -37,7 +37,7 @@ vector<int> computePoint::filter(const vector<vector<int> >& combo, const vector
                 break;
             }
             /*Check if it contained unobtained input*/
-            const GPFunctionDataBase::function* f = mSys->getDetailFunction(comboUnit[j]);
+            const GPFunctionDataBase::function* f = mSys->vQueryFunctionById(comboUnit[j]);
             for (int k=0; k<f->inputType.size(); ++k)
             {
                 const IStatusType* inpId = f->inputType[k];
@@ -83,7 +83,8 @@ bool computePoint::vGrow()
     vector<int> currentOutputId = getDependOutput();
     for (int i=0; i<data.size(); ++i)
     {
-        const vector<vector<int> >& inputData = mSys->getAvailableFunctionInputs(data[i]);
+        const GPFunctionDataBase::function* f = mSys->vQueryFunctionById(data[i]);
+        const vector<vector<int> >& inputData = f->fixTable;
         currentOutputId.push_back(data[i]);
         vector<int> avail = filter(inputData, currentOutputId);
         currentOutputId.erase(currentOutputId.end()-1);

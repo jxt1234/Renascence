@@ -35,24 +35,21 @@ class xmlCopy:public AbstractPoint::IPointCopy
         {
             xmlTree* t = dynamic_cast<xmlTree*>(src);
             assert(NULL!=t);
-            const GPFunctionDataBase::function* f = mSys->getDetailFunction(t->func());
+            const GPFunctionDataBase::function* f = mSys->vQueryFunction(t->func());
             GPTreeADFPoint* p = new GPTreeADFPoint(f, false);
             vector<const IStatusType*> types;
-            vector<string> contents;
             const vector<xmlTree::type>& ttype = t->status();
+            vector<istream*> contents;
             for (int i=0; i<ttype.size(); ++i)
             {
-                const IStatusType* _type = mSys->queryType(ttype[i].name);
+                const IStatusType* _type = mSys->vQueryType(ttype[i].name);
                 types.push_back(_type);
-                contents.push_back(ttype[i].content);
+                contents.push_back(new istringstream(ttype[i].content));
             }
-            vector<GPStatusContent*>& mStatus = p->status();
+            p->initStatus(contents);
             for (int i=0; i<contents.size(); ++i)
             {
-                const IStatusType* t = types[0];
-                istringstream in(contents[0]);
-                GPStatusContent* c = new GPStatusContent(t, in);
-                mStatus.push_back(c);
+                delete contents[i];
             }
             return p;
         }
@@ -73,7 +70,7 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromFormula(const std::string
 IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromName(const std::string& name)
 {
     assert(NULL!=mDataBase);
-    const GPFunctionDataBase::function* f = mDataBase->getDetailFunction(name);
+    const GPFunctionDataBase::function* f = mDataBase->vQueryFunction(name);
     class simpleADF:public IGPAutoDefFunction
     {
         public:
@@ -178,9 +175,9 @@ std::vector<IGPAutoDefFunction*> GPTreeProducer::vCreateAllFunction(const std::v
 
 void GPTreeProducer::_findMatchedFuncton(std::vector<std::vector<int> >& warpOutput, const std::vector<const IStatusType*>& outputType) const
 {
-    for (int i=0; i < mDataBase->getFunctionNumber(); ++i)
+    for (int i=0; i < mDataBase->size(); ++i)
     {
-        const GPFunctionDataBase::function* f = mDataBase->getDetailFunction(i);
+        const GPFunctionDataBase::function* f = mDataBase->vQueryFunctionById(i);
         const vector<const IStatusType*>& out = f->outputType;
         bool match = true;
         for (int j=0; j<outputType.size(); ++j)
@@ -227,7 +224,7 @@ void GPTreeProducer::vMutate(IGPAutoDefFunction* tree) const
             p->replacePoint(queue[n], mDataBase);
         }
     }
-    std::vector<GPStatusContent*>& mStatus = p->status();
+    const std::vector<GPStatusContent*>& mStatus = p->status();
     for (int i=0; i<mStatus.size(); ++i)
     {
         mStatus[i]->mutate();

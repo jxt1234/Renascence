@@ -19,8 +19,8 @@ class GPXmlEvolutionTest:public GPTest
                 GPProducer* sys = GPFactory::createProducer(base);
                 GPProducer& gen = *sys;
                 AUTOCLEAN(sys);
-                const IStatusType* bmp = base->queryType(string("TrBmp"));
-                const IStatusType* doubleId = base->queryType(string("double"));
+                const IStatusType* bmp = base->vQueryType(string("TrBmp"));
+                const IStatusType* doubleId = base->vQueryType(string("double"));
                 vector<const IStatusType*> eOut;
                 eOut.push_back(bmp);
                 vector<const IStatusType*> eInp;

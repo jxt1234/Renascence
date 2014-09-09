@@ -29,11 +29,6 @@ using namespace std;
 GPFunctionDataBase::GPFunctionDataBase()
 {
 }
-const GPFunctionDataBase::function* GPFunctionDataBase::getDetailFunction(int id) const
-{
-    assert(id >=0 && id < mFunctionTable.size());
-    return (mFunctionTable[id]);
-}
 
 void GPFunctionDataBase::loadXml(const char* file, IFunctionTable* table, std::ostream* print)
 {
@@ -56,29 +51,25 @@ void GPFunctionDataBase::loadXml(std::istream& is, IFunctionTable* table, std::o
     }
     this->loadFuncXml(xmlLoader, table);
 }
-std::vector<int> GPFunctionDataBase::getOutputFunctions(const IStatusType* t) const
+std::vector<const GPFunctionDataBase::function*> GPFunctionDataBase::vSearchFunction(const IStatusType* t) const
 {
-    vector<int> res;
+    vector<const GPFunctionDataBase::function*> res;
     for (int i=0; i<mFunctionTable.size(); ++i)
     {
         const vector<const IStatusType*>& output = mFunctionTable[i]->outputType;
         if (find(output.begin(), output.end(), t)!=output.end())
         {
-            res.push_back(i);
+            res.push_back(mFunctionTable[i]);
         }
     }
     return res;
 }
 
-const std::vector<std::vector<int> >& GPFunctionDataBase::getAvailableFunctionInputs(int functionId) const
+int GPFunctionDataBase::size() const
 {
-    static vector<vector<int> > nullVector;
-    if (functionId >=0 && functionId < mFunctionTable.size())
-    {
-        return (mFunctionTable[functionId])->fixTable;
-    }
-    return nullVector;
+    return mFunctionTable.size();
 }
+
 
 GPFunctionDataBase::~GPFunctionDataBase()
 {
@@ -97,14 +88,6 @@ GPFunctionDataBase::~GPFunctionDataBase()
     }
 }
 
-computeFunction GPFunctionDataBase::getFunction(int id) const
-{
-    if (id < mFunctionTable.size() && 0<=id)
-    {
-        return mFunctionTable[id]->basic;
-    }
-    return NULL;
-}
 
 void GPFunctionDataBase::clear()
 {
@@ -219,7 +202,7 @@ void GPFunctionDataBase::print(ostream& os)
     }
     os << endl;
 }
-const IStatusType* GPFunctionDataBase::queryType(const std::string& name) const
+const IStatusType* GPFunctionDataBase::vQueryType(const std::string& name) const
 {
     const IStatusType* res = NULL;
     for (int i=0; i<mTypes.size(); ++i)
@@ -232,7 +215,7 @@ const IStatusType* GPFunctionDataBase::queryType(const std::string& name) const
     }
     return res;
 }
-const GPFunctionDataBase::function* GPFunctionDataBase::getDetailFunction (const string& name) const
+const GPFunctionDataBase::function* GPFunctionDataBase::vQueryFunction (const string& name) const
 {
     for (int i=0; i<mFunctionTable.size(); ++i)
     {
@@ -242,4 +225,9 @@ const GPFunctionDataBase::function* GPFunctionDataBase::getDetailFunction (const
         }
     }
     return NULL;
+}
+const GPFunctionDataBase::function* GPFunctionDataBase::vQueryFunctionById (int id) const
+{
+    assert(id>=0&&id<mFunctionTable.size());
+    return mFunctionTable[id];
 }

@@ -77,53 +77,6 @@ vector<xmlReader::package*> xmlFunctionLoader::loadMain(package* p)
             xmlFunctionLoader::function func;
             func.name = cur->name;
             mFunctions.push_back(func);
-        }
-        //if (cur->name == "functionTable" )
-        //{
-        //    for (int j=0; j<cur->attr.size(); ++j)
-        //    {
-        //        xmlFunctionLoader::function func;
-        //        func.name = cur->attr[j];
-        //        mFunctions.push_back(func);
-        //    }
-        //}
-        //else if(cur->name == "statusTable")
-        //{
-        //    for (int j=0; j<cur->attr.size(); ++j)
-        //    {
-        //        status s;
-        //        s.name = cur->attr[j];
-        //        mStatus.push_back(s);
-        //    }
-        //}
-    }
-    //Load fit and output, collent function
-    for(int i=0; i<children.size(); ++i)
-    {
-        xmlReader::package* cur = children[i];
-        //TODO Support multi output and fit
-        if (cur->name == "fit")
-        {
-            mFit = findFunction(cur->attr[0]);
-        }
-
-        else if (cur->name == "output")
-        {
-            mOutput = findFunction(cur->attr[0]);
-        }
-        else if (cur->name == "input")
-        {
-            for (int j=0; j<cur->attr.size(); ++j)
-            {
-                mInputs.push_back(findFunction(cur->attr[j]));
-            }
-        }
-        else if (cur->name == "statusTable" || cur->name == "functionTable")
-        {
-            //Do nothing, black name
-        }
-        else
-        {
             result.push_back(cur);
         }
     }

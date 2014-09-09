@@ -35,20 +35,20 @@ class GPFunctionDataBase:public RefCount
             std::vector<const IStatusType*> inputType;
             std::vector<const IStatusType*> outputType;
             std::vector<const IStatusType*> statusType;
-            std::vector<std::vector<int> > fixTable;
+            std::vector<std::vector<int> > fixTable;//TODO Delete this
         };
-        computeFunction getFunction (int id) const;
-        const function* getDetailFunction (int id) const;
-        const function* getDetailFunction (const std::string& name) const;
-        inline int getFunctionNumber() const{return mFunctionTable.size();}
+        //Basic Api
+        virtual const function* vQueryFunction (const std::string& name) const;
+        //In Future may delete these two API
+        virtual const function* vQueryFunctionById (int id) const;
+        virtual int size() const;
+        virtual const IStatusType* vQueryType(const std::string& name) const;
         void loadXml(const char* file, IFunctionTable* table=NULL, std::ostream* print = NULL);
         void loadXml(std::istream& is, IFunctionTable* table=NULL, std::ostream* print = NULL);
         void clear();
-        //Basic Api
-        const std::vector<std::vector<int> >& getAvailableFunctionInputs(int functionId) const;
-        std::vector<int> getOutputFunctions(const IStatusType* t) const;
+        //Find Function that has outputType of t
+        virtual std::vector<const function*> vSearchFunction(const IStatusType* t) const;
         void print(std::ostream& os);
-        const IStatusType* queryType(const std::string& name) const;
         GPFunctionDataBase();
         virtual ~GPFunctionDataBase();
     protected:

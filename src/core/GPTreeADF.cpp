@@ -51,6 +51,33 @@ GPTreeADFPoint::~GPTreeADFPoint()
     }
 }
 
+void GPTreeADFPoint::initStatus()
+{
+    vector<std::istream*> is((mFunc->statusType).size(),NULL);
+    initStatus(is);
+}
+void GPTreeADFPoint::initStatus(const std::vector<std::istream*>& is)
+{
+    for (int i=0; i<mStatus.size(); ++i)
+    {
+        SAFE_UNREF(mStatus[i]);
+    }
+    mStatus.clear();
+    const vector<TYPEP>& s = mFunc->statusType;
+    assert(is.size() == s.size());
+    for (int i=0; i<s.size(); ++i)
+    {
+        if (NULL == is[i])
+        {
+            mStatus.push_back(new GPStatusContent(s[i]));
+        }
+        else
+        {
+            mStatus.push_back(new GPStatusContent(s[i], *(is[i])));
+        }
+    }
+}
+
 
 void GPTreeADFPoint::xmlPrint(std::ostream& res) const
 {
@@ -119,7 +146,7 @@ void GPTreeADFPoint::_replacePoint(const std::vector<int> &numbers, int& cur, co
     while(!cacheQueue.empty())
     {
         GPTreeADFPoint* current = cacheQueue.front();
-        current->mFunc = base->getDetailFunction(numbers[cur++]);
+        current->mFunc = base->vQueryFunctionById((numbers[cur++]));
         /*Init status*/
         cur++;//Status be none
         const vector<const IStatusType*>& t = current->mFunc->statusType;

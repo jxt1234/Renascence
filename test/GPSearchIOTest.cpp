@@ -20,7 +20,7 @@ class GPSearchIOTest:public GPTest
                 GPProducer* sys = GPFactory::createProducer(base);
                 GPProducer& gen = *sys;
                 AUTOCLEAN(sys);
-                const IStatusType* ist = base->queryType(string("TrFilterMatrix"));
+                const IStatusType* ist = base->vQueryType(string("TrFilterMatrix"));
                 vector<const IStatusType*> out;
                 out.push_back(ist);
                 vector<const IStatusType*> inp;

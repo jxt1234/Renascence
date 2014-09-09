@@ -19,9 +19,9 @@ class GPcombineTest:public GPTest
             {
                 GPProducer* sys = GPFactory::createProducer(base);
                 AUTOCLEAN(sys);
-                const IStatusType* bmp = base->queryType(string("TrBmp"));
-                const IStatusType* doubleId = base->queryType(string("double"));
-                const IStatusType* matrix = base->queryType(string("TrFilterMatrix"));
+                const IStatusType* bmp = base->vQueryType(string("TrBmp"));
+                const IStatusType* doubleId = base->vQueryType(string("double"));
+                const IStatusType* matrix = base->vQueryType(string("TrFilterMatrix"));
                 /*Construct compose function*/
                 vector<IGPAutoDefFunction*> funcs;
                 GP_Output bmpoutput;//For input

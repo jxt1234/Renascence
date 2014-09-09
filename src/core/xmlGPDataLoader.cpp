@@ -42,7 +42,7 @@ void xmlGPDataLoader::attributeUnflatten()
         std::string& name = cur->name;
         std::vector<std::string>& attr = cur->attr;
         if (attr.empty()) continue;
-        const IStatusType& t = *(mSys.queryType(name));
+        const IStatusType& t = *(mSys.vQueryType(name));
         void* content = NULL;
         if (attr[0] == GP_XmlString::file && attr.size() >=2)//Load from file
         {
