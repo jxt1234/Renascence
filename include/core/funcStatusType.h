@@ -54,6 +54,8 @@ class funcStatusType:public IStatusType
         virtual void copy(void* src, void* dst) const;
         virtual void print(std::ostream& out, void* contents) const;
         virtual void* load(std::istream& in) const;
+
+        virtual bool vQuery(FUNC f) const;
     private:
         statusAllocMethod allocf;
         statusFreeMethod freef;

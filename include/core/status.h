@@ -27,16 +27,27 @@
 class IStatusType
 {
     public:
+        typedef enum {
+            MUTATE,
+            MAP,
+            PRINT,
+            LOAD,
+            COPY
+        }FUNC;
         IStatusType(const std::string name):mName(name){}
         virtual ~IStatusType(){}
         inline std::string name() const {return mName;}
+        //These API must has impletements
         virtual void* Alloc() const = 0;
         virtual void Free(void* contents) const = 0;
+        //These API may be null, which can be queried by vQuery
+        virtual void copy(void* src, void* dst) const = 0;
         virtual void mutate(void* contents) const = 0;
         virtual void mapValue(void* contents, double value) const = 0;
-        virtual void copy(void* src, void* dst) const = 0;
         virtual void print(std::ostream& out, void* contents) const = 0;
         virtual void* load(std::istream& in) const = 0;
+
+        virtual bool vQuery(FUNC f) const = 0;
     private:
         std::string mName;
 };

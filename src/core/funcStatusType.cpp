@@ -46,7 +46,6 @@ funcStatusType::funcStatusType(const std::string& name, IFunctionTable* table):I
 
     func = name + "_load";
     loadf = (statusLoadMethod)(table->vGetFunction(func));
-    /*TODO Print which function is NULL*/
 }
 void* funcStatusType::Alloc() const
 {
@@ -93,4 +92,32 @@ void* funcStatusType::load(std::istream& in) const
 {
     if(NULL==loadf) return NULL;
     return loadf(in);
+}
+
+bool funcStatusType::vQuery(IStatusType::FUNC f) const
+{
+    bool res = false;
+    switch(f)
+    {
+#define JUDGE(x) res=(x!=NULL)
+        case IStatusType::MUTATE:
+            JUDGE(mutatef);
+            break;
+        case IStatusType::PRINT:
+            JUDGE(printvf);
+            break;
+        case IStatusType::LOAD:
+            JUDGE(loadf);
+            break;
+        case IStatusType::MAP:
+            JUDGE(mapf);
+            break;
+        case IStatusType::COPY:
+            JUDGE(copyf);
+            break;
+        default:
+            break;
+#undef JUDGE
+    }
+    return res;
 }

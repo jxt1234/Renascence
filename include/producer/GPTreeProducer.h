@@ -38,9 +38,6 @@ class GPTreeProducer:public GPProducer
         const GPFunctionDataBase* mDataBase;
         void _searchAllSequences(std::vector<std::vector<int> >& res, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true) const;
         void _findMatchedFuncton(std::vector<std::vector<int> >& warpOutput, const std::vector<const IStatusType*>& outputType) const;
-        /*The output is the target function Id*/
-        bool initGP(GPTreeADF* tree, const std::string& type, bool random = true);
-        bool initGP(GPTreeADF* tree, const std::vector<int>& queue);
         void _init();
 
         float mLargeVary;

@@ -135,7 +135,10 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunction(const std::vector<const ISta
     assert(!queue.empty());
     //if (result.empty()) return NULL;
     gp = new GPTreeADF;
-    initGP(gp, queue);
+    {
+        GPTreeADFPoint* p = gp->root();
+        p->replacePoint(queue, mDataBase);
+    }
     return gp;
 }
 
@@ -166,7 +169,7 @@ std::vector<IGPAutoDefFunction*> GPTreeProducer::vCreateAllFunction(const std::v
     for (int i=0; i<queue.size(); ++i)
     {
         gp = new GPTreeADF;
-        initGP(gp, queue[i]);
+        gp->root()->replacePoint(queue[i], mDataBase);
         res.push_back(gp);
     }
     return res;
@@ -198,14 +201,6 @@ void GPTreeProducer::_findMatchedFuncton(std::vector<std::vector<int> >& warpOut
     assert(!warpOutput.empty());
     //if (warpOutput.empty()) return NULL;
 }
-bool GPTreeProducer::initGP(GPTreeADF* tree, const std::vector<int>& queue)
-{
-    assert(NULL!=tree);
-    GPTreeADFPoint* p = tree->find(0.0);//Root
-    p->replacePoint(queue, mDataBase);
-    return true;
-}
-
 
 void GPTreeProducer::vMutate(IGPAutoDefFunction* tree) const
 {
