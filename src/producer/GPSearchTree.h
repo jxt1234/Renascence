@@ -17,6 +17,7 @@
 #define SRC_PRODUCER_GPSEARCHTREE_H
 
 #include "math/carryTree.h"
+#include "math/carryGroup2.h"
 #include "core/GPTreeADF.h"
 /*This class use inputType and outputType to determine the relationship of each function, thus construct a tree*/
 
@@ -24,23 +25,23 @@ class GPSearchTreePoint:public carryPoint
 {
     public:
         typedef const GPFunctionDataBase::function FUNC;
-        typedef std::vector<FUNC*> PAIRP;
-        typedef std::vector<PAIRP> GROUP;
+        typedef std::vector<FUNC*> FUNCTEAM;
+        typedef std::vector<FUNCTEAM> GROUP;
         typedef const IStatusType* TYPEP;
-        GPSearchTreePoint(const GPFunctionDataBase* base, const std::vector<TYPEP>& output);
+        GPSearchTreePoint(const GPFunctionDataBase* base, FUNC* f, GPSearchTreePoint* depend);
         virtual ~GPSearchTreePoint();
         GPTreeADFPoint* output() const;
+        bool invalid() const;
     protected:
         virtual bool vGrow();
         virtual bool vNext();
     private:
-        PAIRP _getDependFunction();
-        const PAIRP& current();
-        int mCur;
-        int mParent;
-        GROUP mGroup;
-        GPSearchTreePoint* mDepend;
-        const GPFunctionDataBase* mSys;
+        FUNCTEAM _getDependFunction();
+        static void _addTeam(const GROUP& origin, const FUNCTEAM& forbid, GROUP& output);
+        carryGroup2<FUNC*> mGroup;
+        FUNC* mF;
+        const FUNCTEAM& current() const;
+        const GPFunctionDataBase* mBase;
     friend class GPSearchTree;
 };
 

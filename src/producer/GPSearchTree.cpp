@@ -14,46 +14,144 @@
    limitations under the License.
 ******************************************************************/
 #include "GPSearchTree.h"
+#include <algorithm>
+using namespace std;
 
-GPSearchTreePoint::GPSearchTreePoint(const GPFunctionDataBase* base, const std::vector<TYPEP>& output)
+GPSearchTreePoint::GPSearchTreePoint(const GPFunctionDataBase* base, FUNC* f, GPSearchTreePoint* depend)
 {
+    mBase = base;
+    mF = f;
+    mDepend = depend;
+    FUNCTEAM forbid = _getDependFunction();
+    /*If fixTable is not empty, use fixTable, else generate group by inputType*/
+    if (!(f->fixTable).empty())
+    {
+        //TODO Turn fixTable be GROUP type, such avoid this convert
+        const vector<vector<int> >& intTable = f->fixTable;
+        GROUP fixTable;
+        for (int i=0; i<intTable.size(); ++i)
+        {
+            FUNCTEAM team;
+            for (int j=0; j<intTable[i].size(); ++j)
+            {
+                team.push_back(mBase->vQueryFunctionById(intTable[i][j]));
+            }
+            fixTable.push_back(team);
+        }
+        _addTeam(fixTable, forbid, mGroup.mBase);
+    }
+    else
+    {
+        //TODO Support multi output
+        const vector<const IStatusType*> input = f->inputType;
+        for (int i=0; i<input.size(); ++i)
+        {
+            FUNCTEAM team = mBase->vSearchFunction(input[i]);
+            FUNCTEAM::iterator iter = team.begin();
+            for (;iter!=team.end();iter++)
+            {
+                if (find(forbid.begin(), forbid.end(), *iter)!=forbid.end())
+                {
+                    iter = team.erase(iter);
+                }
+            }
+            if (team.empty())
+            {
+                //Make this point invalid
+                mGroup.mBase.clear();
+                break;
+            }
+            mGroup.mBase.push_back(team);
+        }
+    }
+    mGroup.reset();
 }
 
 GPSearchTreePoint::~GPSearchTreePoint()
 {
 }
 
+void GPSearchTreePoint::_addTeam(const GROUP& origin, const FUNCTEAM& forbid, GROUP& output)
+{
+    for (int i=0; i<origin.size(); ++i)
+    {
+        const FUNCTEAM& team = origin[i];
+        bool valid = true;
+        for (int j=0; j<team.size(); ++j)
+        {
+            FUNC* _f = (team[j]);
+            for (int k=0; k<forbid.size(); ++k)
+            {
+                if (_f == forbid[k])
+                {
+                    valid = false;
+                    break;
+                }
+            }
+            if (!valid)
+            {
+                break;
+            }
+        }
+        if (valid)
+        {
+            output.push_back(team);
+        }
+    }
+}
+
+
 bool GPSearchTreePoint::vGrow()
 {
-    const PAIRP& p = mGroup[mCur];
-    PAIRP forbid = _getDependFunction();
-    for (int i=0; i<p.size(); ++i)
+    const FUNCTEAM& team = current();
+    for (int i=0; i<team.size(); ++i)
     {
+        GPSearchTreePoint* p = new GPSearchTreePoint(mBase, team[i], this);
+        mChild.push_back(p);
+        if (p->invalid())
+        {
+            return false;
+        }
     }
     return true;
 }
 
-const GPSearchTreePoint::PAIRP& GPSearchTreePoint::current()
+bool GPSearchTreePoint::invalid() const
 {
-    return mGroup[mCur];
+    return (mGroup.mBase.empty());
 }
 
-GPSearchTreePoint::PAIRP GPSearchTreePoint::_getDependFunction()
+const GPSearchTreePoint::FUNCTEAM& GPSearchTreePoint::current() const
 {
-    PAIRP res;
-    GPSearchTreePoint* p = this->mDepend;
+    return mGroup.current();
+}
+
+GPTreeADFPoint* GPSearchTreePoint::output() const
+{
+    GPTreeADFPoint* res = new GPTreeADFPoint(mF);
+    /*Get children from child search point, recurse*/
+    for (int i=0; i<mChild.size(); ++i)
+    {
+        GPSearchTreePoint* p = (GPSearchTreePoint*)mChild[i];
+        GPTreeADFPoint* child = p->output();
+        res->addPoint(child);
+    }
+    return res;
+}
+
+GPSearchTreePoint::FUNCTEAM GPSearchTreePoint::_getDependFunction()
+{
+    FUNCTEAM res;
+    GPSearchTreePoint* p = this;
     while(NULL != p)
     {
-        FUNC* f = NULL;
+        res.push_back(p->mF);
+        p = (GPSearchTreePoint*)(p->mDepend);
     }
+    return res;
 }
 
 bool GPSearchTreePoint::vNext()
 {
-    if (mCur >= mGroup.size())
-    {
-        return false;
-    }
-    mCur++;
-    return true;
+    return mGroup.next();
 }

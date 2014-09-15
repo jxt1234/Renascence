@@ -17,7 +17,6 @@
 #include <fstream>
 #include "core/GPFunctionDataBase.h"
 #include "utils/debug.h"
-#include "math/carryArray.h"
 #include <assert.h>
 #include "core/funcStatusType.h"
 #include <algorithm>

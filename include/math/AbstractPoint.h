@@ -19,7 +19,8 @@
 #include <vector>
 #include <list>
 #include <ostream>
-class AbstractPoint
+#include "utils/RefCount.h"
+class AbstractPoint:public RefCount
 {
     public:
         /*This class will alloc a new AbstractPoint and copy the contents from src*/
