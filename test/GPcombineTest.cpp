@@ -14,10 +14,9 @@ class GPcombineTest:public GPTest
     public:
         virtual void run()
         {
-            GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
-            AUTOCLEAN(base);
+            GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
             {
-                GPProducer* sys = GPFactory::createProducer(base);
+                GPProducer* sys = GPFactory::createProducer(base.get());
                 AUTOCLEAN(sys);
                 const IStatusType* bmp = base->vQueryType(string("TrBmp"));
                 const IStatusType* doubleId = base->vQueryType(string("double"));

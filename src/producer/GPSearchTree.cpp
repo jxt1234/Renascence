@@ -17,15 +17,19 @@
 #include <algorithm>
 using namespace std;
 
-GPSearchTreePoint::GPSearchTreePoint(const GPFunctionDataBase* base, FUNC* f, GPSearchTreePoint* depend)
+GPSearchTreePoint::GPSearchTreePoint(const GPFunctionDataBase* base, FUNC* f, GPSearchTreePoint* depend, const vector<const IStatusType*>& permitInput):mInputs(permitInput)
 {
     mBase = base;
     mF = f;
     mDepend = depend;
     FUNCTEAM forbid = _getDependFunction();
+    mValid = true;
+    mCur = 0;
+    mUseCarry = true;
     /*If fixTable is not empty, use fixTable, else generate group by inputType*/
     if (!(f->fixTable).empty())
     {
+        mUseCarry = false;
         //TODO Turn fixTable be GROUP type, such avoid this convert
         const vector<vector<int> >& intTable = f->fixTable;
         GROUP fixTable;
@@ -39,6 +43,10 @@ GPSearchTreePoint::GPSearchTreePoint(const GPFunctionDataBase* base, FUNC* f, GP
             fixTable.push_back(team);
         }
         _addTeam(fixTable, forbid, mGroup.mBase);
+        if (fixTable.size()>0 && mGroup.mBase.empty())
+        {
+            mValid = false;
+        }
     }
     else
     {
@@ -55,16 +63,20 @@ GPSearchTreePoint::GPSearchTreePoint(const GPFunctionDataBase* base, FUNC* f, GP
                     iter = team.erase(iter);
                 }
             }
+            if (find(permitInput.begin(), permitInput.end(), input[i])!=permitInput.end())
+            {
+                team.insert(team.begin(), NULL);
+            }
             if (team.empty())
             {
                 //Make this point invalid
-                mGroup.mBase.clear();
+                mValid = false;
                 break;
             }
             mGroup.mBase.push_back(team);
         }
+        mGroup.reset();
     }
-    mGroup.reset();
 }
 
 GPSearchTreePoint::~GPSearchTreePoint()
@@ -106,7 +118,11 @@ bool GPSearchTreePoint::vGrow()
     const FUNCTEAM& team = current();
     for (int i=0; i<team.size(); ++i)
     {
-        GPSearchTreePoint* p = new GPSearchTreePoint(mBase, team[i], this);
+        if (NULL == team[i])
+        {
+            continue;
+        }
+        GPSearchTreePoint* p = new GPSearchTreePoint(mBase, team[i], this, mInputs);
         mChild.push_back(p);
         if (p->invalid())
         {
@@ -118,12 +134,19 @@ bool GPSearchTreePoint::vGrow()
 
 bool GPSearchTreePoint::invalid() const
 {
-    return (mGroup.mBase.empty());
+    return !mValid;
 }
 
 const GPSearchTreePoint::FUNCTEAM& GPSearchTreePoint::current() const
 {
-    return mGroup.current();
+    if (mUseCarry)
+    {
+        return mGroup.current();
+    }
+    else
+    {
+        return mGroup.mBase[mCur];
+    }
 }
 
 GPTreeADFPoint* GPSearchTreePoint::output() const
@@ -153,5 +176,21 @@ GPSearchTreePoint::FUNCTEAM GPSearchTreePoint::_getDependFunction()
 
 bool GPSearchTreePoint::vNext()
 {
-    return mGroup.next();
+    if (mUseCarry)
+    {
+        return mGroup.next();
+    }
+    else
+    {
+        int cur = mCur+1;
+        if (cur >= mGroup.mBase.size())
+        {
+            return false;
+        }
+        else
+        {
+            mCur = cur;
+            return true;
+        }
+    }
 }

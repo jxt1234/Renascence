@@ -17,6 +17,7 @@
 #define MATH_CARRYGROUP2_H
 #include <vector>
 #include <assert.h>
+
 template<typename T>
 class carryGroup2
 {

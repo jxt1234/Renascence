@@ -28,7 +28,7 @@ class GPSearchTreePoint:public carryPoint
         typedef std::vector<FUNC*> FUNCTEAM;
         typedef std::vector<FUNCTEAM> GROUP;
         typedef const IStatusType* TYPEP;
-        GPSearchTreePoint(const GPFunctionDataBase* base, FUNC* f, GPSearchTreePoint* depend);
+        GPSearchTreePoint(const GPFunctionDataBase* base, FUNC* f, GPSearchTreePoint* depend, const std::vector<TYPEP>& permitInput);
         virtual ~GPSearchTreePoint();
         GPTreeADFPoint* output() const;
         bool invalid() const;
@@ -42,6 +42,10 @@ class GPSearchTreePoint:public carryPoint
         FUNC* mF;
         const FUNCTEAM& current() const;
         const GPFunctionDataBase* mBase;
+        const std::vector<const IStatusType*>& mInputs;
+        bool mValid;
+        bool mUseCarry;
+        int mCur;
     friend class GPSearchTree;
 };
 
