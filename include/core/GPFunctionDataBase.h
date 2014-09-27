@@ -17,10 +17,10 @@
 #define GP_COMPUTE_SYSTEM_H
 #include "core/function.h"
 #include "core/status.h"
-#include "xml/xmlFunctionLoader.h"
 #include <string>
 #include "core/IDataBase.h"
 #include "user/IFunctionTable.h"
+#include "xml/xmlReader.h"
 
 class GPFunctionDataBase:public RefCount
 {
@@ -45,17 +45,16 @@ class GPFunctionDataBase:public RefCount
         virtual const IStatusType* vQueryType(const std::string& name) const;
         void loadXml(const char* file, IFunctionTable* table=NULL, std::ostream* print = NULL);
         void loadXml(std::istream& is, IFunctionTable* table=NULL, std::ostream* print = NULL);
-        void clear();
         //Find Function that has outputType of t
         virtual std::vector<const function*> vSearchFunction(const IStatusType* t) const;
         void print(std::ostream& os);
         GPFunctionDataBase();
         virtual ~GPFunctionDataBase();
-    protected:
-        void loadFuncXml(xmlFunctionLoader& loader, IFunctionTable* table);
-        std::vector<const IStatusType*> loadStatus(const std::vector<xmlFunctionLoader::status>& sta, IFunctionTable* handle);
     private:
-        void _loadUnit(xmlFunctionLoader func);
+        void _addFunction(GPFunctionDataBase::function* warpf, const xmlReader::package* func, IFunctionTable* table);
+        int _findFunction(const std::string& name);
+        const IStatusType* _findAndLoadStatus(const std::string& name, IFunctionTable* handle);
+        void _clear();
         std::vector<function*> mFunctionTable;
         std::vector<IFunctionTable*> mHandle;
         std::vector<IStatusType*> mTypes;

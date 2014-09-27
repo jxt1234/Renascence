@@ -21,6 +21,7 @@
 class IFunctionTable
 {
     public:
+        //TODO make this function const
         virtual void* vGetFunction(const std::string& name)=0;
         IFunctionTable(){}
         virtual ~IFunctionTable(){}

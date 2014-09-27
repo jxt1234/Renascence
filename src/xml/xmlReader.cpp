@@ -51,16 +51,18 @@ void xmlReader::clear()
     this->subClear();
 }
 
-XMLAPI void xmlReader::loadStream(istream& input)
+XMLAPI const xmlReader::package* xmlReader::loadStream(istream& input)
 {
     clear();
     loadPackage(input);
     this->attributeUnflatten();
+    return mAttributes;
 }
 
-XMLAPI void xmlReader::loadFile(const char* file)
+XMLAPI const xmlReader::package* xmlReader::loadFile(const char* file)
 {
-    if (NULL==file) return;
+    //TODO return NULL
+    assert(NULL!=file);
     ifstream read;
     read.open(file, ios::in);
     assert(!read.fail());
@@ -68,6 +70,7 @@ XMLAPI void xmlReader::loadFile(const char* file)
     loadPackage(read);
     this->attributeUnflatten();
     read.close();
+    return mAttributes;
 }
 
 

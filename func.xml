@@ -49,8 +49,4 @@
 </TrPackageInputTarget>
 
 
-<output>TrWritePixels</output>
-<input>TrPackageInput</input>
-<fit>TrPackageFitCompute</fit>
-
 </libpics>

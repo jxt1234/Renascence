@@ -25,22 +25,22 @@
 class xmlReader
 {
     public:
-        XMLAPI void loadFile(const char* file);
-        XMLAPI void loadStream(std::istream& input);
-        XMLAPI void writeFile(const char* file);
-        xmlReader();
-        virtual ~xmlReader();
-    protected:
-        virtual void attributeUnflatten() = 0;
-        void clear();
-        //For child class to clear their self data
-        virtual void subClear(){}
         struct package
         {
             std::string name;
             std::vector<std::string> attr;
             std::vector<package*> children;
         };
+        XMLAPI const package* loadFile(const char* file);
+        XMLAPI const package* loadStream(std::istream& input);
+        XMLAPI void writeFile(const char* file);
+        xmlReader();
+        virtual ~xmlReader();
+    protected:
+        virtual void attributeUnflatten() {}
+        void clear();
+        //For child class to clear their self data
+        virtual void subClear(){}
         void analysisLine(const std::string& line);
         package* loadPackage(std::istream& input);
         package* mAttributes;
