@@ -13,8 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "core/GPTreeADF.h"
 #include "core/GP_XmlString.h"
+#include "producer/GPTreeADF.h"
 #include <algorithm>
 #include <sstream>
 #include <fstream>

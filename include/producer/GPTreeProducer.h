@@ -18,7 +18,7 @@
 
 #include "core/GPFunctionDataBase.h"
 #include "core/GPProducer.h"
-#include "core/GPTreeADF.h"
+#include "GPTreeADF.h"
 
 class GPTreeProducer:public GPProducer
 {

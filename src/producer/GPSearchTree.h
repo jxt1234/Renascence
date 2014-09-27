@@ -18,7 +18,7 @@
 
 #include "math/carryTree.h"
 #include "math/carryGroup2.h"
-#include "core/GPTreeADF.h"
+#include "producer/GPTreeADF.h"
 /*This class use inputType and outputType to determine the relationship of each function, thus construct a tree*/
 
 class GPSearchTreePoint:public carryPoint

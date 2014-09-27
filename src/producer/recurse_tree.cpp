@@ -15,7 +15,7 @@
 ******************************************************************/
 #include <list>
 #include <algorithm>
-#include "core/GPTreeADF.h"
+#include "producer/GPTreeADF.h"
 #include "producer/GPTreeProducer.h"
 #include "recurse_tree.h"
 using namespace std;

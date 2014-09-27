@@ -17,11 +17,11 @@
 #define CORE_ABSTRACTGP_H
 #include <stdlib.h>
 #include "math/AbstractPoint.h"
-#include "function.h"
+#include "core/function.h"
+#include "core/GPFunctionDataBase.h"
+#include "core/IGPAutoDefFunction.h"
 #include "utils/GP_Clock.h"
 #include "utils/debug.h"
-#include "GPFunctionDataBase.h"
-#include "IGPAutoDefFunction.h"
 
 class GPTreeADFPoint:public AbstractPoint
 {
