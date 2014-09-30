@@ -18,6 +18,7 @@
 #include <vector>
 
 /*We can not define a destructor function and use freeCallBack for GP_Output, because the freeCallBack is called by the system outside*/
+#pragma pack(push)
 #pragma pack(4)
 struct GP_Output
 {
@@ -59,4 +60,5 @@ typedef std::vector<void*> GP_Input;
 #define GP_OUTPUT_SINGLE_EXIT(x, result) GP_Output x;x.output.push_back(result);return x;
 
 typedef GP_Output(*computeFunction)(GP_Input inputs);
+#pragma pack(pop)
 #endif

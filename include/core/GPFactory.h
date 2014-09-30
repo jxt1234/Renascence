@@ -24,6 +24,7 @@ class GPFactory
         typedef enum
         {
             TREE,
+            GRAPIC,
             UNKNOWN
         }TYPE;
         static GPProducer* createProducer(const GPFunctionDataBase* base, TYPE t = TREE);
