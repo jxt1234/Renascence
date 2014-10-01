@@ -34,6 +34,18 @@ GPStatusContent::GPStatusContent(const IStatusType* t, istream& is)
     mType = t;
     mContent = t->load(is);
 }
+GPStatusContent::GPStatusContent(const IStatusType* t, istream* is)
+{
+    mType = t;
+    if (NULL!=is)
+    {
+        mContent = t->load(*is);
+    }
+    else
+    {
+        mContent = t->Alloc();
+    }
+}
 
 GPStatusContent::GPStatusContent(const GPStatusContent& c)
 {

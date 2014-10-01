@@ -38,7 +38,7 @@ class GPFunctionDataBase:public RefCount
             std::vector<std::vector<int> > fixTable;//TODO Delete this
         };
         //Basic Api
-        virtual const function* vQueryFunction (const std::string& name) const;
+        virtual const function* vQueryFunction(const std::string& name) const;
         //In Future may delete these two API
         virtual const function* vQueryFunctionById (int id) const;
         virtual int size() const;

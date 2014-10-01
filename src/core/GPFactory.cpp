@@ -16,10 +16,23 @@
 #include "core/GPFactory.h"
 #include "core/GPFunctionDataBase.h"
 #include "producer/GPTreeProducer.h"
+#include "producer/GPGraphicProducer.h"
 
 GPProducer* GPFactory::createProducer(const GPFunctionDataBase* base, GPFactory::TYPE t)
 {
-    return new GPTreeProducer(base);
+    GPProducer* res = NULL;
+    switch(t)
+    {
+        case TREE:
+            res = new GPTreeProducer(base);
+            break;
+        case GRAPHIC:
+            res = new GPGraphicProducer(base);
+            break;
+        default:
+            break;
+    }
+    return res;
 }
 GPFunctionDataBase* GPFactory::createDataBase(const char* file, IFunctionTable* t)
 {

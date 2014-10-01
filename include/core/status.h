@@ -57,6 +57,7 @@ class GPStatusContent:public RefCount
 {
     public:
         GPStatusContent(const IStatusType* t);
+        GPStatusContent(const IStatusType* t, std::istream* is);
         GPStatusContent(const IStatusType* t, std::istream& is);
         GPStatusContent(const GPStatusContent& c);
         void operator=(const GPStatusContent& c);

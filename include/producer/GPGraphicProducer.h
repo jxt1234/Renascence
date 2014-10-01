@@ -1,5 +1,5 @@
 /******************************************************************
-   Copyright 2013, Jiang Xiao-tang
+   Copyright 2014, Jiang Xiao-tang
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,14 +13,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef GENERATE_SYSTEM_H
-#define GENERATE_SYSTEM_H
-
+#ifndef PRODUCER_GPGRAPHICPRODUCER_H
+#define PRODUCER_GPGRAPHICPRODUCER_H
 #include "core/GPFunctionDataBase.h"
 #include "core/GPProducer.h"
-#include "GPTreeADF.h"
-
-class GPTreeProducer:public GPProducer
+class GPGraphicProducer:public GPProducer
 {
     public:
         virtual IGPAutoDefFunction* vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true, bool random = false);
@@ -29,18 +26,10 @@ class GPTreeProducer:public GPProducer
         virtual IGPAutoDefFunction* vCreateFunctionFromFormula(const std::string& formula);
         virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is);
         virtual void vMutate(IGPAutoDefFunction* tree) const;
-
-        GPTreeProducer():mDataBase(NULL){_init();}
-        GPTreeProducer(const GPFunctionDataBase* sys){setFunctionDataBase(sys);_init();}
-        virtual ~GPTreeProducer(){}
-        void setFunctionDataBase(const GPFunctionDataBase* comsys);
+        GPGraphicProducer(const GPFunctionDataBase* base);
+        virtual ~GPGraphicProducer();
     private:
         const GPFunctionDataBase* mDataBase;
-        void _searchAllSequences(std::vector<std::vector<int> >& res, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true) const;
-        void _findMatchedFuncton(std::vector<std::vector<int> >& warpOutput, const std::vector<const IStatusType*>& outputType) const;
-        void _init();
-
-        float mLargeVary;
         float mStatusVary;
 };
 #endif
