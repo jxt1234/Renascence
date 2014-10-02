@@ -37,7 +37,7 @@ int _POINT::numberOfInstance()
     return gNumber;
 }
 
-_POINT::Point(const GPFunctionDataBase::function* f):mFunc(f)
+_POINT::Point(const GPFunctionDataBase::function* f, const IStatusType* type):mFunc(f), mType(type)
 {
     /*For input and output point, we needn't init status*/
     gNumber++;//FIXME For debug
@@ -101,7 +101,7 @@ bool _POINT::_flow(bool clean)
         for (INPUT_ITER i = mInputs.begin(); i!=mInputs.end(); i++)
         {
             void* c = i->second->content();
-            assert(NULL!=c);
+            //assert(NULL!=c);
             inputs.push_back(c);
         }
         /*Inputs from self status*/
@@ -159,13 +159,12 @@ void _POINT::connectOutput(GPPtr<Point> out)
 
 void _POINT::receive(GPPtr<GPGraphicADF::Unit> u, _POINT* source)
 {
-    /*Output points shouldn't be called by this function*/
     /*For input points can only has one output, it just pass the data to midpoints*/
-    if (NULL == mFunc)
+    if (NULL == mFunc && mInputs.empty())
     {
-        assert(mInputs.empty());
         assert(mOutputs.size() == 1);
         (*(mOutputs.begin()))->receive(u, this);
+        return;
     }
     /*Mid points should has position for the data, otherwise the connection is wrong*/
     bool find = false;
@@ -217,7 +216,7 @@ void GPGraphicADF::_findAllPoints(std::set<Point*>& allPoints) const
     while(!cachePoints.empty())
     {
         Point* p = cachePoints.front();
-        if (allPoints.find(p)!=allPoints.end())
+        if (allPoints.find(p)==allPoints.end())
         {
             allPoints.insert(p);
         }
@@ -235,41 +234,53 @@ void GPGraphicADF::save(std::ostream& os) const
     /*Find all points*/
     std::set<Point*> allPoints;
     _findAllPoints(allPoints);
+    assert(!allPoints.empty());
     /*Print Points, Don't care about the Order*/
+    os << "<GPGraphicADF>\n";
     std::set<Point*>::iterator iter = allPoints.begin();
     for (;iter!=allPoints.end(); iter++)
     {
         Point* cur = *iter;
-        os << "<"<<GP_XmlString::node<<"_"<<cur<<">/n";
-        os << "<"<<GP_XmlString::func<<">";
+        os << "<"<<GP_XmlString::node<<"_"<<cur<<">\n";
         if (NULL!=cur->mFunc)
         {
+            os << "<"<<GP_XmlString::func<<">";
             os << cur->mFunc->name;
+            os << "</"<<GP_XmlString::func<<">\n";
         }
-        os << "</"<<GP_XmlString::func<<">";
-        os << "<"<<GP_XmlString::inputs<<">/n";
+        else
+        {
+            os << "<"<<GP_XmlString::type<<">";
+            if (NULL!=cur->mType)
+            {
+                os << cur->mType->name();
+            }
+            os << "</"<<GP_XmlString::type<<">\n";
+        }
+        os << "<"<<GP_XmlString::inputs<<">\n";
         for (INPUT_ITER i=cur->mInputs.begin(); i!=cur->mInputs.end();i++)
         {
-            os << GP_XmlString::node<<"_"<<i->first<<"/n";
+            os << GP_XmlString::node<<"_"<<i->first<<"\n";
         }
-        os << "</"<<GP_XmlString::inputs<<">/n";
-        os << "<"<<GP_XmlString::outputs<<">/n";
+        os << "</"<<GP_XmlString::inputs<<">\n";
+        os << "<"<<GP_XmlString::outputs<<">\n";
         for (OUTPUT_ITER i=cur->mOutputs.begin(); i!=cur->mOutputs.end();i++)
         {
-            os << GP_XmlString::node<<"_"<<i->get()<<"/n";
+            os << GP_XmlString::node<<"_"<<i->get()<<"\n";
         }
-        os << "</"<<GP_XmlString::outputs<<">/n";
-        os << "<"<<GP_XmlString::status<<">/n";
+        os << "</"<<GP_XmlString::outputs<<">\n";
+        os << "<"<<GP_XmlString::status<<">\n";
         for (STATUS_ITER i=cur->mStatus.begin(); i!=cur->mStatus.end(); i++)
         {
             const IStatusType& s = (*i)->type();
-            os << "<"<<s.name()<<">/n";
+            os << "<"<<s.name()<<">\n";
             s.print(os, (*i)->content());
-            os << "</"<<s.name()<<">/n";
+            os << "</"<<s.name()<<">\n";
         }
-        os << "</"<<GP_XmlString::status<<">/n";
-        os << "</"<<GP_XmlString::node<<"_"<<cur<<">/n";
+        os << "</"<<GP_XmlString::status<<">\n";
+        os << "</"<<GP_XmlString::node<<"_"<<cur<<">\n";
     }
+    os << "</GPGraphicADF>\n";
 }
 std::vector<const IStatusType*> GPGraphicADF::vGetInputs() const
 {
@@ -301,17 +312,17 @@ void GPGraphicADF::_loadMain(const xmlReader::package* root, std::map<std::strin
             const xmlReader::package* func = *iter_func;
             if (func->name == GP_XmlString::func)
             {
-                if (func->attr.empty())//Input or output node
-                {
-                    p = new Point(NULL);
-                }
-                else
-                {
-                    assert(func->attr.size() == 1);//FIXME for debug
-                    const GPFunctionDataBase::function* _f = base->vQueryFunction(func->attr[0]);
-                    assert(_f!=NULL);
-                    p = new Point(_f);
-                }
+                assert(func->attr.size() == 1);//FIXME for debug
+                const GPFunctionDataBase::function* _f = base->vQueryFunction(func->attr[0]);
+                assert(_f!=NULL);
+                p = new Point(_f, NULL);
+                break;
+            }
+            if (func->name == GP_XmlString::type)
+            {
+                assert(func->attr.size() == 1);//FIXME for debug
+                const IStatusType* type = base->vQueryType(func->attr[0]);
+                p = new Point(NULL, type);
                 break;
             }
         }
@@ -353,10 +364,11 @@ void GPGraphicADF::_loadInputs(const xmlReader::package* attach, const std::map<
         Point* p = (allPoints.find(attach->attr[i]))->second;
         currentPoint->connectInput(p);
     }
+    //Has inputs points but no function to handle it, mean it's output point
     if (NULL == currentPoint->mFunc && !attach->attr.empty())
     {
         GPPtr<Point> warp = currentPoint;
-        mInputs.push_back(warp);
+        mOutputs.push_back(warp);
         currentPoint->addRef();
     }
 }
@@ -372,8 +384,9 @@ void GPGraphicADF::_loadOutputs(const xmlReader::package* attach, const std::map
     }
     if (NULL == currentPoint->mFunc && !attach->attr.empty())
     {
+        //Has Outputs points but no function to compute to Output, mean it's input point
         GPPtr<Point> warp = currentPoint;
-        mOutputs.push_back(warp);
+        mInputs.push_back(warp);
         currentPoint->addRef();
     }
 }
@@ -415,6 +428,8 @@ GPGraphicADF::GPGraphicADF(std::istream& is, const GPFunctionDataBase* base)
             iter->second->decRef();
         }
     }
+    assert(!mInputs.empty());
+    assert(!mOutputs.empty());
 }
 GPGraphicADF::~GPGraphicADF()
 {

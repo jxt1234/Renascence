@@ -78,7 +78,7 @@ class GPGraphicADF:public IGPAutoDefFunction
         {
             public:
                 static int numberOfInstance();
-                Point(const GPFunctionDataBase::function* f);
+                Point(const GPFunctionDataBase::function* f, const IStatusType* t);
                 void initStatus(const std::vector<std::istream*>& statusInput);
                 virtual ~Point();
                 void connectInput(Point* in);

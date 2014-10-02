@@ -65,8 +65,8 @@ build/src_utils_debug.o : src/utils/debug.c   ${ALL_INCLUESlibGP.so}
 
 ALL_INCLUEStest.out= include/math/carryGroup2.h include/math/GPFormula.h include/math/AbstractPoint.h include/math/carryTree.h include/math/carryArray.h include/math/carryPoint.h include/math/GPSingleTree.h include/system/system_lib.h include/evolution/GPEvolutionGroup.h include/evolution/AbstractEvolutionGroup.h include/core/xmlGPDataLoader.h include/core/status.h include/core/GPFactory.h include/core/GPFunctionDataBase.h include/core/funcStatusType.h include/core/genetic_operator.h include/core/GP_XmlString.h include/core/IDataBase.h include/core/BasicComposeFunction.h include/core/function.h include/core/GPData.h include/core/IGPAutoDefFunction.h include/core/group.h include/core/GPProducer.h include/xml/xmlReader.h include/xml/xmlTree.h include/producer/GPTreeProducer.h include/producer/GPTreeADF.h include/producer/GPGraphicProducer.h include/producer/GPGraphicADF.h include/utils/statusMachine.h include/utils/RefCount.h include/utils/AutoClean.h include/utils/BasicTree.h include/utils/debug.h include/utils/GP_Clock.h include/utils/GPRandom.h include/head.h include/user/IFunctionTable.h include/user/package.h
 
-test.out:  build/test_main.o build/test_GPcombineTest.o build/test_AbstractPointTest.o build/test_GPXmlEvolutionTest.o build/test_GPSingleTreeTest.o build/test_GPloadXmlTreeTest.o build/test_GPGPDataTest.o build/test_GPTest.o build/test_GPxmlTreeTest.o build/test_GPSearchIOTest.o libGP.so
-	g++  -O3 -fPIC -o test.out  build/test_main.o build/test_GPcombineTest.o build/test_AbstractPointTest.o build/test_GPXmlEvolutionTest.o build/test_GPSingleTreeTest.o build/test_GPloadXmlTreeTest.o build/test_GPGPDataTest.o build/test_GPTest.o build/test_GPxmlTreeTest.o build/test_GPSearchIOTest.o  ./libGP.so -ldl -lpthread  ${SELF_VARIABLES}
+test.out:  build/test_main.o build/test_GPcombineTest.o build/test_AbstractPointTest.o build/test_GPXmlEvolutionTest.o build/test_GPSingleTreeTest.o build/test_GPloadXmlTreeTest.o build/test_GPGPDataTest.o build/test_GPGraphicTest.o build/test_GPTest.o build/test_GPxmlTreeTest.o build/test_GPSearchIOTest.o libGP.so
+	g++  -O3 -fPIC -o test.out  build/test_main.o build/test_GPcombineTest.o build/test_AbstractPointTest.o build/test_GPXmlEvolutionTest.o build/test_GPSingleTreeTest.o build/test_GPloadXmlTreeTest.o build/test_GPGPDataTest.o build/test_GPGraphicTest.o build/test_GPTest.o build/test_GPxmlTreeTest.o build/test_GPSearchIOTest.o  ./libGP.so -ldl -lpthread  ${SELF_VARIABLES}
 build/test_main.o : test/main.cpp libGP.so  ${ALL_INCLUEStest.out}
 	g++ -O3 -fPIC -o build/test_main.o -c test/main.cpp -Iinclude 
 build/test_GPcombineTest.o : test/GPcombineTest.cpp libGP.so  ${ALL_INCLUEStest.out}
@@ -81,6 +81,8 @@ build/test_GPloadXmlTreeTest.o : test/GPloadXmlTreeTest.cpp libGP.so  ${ALL_INCL
 	g++ -O3 -fPIC -o build/test_GPloadXmlTreeTest.o -c test/GPloadXmlTreeTest.cpp -Iinclude 
 build/test_GPGPDataTest.o : test/GPGPDataTest.cpp libGP.so  ${ALL_INCLUEStest.out}
 	g++ -O3 -fPIC -o build/test_GPGPDataTest.o -c test/GPGPDataTest.cpp -Iinclude 
+build/test_GPGraphicTest.o : test/GPGraphicTest.cpp libGP.so  ${ALL_INCLUEStest.out}
+	g++ -O3 -fPIC -o build/test_GPGraphicTest.o -c test/GPGraphicTest.cpp -Iinclude 
 build/test_GPTest.o : test/GPTest.cpp libGP.so  ${ALL_INCLUEStest.out}
 	g++ -O3 -fPIC -o build/test_GPTest.o -c test/GPTest.cpp -Iinclude 
 build/test_GPxmlTreeTest.o : test/GPxmlTreeTest.cpp libGP.so  ${ALL_INCLUEStest.out}
