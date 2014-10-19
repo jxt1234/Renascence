@@ -25,6 +25,7 @@ const string GP_XmlString::file("File");
 const string GP_XmlString::inputs("InputNodes");
 const string GP_XmlString::outputs("OutputNodes");
 const string GP_XmlString::type("DataType");
+const string GP_XmlString::shortName("ShortName");
 void GP_XmlString::warpStart(const std::string& head, ostream& os)
 {
     os << "<"<<head<<">/n";

@@ -39,10 +39,17 @@ AbstractPoint* AbstractPoint::deepCopy(AbstractPoint* src, AbstractPoint::IPoint
     assert(NULL!=copy);
     AbstractPoint* result;
     result = copy->copy(src);
+    if (NULL == result)
+    {
+        return result;
+    }
     for (int i=0; i<(src->mChildren).size(); ++i)
     {
         AbstractPoint* child = deepCopy(src->mChildren[i], copy);
-        result->addPoint(child);
+        if (NULL != child)
+        {
+            result->addPoint(child);
+        }
     }
     return result;
 }

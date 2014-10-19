@@ -29,6 +29,7 @@ class GP_XmlString
         static const std::string inputs;
         static const std::string outputs;
         static const std::string type;
+        static const std::string shortName;
 
         static const std::string file;
 

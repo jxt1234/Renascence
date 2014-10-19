@@ -2,11 +2,12 @@
 class XXXXXXXXXXXXXX:public GPTest
 {
     public:
-        virtual void run()
-        {
-        }
+        virtual void run();
         XXXXXXXXXXXXXX(){}
         virtual ~XXXXXXXXXXXXXX(){}
 };
+void XXXXXXXXXXXXXX::run()
+{
+}
 
 static GPTestRegister<XXXXXXXXXXXXXX> a("XXXXXXXXXXXXXX");

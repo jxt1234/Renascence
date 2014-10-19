@@ -13,18 +13,18 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "producer/GPTreeProducer.h"
 #include <list>
 #include <algorithm>
 #include <sstream>
 #include <stdlib.h>
+#include "math/FormulaTree.h"
 #include "utils/debug.h"
-#include "recurse_tree.h"
 #include "xml/xmlTree.h"
 #include "utils/GPRandom.h"
+#include "producer/GPTreeProducer.h"
+#include "recurse_tree.h"
 using namespace std;
 
-#define LIMIT_SIZE 100
 class xmlCopy:public AbstractPoint::IPointCopy
 {
     public:
@@ -56,13 +56,35 @@ class xmlCopy:public AbstractPoint::IPointCopy
         const GPFunctionDataBase* mSys;
 };
 
+class formulaCopy:public AbstractPoint::IPointCopy
+{
+    public:
+        formulaCopy(const GPFunctionDataBase* base):mBase(base){}
+        virtual ~formulaCopy(){}
+        virtual AbstractPoint* copy(AbstractPoint* src)
+        {
+            FormulaTreePoint* point = dynamic_cast<FormulaTreePoint*>(src);
+            assert(NULL!=point);
+            if (FormulaTreePoint::NUM == point->type())
+            {
+                return NULL;
+            }
+            const GPFunctionDataBase::function* f = mBase->vQueryFunction(point->name());
+            GPTreeADFPoint* p = new GPTreeADFPoint(f, true);
+            return p;
+        }
+    private:
+        const GPFunctionDataBase* mBase;
+};
+
 //TODO
 IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromFormula(const std::string& formula)
 {
-    GPTreeADFPoint* root = NULL;
-    vector<int> function;
-    vector<int> childrenNumber;
-    return NULL;
+    FormulaTree tree;
+    tree.setFormula(formula);
+    formulaCopy c(mDataBase);
+    GPTreeADFPoint* p = (GPTreeADFPoint*)(AbstractPoint::deepCopy(tree.root(), &c));
+    return new GPTreeADF(p);
 }
 
 
