@@ -19,7 +19,7 @@
 #include <sstream>
 #include <fstream>
 #include "utils/debug.h"
-#include <assert.h>
+#include <utils/debug.h>
 //#define DEBUG_TIMES
 //#define DEBUG_XML
 
@@ -32,7 +32,7 @@ GPTreeADFPoint::GPTreeADFPoint()
 }
 GPTreeADFPoint::GPTreeADFPoint(const GPFunctionDataBase::function* func, bool initStatus)
 {
-    assert(NULL!=func);
+    GPASSERT(NULL!=func);
     mFunc = func;
     if (initStatus)
     {
@@ -64,7 +64,7 @@ void GPTreeADFPoint::initStatus(const std::vector<std::istream*>& is)
     }
     mStatus.clear();
     const vector<TYPEP>& s = mFunc->statusType;
-    assert(is.size() == s.size());
+    GPASSERT(is.size() == s.size());
     for (int i=0; i<s.size(); ++i)
     {
         if (NULL == is[i])
@@ -121,14 +121,14 @@ AbstractPoint* GPTreeADFPoint::GPTreeADFCopy::copy(AbstractPoint* src)
 
 void GPTreeADFPoint::replacePoint(const std::vector<int> &numbers, const GPFunctionDataBase* base)
 {
-    assert(numbers.size()>0);
+    GPASSERT(numbers.size()>0);
     int cur=0;
     _replacePoint(numbers, cur, base);
 }
 void GPTreeADFPoint::_replacePoint(const std::vector<int> &numbers, int& cur, const GPFunctionDataBase* base)
 {
-    assert(numbers.size()>0);
-    assert(numbers.size()%3==0);
+    GPASSERT(numbers.size()>0);
+    GPASSERT(numbers.size()%3==0);
     //Clear all children, status and result
     for (int i=0; i<mChildren.size(); ++i)
     {
@@ -180,12 +180,12 @@ void GPTreeADFPoint::getinput(std::vector<const IStatusType*>& tlist) const
 
 std::vector<const IStatusType*> GPTreeADF::vGetOutputs() const
 {
-    assert(NULL!=mRoot);
+    GPASSERT(NULL!=mRoot);
     return mRoot->mFunc->outputType;
 }
 std::vector<const IStatusType*> GPTreeADF::vGetInputs() const
 {
-    assert(NULL!=mRoot);
+    GPASSERT(NULL!=mRoot);
     vector<const IStatusType*> res;
     mRoot->getinput(res);
     return res;
@@ -199,6 +199,7 @@ GP_Output GPTreeADFPoint::compute(const GP_Input& input, int& cur)
     vector<GP_Output::GP_Unit> inputMap;
     vector<void*> children;
     vector<void*> inputs;
+    GPASSERT(input.size()>=(mFunc->inputType).size());
     for (int i=0; i<(mFunc->inputType).size(); ++i)
     {
         inputs.push_back(input[cur++]);
@@ -207,7 +208,7 @@ GP_Output GPTreeADFPoint::compute(const GP_Input& input, int& cur)
     for (int i=0; i<mChildren.size(); ++i)
     {
         GPTreeADFPoint* p = (GPTreeADFPoint*)(mChildren[i]);
-        assert(NULL!=p);
+        GPASSERT(NULL!=p);
         GP_Output out = p->compute(input, cur);
         vector<GP_Output::GP_Unit>& output_unit = out.output;
         for (int j=0; j<output_unit.size(); ++j)
@@ -251,7 +252,7 @@ GPTreeADF::GPTreeADF()
 }
 GPTreeADF::GPTreeADF(GPTreeADFPoint* root)
 {
-    assert(NULL!=root);
+    GPASSERT(NULL!=root);
     mRoot = root;
 }
 GPTreeADF::~GPTreeADF()
@@ -260,7 +261,7 @@ GPTreeADF::~GPTreeADF()
 }
 GPTreeADFPoint* GPTreeADF::find(float rate)
 {
-    assert(0.0<=rate && rate<1.0);
+    GPASSERT(0.0<=rate && rate<1.0);
     vector<AbstractPoint*> nodes = mRoot->display();
     int n = rate*nodes.size();
     GPTreeADFPoint* p = (GPTreeADFPoint*)nodes[n];
@@ -276,13 +277,13 @@ void GPTreeADF::loadUnitFunction(vector<int>& result, int functionId, int status
 
 void GPTreeADF::save(std::ostream& res) const
 {
-    assert(NULL!=mRoot);
+    GPASSERT(NULL!=mRoot);
     mRoot->xmlPrint(res);
 }
 
 GP_Output GPTreeADF::run(const GP_Input& inputs)
 {
-    assert(NULL!=mRoot);
+    GPASSERT(NULL!=mRoot);
 #ifdef DEBUG_XML
     ofstream os("GPTreeADF.xml");
     this->save(os);

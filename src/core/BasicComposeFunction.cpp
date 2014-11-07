@@ -1,4 +1,4 @@
-#include <assert.h>
+#include <utils/debug.h>
 #include "core/BasicComposeFunction.h"
 #include "utils/debug.h"
 
@@ -8,7 +8,7 @@ using namespace std;
 
 GPBoolADF::GPBoolADF(IGPAutoDefFunction* gp)
 {
-    assert(NULL!=gp);
+    GPASSERT(NULL!=gp);
     mGP = gp;
     gp->addRef();
 }
@@ -54,8 +54,8 @@ GP_Output GPCombineADF::run(const GP_Input& inputs)
     {
         int n = (mFunctions[i]->vGetInputs()).size();
         //printf("n=%d, i=%d, cur=%d, inputsize=%d\n", n, i, cur, inputs.size());
-        assert(0<=n);
-        assert(inputs.size() >= cur+n);
+        GPASSERT(0<=n);
+        GPASSERT(inputs.size() >= cur+n);
         GP_Input input;
         for (int j=0; j<n; ++j)
         {
@@ -110,9 +110,9 @@ vector<const IStatusType*> GPCombineADF::vGetOutputs() const
 }
 GPSwitchADF::GPSwitchADF(IGPAutoDefFunction* _s, IGPAutoDefFunction* _a, IGPAutoDefFunction* _b)
 {
-    assert(NULL!=_s);
-    assert(NULL!=_a);
-    assert(NULL!=_b);
+    GPASSERT(NULL!=_s);
+    GPASSERT(NULL!=_a);
+    GPASSERT(NULL!=_b);
 
     s = new GPBoolADF(_s);
     a = _a;
@@ -124,9 +124,9 @@ GPSwitchADF::GPSwitchADF(IGPAutoDefFunction* _s, IGPAutoDefFunction* _a, IGPAuto
 
 GPSwitchADF::GPSwitchADF(GPBoolADF* _s, IGPAutoDefFunction* _a, IGPAutoDefFunction* _b)
 {
-    assert(NULL!=_s);
-    assert(NULL!=_a);
-    assert(NULL!=_b);
+    GPASSERT(NULL!=_s);
+    GPASSERT(NULL!=_a);
+    GPASSERT(NULL!=_b);
 
     s = _s;
     a = _a;

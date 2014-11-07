@@ -21,7 +21,7 @@
 #include <execinfo.h>
 #include <sstream>
 #include <iostream>
-#include <assert.h>
+#include <utils/debug.h>
 using namespace std;
 
 GPStatusContent::GPStatusContent(const IStatusType* t)

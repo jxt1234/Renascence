@@ -15,7 +15,7 @@
 ******************************************************************/
 #include "math/AbstractPoint.h"
 #include <stdlib.h>
-#include <assert.h>
+#include <utils/debug.h>
 #include "utils/debug.h"
 using namespace std;
 
@@ -29,14 +29,14 @@ AbstractPoint::~AbstractPoint()
 
 void AbstractPoint::addPoint(AbstractPoint* p)
 {
-    assert(NULL!=p);
+    GPASSERT(NULL!=p);
     mChildren.push_back(p);
 }
 
 AbstractPoint* AbstractPoint::deepCopy(AbstractPoint* src, AbstractPoint::IPointCopy* copy)
 {
-    assert(NULL!=src);
-    assert(NULL!=copy);
+    GPASSERT(NULL!=src);
+    GPASSERT(NULL!=copy);
     AbstractPoint* result;
     result = copy->copy(src);
     if (NULL == result)

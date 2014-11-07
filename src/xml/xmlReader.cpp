@@ -17,7 +17,7 @@
 #include <list>
 #include <iostream>
 #include <fstream>
-#include <assert.h>
+#include <utils/debug.h>
 
 using namespace std;
 
@@ -62,10 +62,10 @@ XMLAPI const xmlReader::package* xmlReader::loadStream(istream& input)
 XMLAPI const xmlReader::package* xmlReader::loadFile(const char* file)
 {
     //TODO return NULL
-    assert(NULL!=file);
+    GPASSERT(NULL!=file);
     ifstream read;
     read.open(file, ios::in);
-    assert(!read.fail());
+    GPASSERT(!read.fail());
     clear();
     loadPackage(read);
     this->attributeUnflatten();

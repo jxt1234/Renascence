@@ -36,7 +36,7 @@ class GPcombineTest:public GPTest
                     {
                         funcs.push_back(fs[i]);
                     }
-                    assert(fs.size()>0);
+                    GPASSERT(fs.size()>0);
                     GP_Input inp;
                     bmpoutput = fs[0]->run(inp);
                     bmpinput.push_back(bmpoutput[0]);

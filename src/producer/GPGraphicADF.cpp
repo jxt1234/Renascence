@@ -24,7 +24,7 @@ typedef std::vector<xmlReader::package*>::const_iterator PITER;;
 /*For debug*/
 static void valid(const std::string& name)
 {
-    assert(name.find(GP_XmlString::node) != std::string::npos);
+    GPASSERT(name.find(GP_XmlString::node) != std::string::npos);
 }
 
 
@@ -56,7 +56,7 @@ void _POINT::initStatus(const std::vector<std::istream*>& statusInput)
     if (NULL == mFunc) return;
     const std::vector<const IStatusType*>& status = mFunc->statusType;
     mStatus.clear();
-    assert(statusInput.size() == status.size());
+    GPASSERT(statusInput.size() == status.size());
     for (int i=0; i<status.size(); ++i)
     {
         GPPtr<GPStatusContent> s;
@@ -85,7 +85,7 @@ void _POINT::_reset()
 GPGraphicADF::UNIT _POINT::collect()
 {
     /*Multi output is not allowed*/
-    assert(mInputs.size() == 1);
+    GPASSERT(mInputs.size() == 1);
     Unit* u = ((mInputs.begin())->second).get();
     UNIT result = u->warp();
     _clean();
@@ -101,7 +101,7 @@ bool _POINT::_flow(bool clean)
         for (INPUT_ITER i = mInputs.begin(); i!=mInputs.end(); i++)
         {
             void* c = i->second->content();
-            //assert(NULL!=c);
+            //GPASSERT(NULL!=c);
             inputs.push_back(c);
         }
         /*Inputs from self status*/
@@ -111,7 +111,7 @@ bool _POINT::_flow(bool clean)
         }
 
         GP_Output out = mFunc->basic(inputs);
-        assert(out.size() == mOutputs.size());
+        GPASSERT(out.size() == mOutputs.size());
 
         /*Send output*/
         for (int i=0; i<out.size(); ++i)
@@ -162,7 +162,7 @@ void _POINT::receive(GPPtr<GPGraphicADF::Unit> u, _POINT* source)
     /*For input points can only has one output, it just pass the data to midpoints*/
     if (NULL == mFunc && mInputs.empty())
     {
-        assert(mOutputs.size() == 1);
+        GPASSERT(mOutputs.size() == 1);
         (*(mOutputs.begin()))->receive(u, this);
         return;
     }
@@ -177,12 +177,12 @@ void _POINT::receive(GPPtr<GPGraphicADF::Unit> u, _POINT* source)
             break;
         }
     }
-    assert(true == find);
+    GPASSERT(true == find);
 }
 
 GP_Output GPGraphicADF::run(const GP_Input& inputs)
 {
-    assert(inputs.size() == mInputs.size());
+    GPASSERT(inputs.size() == mInputs.size());
     for (int i=0; i<inputs.size(); ++i)
     {
         GPPtr<Unit> u = new Unit(inputs.at(i));
@@ -207,7 +207,7 @@ IGPAutoDefFunction* GPGraphicADF::copy() const
 
 void GPGraphicADF::_findAllPoints(std::set<Point*>& allPoints) const
 {
-    assert(allPoints.empty());
+    GPASSERT(allPoints.empty());
     std::list<Point*> cachePoints;
     for (int i=0; i<mInputs.size(); ++i)
     {
@@ -234,7 +234,7 @@ void GPGraphicADF::save(std::ostream& os) const
     /*Find all points*/
     std::set<Point*> allPoints;
     _findAllPoints(allPoints);
-    assert(!allPoints.empty());
+    GPASSERT(!allPoints.empty());
     /*Print Points, Don't care about the Order*/
     os << "<GPGraphicADF>\n";
     std::set<Point*>::iterator iter = allPoints.begin();
@@ -303,7 +303,7 @@ void GPGraphicADF::_loadMain(const xmlReader::package* root, std::map<std::strin
     {
         const xmlReader::package* node = *iter;
         valid(node->name);
-        assert(allPoints.find(node->name)==allPoints.end());//FIXME Print Error instead of assert
+        GPASSERT(allPoints.find(node->name)==allPoints.end());//FIXME Print Error instead of GPASSERT
         /*Find function name*/
         std::vector<xmlReader::package*>::const_iterator iter_func;
         Point* p = NULL;
@@ -312,21 +312,21 @@ void GPGraphicADF::_loadMain(const xmlReader::package* root, std::map<std::strin
             const xmlReader::package* func = *iter_func;
             if (func->name == GP_XmlString::func)
             {
-                assert(func->attr.size() == 1);//FIXME for debug
+                GPASSERT(func->attr.size() == 1);//FIXME for debug
                 const GPFunctionDataBase::function* _f = base->vQueryFunction(func->attr[0]);
-                assert(_f!=NULL);
+                GPASSERT(_f!=NULL);
                 p = new Point(_f, NULL);
                 break;
             }
             if (func->name == GP_XmlString::type)
             {
-                assert(func->attr.size() == 1);//FIXME for debug
+                GPASSERT(func->attr.size() == 1);//FIXME for debug
                 const IStatusType* type = base->vQueryType(func->attr[0]);
                 p = new Point(NULL, type);
                 break;
             }
         }
-        assert(NULL!=p);//FIXME Print error instead of assert
+        GPASSERT(NULL!=p);//FIXME Print error instead of GPASSERT
         allPoints.insert(std::make_pair(node->name, p));
     }
 }
@@ -334,7 +334,7 @@ void GPGraphicADF::_loadMain(const xmlReader::package* root, std::map<std::strin
 void GPGraphicADF::_loadStatus(const xmlReader::package* attach, const GPFunctionDataBase* base, Point* currentPoint) const
 {
     int n = (currentPoint->mFunc->statusType).size();
-    assert(n == attach->children.size());
+    GPASSERT(n == attach->children.size());
     int cur = 0;
     std::vector<std::istream*> statusContents;
     statusContents.reserve(n);
@@ -428,8 +428,8 @@ GPGraphicADF::GPGraphicADF(std::istream& is, const GPFunctionDataBase* base)
             iter->second->decRef();
         }
     }
-    assert(!mInputs.empty());
-    assert(!mOutputs.empty());
+    GPASSERT(!mInputs.empty());
+    GPASSERT(!mOutputs.empty());
 }
 GPGraphicADF::~GPGraphicADF()
 {

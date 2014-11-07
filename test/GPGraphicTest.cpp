@@ -25,13 +25,13 @@ class GPGraphicTest:public GPTest
                     GP_Input inputs;
                     inputs.push_back(NULL);
                     GP_Output out = gp->run(inputs);
-                    assert(out.size() == 1);
+                    GPASSERT(out.size() == 1);
                     double* result = (double*)out[0];
                     cout << *result <<endl;
                     out.clear();
                 }
             }
-            assert(0 == GPGraphicADF::Point::numberOfInstance());
+            GPASSERT(0 == GPGraphicADF::Point::numberOfInstance());
         }
         GPGraphicTest(){}
         virtual ~GPGraphicTest(){}

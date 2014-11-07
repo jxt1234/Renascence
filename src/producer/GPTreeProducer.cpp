@@ -33,7 +33,7 @@ class xmlCopy:public AbstractPoint::IPointCopy
         virtual AbstractPoint* copy(AbstractPoint* src)
         {
             xmlTree* t = dynamic_cast<xmlTree*>(src);
-            assert(NULL!=t);
+            GPASSERT(NULL!=t);
             const GPFunctionDataBase::function* f = mSys->vQueryFunction(t->func());
             GPTreeADFPoint* p = new GPTreeADFPoint(f, false);
             vector<const IStatusType*> types;
@@ -64,7 +64,7 @@ class formulaCopy:public AbstractPoint::IPointCopy
         virtual AbstractPoint* copy(AbstractPoint* src)
         {
             FormulaTreePoint* point = dynamic_cast<FormulaTreePoint*>(src);
-            assert(NULL!=point);
+            GPASSERT(NULL!=point);
             if (FormulaTreePoint::NUM == point->type())
             {
                 return NULL;
@@ -90,7 +90,7 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromFormula(const std::string
 
 IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromName(const std::string& name)
 {
-    assert(NULL!=mDataBase);
+    GPASSERT(NULL!=mDataBase);
     const GPFunctionDataBase::function* f = mDataBase->vQueryFunction(name);
     class simpleADF:public IGPAutoDefFunction
     {
@@ -136,7 +136,7 @@ void GPTreeProducer::setFunctionDataBase(const GPFunctionDataBase* comsys)
 /*FIXME Currently, we assume random be false and inputRepeat be true, just return the first short tree by algorithm*/
 IGPAutoDefFunction* GPTreeProducer::vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, bool random)
 {
-    assert(NULL!=mDataBase);
+    GPASSERT(NULL!=mDataBase);
     /*TODO if inputType and outputType is the same as last one, return the cached one*/
     GPTreeADF* gp = NULL;
     IGPAutoDefFunction* res = NULL;
@@ -150,7 +150,7 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunction(const std::vector<const ISta
     /*TODO random for result*/
     vector<int> queue = tree.searchOne();
     //TODO Allow queue.empty()
-    assert(!queue.empty());
+    GPASSERT(!queue.empty());
     //if (result.empty()) return NULL;
     gp = new GPTreeADF;
     {
@@ -179,7 +179,7 @@ void GPTreeProducer::_searchAllSequences(std::vector<std::vector<int> >& res, co
 
 std::vector<IGPAutoDefFunction*> GPTreeProducer::vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat)
 {
-    assert(NULL!=mDataBase);
+    GPASSERT(NULL!=mDataBase);
     GPTreeADF* gp = NULL;
     vector<IGPAutoDefFunction*> res;
     vector<vector<int> >queue;
@@ -216,7 +216,7 @@ void GPTreeProducer::_findMatchedFuncton(std::vector<std::vector<int> >& warpOut
             warpOutput.push_back(output);
         }
     }
-    assert(!warpOutput.empty());
+    GPASSERT(!warpOutput.empty());
     //if (warpOutput.empty()) return NULL;
 }
 
@@ -224,7 +224,7 @@ void GPTreeProducer::vMutate(IGPAutoDefFunction* tree) const
 {
     //TODO find better way of RTTI
     GPTreeADF* t = dynamic_cast<GPTreeADF*>(tree);
-    assert(NULL!=t);
+    GPASSERT(NULL!=t);
     /*find random pos*/
     float pos = GPRandom::rate();
     GPTreeADFPoint* p = t->find(pos);
@@ -240,7 +240,7 @@ void GPTreeProducer::vMutate(IGPAutoDefFunction* tree) const
             p->pGetInputs(inputs);
             vector<vector<int> > queue;
             _searchAllSequences(queue, outputs, inputs);
-            assert(!queue.empty());
+            GPASSERT(!queue.empty());
             int n = GPRandom::mid(0, queue.size());
             p->replacePoint(queue[n], mDataBase);
         }

@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include <assert.h>
+#include <utils/debug.h>
 #include <sstream>
 #include "math/FormulaTree.h"
 #include <iostream>
@@ -96,7 +96,7 @@ void FormulaTree::setFormula(const std::string& formula)
     SAFE_UNREF(mRoot);
     std::vector<std::string> words;
     divideFormula(words, formula);
-    assert(!words.empty());
+    GPASSERT(!words.empty());
 
     /*Frist word is root*/
     mRoot = new FormulaTreePoint;
@@ -138,6 +138,6 @@ void FormulaTree::setFormula(const std::string& formula)
 
 void FormulaTree::print(std::ostream& s)
 {
-    assert(NULL!=mRoot);
+    GPASSERT(NULL!=mRoot);
     mRoot->print(s);
 }

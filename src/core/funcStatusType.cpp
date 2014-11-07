@@ -15,16 +15,16 @@
 ******************************************************************/
 #include "utils/debug.h"
 #include "core/funcStatusType.h"
-#include <assert.h>
+#include <utils/debug.h>
 #include <sstream>
 #include <iostream>
 #include "utils/GPRandom.h"
 using namespace std;
 
-/*FIXME replace assert by exception*/
+/*FIXME replace GPASSERT by exception*/
 funcStatusType::funcStatusType(const std::string& name, IFunctionTable* table):IStatusType(name)
 {
-    assert(NULL!=table);
+    GPASSERT(NULL!=table);
     string func;
     func = name + "_alloc";
     allocf = (statusAllocMethod)(table->vGetFunction(func));
@@ -49,17 +49,17 @@ funcStatusType::funcStatusType(const std::string& name, IFunctionTable* table):I
 }
 void* funcStatusType::Alloc() const
 {
-    assert(NULL!=allocf);
+    GPASSERT(NULL!=allocf);
     return allocf();
 }
 void funcStatusType::Free(void* contents) const
 {
-    assert(NULL!=freef);
+    GPASSERT(NULL!=freef);
     freef(contents);
 }
 void funcStatusType::mutate(void* contents) const
 {
-    assert(NULL!=mutatef || NULL!=mapf);
+    GPASSERT(NULL!=mutatef || NULL!=mapf);
     if (NULL != mutatef)
     {
         mutatef(contents);
@@ -80,7 +80,7 @@ void funcStatusType::mapValue(void* contents, double value) const
 }
 void funcStatusType::copy(void* src, void* dst) const
 {
-    assert(NULL!=copyf);
+    GPASSERT(NULL!=copyf);
     copyf(src, dst);
 }
 void funcStatusType::print(std::ostream& out, void* contents) const

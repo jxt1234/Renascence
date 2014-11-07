@@ -17,7 +17,7 @@
 #include <fstream>
 #include "core/GPFunctionDataBase.h"
 #include "utils/debug.h"
-#include <assert.h>
+#include <utils/debug.h>
 #include "core/funcStatusType.h"
 #include <algorithm>
 #include "system/system_lib.h"
@@ -32,7 +32,7 @@ GPFunctionDataBase::GPFunctionDataBase()
 void GPFunctionDataBase::loadXml(const char* file, IFunctionTable* table, std::ostream* print)
 {
     ifstream is(file);
-    assert(!is.fail());
+    GPASSERT(!is.fail());
     loadXml(is, table, print);
 }
 void GPFunctionDataBase::loadXml(std::istream& is, IFunctionTable* table, std::ostream* print)
@@ -50,9 +50,9 @@ void GPFunctionDataBase::loadXml(std::istream& is, IFunctionTable* table, std::o
     for (int i=0; i<functions.size(); ++i)
     {
         const xmlReader::package* func = functions.at(i);
-        assert(NULL!=func);
+        GPASSERT(NULL!=func);
         computeFunction f = (computeFunction)(table->vGetFunction(func->name));
-        assert(NULL!=f);//TODO throw error when no function in the table
+        GPASSERT(NULL!=f);//TODO throw error when no function in the table
         function* warpf = new function;
         warpf->name = func->name;
         warpf->basic = f;
@@ -96,7 +96,7 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
             for (int j=0; j<cur->attr.size(); ++j)
             {
                 const IStatusType* sta = _findAndLoadStatus(cur->attr[j], table);
-                assert(NULL!=sta);//FIXME
+                GPASSERT(NULL!=sta);//FIXME
                 (warpf->statusType).push_back(sta);
             }
         }
@@ -105,7 +105,7 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
             for (int j=0; j<cur->attr.size(); ++j)
             {
                 const IStatusType* sta = _findAndLoadStatus(cur->attr[j], table);
-                assert(NULL!=sta);//FIXME
+                GPASSERT(NULL!=sta);//FIXME
                 (warpf->outputType).push_back(sta);
             }
         }
@@ -114,7 +114,7 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
             for (int j=0; j<cur->attr.size(); ++j)
             {
                 const IStatusType* sta = _findAndLoadStatus(cur->attr[j], table);
-                assert(NULL!=sta);//FIXME
+                GPASSERT(NULL!=sta);//FIXME
                 (warpf->inputType).push_back(sta);
             }
         }
@@ -262,6 +262,6 @@ const GPFunctionDataBase::function* GPFunctionDataBase::vQueryFunction (const st
 }
 const GPFunctionDataBase::function* GPFunctionDataBase::vQueryFunctionById (int id) const
 {
-    assert(id>=0&&id<mFunctionTable.size());
+    GPASSERT(id>=0&&id<mFunctionTable.size());
     return mFunctionTable[id];
 }

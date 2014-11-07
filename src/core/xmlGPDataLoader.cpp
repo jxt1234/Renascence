@@ -14,7 +14,7 @@
    limitations under the License.
 ******************************************************************/
 #include "core/xmlGPDataLoader.h"
-#include <assert.h>
+#include <utils/debug.h>
 #include <sstream>
 #include <fstream>
 #include "core/GP_XmlString.h"
@@ -34,7 +34,7 @@ xmlGPDataLoader::~xmlGPDataLoader()
 
 void xmlGPDataLoader::attributeUnflatten()
 {
-    assert(NULL!=mAttributes);
+    GPASSERT(NULL!=mAttributes);
     mData = new GPData(mAttributes->name);
     for (int i=0; i<mAttributes->children.size(); ++i)
     {

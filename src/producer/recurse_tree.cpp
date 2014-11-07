@@ -78,7 +78,7 @@ vector<int> computePoint::getDependOutput()
 bool computePoint::vGrow()
 {
     bool success = true;
-    assert(NULL!=mSys);
+    GPASSERT(NULL!=mSys);
     const vector<int>& data = getData();
     vector<int> currentOutputId = getDependOutput();
     for (int i=0; i<data.size(); ++i)

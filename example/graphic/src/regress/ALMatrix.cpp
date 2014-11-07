@@ -2,7 +2,7 @@
 #include "regress/ALUtils.h"
 void ALMatrix::reset(int w, int h)
 {
-    assert(0 < w && 0 < h);
+    GPASSERT(0 < w && 0 < h);
     if (mW != w || mH != h)
     {
         mW = w;

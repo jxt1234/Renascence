@@ -14,7 +14,7 @@
    limitations under the License.
 ******************************************************************/
 #include "evolution/GPEvolutionGroup.h"
-#include <assert.h>
+#include <utils/debug.h>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -22,7 +22,7 @@
 using namespace std;
 GPEvolutionGroup::GPEvolutionGroup(GPProducer* sys, int time, int size):mSys(sys)
 {
-    assert(NULL!=sys);
+    GPASSERT(NULL!=sys);
     mBest = NULL;
     mStrategy = NULL;
     mTime = time;
@@ -189,7 +189,7 @@ void GPEvolutionGroup::_mutate()
 
 void GPEvolutionGroup::loadBest(istream& input)
 {
-    assert(NULL!=mSys);
+    GPASSERT(NULL!=mSys);
     if (NULL!=mBest)
     {
         mBest->decRef();
@@ -206,7 +206,7 @@ void GPEvolutionGroup::vEvolution(IGPAutoDefFunction* fit)
     /*Create the initial group*/
     _clearGroup();
     vector<IGPAutoDefFunction*> group = mSys->vCreateAllFunction(mOutput, mInput);
-    assert(!group.empty());
+    GPASSERT(!group.empty());
     for (int i=0; i<group.size(); ++i)
     {
         mGroup.push_back(group[i]);

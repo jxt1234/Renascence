@@ -1,5 +1,5 @@
 #include "package.h"
-#include <assert.h>
+#include <utils/debug.h>
 #define RETURN_GP \
     GP_Output out;\
     out.output.push_back(result);\
@@ -7,7 +7,7 @@
 
 GP_Output TrPackageFilterMatrix(vector<void*> inputs)
 {
-    assert(inputs.size() == 2);
+    GPASSERT(inputs.size() == 2);
     GP_Output::GP_Unit result;
     TrBmp* dst = TrFilterMatrixTransform((TrBmp*)inputs[0], (TrFilterMatrix*)inputs[1]);
     result.content = dst;
@@ -17,7 +17,7 @@ GP_Output TrPackageFilterMatrix(vector<void*> inputs)
 
 GP_Output TrPackageSaturation(vector<void*> inputs)
 {
-    assert(inputs.size() == 2);
+    GPASSERT(inputs.size() == 2);
     GP_Output::GP_Unit result;
     TrBmp* dst = TrSaturation((TrBmp*)inputs[0], 2*((float*)inputs[1])[0]);
     result.content = dst;
@@ -28,7 +28,7 @@ GP_Output TrPackageSaturation(vector<void*> inputs)
 //以第一幅图像的大小为最终的图像大小
 GP_Output TrPackageCompse(vector<void*> inputs)
 {
-    assert(inputs.size() >= 2);
+    GPASSERT(inputs.size() >= 2);
     GP_Output::GP_Unit result;
     int picsize = inputs.size() - 1;
     TrBmp** pic = (TrBmp**)(malloc(picsize*sizeof(TrBmp)));
@@ -48,7 +48,7 @@ GP_Output TrPackageCompse(vector<void*> inputs)
 
 GP_Output TrPackageOutput(vector<void*> inputs)
 {
-    assert(!inputs.empty());
+    GPASSERT(!inputs.empty());
     const char* file = "output_fix.jpg";
     TrWritePixels((TrBmp*)inputs[0], file);
     GP_Output res;
@@ -60,7 +60,7 @@ static void doubleDelete(double* p)
 }
 GP_Output TrPackageFitCompute(vector<void*> inputs)
 {
-    assert(!inputs.empty());
+    GPASSERT(!inputs.empty());
     GP_Output::GP_Unit result;
     static TrBmp* target = NULL;
     if (!target)
@@ -106,7 +106,7 @@ GP_Output TrPackageInputTarget(vector<void*> inputs)
 GP_Output TrPackageFilterMatrixRegress(vector<void*> inputs)
 {
     GP_Output::GP_Unit result;
-    assert(inputs.size()==3);
+    GPASSERT(inputs.size()==3);
     TrBmp* src = (TrBmp*)inputs[0];
     TrBmp* dst = (TrBmp*)inputs[1];
     TrRegreeMode* mode = (TrRegreeMode*)inputs[2];

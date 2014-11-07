@@ -14,19 +14,19 @@
    limitations under the License.
 ******************************************************************/
 #include "math/GPSingleTree.h"
-#include <assert.h>
+#include <utils/debug.h>
 #include <stdlib.h>
 using namespace std;
 GPSinglePoint::GPSinglePoint(GPIFloatFunction* f)
 {
-    assert(NULL!=f);
+    GPASSERT(NULL!=f);
     f->addRef();
     mF = f;
     mCache = NULL;
     if (0 < mF->size())
     {
         mCache = new GPFLOAT[mF->size()];
-        assert(NULL!=mCache);
+        GPASSERT(NULL!=mCache);
     }
 }
 
@@ -38,7 +38,7 @@ GPSinglePoint::~GPSinglePoint()
 
 GPFLOAT GPSinglePoint::compute()
 {
-    assert(mChildren.size() == mF->size());
+    GPASSERT(mChildren.size() == mF->size());
     for (int i=0; i<mChildren.size(); ++i)
     {
         GPSinglePoint* p = (GPSinglePoint*)(mChildren[i]);
@@ -92,7 +92,7 @@ GPSingleTree::GPSingleTree(const GPSingleTree& tree):mSet(tree.mSet)
 
 void GPSingleTree::operator=(const GPSingleTree& tree)
 {
-    assert(&mSet == &(tree.mSet));
+    GPASSERT(&mSet == &(tree.mSet));
     if (NULL!=mRoot)
     {
         delete mRoot;

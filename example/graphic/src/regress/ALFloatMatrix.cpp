@@ -4,7 +4,7 @@
 
 ALFloatMatrix::ALFloatMatrix(int w, int h):ALMatrix(w, h)
 {
-    assert(w>=0 && h>=0);
+    GPASSERT(w>=0 && h>=0);
     int size = w*h;
     if (0 == size)
     {
@@ -37,10 +37,10 @@ void ALFloatMatrix::vReset(int w, int h)
 
 void ALFloatMatrix::vProduct(ALMatrix* A, ALMatrix* B)
 {
-    assert(A->width() == B->height());
+    GPASSERT(A->width() == B->height());
     ALFloatMatrix* FA = dynamic_cast<ALFloatMatrix*>(A);
     ALFloatMatrix* FB = dynamic_cast<ALFloatMatrix*>(B);
-    assert(NULL!=FA && NULL!=FB);
+    GPASSERT(NULL!=FA && NULL!=FB);
     int w = B->width();
     int h = A->height();
     int l = A->width();
@@ -71,11 +71,11 @@ void ALFloatMatrix::vProduct(ALMatrix* A, ALMatrix* B)
 void ALFloatMatrix::vInverse(ALMatrix* A)
 {
     ALFloatMatrix* FA = dynamic_cast<ALFloatMatrix*>(A);
-    assert(NULL!=FA);
-    assert(A->width() > 0 && A->height() > 0);
+    GPASSERT(NULL!=FA);
+    GPASSERT(A->width() > 0 && A->height() > 0);
     int w = A->width();
     int h = A->height();
-    assert(w == h);
+    GPASSERT(w == h);
     reset(w, w);
     ALFLOAT* a = new ALFLOAT[w*w];
     ALFLOAT* a_r = new ALFLOAT[w];
@@ -134,7 +134,7 @@ void ALFloatMatrix::vInverse(ALMatrix* A)
             }
             continue;
         }
-        assert(!ZERO(weight));
+        GPASSERT(!ZERO(weight));
         /*Do row transform to make the i row of A be "0 0 0 1 x1 x2...."*/
         //For A, the value before i column must be zero
         for (int j=i; j<n; ++j)
@@ -172,8 +172,8 @@ void ALFloatMatrix::vInverse(ALMatrix* A)
 void ALFloatMatrix::vTranspose(ALMatrix* A)
 {
     ALFloatMatrix* FA = dynamic_cast<ALFloatMatrix*>(A);
-    assert(NULL!=FA);
-    assert(A->width() > 0 && A->height() > 0);
+    GPASSERT(NULL!=FA);
+    GPASSERT(A->width() > 0 && A->height() > 0);
     int w = A->width();
     int h = A->height();
     reset(h, w);
@@ -193,8 +193,8 @@ void ALFloatMatrix::vTranspose(ALMatrix* A)
 void ALFloatMatrix::vSTS(ALMatrix* A, bool transpose)
 {
     ALFloatMatrix* FA = dynamic_cast<ALFloatMatrix*>(A);
-    assert(NULL!=FA);
-    assert(A->width() > 0 && A->height() > 0);
+    GPASSERT(NULL!=FA);
+    GPASSERT(A->width() > 0 && A->height() > 0);
     int w = A->width();
     int h = A->height();
     ALFLOAT* a = (ALFLOAT*)A->vGetAddr();

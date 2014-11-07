@@ -19,26 +19,26 @@
 #include "core/GPFunctionDataBase.h"
 #include <fstream>
 #include "utils/AutoClean.h"
-#include <assert.h>
+#include <utils/debug.h>
 #include "core/xmlGPDataLoader.h"
 using namespace std;
 
 int main(int argc, char** argv)
 {
     /*Prepare Runtime*/
-    assert(argc>=2);
+    GPASSERT(argc>=2);
     FilePath::setEnvPath(argv[1]);
 	GPFunctionDataBase* base = GPFactory::createDataBase(NULL, NULL);
     ifstream is;
     bool res = FilePath::open(FilePath::RUNTIME, is);
-    assert(true == res);
+    GPASSERT(true == res);
 	base->loadXml(is);
 	AUTOCLEAN(base);
 	{
 		GPProducer* sys = GPFactory::createProducer(base);
 		/*Load Standard function*/
 		res = FilePath::open(FilePath::STANDARD, is);
-		assert(true == res);
+		GPASSERT(true == res);
 		IGPAutoDefFunction* function = sys->vCreateFunctionFromIS(is);
 		AutoClean __clean_funtion(function);
 		is.close();
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 		vector<string> inputFiles;
 		vector<string> outputFiles;
 		res = (FilePath::open(FilePath::INPUT, is));
-		assert(true == res);
+		GPASSERT(true == res);
 		string temp;
 		while (is >> temp)
 		{
@@ -54,14 +54,14 @@ int main(int argc, char** argv)
 		}
 		is.close();
 		res = (FilePath::open(FilePath::OUTPUT, is));
-		assert(true == res);
+		GPASSERT(true == res);
 		while (is >> temp)
 		{
 			outputFiles.push_back(temp);
 		}
 		is.close();
 		res = (inputFiles.size() == outputFiles.size());
-		assert(true == res);
+		GPASSERT(true == res);
 		/*TODO Load Compare function*/
 		/*Start to compare*/
 		int n = inputFiles.size();
