@@ -16,6 +16,7 @@
 #ifndef OPTIMIZOR_IGPOPTIMIZOR_H
 #define OPTIMIZOR_IGPOPTIMIZOR_H
 #include "utils/RefCount.h"
+#include "utils/debug.h"
 #include <stdlib.h>
 typedef float PFLOAT;
 class GPParameter:public RefCount

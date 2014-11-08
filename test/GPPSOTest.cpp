@@ -4,20 +4,19 @@
 #include <iostream>
 #include "TestOptimizeFunction.h"
 using namespace std;
-
-class GPGoldenDividerTest:public GPTest
+class GPPSOTest:public GPTest
 {
     public:
         virtual void run();
-        GPGoldenDividerTest(){}
-        virtual ~GPGoldenDividerTest(){}
+        GPPSOTest(){}
+        virtual ~GPPSOTest(){}
 };
-void GPGoldenDividerTest::run()
+void GPPSOTest::run()
 {
     GPPtr<IGPOptimizor::IComputer> comput = new TestOptimizeFunction;
-    GPPtr<IGPOptimizor> opt = GPOptimizorFactory::create(GPOptimizorFactory::GOLDEN_DIVIDE);
+    GPPtr<IGPOptimizor> opt = GPOptimizorFactory::create(GPOptimizorFactory::PSO_SEARCH);
     GPPtr<GPParameter> p = opt->vFindBest(2, comput);
     cout << p->get(0) << ", " << p->get(1) << endl;
 }
 
-static GPTestRegister<GPGoldenDividerTest> a("GPGoldenDividerTest");
+static GPTestRegister<GPPSOTest> a("GPPSOTest");
