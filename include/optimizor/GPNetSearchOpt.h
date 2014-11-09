@@ -21,7 +21,7 @@ class GPNetSearchOpt:public IGPOptimizor
     public:
         GPNetSearchOpt(PFLOAT inter);
         virtual ~GPNetSearchOpt();
-        virtual GPPtr<GPParameter> vFindBest(int n, GPPtr<IComputer> computer) const;
+        virtual GPPtr<GPParameter> vFindBest(int n, GPPtr<IComputer> computer, PFLOAT* target) const;
     private:
         int mPrecision;
         PFLOAT mInter;

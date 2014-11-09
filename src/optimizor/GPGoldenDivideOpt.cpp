@@ -17,7 +17,7 @@ static inline PFLOAT runOnePass(int k, PFLOAT v, GPPtr<GPParameter> current, GPP
     return computer->run(p);
 }
 
-GPPtr<GPParameter> GPGoldenDivideOpt::vFindBest(int n, GPPtr<IComputer> computer) const
+GPPtr<GPParameter> GPGoldenDivideOpt::vFindBest(int n, GPPtr<IComputer> computer, PFLOAT* target) const
 {
     GPASSERT(n>0);
     GPPtr<GPParameter> result = new GPParameter(n);

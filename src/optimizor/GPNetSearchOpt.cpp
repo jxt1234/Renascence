@@ -12,7 +12,7 @@ GPNetSearchOpt::~GPNetSearchOpt()
 {
 }
 
-GPPtr<GPParameter> GPNetSearchOpt::vFindBest(int n, GPPtr<IComputer> computer) const
+GPPtr<GPParameter> GPNetSearchOpt::vFindBest(int n, GPPtr<IComputer> computer, PFLOAT* target) const
 {
     GPASSERT(n>0);
     carryArray array(n, mPrecision);

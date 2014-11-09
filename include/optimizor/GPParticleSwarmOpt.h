@@ -22,7 +22,7 @@ class GPParticleSwarmOpt:public IGPOptimizor
     public:
         GPParticleSwarmOpt(PFLOAT Vmax, PFLOAT theta1, PFLOAT theta2, int groupsize = 20, int time = 1000, PFLOAT dis=0.0001);
         virtual ~GPParticleSwarmOpt();
-        virtual GPPtr<GPParameter> vFindBest(int mN, GPPtr<IComputer> computer) const;
+        virtual GPPtr<GPParameter> vFindBest(int mN, GPPtr<IComputer> computer, PFLOAT* target) const;
     private:
         class Particle:public RefCount
         {

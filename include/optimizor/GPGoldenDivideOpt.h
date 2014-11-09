@@ -21,7 +21,7 @@ class GPGoldenDivideOpt:public IGPOptimizor
     public:
         GPGoldenDivideOpt(PFLOAT minInterval=0.01):mInter(minInterval){}
         virtual ~GPGoldenDivideOpt(){}
-        virtual GPPtr<GPParameter> vFindBest(int n, GPPtr<IComputer> computer) const;
+        virtual GPPtr<GPParameter> vFindBest(int n, GPPtr<IComputer> computer, PFLOAT* target) const;
     private:
         PFLOAT mInter;
 };

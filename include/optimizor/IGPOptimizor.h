@@ -43,7 +43,7 @@ class IGPOptimizor:public RefCount
                 IComputer(){}
                 virtual ~IComputer(){}
         };
-        virtual GPPtr<GPParameter> vFindBest(int n, GPPtr<IComputer> computer) const = 0;
+        virtual GPPtr<GPParameter> vFindBest(int n, GPPtr<IComputer> computer, PFLOAT* target=NULL) const = 0;
         IGPOptimizor(){}
         virtual ~IGPOptimizor(){}
 };

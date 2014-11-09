@@ -111,7 +111,7 @@ PFLOAT GPParticleSwarmOpt::max_distance(const std::vector<GPPtr<Particle> >& gro
     }
     return _max_distance;
 }
-GPPtr<GPParameter> GPParticleSwarmOpt::vFindBest(int n, GPPtr<IComputer> computer) const
+GPPtr<GPParameter> GPParticleSwarmOpt::vFindBest(int n, GPPtr<IComputer> computer, PFLOAT* target) const
 {
     GPASSERT(n>0);
     GPASSERT(mSize>=1);
@@ -146,6 +146,13 @@ GPPtr<GPParameter> GPParticleSwarmOpt::vFindBest(int n, GPPtr<IComputer> compute
                 bestP = group[j];
             }
         }
+        if (NULL!=target)
+        {
+            if (*target <= bestP->fit())
+            {
+                break;
+            }
+        }
         /*Get the max distance before, Determin if we can break*/
         PFLOAT maxDis_before = max_distance(group);
         /*Move all Particle*/
@@ -156,7 +163,7 @@ GPPtr<GPParameter> GPParticleSwarmOpt::vFindBest(int n, GPPtr<IComputer> compute
         }
         /*Get the max distance after, Determin if we can break*/
         PFLOAT maxDis_after = max_distance(group);
-        if (maxDis_before < mMinDistance && maxDis_after < mMinDistance)
+        if (maxDis_before < mMinDistance*n && maxDis_after < mMinDistance*n)
         {
             break;
         }
