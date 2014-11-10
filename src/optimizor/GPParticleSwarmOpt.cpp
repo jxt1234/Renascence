@@ -74,7 +74,7 @@ void GPParticleSwarmOpt::Particle::move(GPPtr<Particle> best)
     {
         PFLOAT u1 = GPRandom::rate()*the1;
         PFLOAT u2 = GPRandom::rate()*the2;
-        v[i] = v[i] + u1*(p[i]-x[i]) + u2*(pg[i]-x[i]);
+        v[i] = (v[i] + u1*(p[i]-x[i]) + u2*(pg[i]-x[i]))*0.718;
         x[i] = v[i] + x[i];
 
         if (x[i] > Max) x[i] = Max;
@@ -82,7 +82,7 @@ void GPParticleSwarmOpt::Particle::move(GPPtr<Particle> best)
     }
 }
 
-GPParticleSwarmOpt::GPParticleSwarmOpt(PFLOAT Vmax, PFLOAT theta1, PFLOAT theta2, int groupsize, int time, PFLOAT dis)
+GPParticleSwarmOpt::GPParticleSwarmOpt(PFLOAT Vmax, int groupsize, int time, PFLOAT dis, PFLOAT theta1, PFLOAT theta2)
 {
     mVmax = Vmax;
     mThe1 = theta1;

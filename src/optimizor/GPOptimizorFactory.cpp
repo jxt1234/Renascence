@@ -26,7 +26,17 @@ GPPtr<IGPOptimizor> GPOptimizorFactory::create(TYPE t, std::istream* parameter)
             res = new GPNetSearchOpt(inter);
             break;
         case PSO_SEARCH:
-            res = new GPParticleSwarmOpt(10.0, 2.0, 2.0, 50);
+            {
+                int groupsize=20, time=1000;
+                if (NULL != parameter)
+                {
+                    std::istream& is = *parameter;
+                    int maxTime;
+                    is >> maxTime;
+                    time = maxTime/groupsize;
+                }
+                res = new GPParticleSwarmOpt(10.0, groupsize, time);
+            }
             break;
         default:
             break;
