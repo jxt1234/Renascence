@@ -18,7 +18,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "utils/debug.h"
-#include <execinfo.h>
 #include <sstream>
 #include <iostream>
 #include <utils/debug.h>

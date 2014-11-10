@@ -2,6 +2,7 @@
 *.slo
 *.lo
 *.o
+*.d
 *.so
 *.jpg
 *.out

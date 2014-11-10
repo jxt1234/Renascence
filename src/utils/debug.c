@@ -14,6 +14,7 @@
    limitations under the License.
 ******************************************************************/
 #include "utils/debug.h"
+#ifndef BUILD_FOR_ANDROID
 void dump_stack()
 {
 #define SIZE 100
@@ -33,3 +34,4 @@ void dump_stack()
     }
     free(strings);
 }
+#endif
