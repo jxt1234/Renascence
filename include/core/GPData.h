@@ -17,7 +17,7 @@
 #define CORE_GPDATA_H
 #include "utils/RefCount.h"
 #include "user/package.h"
-#include "core/status.h"
+#include "user/status.h"
 #include <ostream>
 #include <string>
 class GPData:public RefCount
@@ -37,7 +37,7 @@ class GPData:public RefCount
             data(void* c, const IStatusType& s):content(c), type(s){}
             ~data()
             {
-                type.Free(content);
+                type.vFree(content);
             }
         };
         std::vector<data*> mData;

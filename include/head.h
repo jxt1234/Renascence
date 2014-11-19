@@ -18,4 +18,5 @@
 #include "utils/debug.h"
 #include "utils/RefCount.h"
 #include "utils/AutoClean.h"
+#include "utils/AutoStorage.h"
 #endif

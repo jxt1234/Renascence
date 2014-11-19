@@ -16,11 +16,12 @@
 #ifndef GP_COMPUTE_SYSTEM_H
 #define GP_COMPUTE_SYSTEM_H
 #include "core/function.h"
-#include "core/status.h"
+#include "user/status.h"
 #include <string>
 #include "core/IDataBase.h"
 #include "user/IFunctionTable.h"
 #include "xml/xmlReader.h"
+#include "head.h"
 
 class GPFunctionDataBase:public RefCount
 {

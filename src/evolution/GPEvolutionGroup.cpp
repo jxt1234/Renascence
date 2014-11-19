@@ -13,12 +13,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "evolution/GPEvolutionGroup.h"
-#include <utils/debug.h>
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include "utils/debug.h"
 #include "utils/GPRandom.h"
+#include "evolution/GPEvolutionGroup.h"
+#include "optimizor/GPOptimizorFactory.h"
 using namespace std;
 GPEvolutionGroup::GPEvolutionGroup(GPProducer* sys, int time, int size):mSys(sys)
 {
@@ -106,6 +107,41 @@ void GPEvolutionGroup::vSetInputStrategy(IInputStrategy* strategy)
     strategy->addRef();
 }
 
+void GPEvolutionGroup::optimizeParameters(IGPAutoDefFunction* g, IGPAutoDefFunction* fit) const
+{
+    class computer:public IGPOptimizor::IComputer
+    {
+        public:
+            computer(GP_Input& input, IGPAutoDefFunction* fit, IGPAutoDefFunction* g):I(input), F(fit), G(g){}
+            virtual PFLOAT run(GPPtr<GPParameter> p)
+            {
+                G->vMap(p);
+                GP_Output out1 = G->run(I);
+                GP_Input input;
+                GP_Output_collect(input, out1);
+                GP_Output out2 = F->run(input);
+                double* f = (double*)out1[0];
+                out1.clear();
+                out2.clear();
+                PFLOAT result = *f;
+                return result;
+            }
+        private:
+            GP_Input& I;
+            IGPAutoDefFunction* F;
+            IGPAutoDefFunction* G;
+    };
+
+    GPPtr<GPParameter> pa;
+    int number = g->vMap(pa);//Get the number of map values
+    std::istringstream parameter("40");
+    GPPtr<IGPOptimizor> optimizor = GPOptimizorFactory::create(GPOptimizorFactory::PSO_SEARCH, &parameter);
+    GP_Input input = mStrategy->vCreate(g);
+    GPPtr<IGPOptimizor::IComputer> c = new computer(input, fit, g);
+    pa = optimizor->vFindBest(number, c);
+    g->vMap(pa);
+}
+
 double GPEvolutionGroup::_fitCompute(IGPAutoDefFunction* g, IGPAutoDefFunction* fit) const
 {
 /*Debug */
@@ -118,6 +154,7 @@ double GPEvolutionGroup::_fitCompute(IGPAutoDefFunction* g, IGPAutoDefFunction* 
     g->save(f);
     f.close();
 #endif
+    //optimizeParameters(g, fit);
     GP_Output out = g->run(mStrategy->vCreate(g));
     GP_Input inp;
     GP_Output_collect(inp, out);
@@ -138,7 +175,6 @@ void GPEvolutionGroup::_best(IGPAutoDefFunction* fit)
     for (iter++; iter!=mGroup.end(); iter++)
     {
         double _f = _fitCompute(*iter, fit);
-        //FUNC_PRINT_ALL(_f, f);
         if (_f > _max)
         {
             bestIter = iter;

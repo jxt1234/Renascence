@@ -18,9 +18,9 @@
 #include "core/GPFunctionDataBase.h"
 #include "utils/debug.h"
 #include <utils/debug.h>
-#include "core/funcStatusType.h"
 #include <algorithm>
 #include "system/system_lib.h"
+#include "core/GP_XmlString.h"
 
 using namespace std;
 
@@ -121,7 +121,7 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
     }
 }
 
-int  GPFunctionDataBase::_findFunction(const std::string& name)
+int GPFunctionDataBase::_findFunction(const std::string& name)
 {
     int res = -1;
     for (int i=0; i<mFunctionTable.size(); ++i)
@@ -193,7 +193,10 @@ const IStatusType* GPFunctionDataBase::_findAndLoadStatus(const std::string& nam
     }
     if (NULL == t)
     {
-        t = new funcStatusType(name, handle);
+        TYPECREATER create = handle->get<TYPECREATER>(GP_XmlString::status_creator);
+        GPASSERT(NULL!=create);
+        t = create(name);
+        GPASSERT(NULL!=t);
         mTypes.push_back(t);
     }
     return t;

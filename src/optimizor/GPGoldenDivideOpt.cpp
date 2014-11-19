@@ -12,7 +12,7 @@ static inline PFLOAT runOnePass(int k, PFLOAT v, GPPtr<GPParameter> current, GPP
     GPASSERT(NULL!=current.get());
     GPASSERT(0<=k && k<current->size());
     GPPtr<GPParameter> p = new GPParameter(current->size(), current->get());
-    float* _p = p->attach();
+    PFLOAT* _p = p->attach();
     _p[k] = v;
     return computer->run(p);
 }

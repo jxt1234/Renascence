@@ -30,17 +30,15 @@ GPTreeADFPoint::GPTreeADFPoint()
 {
     mFunc = NULL;
 }
-GPTreeADFPoint::GPTreeADFPoint(const GPFunctionDataBase::function* func, bool initStatus)
+
+GPTreeADFPoint::GPTreeADFPoint(const GPFunctionDataBase::function* func)
 {
     GPASSERT(NULL!=func);
     mFunc = func;
-    if (initStatus)
+    vector<TYPEP> s = func->statusType;
+    for (int i=0; i<s.size(); ++i)
     {
-        vector<TYPEP> s = func->statusType;
-        for (int i=0; i<s.size(); ++i)
-        {
-            mStatus.push_back(new GPStatusContent(s[i]));
-        }
+        mStatus.push_back(new GPStatusContent(s[i]));
     }
 }
 GPTreeADFPoint::~GPTreeADFPoint()
@@ -51,30 +49,23 @@ GPTreeADFPoint::~GPTreeADFPoint()
     }
 }
 
-void GPTreeADFPoint::initStatus()
+void GPTreeADFPoint::initStatus(const std::vector<std::istream*>& statusInput)
 {
-    vector<std::istream*> is((mFunc->statusType).size(),NULL);
-    initStatus(is);
-}
-void GPTreeADFPoint::initStatus(const std::vector<std::istream*>& is)
-{
+    GPASSERT(statusInput.size() == mStatus.size());
+    const std::vector<const IStatusType*>& statustype = mFunc->statusType;
+    GPASSERT(statusInput.size() == statustype.size());
     for (int i=0; i<mStatus.size(); ++i)
     {
-        SAFE_UNREF(mStatus[i]);
-    }
-    mStatus.clear();
-    const vector<TYPEP>& s = mFunc->statusType;
-    GPASSERT(is.size() == s.size());
-    for (int i=0; i<s.size(); ++i)
-    {
-        if (NULL == is[i])
+        if (NULL==statusInput[i]) continue;
+        istream& is = *(statusInput[i]);
+        GPStatusContent* s= mStatus[i];
+        AutoStorage<double> _v(s->size());
+        double* v = _v.get();
+        for (int j=0; j<s->size(); ++j)
         {
-            mStatus.push_back(new GPStatusContent(s[i]));
+            is >> v[j];
         }
-        else
-        {
-            mStatus.push_back(new GPStatusContent(s[i], *(is[i])));
-        }
+        s->setValue(v, s->size());
     }
 }
 
@@ -89,8 +80,7 @@ void GPTreeADFPoint::xmlPrint(std::ostream& res) const
     {
         const IStatusType& s = mStatus[j]->type();
         res << "<" << s.name() <<">"<<endl;
-        void* content = mStatus[j]->content();
-        s.print(res, content);
+        mStatus[j]->print(res);
         res << endl<<"</" << s.name() <<">"<<endl;
     }
     res<<"</"<<GP_XmlString::status<<">\n";
@@ -299,4 +289,39 @@ IGPAutoDefFunction* GPTreeADF::copy() const
     GPTreeADFPoint* root = mRoot;
     GPTreeADFPoint* p = (GPTreeADFPoint*)AbstractPoint::deepCopy(root, &c);
     return new GPTreeADF(p);
+}
+int GPTreeADF::vMap(GPPtr<GPParameter> para)
+{
+    GPASSERT(NULL!=mRoot);
+    vector<AbstractPoint*> allpoints = mRoot->display();
+    vector<GPStatusContent*> allcontents;
+    int sum = 0;
+    for (int i=0; i<allpoints.size(); ++i)
+    {
+        GPTreeADFPoint* p = (GPTreeADFPoint*)allpoints[i];
+        vector<GPStatusContent*>& status = p->mStatus;
+        for (int j=0; j<status.size(); ++j)
+        {
+            sum+=status[j]->size();
+            allcontents.push_back(status[j]);
+        }
+    }
+    if (NULL!=para.get())
+    {
+        GPASSERT(sum == para->size());
+        const PFLOAT* ps = para->get();
+        for (int i=0; i<allcontents.size(); ++i)
+        {
+            GPStatusContent* c = allcontents[i];
+            AutoStorage<double> _values(c->size());
+            double* v = _values.get();
+            for (int j=0; j<c->size(); ++j)
+            {
+                v[j] = ps[j];
+            }
+            ps+=c->size();
+            c->setValue(v, c->size());
+        }
+    }
+    return sum;
 }

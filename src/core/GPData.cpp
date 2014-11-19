@@ -53,9 +53,7 @@ void GPData::print(std::ostream& out) const
     for (int i=0; i<mData.size(); ++i)
     {
         GPData::data* d = mData[i];
-        out << "<"<<(d->type).name()<<">\n";
-        (d->type).print(out, d->content);
-        out << "\n</"<<(d->type).name()<<">\n";
+        (d->type).vSave(d->content, out);
     }
     out << "</"<<mName<<">\n";
 }
@@ -75,8 +73,8 @@ double GPData::compare(const GP_Output& output)
             GPData::data* d = mData[i];
             const IStatusType& t = d->type;
             ostringstream _data, _out;
-            t.print(_data, d->content);
-            t.print(_out, output[i]);
+            t.vSave(d->content, _data);
+            t.vSave(output[i], _out);
             istringstream data(_data.str());
             istringstream out(_out.str());
             bool hasContent = true;

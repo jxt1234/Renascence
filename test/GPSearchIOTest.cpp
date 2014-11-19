@@ -30,7 +30,7 @@ class GPSearchIOTest:public GPTest
                 vector<void*> _output;
                 GP_Output_collect(_output, GPout);
                 GPASSERT(_output.size()==1);
-                ist->print(cout, _output[0]);
+                ist->vSave(_output[0], cout);
                 cout <<endl;
                 GP_Output_clear(GPout);
                 f->decRef();
@@ -48,7 +48,7 @@ class GPSearchIOTest:public GPTest
                     vector<void*> _output2;
                     GP_Output_collect(_output2, GPout);
                     GPASSERT(_output2.size()==1);
-                    ist->print(cout, _output2[0]);
+                    ist->vSave(_output2[0], cout);
                     cout << endl;
                     GP_Output_clear(GPout);
                     f->save(output);

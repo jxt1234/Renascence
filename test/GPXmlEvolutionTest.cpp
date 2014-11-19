@@ -25,7 +25,7 @@ class GPXmlEvolutionTest:public GPTest
                 eOut.push_back(bmp);
                 vector<const IStatusType*> eInp;
                 GP_Input nullInput;
-                GPEvolutionGroup* group = new GPEvolutionGroup(&gen, 10, 10);
+                GPEvolutionGroup* group = new GPEvolutionGroup(&gen, 2, 2);
                 group->vSetInput(eInp);
                 group->vSetOutput(eOut);
                 group->vSetFixInput(nullInput);

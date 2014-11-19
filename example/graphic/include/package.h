@@ -23,6 +23,7 @@ extern "C"
 using namespace std;
 extern "C"
 {
+    /*GP BEGIN*/
     GP_Output TrPackageFitCompute(vector<void*> inputs);
     GP_Output TrPackageOutput(vector<void*> inputs);
     GP_Output TrPackageInput(vector<void*> inputs);
@@ -35,8 +36,6 @@ extern "C"
     /*Input: TrBmp TrFilterMatrix, Output TrBmp*/
     GP_Output TrPackageFilterTransformFromRegress(vector<void*> inputs);
     GP_Output TrPackageCompse(vector<void*> inputs);
-    GP_Output TrPackageCompseFromRegress(vector<void*> inputs);
-    GP_Output TrPackageCompseRegress(vector<void*> inputs);
     /*Saturation*/
     GP_Output TrPackageSaturation(vector<void*> inputs);
 }

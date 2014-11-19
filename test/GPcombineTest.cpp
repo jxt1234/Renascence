@@ -62,7 +62,7 @@ class GPcombineTest:public GPTest
 
 
                 //The first is TrFilterMatrix
-                matrix->print(cout, alloutput[0]);
+                matrix->vSave(alloutput[0], cout);
                 cout << endl;
                 //Mids are all bmps
                 for (int i=1; i<alloutput.size()-1; ++i)

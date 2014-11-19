@@ -225,3 +225,6 @@ e、compare.xml 表示用来比较期望输出和实际输出的函数，要求�
 
 2014.9.26
 1、编写自动生成标准函数的py文件（CONTINUE）
+
+2014.11.17
+1、架构修改，去除status类的load、save和mutate，以统一的map替代

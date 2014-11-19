@@ -20,6 +20,7 @@
 #include "core/function.h"
 #include "core/GPFunctionDataBase.h"
 #include "core/IGPAutoDefFunction.h"
+#include "core/GPStatusContent.h"
 #include "utils/GP_Clock.h"
 #include "utils/debug.h"
 
@@ -27,9 +28,8 @@ class GPTreeADFPoint:public AbstractPoint
 {
     public:
         GPTreeADFPoint();
-        GPTreeADFPoint(const GPFunctionDataBase::function* func, bool initStatus = true);
+        GPTreeADFPoint(const GPFunctionDataBase::function* func);
         void initStatus(const std::vector<std::istream*>& is);
-        void initStatus();
         virtual ~GPTreeADFPoint();
         void replacePoint(const std::vector<int> &numbers, const GPFunctionDataBase* base);
         inline const GPFunctionDataBase::function* func() const {return mFunc;}
@@ -77,6 +77,7 @@ class GPTreeADF:public IGPAutoDefFunction
         virtual std::vector<const IStatusType*> vGetOutputs() const;
         //Output a xml string, which can be write into file directly
         virtual void save(std::ostream& os) const;
+        virtual int vMap(GPPtr<GPParameter> para);
         //FIXME: dangerous api
         static void loadUnitFunction(std::vector<int>& result, int functionId, int statusId, int number);
     protected:

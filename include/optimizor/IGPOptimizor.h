@@ -18,7 +18,8 @@
 #include "utils/RefCount.h"
 #include "utils/debug.h"
 #include <stdlib.h>
-typedef float PFLOAT;
+typedef double PFLOAT;
+/*A Seriers of numbers that in [0, 1]*/
 class GPParameter:public RefCount
 {
     public:

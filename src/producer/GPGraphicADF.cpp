@@ -54,14 +54,21 @@ _POINT::~Point()
 void _POINT::initStatus(const std::vector<std::istream*>& statusInput)
 {
     if (NULL == mFunc) return;
-    const std::vector<const IStatusType*>& status = mFunc->statusType;
-    mStatus.clear();
-    GPASSERT(statusInput.size() == status.size());
-    for (int i=0; i<status.size(); ++i)
+    GPASSERT(statusInput.size() == mStatus.size());
+    const std::vector<const IStatusType*>& statustype = mFunc->statusType;
+    GPASSERT(statusInput.size() == statustype.size());
+    for (int i=0; i<mStatus.size(); ++i)
     {
-        GPPtr<GPStatusContent> s;
-        s = new GPStatusContent(status.at(i), statusInput[i]);
-        mStatus.push_back(s);
+        if (NULL==statusInput[i]) continue;
+        std::istream& is = *(statusInput[i]);
+        GPStatusContent* s= mStatus[i].get();
+        AutoStorage<double> _v(s->size());
+        double* v = _v.get();
+        for (int j=0; j<s->size(); ++j)
+        {
+            is >> v[j];
+        }
+        s->setValue(v, s->size());
     }
 }
 
@@ -274,7 +281,7 @@ void GPGraphicADF::save(std::ostream& os) const
         {
             const IStatusType& s = (*i)->type();
             os << "<"<<s.name()<<">\n";
-            s.print(os, (*i)->content());
+            (*i)->print(os);
             os << "</"<<s.name()<<">\n";
         }
         os << "</"<<GP_XmlString::status<<">\n";
@@ -433,4 +440,9 @@ GPGraphicADF::GPGraphicADF(std::istream& is, const GPFunctionDataBase* base)
 }
 GPGraphicADF::~GPGraphicADF()
 {
+}
+
+int GPGraphicADF::vMap(GPPtr<GPParameter> p)
+{
+    return 0;
 }

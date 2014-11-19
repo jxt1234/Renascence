@@ -45,6 +45,7 @@ class GPCombineADF:public IGPAutoDefFunction
         virtual std::vector<const IStatusType*> vGetInputs() const;
         virtual std::vector<const IStatusType*> vGetOutputs() const;
         virtual IGPAutoDefFunction* copy() const;
+        virtual int vMap(GPPtr<GPParameter> para);
     private:
         std::vector<IGPAutoDefFunction*> mFunctions;
 };
@@ -61,6 +62,7 @@ class GPSwitchADF:public IGPAutoDefFunction
         virtual std::vector<const IStatusType*> vGetInputs() const;
         virtual std::vector<const IStatusType*> vGetOutputs() const;
         virtual IGPAutoDefFunction* copy() const;
+        virtual int vMap(GPPtr<GPParameter> para);
     private:
         IGPAutoDefFunction* a;
         IGPAutoDefFunction* b;

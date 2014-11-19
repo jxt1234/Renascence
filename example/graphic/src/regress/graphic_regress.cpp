@@ -2,7 +2,7 @@ extern "C"
 {
 #include "regress/graphic_regress.h"
 }
-#include <utils/debug.h>
+#include <assert.h>
 #include <string.h>
 #include "debug.h"
 
@@ -13,7 +13,7 @@ static int getRegressNumber(TrRegreeMode* mode)
     int i, j;
     int selectNumber = 0;
     int dim = mode->dim;
-    GPASSERT(NULL!=mode);
+    assert(NULL!=mode);
     for(i=0; i<dim; ++i)
     {
         for (j=0; j<dim; ++j)
@@ -29,8 +29,8 @@ static int getRegressNumber(TrRegreeMode* mode)
 
 void TrRegressExpand(TrBmp* src, TrRegreeMode* mode, ALFloatMatrix* M, int hasConst)
 {
-    GPASSERT(TrValidBmp(src));
-    GPASSERT(NULL!=mode);
+    assert(TrValidBmp(src));
+    assert(NULL!=mode);
 #define FILTER_EXPAND(x, y) (x-(mode->dim)/2)+(y-(mode->dim)/2)*(src->width)
     int i,j,k;
     int selectNumber, allSelected=0;
@@ -43,7 +43,7 @@ void TrRegressExpand(TrBmp* src, TrRegreeMode* mode, ALFloatMatrix* M, int hasCo
     int area = width*height;
     TrPixels* srcBase = src->pixels + staPos*src->width+staPos;
     select = (int*)malloc(sizeof(int)*dim*dim);
-    GPASSERT(NULL!=select);
+    assert(NULL!=select);
     /*Determine which value is used*/
     selectNumber = 0;
     for(i=0; i<dim; ++i)
@@ -84,8 +84,8 @@ void TrRegressExpand(TrBmp* src, TrRegreeMode* mode, ALFloatMatrix* M, int hasCo
 
 int TrRegreeModeNumberCompute(TrRegreeMode* mode)
 {
-    GPASSERT(NULL!=mode);
-    GPASSERT(NULL!=mode->mode);
+    assert(NULL!=mode);
+    assert(NULL!=mode->mode);
     int i, result=0;
     for (i=0; i<mode->dim*mode->dim; ++i)
     {
@@ -148,10 +148,10 @@ void TrRegreeModeCopy(TrRegreeMode* src, TrRegreeMode* dst)
 
 TrFilterMatrix* TrRegressMatrix(TrBmp* src, TrBmp* target, TrRegreeMode* mode)
 {
-    GPASSERT(TrValidBmp(src));
-    GPASSERT(TrValidBmp(target));
-    GPASSERT(mode);
-    GPASSERT(src->width*src->height == target->width*target->height);
+    assert(TrValidBmp(src));
+    assert(TrValidBmp(target));
+    assert(mode);
+    assert(src->width*src->height == target->width*target->height);
     TrFilterMatrix* result;
     TrRegreeMode* oriMode;
     const int lossPixels = (mode->dim/2)*2;

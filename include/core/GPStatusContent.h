@@ -13,22 +13,28 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef XML_XMLGPDATALOADER_H
-#define XML_XMLGPDATALOADER_H
+#ifndef CORE_GPSTATUSCONTENT_H
+#define CORE_GPSTATUSCONTENT_H
 #include "user/status.h"
-#include "xml/xmlReader.h"
-#include "GPData.h"
-#include "GPFunctionDataBase.h"
-class xmlGPDataLoader:public xmlReader
+#include "head.h"
+
+class GPStatusContent:public RefCount
 {
     public:
-        xmlGPDataLoader(const GPFunctionDataBase& sys);
-        virtual ~xmlGPDataLoader();
-        inline GPData* get() const{return mData;}
-    protected:
-        virtual void attributeUnflatten();
+        GPStatusContent(const IStatusType* t);
+        GPStatusContent(const GPStatusContent& c);
+        void operator=(const GPStatusContent& c);
+        ~GPStatusContent();
+        void print(std::ostream& out) const;
+        void setValue(double* value, int n);
+        inline void* content() const {return mContent;}
+        inline const IStatusType& type() const {return *mType;}
+        inline int size() const{return mNumber;}
+        void mutate();
     private:
-        const GPFunctionDataBase& mSys;
-        GPData* mData;
+        const IStatusType* mType;
+        double* mValues;
+        void* mContent;
+        int mNumber;
 };
 #endif

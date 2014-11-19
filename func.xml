@@ -24,7 +24,7 @@
 </TrPackageFilterMatrix>
 
 <TrPackageFitCompute>
-	<output>double</output>
+    <output>double</output>
 	<inputType>TrBmp</inputType>
 </TrPackageFitCompute>
 

@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <set>
 #include <map>
+#include "core/GPStatusContent.h"
 #include "core/GPFunctionDataBase.h"
 #include "core/IGPAutoDefFunction.h"
 #include "utils/GP_Clock.h"
@@ -31,6 +32,8 @@ class GPGraphicADF:public IGPAutoDefFunction
         virtual void save(std::ostream& os) const;
         /*Return a new copy of this Function*/
         virtual IGPAutoDefFunction* copy() const;
+
+        virtual int vMap(GPPtr<GPParameter> p);
         /*Return all inputTypes in order*/
         virtual std::vector<const IStatusType*> vGetInputs() const;
         /*Return all outputTypes in order*/

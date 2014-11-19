@@ -28,6 +28,7 @@ class GPEvolutionGroup
         class IInputStrategy:public RefCount
         {
             public:
+                /*FIXME Must assume that the GP_Input can be freed*/
                 virtual GP_Input vCreate(IGPAutoDefFunction* f) const= 0;
                 IInputStrategy(){}
                 virtual ~IInputStrategy(){}
@@ -43,6 +44,7 @@ class GPEvolutionGroup
         inline IGPAutoDefFunction* getBest(){return mBest;}
         inline double getBestFit() const {return mBestFit;}
         void loadBest(std::istream& input);
+        void optimizeParameters(IGPAutoDefFunction* g, IGPAutoDefFunction* fit) const;
     private:
         double _fitCompute(IGPAutoDefFunction* g, IGPAutoDefFunction* fit) const;
         void _best(IGPAutoDefFunction* fit);

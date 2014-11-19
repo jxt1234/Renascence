@@ -70,6 +70,10 @@ GP_Output GPCombineADF::run(const GP_Input& inputs)
     }
     return res;
 }
+int GPCombineADF::vMap(GPPtr<GPParameter> para)
+{
+    return 0;
+}
 void GPCombineADF::save(std::ostream& os)
 {
     os << "<Combine>\n";
@@ -209,4 +213,8 @@ vector<const IStatusType*> GPSwitchADF::vGetOutputs() const
 {
     vector<const IStatusType*> t;
     return t;
+}
+int GPSwitchADF::vMap(GPPtr<GPParameter> para)
+{
+    return 0;
 }

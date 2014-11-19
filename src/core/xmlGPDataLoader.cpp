@@ -47,7 +47,7 @@ void xmlGPDataLoader::attributeUnflatten()
         if (attr[0] == GP_XmlString::file && attr.size() >=2)//Load from file
         {
             std::ifstream is(attr[1].c_str());
-            content = t.load(is);
+            content = t.vLoad(is);
             is.close();
         }
         else
@@ -63,7 +63,7 @@ void xmlGPDataLoader::attributeUnflatten()
                 os << cur->attr[l-1];
             }
             std::istringstream is(os.str());
-            content = t.load(is);
+            content = t.vLoad(is);
         }
         mData->addData(content, t);
     }

@@ -1,5 +1,5 @@
 /******************************************************************
-   Copyright 2013, Jiang Xiao-tang
+   Copyright 2014, Jiang Xiao-tang
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,21 +13,22 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef USER_FUNCTIONTABLE_H
-#define USER_FUNCTIONTABLE_H
-#include <string>
-
-
-class IFunctionTable
+#ifndef UTILS_AUTOSTORAGE_H
+#define UTILS_AUTOSTORAGE_H
+template <typename T>
+class AutoStorage
 {
     public:
-        template <typename T>
-        T get(const std::string& name){return (T)(this->vGetFunction(name));}
-        //TODO make this function const
-        virtual void* vGetFunction(const std::string& name)=0;
-        IFunctionTable(){}
-        virtual ~IFunctionTable(){}
+        AutoStorage(int size)
+        {
+            mT = new T[size];
+        }
+        ~AutoStorage()
+        {
+            delete [] mT;
+        }
+        T* get() {return mT;}
+    private:
+        T* mT;
 };
-
-
 #endif

@@ -35,7 +35,7 @@ class xmlCopy:public AbstractPoint::IPointCopy
             xmlTree* t = dynamic_cast<xmlTree*>(src);
             GPASSERT(NULL!=t);
             const GPFunctionDataBase::function* f = mSys->vQueryFunction(t->func());
-            GPTreeADFPoint* p = new GPTreeADFPoint(f, false);
+            GPTreeADFPoint* p = new GPTreeADFPoint(f);
             vector<const IStatusType*> types;
             const vector<xmlTree::type>& ttype = t->status();
             vector<istream*> contents;
@@ -70,7 +70,7 @@ class formulaCopy:public AbstractPoint::IPointCopy
                 return NULL;
             }
             const GPFunctionDataBase::function* f = mBase->vQueryFunction(point->name());
-            GPTreeADFPoint* p = new GPTreeADFPoint(f, true);
+            GPTreeADFPoint* p = new GPTreeADFPoint(f);
             return p;
         }
     private:
@@ -117,6 +117,10 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromName(const std::string& n
             {
                 IGPAutoDefFunction* r = new simpleADF(mFunc);
                 return r;
+            }
+            virtual int vMap(GPPtr<GPParameter> para)
+            {
+                return 0;
             }
 
         private:

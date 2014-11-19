@@ -20,6 +20,7 @@
 #include <istream>
 #include <ostream>
 #include "head.h"
+#include "optimizor/IGPOptimizor.h"
 
 class IGPAutoDefFunction:public RefCount
 {
@@ -28,6 +29,8 @@ class IGPAutoDefFunction:public RefCount
         virtual void save(std::ostream& os) const{}
         /*Return a new copy of this Function*/
         virtual IGPAutoDefFunction* copy() const= 0;
+        /*Return the number of parameter needed, do nothing if para.get()==null*/
+        virtual int vMap(GPPtr<GPParameter> para) = 0;
         /*Return all inputTypes in order*/
         virtual std::vector<const IStatusType*> vGetInputs() const = 0;
         /*Return all outputTypes in order*/
