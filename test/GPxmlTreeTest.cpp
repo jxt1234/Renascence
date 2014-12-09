@@ -10,7 +10,7 @@ class GPxmlTreeTest:public GPTest
         virtual void run()
         {
             xmlTree tree;
-            tree.loadFile("result.xml");
+            tree.loadFile("output/result.xml");
             ofstream file("output/result_test.xml");
             tree.print(file);
         }

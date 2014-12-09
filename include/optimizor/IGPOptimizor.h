@@ -15,10 +15,8 @@
 ******************************************************************/
 #ifndef OPTIMIZOR_IGPOPTIMIZOR_H
 #define OPTIMIZOR_IGPOPTIMIZOR_H
-#include "utils/RefCount.h"
-#include "utils/debug.h"
 #include <stdlib.h>
-typedef double PFLOAT;
+#include "head.h"
 /*A Seriers of numbers that in [0, 1]*/
 class GPParameter:public RefCount
 {

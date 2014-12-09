@@ -27,7 +27,7 @@ class GPProducer:public RefCount
     public:
         GPProducer(){}
         virtual ~GPProducer(){}
-        inline IGPAutoDefFunction* createFunction(const IStatusType* output, const IStatusType* input = NULL)
+        inline IGPAutoDefFunction* createFunction(const IStatusType* output, const IStatusType* input = NULL) const
         {
             std::vector<const IStatusType*> out(1, output);
             std::vector<const IStatusType*> inp(1, input);
@@ -35,17 +35,17 @@ class GPProducer:public RefCount
         }
         virtual void vPrint(std::ostream& os) const{}
         /*Create GP from xml files*/
-        virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is) = 0;
+        virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is) const = 0;
         /*For evolution*/
         virtual void vMutate(IGPAutoDefFunction* f) const {}
         /*Create a IGPAutoDefFunction which use the inputType to output the same content in outputType, inputRepeat means the content of inputType can be used repeated*/
         /*The function can't be recursive, which can be modified by mutate*/
-        virtual IGPAutoDefFunction* vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true, bool random = false) = 0;
-        virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true) = 0;
+        virtual IGPAutoDefFunction* vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true, bool random = false) const = 0;
+        virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true) const = 0;
         /*Construct ADF by a function name, just package the function to be an ADF, the inputFuncs of this function will be ignored*/
-        virtual IGPAutoDefFunction* vCreateFunctionFromName(const std::string& name) = 0;
+        virtual IGPAutoDefFunction* vCreateFunctionFromName(const std::string& name) const = 0;
         /*Construct ADF by formula such as [ f3(f1(x0), f2(x1), f4(f5(x2))) ], +,-,* will be supported later*/
-        virtual IGPAutoDefFunction* vCreateFunctionFromFormula(const std::string& formula) = 0;
+        virtual IGPAutoDefFunction* vCreateFunctionFromFormula(const std::string& formula) const = 0;
 };
 
 #endif

@@ -13,13 +13,19 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef EVOLUTION_ABSTRACTEVOLUTIONGROUP_H
-#define EVOLUTION_ABSTRACTEVOLUTIONGROUP_H
-#include "core/IGPAutoDefFunction.h"
-#include "utils/RefCount.h"
-
-class AbstractEvolutionGroup:public RefCount
+#ifndef EVOLUTION_GPSINGLEOPTIMIZOR_H
+#define EVOLUTION_GPSINGLEOPTIMIZOR_H
+#include "IGPADFOptimizor.h"
+#include "GPADFOptimizorFactory.h"
+#include "optimizor/GPOptimizorFactory.h"
+class GPSingleOptimizor:public IGPADFOptimizor
 {
+    public:
+        virtual GPPtr<IGPAutoDefFunction> vFindBest(GPPtr<IGPAutoDefFunction> origin) const;
+        GPSingleOptimizor(GPPtr<IGPFitComputer> fit, GPOptimizorFactory::TYPE t);
+        virtual ~GPSingleOptimizor();
+    private:
+        GPPtr<IGPFitComputer> mFit;
+        GPPtr<IGPOptimizor> mOpt;
 };
-
 #endif

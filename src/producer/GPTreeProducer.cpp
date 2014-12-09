@@ -78,7 +78,7 @@ class formulaCopy:public AbstractPoint::IPointCopy
 };
 
 //TODO
-IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromFormula(const std::string& formula)
+IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromFormula(const std::string& formula) const
 {
     FormulaTree tree;
     tree.setFormula(formula);
@@ -88,7 +88,7 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromFormula(const std::string
 }
 
 
-IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromName(const std::string& name)
+IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromName(const std::string& name) const
 {
     GPASSERT(NULL!=mDataBase);
     const GPFunctionDataBase::function* f = mDataBase->vQueryFunction(name);
@@ -138,7 +138,7 @@ void GPTreeProducer::setFunctionDataBase(const GPFunctionDataBase* comsys)
 
 
 /*FIXME Currently, we assume random be false and inputRepeat be true, just return the first short tree by algorithm*/
-IGPAutoDefFunction* GPTreeProducer::vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, bool random)
+IGPAutoDefFunction* GPTreeProducer::vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, bool random) const
 {
     GPASSERT(NULL!=mDataBase);
     /*TODO if inputType and outputType is the same as last one, return the cached one*/
@@ -181,7 +181,7 @@ void GPTreeProducer::_searchAllSequences(std::vector<std::vector<int> >& res, co
     res = tree.searchAll();
 }
 
-std::vector<IGPAutoDefFunction*> GPTreeProducer::vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat)
+std::vector<IGPAutoDefFunction*> GPTreeProducer::vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat) const
 {
     GPASSERT(NULL!=mDataBase);
     GPTreeADF* gp = NULL;
@@ -261,7 +261,7 @@ void GPTreeProducer::_init()
     mLargeVary = 0.1;
     mStatusVary = 0.4;
 }
-IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromIS(std::istream& is)
+IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromIS(std::istream& is) const
 {
     xmlTree tree;
     tree.loadStream(is);

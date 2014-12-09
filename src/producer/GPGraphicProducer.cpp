@@ -16,24 +16,24 @@
 #include "producer/GPGraphicProducer.h"
 #include "producer/GPGraphicADF.h"
 
-IGPAutoDefFunction* GPGraphicProducer::vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, bool random)
+IGPAutoDefFunction* GPGraphicProducer::vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, bool random) const
 {
     return NULL;
 }
-std::vector<IGPAutoDefFunction*> GPGraphicProducer::vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat)
+std::vector<IGPAutoDefFunction*> GPGraphicProducer::vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat) const
 {
     std::vector<IGPAutoDefFunction*> res;
     return res;
 }
-IGPAutoDefFunction* GPGraphicProducer::vCreateFunctionFromName(const std::string& name)
+IGPAutoDefFunction* GPGraphicProducer::vCreateFunctionFromName(const std::string& name) const
 {
     return NULL;
 }
-IGPAutoDefFunction* GPGraphicProducer::vCreateFunctionFromFormula(const std::string& formula)
+IGPAutoDefFunction* GPGraphicProducer::vCreateFunctionFromFormula(const std::string& formula) const
 {
     return NULL;
 }
-IGPAutoDefFunction* GPGraphicProducer::vCreateFunctionFromIS(std::istream& is)
+IGPAutoDefFunction* GPGraphicProducer::vCreateFunctionFromIS(std::istream& is) const
 {
     return new GPGraphicADF(is, mDataBase);
 }

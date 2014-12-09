@@ -60,9 +60,15 @@ class TrFilterMatrixType:public IStatusType
             }
             TrFilterMatrix* m = (TrFilterMatrix*)(*content);
             float* p = m->data;
+            float sum = 0.0;
             for(int i=0; i < DEFAULT_DIM*DEFAULT_DIM; ++i)
             {
                 p[i] = value[i];
+                sum+=value[i];
+            }
+            for (int i=0; i < DEFAULT_DIM*DEFAULT_DIM; ++i)
+            {
+                p[i] /= sum;
             }
             return DEFAULT_DIM*DEFAULT_DIM;
         }

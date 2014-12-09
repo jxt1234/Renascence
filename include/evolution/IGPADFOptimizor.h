@@ -13,11 +13,15 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef HEAD_H
-#define HEAD_H
-#include "utils/debug.h"
+#ifndef EVOLUTION_IGPADFOPTIMIZOR_H
+#define EVOLUTION_IGPADFOPTIMIZOR_H
 #include "utils/RefCount.h"
-#include "utils/AutoClean.h"
-#include "utils/AutoStorage.h"
-typedef double PFLOAT;
+#include "core/IGPAutoDefFunction.h"
+class IGPADFOptimizor:public RefCount
+{
+    public:
+        virtual GPPtr<IGPAutoDefFunction> vFindBest(GPPtr<IGPAutoDefFunction> origin) const = 0;
+        IGPADFOptimizor(){}
+        virtual ~IGPADFOptimizor(){}
+};
 #endif
