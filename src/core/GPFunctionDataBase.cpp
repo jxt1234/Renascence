@@ -15,15 +15,26 @@
 ******************************************************************/
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include "core/GPFunctionDataBase.h"
 #include "utils/debug.h"
-#include <utils/debug.h>
 #include <algorithm>
 #include "system/system_lib.h"
 #include "core/GP_XmlString.h"
 
 using namespace std;
 
+std::vector<const IStatusType*> GPFunctionDataBase::queryType(const std::string typelist)
+{
+    std::vector<const IStatusType*> results;
+    std::istringstream is(typelist);
+    std::string name;
+    while (is >> name)
+    {
+        results.push_back(this->vQueryType(name));
+    }
+    return results;
+}
 
 GPFunctionDataBase::GPFunctionDataBase()
 {

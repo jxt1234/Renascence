@@ -48,6 +48,11 @@ struct GP_Output
         output.clear();
     }
     inline int size() const {return output.size();}
+    template <typename T>
+    T* get(int n)
+    {
+        return (T*)(output[n].content);
+    }
     void* operator[](int n) const
     {
         return output[n].content;

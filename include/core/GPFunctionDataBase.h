@@ -38,6 +38,7 @@ class GPFunctionDataBase:public RefCount
             std::vector<const IStatusType*> statusType;
             std::vector<std::vector<int> > fixTable;//TODO Delete this
         };
+        std::vector<const IStatusType*> queryType(const std::string typelist);
         //Basic Api
         virtual const function* vQueryFunction(const std::string& name) const;
         //In Future may delete these two API

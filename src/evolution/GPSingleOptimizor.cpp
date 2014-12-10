@@ -43,3 +43,25 @@ GPSingleOptimizor::GPSingleOptimizor(GPPtr<IGPFitComputer> fit, GPOptimizorFacto
 GPSingleOptimizor::~GPSingleOptimizor()
 {
 }
+
+class psoOptimizorcreator:public IGPADFOptimizorCreator
+{
+    public:
+        virtual GPPtr<IGPADFOptimizor> vCreate(const GPProducer* producer, GPPtr<IGPFitComputer> fit) const
+        {
+            return new GPSingleOptimizor(fit, GPOptimizorFactory::PSO_SEARCH);
+        }
+};
+
+static GPADFOptimizorRegistor<psoOptimizorcreator> _pso("PSO_Single", "Use PSO to optimize single function");
+
+class goldencreator:public IGPADFOptimizorCreator
+{
+    public:
+        virtual GPPtr<IGPADFOptimizor> vCreate(const GPProducer* producer, GPPtr<IGPFitComputer> fit) const
+        {
+            return new GPSingleOptimizor(fit, GPOptimizorFactory::GOLDEN_DIVIDE);
+        }
+};
+
+static GPADFOptimizorRegistor<goldencreator> _golden("Golden_Single", "Golden divide method");
