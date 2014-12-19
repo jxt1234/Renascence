@@ -22,7 +22,7 @@ class GPloadXmlTreeTest2:public GPTest
                 GPProducer* gen = GPFactory::createProducer(base);
                 AUTOCLEAN(gen);
                 {
-                    ifstream f("output/result.xml");
+                    ifstream f("result.xml");
                     IGPAutoDefFunction* gp = gen->vCreateFunctionFromIS(f);
                     AUTOCLEAN(gp);
                     f.close();

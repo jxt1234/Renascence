@@ -1,1 +1,2 @@
+若要修改编译方式，修改newMake.py中相关内容然后执行./newMake.py
 运行./install.sh

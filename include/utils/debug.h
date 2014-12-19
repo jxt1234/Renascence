@@ -23,13 +23,13 @@
 #ifdef BUILD_FOR_ANDROID
 #include <android/log.h>
 #define GPPRINT(format, ...) __android_log_print(ANDROID_LOG_INFO, "GP", format,##__VA_ARGS__)
-#define GPPRINT_FL(format,...) __android_log_print(ANDROID_LOG_INFO, "GP", "FUNC: %s, LINE: %d: "format"\n", __func__, __LINE__,##__VA_ARGS__)
+#define GPPRINT_FL(format,...) __android_log_print(ANDROID_LOG_INFO, "GP", format", FUNC: %s, LINE: %d \n",##__VA_ARGS__, __func__, __LINE__)
 #else
 #define GPPRINT(format, ...) printf(format,##__VA_ARGS__)
-#define GPPRINT_FL(format,...) printf("FUNC: %s, LINE: %d: "format"\n", __func__, __LINE__,##__VA_ARGS__)
+#define GPPRINT_FL(format,...) printf(format", FUNC: %s, LINE: %d \n", ##__VA_ARGS__,__func__, __LINE__)
 #endif
 /*Add with line and function*/
-#define FUNC_PRINT(x) GPPRINT_FL(#x"=%d in %s, %d \n",x,  __func__, __LINE__);
+#define FUNC_PRINT(x) GPPRINT(#x"=%d in %s, %d \n",x,  __func__, __LINE__);
 #define FUNC_PRINT_ALL(x, type) GPPRINT(#x"= "#type" %"#type" in %s, %d \n",x,  __func__, __LINE__);
 
 #define CHECK_POINTER(x) {if(NULL==x){FUNC_PRINT_ALL(x,p);break;}}

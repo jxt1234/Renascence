@@ -1,5 +1,6 @@
 #include "package.h"
 #include <assert.h>
+using namespace std;
 #define RETURN_GP \
     GP_Output out;\
     out.output.push_back(result);\
