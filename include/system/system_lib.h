@@ -15,10 +15,10 @@
 ******************************************************************/
 #ifndef SYSTEM_LIB_H
 #define SYSTEM_LIB_H
-#include "user/IFunctionTable.h"
 #include <assert.h>
 #include <map>
 #include <vector>
+#include "user/IFunctionTable.h"
 
 void* system_load_lib(const char* libName);
 

@@ -20,6 +20,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 /*TODO Add windows version*/
@@ -27,7 +28,11 @@ using namespace std;
 void* system_load_lib(const char* libName)
 {
     ostringstream completeName;
-    completeName<<libName<<".so";
+    /*Read abosulute path form path.conf*/
+    ifstream input("path.conf");
+    string path;
+    getline(input, path);
+    completeName<<path << "/" << libName<<".so";
     return dlopen(completeName.str().c_str(), RTLD_NOW);
 }
 
