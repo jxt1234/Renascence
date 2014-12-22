@@ -14,7 +14,7 @@ typedef struct TrRegreeMode
 
 /*Generate a TrFilterMatrix from src to target*/
 /*Reverse function of TrFilterMatrixTransform*/
-TrFilterMatrix* TrRegressMatrix(TrBmp* src, TrBmp* target, TrRegreeMode* mode);
+/*GP FUNCTION*/TrFilterMatrix* TrRegressMatrix(TrBmp* src, TrBmp* target, TrRegreeMode* mode);
 
 /*Compute a amount of inputNumber float parameters from src to dst*/
 /*Reverse function of TrMixPicture*/

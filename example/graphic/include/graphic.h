@@ -24,5 +24,6 @@ int TrValidBmp(TrBmp* bmp);
 TrBmp* TrAllocBmp(int width, int height);
 TrBmp* TrCopyAllocBmp(TrBmp* src);
 void TrFreeBmp(TrBmp* bmp);
-double TrCompareBmp(TrBmp* src, TrBmp* dst);
+
+/*GP FUNCTION*/double TrCompareBmp(TrBmp* src, TrBmp* dst);
 #endif
