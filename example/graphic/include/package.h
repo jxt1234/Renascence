@@ -1,17 +1,7 @@
 #include <vector>
 #include <stdlib.h>
+#include "gppackage.h"
 
-typedef void (*GP_FreeFunction)(void*);
-
-struct GP_Output
-{
-    struct GP_Unit
-    {
-        void* content;
-        void(*freeCallBack)(void*);
-    };
-    std::vector<GP_Unit> output;
-};
 extern "C"
 {
 #include "transform.h"
