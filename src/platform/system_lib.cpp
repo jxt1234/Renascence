@@ -13,26 +13,26 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "system/system_lib.h"
+/*TODO Add windows version*/
 #include <dlfcn.h>
-#include "utils/debug.h"
+#include <unistd.h>
 
 #include <string>
 #include <sstream>
-#include <iostream>
-#include <fstream>
+#include "utils/debug.h"
+#include "system/system_lib.h"
 using namespace std;
 
-/*TODO Add windows version*/
 
+#define PATH_MAX_SIZE 1024
 void* system_load_lib(const char* libName)
 {
+    /*Get absolute path*/
+    char current_absolute_path[PATH_MAX_SIZE];
+    getcwd(current_absolute_path, PATH_MAX_SIZE);
+
     ostringstream completeName;
-    /*Read abosulute path form path.conf*/
-    ifstream input("path.conf");
-    string path;
-    getline(input, path);
-    completeName<<path << "/" << libName<<".so";
+    completeName<<current_absolute_path << "/" << libName<<".so";
     return dlopen(completeName.str().c_str(), RTLD_NOW);
 }
 
