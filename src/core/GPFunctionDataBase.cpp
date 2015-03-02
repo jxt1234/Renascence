@@ -63,7 +63,11 @@ void GPFunctionDataBase::loadXml(std::istream& is, IFunctionTable* table, std::o
         const xmlReader::package* func = functions.at(i);
         GPASSERT(NULL!=func);
         computeFunction f = (computeFunction)(table->vGetFunction(func->name));
-        GPASSERT(NULL!=f);//TODO throw error when no function in the table
+        if (NULL == f)
+        {
+            FUNC_PRINT_ALL((func->name).c_str(), s);
+            GPASSERT(NULL!=f);//TODO throw error when no function in the table
+        }
         function* warpf = new function;
         warpf->name = func->name;
         warpf->basic = f;
@@ -205,9 +209,17 @@ const IStatusType* GPFunctionDataBase::_findAndLoadStatus(const std::string& nam
     if (NULL == t)
     {
         TYPECREATER create = handle->get<TYPECREATER>(GP_XmlString::status_creator);
-        GPASSERT(NULL!=create);
+        if (NULL == create)
+        {
+            FUNC_PRINT_ALL(GP_XmlString::status_creator.c_str(), s);
+            GPASSERT(NULL!=create);//FIXME
+        }
         t = create(name);
-        GPASSERT(NULL!=t);
+        if (NULL == t)
+        {
+            FUNC_PRINT_ALL(name.c_str(), s);
+            GPASSERT(NULL!=t);//FIXME
+        }
         mTypes.push_back(t);
     }
     return t;

@@ -29,4 +29,5 @@ class AutoClean
 };
 
 #define AUTOCLEAN(t) AutoClean __##t(t);
+#define AUTOUNREF(t) AutoClean __##t(t);
 #endif

@@ -166,6 +166,38 @@ double GPEvolutionGroup::_fitCompute(IGPAutoDefFunction* g, IGPAutoDefFunction* 
     return res;
 }
 
+void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)> f)
+{
+    int bestId = 0;
+    double _max = f(*(mGroup.begin()));
+    list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
+    list<IGPAutoDefFunction*>::iterator bestIter = mGroup.begin();
+    for (iter++; iter!=mGroup.end(); iter++)
+    {
+        double _f = f(*iter);
+        if (_f > _max)
+        {
+            bestIter = iter;
+            _max = _f;
+        }
+    }
+    if (mBest!=NULL)
+    {
+        if (mBestFit <= _max)
+        {
+            mBest->decRef();
+            mBest = *bestIter;
+            (*bestIter)->addRef();
+            mBestFit = _max;
+        }
+    }
+    else
+    {
+        mBest = *bestIter;
+        mBestFit = _max;
+        (*bestIter)->addRef();
+    }
+}
 void GPEvolutionGroup::_best(IGPAutoDefFunction* fit)
 {
     int bestId = 0;
@@ -232,7 +264,6 @@ void GPEvolutionGroup::loadBest(istream& input)
     }
     mBest = mSys->vCreateFunctionFromIS(input);
 }
-
 void GPEvolutionGroup::vEvolution(IGPAutoDefFunction* fit)
 {
     if (NULL!=mBest)
@@ -253,6 +284,30 @@ void GPEvolutionGroup::vEvolution(IGPAutoDefFunction* fit)
     for (int i=0; i<mTime; ++i)
     {
         _best(fit);
+        _expand();
+        _mutate();
+    }
+}
+void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func)
+{
+    if (NULL!=mBest)
+    {
+        mBestFit = fit_func(mBest);
+    }
+    /*Create the initial group*/
+    _clearGroup();
+    vector<IGPAutoDefFunction*> group = mSys->vCreateAllFunction(mOutput, mInput);
+    GPASSERT(!group.empty());
+    for (int i=0; i<group.size(); ++i)
+    {
+        mGroup.push_back(group[i]);
+    }
+    _restoreBackup();
+
+    /*Evolution*/
+    for (int i=0; i<mTime; ++i)
+    {
+        _best(fit_func);
         _expand();
         _mutate();
     }

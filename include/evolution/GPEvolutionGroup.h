@@ -20,6 +20,7 @@
 #include <list>
 #include <vector>
 #include <istream>
+#include <functional>
 
 /*ES strategy*/
 class GPEvolutionGroup
@@ -41,6 +42,7 @@ class GPEvolutionGroup
         virtual void vSetInputStrategy(IInputStrategy* strategy);
         /*The fit function is assume to output only one double value*/
         virtual void vEvolution(IGPAutoDefFunction* fit);
+        virtual void vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func);
         inline IGPAutoDefFunction* getBest(){return mBest;}
         inline double getBestFit() const {return mBestFit;}
         void loadBest(std::istream& input);
@@ -48,6 +50,7 @@ class GPEvolutionGroup
     private:
         double _fitCompute(IGPAutoDefFunction* g, IGPAutoDefFunction* fit) const;
         void _best(IGPAutoDefFunction* fit);
+        void _best(std::function<double(IGPAutoDefFunction*)> f);
         void _expand();
         void _mutate();
         void _clearGroup();
