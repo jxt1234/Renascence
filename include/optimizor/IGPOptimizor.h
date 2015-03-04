@@ -32,6 +32,7 @@ class GPParameter:public RefCount
         PFLOAT* mContent;
         int mNum;
 };
+/*TODO Support time limit set*/
 class IGPOptimizor:public RefCount
 {
     public:

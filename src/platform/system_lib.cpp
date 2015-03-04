@@ -29,7 +29,7 @@ void* system_load_lib(const char* libName)
 {
     /*Get absolute path*/
     char current_absolute_path[PATH_MAX_SIZE];
-    getcwd(current_absolute_path, PATH_MAX_SIZE);
+    char* c = getcwd(current_absolute_path, PATH_MAX_SIZE);
 
     ostringstream completeName;
     completeName<<current_absolute_path << "/" << libName<<".so";

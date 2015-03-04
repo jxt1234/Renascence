@@ -23,7 +23,7 @@
 #include <functional>
 
 /*ES strategy*/
-class GPEvolutionGroup
+class GPEvolutionGroup:public RefCount
 {
     public:
         class IInputStrategy:public RefCount

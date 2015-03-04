@@ -4,6 +4,8 @@
 #include "core/GPFactory.h"
 #include "core/GPFunctionDataBase.h"
 #include "evolution/GPADFOptimizorFactory.h"
+#include "evolution/GPEvolutionGroup.h"
+#include "optimizor/GPOptimizorFactory.h"
 #include <string>
 #include <sstream>
 /*Warp for GPFunctionDataBase and GPProducer*/
@@ -71,6 +73,24 @@ void GP_Producer_Destroy(AGPProducer* p)
     p->decRef();
 }
 
+static std::vector<const IStatusType*> _transform(const char* types, const AGPProducer* p)
+{
+    GPASSERT(NULL!=types);
+    GPASSERT(NULL!=p);
+    std::istringstream is(types);
+    std::string name;
+    std::vector<const IStatusType*> res;
+    while(is >> name)
+    {
+        auto t = p->F->vQueryType(name);
+        if (NULL!=t)
+        {
+            res.push_back(t);
+        }
+    }
+    return res;
+}
+
 IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, bool inputRepeat)
 {
     if (NULL == outputTypes || NULL == inputTypes || NULL == p)
@@ -78,21 +98,8 @@ IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* 
         FUNC_PRINT(1);
         return NULL;
     }
-    std::vector<const IStatusType*> inputs;
-    std::vector<const IStatusType*> outputs;
-    {
-        std::istringstream is(inputTypes);
-        std::string name;
-        while(is >> name)
-        {
-            inputs.push_back(p->F->vQueryType(name));
-        }
-        is.str(outputTypes);
-        while(is >> name)
-        {
-            outputs.push_back(p->F->vQueryType(name));
-        }
-    }
+    std::vector<const IStatusType*> inputs = _transform(inputTypes, p);
+    std::vector<const IStatusType*> outputs = _transform(outputTypes, p);
     return p->P->vCreateFunction(outputs, inputs, inputRepeat);
 }
 IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula)
@@ -148,15 +155,58 @@ void GP_Function_Destroy(IGPAutoDefFunction* f)
 void GP_Function_Optimize(IGPAutoDefFunction* f, std::function< double(IGPAutoDefFunction*)> fit_fun, int type, int maxTimes)
 {
     /*TODO*/
+    GPPtr<IGPOptimizor> opt;
+    switch(type)
+    {
+        case 0:
+            opt = GPOptimizorFactory::create(GPOptimizorFactory::PSO_SEARCH);
+            break;
+        case 1:
+            opt = GPOptimizorFactory::create(GPOptimizorFactory::GOLDEN_DIVIDE);
+            break;
+        default:
+            break;
+    }
+    if (NULL == opt.get())
+    {
+        FUNC_PRINT(1);
+        return;
+    }
+    class funcopt:public IGPOptimizor::IComputer
+    {
+        public:
+            funcopt(IGPAutoDefFunction* f, std::function<double(IGPAutoDefFunction*)> fit):mF(f), mFit(fit){}
+            virtual ~funcopt(){}
+            virtual PFLOAT run(GPPtr<GPParameter> p)
+            {
+                mF->vMap(p);
+                return mFit(mF);
+            }
+        private:
+            IGPAutoDefFunction* mF;
+            std::function<double(IGPAutoDefFunction*)> mFit;
+    };
+    GPPtr<IGPOptimizor::IComputer> c = new funcopt(f, fit_fun);
+    GPPtr<GPParameter> result;
+    int n = f->vMap(result);//Get the count
+    result = opt->vFindBest(n, c);
+    f->vMap(result);
 }
 
-IGPAutoDefFunction* GP_Function_CreateBest_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, bool inputRepeat, std::function< double(IGPAutoDefFunction*)> fit_func)
+IGPAutoDefFunction* GP_Function_CreateBest_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, bool inputRepeat, std::function< double(IGPAutoDefFunction*)> fit_func, int maxTimes)
 {
     if (NULL == p || NULL ==outputTypes || NULL == inputTypes)
     {
         FUNC_PRINT(1);
         return NULL;
     }
-    /*TODO*/
-    return NULL;
+    GPPtr<GPEvolutionGroup> group = new GPEvolutionGroup(p->P, 100, 20);//FIXME Set it from parameter
+    std::vector<const IStatusType*> inputs = _transform(inputTypes, p);
+    std::vector<const IStatusType*> outputs = _transform(outputTypes, p);
+    group->vSetInput(inputs);
+    group->vSetOutput(outputs);
+    group->vEvolutionFunc(fit_func);
+    auto best = group->getBest();
+    best->addRef();
+    return best;
 }

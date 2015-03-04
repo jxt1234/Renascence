@@ -42,7 +42,7 @@ void GP_Producer_Destroy(AGPProducer* p);
 /*
  * p: the AGPProducer created by GP_Create_Producer
  * outputTypes: the name of all output types
- * inputTypes: all the input types obtained for the IGPAutoDefFunction, not orderred, if set NULL, GP will not care about the input
+ * inputTypes: all the input types obtained for the IGPAutoDefFunction, not orderred, if set "", GP will not care about the input
  * inputRepeat: whethether the type of inputTypes can be use repeatly
  */
 /*Must remind that, user must get the real orderred inputTypes of the IGPAutoDefFunction after call this function*/
@@ -85,6 +85,6 @@ void GP_Function_Optimize(IGPAutoDefFunction* f, std::function< double(IGPAutoDe
 /*Evolution Method to find best function, it will take a long time*/
 /*fit_func: the function to compute the fitness of IGPAutoDefFunction*/
 /*TODO Let User control the speed of training*/
-IGPAutoDefFunction* GP_Function_CreateBest_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, bool inputRepeat, std::function< double(IGPAutoDefFunction*)> fit_func);
+IGPAutoDefFunction* GP_Function_CreateBest_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, bool inputRepeat, std::function< double(IGPAutoDefFunction*)> fit_func, int maxTimes);
 };
 #endif

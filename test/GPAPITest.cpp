@@ -1,3 +1,4 @@
+#include "test/GPTest.h"
 #include "user/GPAPI.h"
 #include <assert.h>
 #include <fstream>
@@ -5,7 +6,7 @@
 #include <string>
 using namespace std;
 
-int test_main()
+static int test_main()
 {
     ifstream soxml("func.xml");
     auto producer = GP_Producer_Create(soxml, NULL, 0);
@@ -37,7 +38,6 @@ int test_main()
         outputs[0]->vSave(gp_output[0], cout);
         gp_output.clear();
         GP_Function_Destroy(adf);
-        cout << endl;
     }
     /*Optimize*/
     {
@@ -57,18 +57,16 @@ int test_main()
         {
             string formula = "TrPackageCompse(TrPackageSaturation(TrPackageInput()), TrPackageFilterMatrix(TrPackageInput()))";
             auto adf  = GP_Function_Create_ByFormula(producer, formula.c_str());
-            cout << "Before Optimize: " << fitfunction(adf) << endl;
             GP_Function_Optimize(adf, fitfunction, 1, 10);
-            cout << "After Optimize: " << fitfunction(adf) << endl;
+            cout << fitfunction(adf) << endl;
             ofstream orzzz("output/GPAPI_Formula_SOpt.txt");
             GP_Function_Save(adf, orzzz);
             GP_Function_Destroy(adf);
-            cout.flush();
         }
         /*Find Best, evolution group*/
         {
             auto bestf = GP_Function_CreateBest_ByType(producer, "TrFilterMatrix", "", true, fitfunction, 1000);
-            cout << endl << "Best Fit is " << fitfunction(bestf) << endl;
+            cout << fitfunction(bestf) << endl;
             ofstream orzzz("output/GPAPI_Evolution.txt");
             GP_Function_Save(bestf, orzzz);
             GP_Function_Destroy(bestf);
@@ -78,7 +76,16 @@ int test_main()
     GP_Producer_Destroy(producer);
 }
 
-int main()
+class GPAPITest:public GPTest
 {
-    return test_main();
+    public:
+        virtual void run();
+        GPAPITest(){}
+        virtual ~GPAPITest(){}
+};
+void GPAPITest::run()
+{
+    test_main();
 }
+
+static GPTestRegister<GPAPITest> a("GPAPITest");
