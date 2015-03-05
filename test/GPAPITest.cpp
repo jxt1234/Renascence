@@ -41,7 +41,7 @@ static int test_main()
     }
     /*Optimize*/
     {
-        auto fitf = GP_Function_Create_ByType(producer, "double", "TrFilterMatrix", true);
+        auto fitf = GP_Function_Create_ByType(producer, "double", "TrBmp", true);
         auto fitfunction = [=](IGPAutoDefFunction* target){
             GP_Input nullinput;
             auto output = GP_Function_Run(target, nullinput);
@@ -65,7 +65,7 @@ static int test_main()
         }
         /*Find Best, evolution group*/
         {
-            auto bestf = GP_Function_CreateBest_ByType(producer, "TrFilterMatrix", "", true, fitfunction, 1000);
+            auto bestf = GP_Function_CreateBest_ByType(producer, "TrBmp", "", true, fitfunction, 1000);
             cout << fitfunction(bestf) << endl;
             ofstream orzzz("output/GPAPI_Evolution.txt");
             GP_Function_Save(bestf, orzzz);

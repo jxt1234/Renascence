@@ -138,6 +138,7 @@ void GPTreeProducer::setFunctionDataBase(const GPFunctionDataBase* comsys)
 
 
 /*FIXME Currently, we assume random be false and inputRepeat be true, just return the first short tree by algorithm*/
+/*FIXME currently the inputType has no use at all*/
 IGPAutoDefFunction* GPTreeProducer::vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, bool random) const
 {
     GPASSERT(NULL!=mDataBase);

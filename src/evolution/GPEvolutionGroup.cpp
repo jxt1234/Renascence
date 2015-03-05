@@ -175,6 +175,12 @@ void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)> f)
     for (iter++; iter!=mGroup.end(); iter++)
     {
         double _f = f(*iter);
+        //static int count=0;
+        //std::ostringstream os;
+        //os << "output/"<<count++<<".txt";
+        //std::ofstream of(os.str().c_str());
+        //(*iter)->save(of);
+        //of <<"fit="<< _f<<std::endl;
         if (_f > _max)
         {
             bestIter = iter;
