@@ -128,7 +128,7 @@ TrBmp* TrLoadPixels(const char* file)
     int row_stride;
     if ((infile = fopen(file, "rb")) == NULL) 
     {
-        return;
+        return NULL;
     }
     cinfo.err = jpeg_std_error(&jerr);
     jpeg_create_decompress(&cinfo);
@@ -138,7 +138,7 @@ TrBmp* TrLoadPixels(const char* file)
     if (cinfo.output_components!=3)
     {
         printf("cinfo.output_components=%d \n", cinfo.output_components);
-        return;
+        return NULL;
     }
     output = (TrBmp*)malloc(sizeof(TrBmp));
     output->width = cinfo.output_width;

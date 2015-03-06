@@ -82,9 +82,8 @@ double GPData::compare(const GP_Output& output)
             double _o;
             double sum = 0;
             int n = 0;
-            while(hasContent)
+            while(data>>_d)
             {
-                hasContent = data >> _d;
                 out >> _o;
                 double err = (_o-_d)*(_o-_d);
                 double div = (_o*_o+_d*_d+DIVIDE_LITTLE)*2;

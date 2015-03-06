@@ -16,6 +16,11 @@ static int test_main()
         ofstream output("output/GPAPI_base.txt");
         GP_Function_Save(adf, output);
         GP_Function_Destroy(adf);
+		ifstream input("output/GPAPI_base.txt");
+		auto adf2 = GP_Function_Create_ByStream(producer, input);
+		ofstream output2("output/GPAPI_base2.txt");
+        GP_Function_Save(adf2, output2);
+		GP_Function_Destroy(adf2);
     }
     /*Formula*/
     {

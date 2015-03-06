@@ -6,8 +6,10 @@ import sys
 CFLAGS="-O3 -fPIC"
 #CFLAGS="-rdynamic -g -fPIC"
 
-CPP="g++-4.8 -std=c++11 "
-C="gcc-4.8 -std=c11 "
+#CPP="g++-4.8 -std=c++11 "
+#C="gcc-4.8 -std=c11 "
+CPP="g++ -std=c++11 "
+C="gcc -std=c11 "
 MIDPATH='build/'
 
 from config import *
@@ -78,7 +80,7 @@ def Generate_Output(outName, srcDirs, srcFiles, CLINK, depend):
 	#Program
 	target = ''
 	if (main.find('.so')>-1):
-		target = ' --share '
+		target = ' --shared '
 	fileContents+=('\t' + CPP + " " + CFLAGS +target+' -o ' + main+' ')
 	for obj in objs:
 		fileContents+=(' '+MIDPATH+obj)

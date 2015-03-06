@@ -77,7 +77,7 @@ def Generate_Output(outName, srcDirs, srcFiles, CLINK, depend):
 	#Program
 	target = ''
 	if (main.find('.so')>-1):
-		target = ' --share '
+		target = ' --shared '
 	fileContents+=('\t' + CPP + " " + CFLAGS +target+' -o ' + main+' ')
 	for obj in objs:
 		fileContents+=(' '+MIDPATH+obj)
