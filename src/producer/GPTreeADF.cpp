@@ -205,6 +205,7 @@ GPContents* GPTreeADFPoint::compute(GPContents* input, int& cur)
             childreninputs.push(output_unit[j]);
             totalInputs.push(output_unit[j]);
         }
+        delete out;
     }
     //Get status
     for (int i=0; i<mStatus.size(); ++i)

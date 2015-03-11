@@ -13,25 +13,25 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef CORE_STATUS_H
-#define CORE_STATUS_H
+#ifndef USER_STATUS_H
+#define USER_STATUS_H
 
 #include <string>
 #include <stdlib.h>
+#include <istream>
+#include <ostream>
 
 
 /*Basic API*/
-
 class IStatusType
 {
     public:
         IStatusType(const std::string name):mName(name){}
         virtual ~IStatusType(){}
         inline std::string name() const {return mName;}
-        virtual void* vLoad(std::istream& input) const = 0;
+        virtual void* vLoad(std::istream& input) const = 0; 
         virtual void vSave(void* contents, std::ostream& output) const = 0;
         virtual void vFree(void* contents) const = 0;
-        virtual int vMap(void** content, double* value) const = 0;
         /*
             * map
             * Modify contents by values.
@@ -39,6 +39,7 @@ class IStatusType
             * If value is NULL, just return the number of parameters.
             * If *content is NULL and value is not NULL, alloc a new one.
         */
+        virtual int vMap(void** content, double* value) const = 0;
 
     private:
         std::string mName;

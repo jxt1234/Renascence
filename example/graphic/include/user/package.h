@@ -54,11 +54,6 @@ struct GPContents
     inline void* get(size_t i) const {return contents[i].content;}
     inline void* operator[](size_t i) const {return contents[i].content;}
     inline size_t size() const {return contents.size();}
-    static void destroy(GPContents* c)
-    {
-        c->clear();
-        delete c;
-    }
 };
 
 typedef GPContents*(*computeFunction)(GPContents* inputs);

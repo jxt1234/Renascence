@@ -22,6 +22,7 @@ class GPGraphicTest:public GPTest
                 out.close();
                 {
                     GPContents contents;
+                    contents.push(NULL, NULL);
                     GPContents* out = gp->run(&contents);
                     GPASSERT(out->size() == 1);
                     double* result = (double*)out->get(0);

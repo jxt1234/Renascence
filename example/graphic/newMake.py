@@ -5,8 +5,8 @@ import os
 import sys
 CFLAGS="-O3 -fPIC"
 #CFLAGS="-rdynamic -g"
-CPP="g++ "
-C="gcc "
+CPP="g++ -std=c++11 "
+C="gcc -std=c11 "
 MIDPATH='build/'
 
 from config import *

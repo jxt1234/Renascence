@@ -183,10 +183,6 @@ void GPFunctionDataBase::_clear()
         delete mFunctionTable[i];
     }
     mFunctionTable.clear();
-    for (int i=0; i<mTypes.size(); ++i)
-    {
-        delete mTypes[i];
-    }
     mTypes.clear();
     for (int i=0; i<mHandle.size(); ++i)
     {
@@ -197,7 +193,7 @@ void GPFunctionDataBase::_clear()
 
 const IStatusType* GPFunctionDataBase::_findAndLoadStatus(const std::string& name, IFunctionTable* handle)
 {
-    IStatusType* t = NULL;
+    const IStatusType* t = NULL;
     for (int i=0; i<mTypes.size(); ++i)
     {
         if (mTypes.at(i)->name() == name)

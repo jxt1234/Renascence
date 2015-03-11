@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 using namespace std;
-#if 0
+
 static int test_main()
 {
     ifstream soxml("func.xml");
@@ -33,29 +33,30 @@ static int test_main()
     /*Run*/
     {
         auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "", true);
-        auto inputs = GP_Function_Get_Inputs(adf);
+        GPTYPES inputs, outputs;
+        GP_Function_Get_Inputs(adf, &inputs);
         assert(0 == inputs.size());
-        auto outputs = GP_Function_Get_Outputs(adf);
+        GP_Function_Get_Outputs(adf, &outputs);
         assert(1==outputs.size());
-        GP_Input gp_inputs;
-        auto gp_output = GP_Function_Run(adf, gp_inputs);
-        assert(1==gp_output.size());
-        outputs[0]->vSave(gp_output[0], cout);
-        gp_output.clear();
+        GPContents gp_inputs;
+        auto gp_output = GP_Function_Run(adf, &gp_inputs);
+        assert(1==gp_output->size());
+        auto unit = gp_output->contents[0];
+        unit.type->vSave(unit.content, cout);
+        GPContents::destroy(gp_output);
         GP_Function_Destroy(adf);
     }
     /*Optimize*/
     {
         auto fitf = GP_Function_Create_ByType(producer, "double", "TrBmp", true);
         auto fitfunction = [=](IGPAutoDefFunction* target){
-            GP_Input nullinput;
-            auto output = GP_Function_Run(target, nullinput);
-            GP_Input fitinput;
-            fitinput.push_back(output[0]);
-            auto foutput = GP_Function_Run(fitf, fitinput);
-            double res = *(double*)(foutput[0]);
-            output.clear();
-            foutput.clear();
+            GPContents nullinput;
+            auto output = GP_Function_Run(target, &nullinput);
+            auto foutput = GP_Function_Run(fitf, output);
+            double res = *(double*)(foutput->get(0));
+            output->clear();
+            GPContents::destroy(output);
+            GPContents::destroy(foutput);
             return res;
         };
         /*Single Opt*/
@@ -95,4 +96,4 @@ void GPAPITest::run()
 }
 
 static GPTestRegister<GPAPITest> a("GPAPITest");
-#endif
+

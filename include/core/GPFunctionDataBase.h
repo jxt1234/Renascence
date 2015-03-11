@@ -59,7 +59,7 @@ class GPFunctionDataBase:public RefCount
         void _clear();
         std::vector<function*> mFunctionTable;
         std::vector<IFunctionTable*> mHandle;
-        std::vector<IStatusType*> mTypes;
+        std::vector<const IStatusType*> mTypes;
 };
 
 #endif

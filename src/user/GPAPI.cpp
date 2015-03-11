@@ -111,25 +111,26 @@ IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const cha
     return p->P->vCreateFunctionFromFormula(std::string(formula));
 }
 
-std::vector<const IStatusType*> GP_Function_Get_Inputs(const IGPAutoDefFunction* f)
+void GP_Function_Get_Inputs(const IGPAutoDefFunction* f, GPTYPES* output)
 {
     GPASSERT(NULL!=f);//FIXME
-    return f->vGetInputs();
+    GPASSERT(NULL!=output);
+    *output = f->vGetInputs();
 }
 
-
-std::vector<const IStatusType*> GP_Function_Get_Outputs(const IGPAutoDefFunction* f)
+void GP_Function_Get_Outputs(const IGPAutoDefFunction* f, GPTYPES* output)
 {
     GPASSERT(NULL!=f);//FIXME
-    return f->vGetOutputs();
+    GPASSERT(NULL!=output);
+    *output = f->vGetOutputs();
 }
-/*
-GP_Output GP_Function_Run(IGPAutoDefFunction* f, const GP_Input& input)
+
+GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input)
 {
     GPASSERT(NULL!=f);//FIXME
     return f->run(input);
 }
- */
+
 IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, std::istream& xmlFile)
 {
     if (NULL == p)
