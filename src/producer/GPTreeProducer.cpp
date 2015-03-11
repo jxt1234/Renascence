@@ -98,7 +98,7 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromName(const std::string& n
             simpleADF(const GPFunctionDataBase::function& f):mFunc(f){}
             ~simpleADF(){}
 
-            virtual GP_Output run(const GP_Input& input)
+            virtual GPContents* run(GPContents* input)
             {
                 return mFunc.basic(input);
             }

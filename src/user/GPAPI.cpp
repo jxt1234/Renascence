@@ -3,7 +3,6 @@
 #include "core/GPProducer.h"
 #include "core/GPFactory.h"
 #include "core/GPFunctionDataBase.h"
-#include "evolution/GPADFOptimizorFactory.h"
 #include "evolution/GPEvolutionGroup.h"
 #include "optimizor/GPOptimizorFactory.h"
 #include <string>
@@ -124,11 +123,13 @@ std::vector<const IStatusType*> GP_Function_Get_Outputs(const IGPAutoDefFunction
     GPASSERT(NULL!=f);//FIXME
     return f->vGetOutputs();
 }
+/*
 GP_Output GP_Function_Run(IGPAutoDefFunction* f, const GP_Input& input)
 {
     GPASSERT(NULL!=f);//FIXME
     return f->run(input);
 }
+ */
 IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, std::istream& xmlFile)
 {
     if (NULL == p)
@@ -172,24 +173,13 @@ void GP_Function_Optimize(IGPAutoDefFunction* f, std::function< double(IGPAutoDe
         FUNC_PRINT(1);
         return;
     }
-    class funcopt:public IGPOptimizor::IComputer
-    {
-        public:
-            funcopt(IGPAutoDefFunction* f, std::function<double(IGPAutoDefFunction*)> fit):mF(f), mFit(fit){}
-            virtual ~funcopt(){}
-            virtual PFLOAT run(GPPtr<GPParameter> p)
-            {
-                mF->vMap(p);
-                return mFit(mF);
-            }
-        private:
-            IGPAutoDefFunction* mF;
-            std::function<double(IGPAutoDefFunction*)> mFit;
+    auto optfun = [&](GPPtr<GPParameter> para){
+        f->vMap(para);
+        return fit_fun(f);
     };
-    GPPtr<IGPOptimizor::IComputer> c = new funcopt(f, fit_fun);
     GPPtr<GPParameter> result;
     int n = f->vMap(result);//Get the count
-    result = opt->vFindBest(n, c);
+    result = opt->vFindBest(n, optfun);
     f->vMap(result);
 }
 

@@ -26,22 +26,11 @@
 class GPEvolutionGroup:public RefCount
 {
     public:
-        class IInputStrategy:public RefCount
-        {
-            public:
-                /*FIXME Must assume that the GP_Input can be freed*/
-                virtual GP_Input vCreate(IGPAutoDefFunction* f) const= 0;
-                IInputStrategy(){}
-                virtual ~IInputStrategy(){}
-        };
         GPEvolutionGroup(GPProducer* sys, int time = 10, int size = 10);
         ~GPEvolutionGroup();
         virtual void vSetInput(const std::vector<const IStatusType*>& input){mInput = input;}
         virtual void vSetOutput(const std::vector<const IStatusType*>& output){mOutput = output;}
-        virtual void vSetFixInput(const GP_Input& input);
-        virtual void vSetInputStrategy(IInputStrategy* strategy);
         /*The fit function is assume to output only one double value*/
-        virtual void vEvolution(IGPAutoDefFunction* fit);
         virtual void vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func);
         inline IGPAutoDefFunction* getBest(){return mBest;}
         inline double getBestFit() const {return mBestFit;}
@@ -64,7 +53,6 @@ class GPEvolutionGroup:public RefCount
         std::vector<IGPAutoDefFunction*> mBackup;
         std::vector<const IStatusType*> mInput;
         std::vector<const IStatusType*> mOutput;
-        IInputStrategy* mStrategy;
         int mTime;
         int mSize;
 };

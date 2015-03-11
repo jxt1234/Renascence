@@ -28,7 +28,7 @@ class GPStatusContent:public RefCount
         void print(std::ostream& out) const;
         void setValue(double* value, int n);
         inline void* content() const {return mContent;}
-        inline const IStatusType& type() const {return *mType;}
+        inline const IStatusType* type() const {return mType;}
         inline int size() const{return mNumber;}
         void mutate();
     private:

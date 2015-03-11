@@ -199,6 +199,7 @@ xmlReader::package* xmlReader::loadPackage(istream& input)
         analysisLine(tempLine);
     }
     mAttributes = mCurPackage;
+    return mAttributes;
 }
 
 void xmlReaderTest::print()

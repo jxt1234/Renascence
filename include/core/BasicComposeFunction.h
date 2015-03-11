@@ -20,14 +20,14 @@
 class IBoolADF:public RefCount
 {
     public:
-        virtual bool value(const GP_Input& inputs) = 0;
+        virtual bool value(GPContents* inputs) = 0;
         IBoolADF(){}
         virtual ~IBoolADF(){}
 };
 class GPBoolADF:public IBoolADF
 {
     public:
-        virtual bool value(const GP_Input& inputs);
+        virtual bool value(GPContents* inputs);
         GPBoolADF(IGPAutoDefFunction* gp);
         virtual ~GPBoolADF();
         inline IGPAutoDefFunction* get() const {return mGP;}
@@ -39,7 +39,7 @@ class GPCombineADF:public IGPAutoDefFunction
 {
     public:
         GPCombineADF(std::vector<IGPAutoDefFunction*> funcs);
-        virtual GP_Output run(const GP_Input& inputs);
+        virtual GPContents* run(GPContents* inputs);
         virtual void save(std::ostream& os);
         virtual ~GPCombineADF();
         virtual std::vector<const IStatusType*> vGetInputs() const;
@@ -56,7 +56,7 @@ class GPSwitchADF:public IGPAutoDefFunction
         GPSwitchADF(IGPAutoDefFunction* _s, IGPAutoDefFunction* _a, IGPAutoDefFunction* _b);
         GPSwitchADF(GPBoolADF* _s, IGPAutoDefFunction* _a, IGPAutoDefFunction* _b);
         virtual ~GPSwitchADF();
-        virtual GP_Output run(const GP_Input& inputs);
+        virtual GPContents* run(GPContents* inputs);
         virtual void save(std::ostream& os);
         /*TODO Complete these two*/
         virtual std::vector<const IStatusType*> vGetInputs() const;

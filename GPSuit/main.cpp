@@ -74,11 +74,12 @@ int main(int argc, char** argv)
 			lout.loadFile(outputFiles[i].c_str());
 			GPData* inp = lin.get();
 			GPData* out = lout.get();
-			GP_Input gp_inp = inp->expand();
-			GP_Output gp_out = function->run(gp_inp);
-			double res = out->compare(gp_out);
+			GPContents* gp_inp = inp->expand();
+			GPContents* gp_out = function->run(gp_inp);
+			double res = out->compare(*gp_out);
 			result_os <<res <<"\n";
-			gp_out.clear();
+			gp_out->clear();
+            delete gp_out;
 		}
 		result_os.close();
 	}

@@ -1,7 +1,7 @@
 #include "test/GPTest.h"
 #include "core/GPFactory.h"
-#include "evolution/GPADFOptimizorFactory.h"
-#include "evolution/GPFunctionFitcomputer.h"
+#include "core/GPProducer.h"
+#include "optimizor/GPOptimizorFactory.h"
 #include <iostream>
 class GPSingleFunctionOptTest:public GPTest
 {
@@ -15,13 +15,27 @@ void GPSingleFunctionOptTest::run()
     GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
     {
         GPPtr<GPProducer> sys = GPFactory::createProducer(base.get());
-        GP_Input emptyInput;
-        GPPtr<IGPFitComputer> fitcomputer = new GPFunctionFitcomputer("TrPackageFitCompute", sys.get(), emptyInput);
-        GPPtr<IGPADFOptimizor> opt = GPADFOptimizorFactory::create("PSO_Single", sys.get(), fitcomputer);
+        GPPtr<IGPAutoDefFunction> func = sys->vCreateFunctionFromName("TrPackageFitCompute");
+        GPPtr<IGPOptimizor> opt = GPOptimizorFactory::create(GPOptimizorFactory::PSO_SEARCH);
+
         GPPtr<IGPAutoDefFunction> origin = sys->vCreateFunction(base->queryType("TrBmp"), base->queryType(""));
         origin->save(std::cout);
-        GPPtr<IGPAutoDefFunction> bestfunc = opt->vFindBest(origin);
-        std::cout << fitcomputer->compute(bestfunc.get()) <<std::endl;
+        GPPtr<GPParameter> nullp;
+        int n = origin->vMap(nullp);
+        auto optfunc = [&](GPPtr<GPParameter> p){
+            origin->vMap(p);
+            GPContents firstinputs;
+            GPContents* result = origin->run(&firstinputs);
+            GPContents* fit = func->run(result);
+            double r = *(double*)fit->get(0);
+            result->clear();
+            fit->clear();
+            delete result;
+            delete fit;
+            return r;
+        };
+        GPPtr<GPParameter> p = opt->vFindBest(n, optfunc);
+        std::cout << optfunc(p) <<std::endl;
     }
 }
 

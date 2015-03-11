@@ -18,12 +18,13 @@ GPBoolADF::~GPBoolADF()
     mGP->decRef();
 }
 
-bool GPBoolADF::value(const GP_Input& inputs)
+bool GPBoolADF::value(GPContents* inputs)
 {
-    GP_Output out = mGP->run(inputs);
-    bool* res = (bool*)out[0];
+    GPContents* out = mGP->run(inputs);
+    bool* res = (bool*)out->get(0);
     bool r = *res;
-    out.clear();
+    out->clear();
+    delete out;
     return r;
 }
 
@@ -46,27 +47,28 @@ GPCombineADF::~GPCombineADF()
     }
 }
 
-GP_Output GPCombineADF::run(const GP_Input& inputs)
+GPContents* GPCombineADF::run(GPContents* inputs)
 {
-    GP_Output res;
+    GPContents* res = new GPContents;
     int cur = 0;
     for (int i=0; i<mFunctions.size(); ++i)
     {
-        int n = (mFunctions[i]->vGetInputs()).size();
+        size_t n = (mFunctions[i]->vGetInputs()).size();
         //printf("n=%d, i=%d, cur=%d, inputsize=%d\n", n, i, cur, inputs.size());
         GPASSERT(0<=n);
-        GPASSERT(inputs.size() >= cur+n);
-        GP_Input input;
+        GPASSERT(inputs->size() >= cur+n);
+        GPContents input;
         for (int j=0; j<n; ++j)
         {
-            input.push_back(inputs[cur+j]);
+            input.push(inputs->contents[cur+j]);
         }
         cur+=n;
-        GP_Output out = (mFunctions[i])->run(input);
-        for (int j=0; j<out.output.size(); ++j)
+        GPContents* out = (mFunctions[i])->run(&input);
+        for (auto p : out->contents)
         {
-            res.output.push_back(out.output[j]);
+            res->push(p);
         }
+        delete out;
     }
     return res;
 }
@@ -153,21 +155,21 @@ IGPAutoDefFunction* GPSwitchADF::copy() const
     IGPAutoDefFunction* r = new GPSwitchADF(s,a,b);
     return r;
 }
-GP_Output GPSwitchADF::run(const GP_Input& inputs)
+GPContents* GPSwitchADF::run(GPContents* inputs)
 {
     bool swi = false;
     int cur = 0;
-    int n = 0;
+    size_t n = 0;
     IGPAutoDefFunction* tar = NULL;
     //If operator
     {
         n = (s->get()->vGetInputs()).size();
-        GP_Input inp;
+        GPContents inp;
         for (int i=0; i<n; ++i)
         {
-            inp.push_back(inputs[i]);
+            inp.push(inputs->contents[i]);
         }
-        swi = s->value(inp);
+        swi = s->value(&inp);
     }
     if (swi)
     {
@@ -181,12 +183,12 @@ GP_Output GPSwitchADF::run(const GP_Input& inputs)
         n = (b->vGetInputs()).size();
         tar = b;
     }
-    GP_Input inp;
+    GPContents inp;
     for (int i=0; i<n; ++i)
     {
-        inp.push_back(inputs[i+cur]);
+        inp.push(inputs->contents[i+cur]);
     }
-    return tar->run(inp);
+    return tar->run(&inp);
 }
 void GPSwitchADF::save(std::ostream& os)
 {

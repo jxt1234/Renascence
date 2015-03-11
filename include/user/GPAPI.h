@@ -22,7 +22,7 @@ class IGPAutoDefFunction;
 #include <functional>
 #include <istream>
 #include <ostream>
-extern "C"{
+//extern "C"{
 enum
 {
     GP_PRODUCER_TREE=0,
@@ -57,8 +57,7 @@ std::vector<const IStatusType*> GP_Function_Get_Outputs(const IGPAutoDefFunction
 
 /*The Inputs should be generate from stream by IStatusType inorder by the inputTypes return from GP_Function_Get_Inputs*/
 /*The Outputs can be write to stream by IStatusType get from GP_Function_Get_Outputs*/
-GP_Output GP_Function_Run(IGPAutoDefFunction* f, const GP_Input& input);
-
+//GP_Output GP_Function_Run(IGPAutoDefFunction* f, const GP_Input& input);
 /*Free the memory of function*/
 void GP_Function_Destroy(IGPAutoDefFunction* f);
 
@@ -86,5 +85,5 @@ void GP_Function_Optimize(IGPAutoDefFunction* f, std::function< double(IGPAutoDe
 /*fit_func: the function to compute the fitness of IGPAutoDefFunction*/
 /*TODO Let User control the speed of training*/
 IGPAutoDefFunction* GP_Function_CreateBest_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, bool inputRepeat, std::function< double(IGPAutoDefFunction*)> fit_func, int maxTimes);
-};
+//};
 #endif

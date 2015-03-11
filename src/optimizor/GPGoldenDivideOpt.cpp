@@ -7,17 +7,17 @@ static inline PFLOAT getNextPoint(PFLOAT sta, PFLOAT fin)
     return 0.618*(fin-sta) + sta;
 }
 
-static inline PFLOAT runOnePass(int k, PFLOAT v, GPPtr<GPParameter> current, GPPtr<IGPOptimizor::IComputer> computer)
+static inline PFLOAT runOnePass(int k, PFLOAT v, GPPtr<GPParameter> current, IGPOptimizor::OPTFUNC& computer)
 {
     GPASSERT(NULL!=current.get());
     GPASSERT(0<=k && k<current->size());
     GPPtr<GPParameter> p = new GPParameter(current->size(), current->get());
     PFLOAT* _p = p->attach();
     _p[k] = v;
-    return computer->run(p);
+    return computer(p);
 }
 
-GPPtr<GPParameter> GPGoldenDivideOpt::vFindBest(int n, GPPtr<IComputer> computer, PFLOAT* target) const
+GPPtr<GPParameter> GPGoldenDivideOpt::vFindBest(int n, IGPOptimizor::OPTFUNC computer, PFLOAT* target) const
 {
     GPASSERT(n>0);
     GPPtr<GPParameter> result = new GPParameter(n);

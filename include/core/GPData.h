@@ -18,6 +18,7 @@
 #include "utils/RefCount.h"
 #include "user/package.h"
 #include "user/status.h"
+#include "user/package.h"
 #include <ostream>
 #include <string>
 class GPData:public RefCount
@@ -25,10 +26,10 @@ class GPData:public RefCount
     public:
         GPData(const std::string& name);
         ~GPData();
-        GP_Input expand() const;
+        GPContents* expand() const;
         void addData(void* content, const IStatusType& type);
         void print(std::ostream& out) const;
-        double compare(const GP_Output& output);
+        double compare(const GPContents& output);
     private:
         struct data
         {

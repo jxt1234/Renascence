@@ -23,7 +23,6 @@
 
 
 /*Basic API*/
-
 class IStatusType
 {
     public:

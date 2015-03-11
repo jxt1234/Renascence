@@ -20,15 +20,14 @@ class GPGraphicTest:public GPTest
                 ofstream out("output/GPGraphicTest.xml");
                 gp->save(out);
                 out.close();
-
                 {
-                    GP_Input inputs;
-                    inputs.push_back(NULL);
-                    GP_Output out = gp->run(inputs);
-                    GPASSERT(out.size() == 1);
-                    double* result = (double*)out[0];
+                    GPContents contents;
+                    GPContents* out = gp->run(&contents);
+                    GPASSERT(out->size() == 1);
+                    double* result = (double*)out->get(0);
                     cout << *result <<endl;
-                    out.clear();
+                    out->clear();
+                    delete out;
                 }
             }
             GPASSERT(0 == GPGraphicADF::Point::numberOfInstance());

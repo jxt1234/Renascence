@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef CORE_GPPRODUCER_H
 #define CORE_GPPRODUCER_H
-#include "function.h"
+#include "user/package.h"
 #include "utils/RefCount.h"
 #include "user/status.h"
 #include "user/IFunctionTable.h"

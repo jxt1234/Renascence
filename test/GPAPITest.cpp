@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 using namespace std;
-
+#if 0
 static int test_main()
 {
     ifstream soxml("func.xml");
@@ -79,6 +79,7 @@ static int test_main()
         GP_Function_Destroy(fitf);
     }
     GP_Producer_Destroy(producer);
+    return 1;
 }
 
 class GPAPITest:public GPTest
@@ -94,3 +95,4 @@ void GPAPITest::run()
 }
 
 static GPTestRegister<GPAPITest> a("GPAPITest");
+#endif

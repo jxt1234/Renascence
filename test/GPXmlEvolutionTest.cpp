@@ -24,14 +24,22 @@ class GPXmlEvolutionTest:public GPTest
                 vector<const IStatusType*> eOut;
                 eOut.push_back(bmp);
                 vector<const IStatusType*> eInp;
-                GP_Input nullInput;
                 GPEvolutionGroup* group = new GPEvolutionGroup(&gen, 2, 2);
                 group->vSetInput(eInp);
                 group->vSetOutput(eOut);
-                group->vSetFixInput(nullInput);
-
                 IGPAutoDefFunction* fit = gen.createFunction(doubleId, bmp);
-                group->vEvolution(fit);
+                auto fitfunc = [&](IGPAutoDefFunction* f){
+                    GPContents nullinput;
+                    GPContents* result = f->run(&nullinput);
+                    GPContents* fits = fit->run(result);
+                    double fitresult = *(double*)fits->get(0);
+                    result->clear();
+                    delete result;
+                    fits->clear();
+                    delete fits;
+                    return fitresult;
+                };
+                group->vEvolutionFunc(fitfunc);
                 fit->decRef();
 
                 IGPAutoDefFunction* result = group->getBest();

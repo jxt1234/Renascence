@@ -27,8 +27,8 @@
 class GPGraphicADF:public IGPAutoDefFunction
 {
     public:
-        typedef GP_Output::GP_Unit UNIT;
-        virtual GP_Output run(const GP_Input& inputs);
+    typedef GPContents::GP_Unit UNIT;
+        virtual GPContents* run(GPContents*  inputs);
         virtual void save(std::ostream& os) const;
         /*Return a new copy of this Function*/
         virtual IGPAutoDefFunction* copy() const;
@@ -49,14 +49,14 @@ class GPGraphicADF:public IGPAutoDefFunction
                 {
                     UNIT u;
                     u.content = mC;
-                    u.freeCallBack = mF;
+                    u.type = mF;
                     mF = NULL;
                     return u;
                 }
                 Unit(const UNIT& u)
                 {
                     mC = u.content;
-                    mF = u.freeCallBack;
+                    mF = u.type;
                 }
                 Unit(void* c)
                 {
@@ -67,14 +67,14 @@ class GPGraphicADF:public IGPAutoDefFunction
                 {
                     if(NULL!=mF)
                     {
-                        mF(mC);
+                        mF->vFree(mC);
                     }
                     mC = NULL;
                     mF = NULL;
                 }
             private:
                 void* mC;
-                void(*mF)(void*);
+                const IStatusType* mF;
         };
         /*Each Point only send one result to another Point*/
         class Point:public RefCount

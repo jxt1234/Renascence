@@ -78,10 +78,10 @@ void GPTreeADFPoint::xmlPrint(std::ostream& res) const
     res<<"<"<<GP_XmlString::status<<">\n";
     for (int j=0; j<mStatus.size(); ++j)
     {
-        const IStatusType& s = mStatus[j]->type();
-        res << "<" << s.name() <<">"<<endl;
+        const IStatusType* s = mStatus[j]->type();
+        res << "<" << s->name() <<">"<<endl;
         mStatus[j]->print(res);
-        res << endl<<"</" << s.name() <<">"<<endl;
+        res << endl<<"</" << s->name() <<">"<<endl;
     }
     res<<"</"<<GP_XmlString::status<<">\n";
     res <<"<"<< GP_XmlString::children<<">"<<endl;
@@ -182,57 +182,53 @@ std::vector<const IStatusType*> GPTreeADF::vGetInputs() const
 }
 
 
-GP_Output GPTreeADFPoint::compute(const GP_Input& input, int& cur)
+GPContents* GPTreeADFPoint::compute(GPContents* input, int& cur)
 {
-    GP_Output result;
     computeFunction comp = mFunc->basic;
-    vector<GP_Output::GP_Unit> inputMap;
-    vector<void*> children;
-    vector<void*> inputs;
-    GPASSERT(input.size()>=(mFunc->inputType).size());
+    GPContents totalInputs;
+    GPContents outinputs;
+    GPASSERT(input->size()>=(mFunc->inputType).size());
     for (int i=0; i<(mFunc->inputType).size(); ++i)
     {
-        inputs.push_back(input[cur++]);
+        outinputs.push(input->contents[cur++]);
     }
+    GPContents childreninputs;
     //Get Inputs from childern point
     for (int i=0; i<mChildren.size(); ++i)
     {
         GPTreeADFPoint* p = (GPTreeADFPoint*)(mChildren[i]);
         GPASSERT(NULL!=p);
-        GP_Output out = p->compute(input, cur);
-        vector<GP_Output::GP_Unit>& output_unit = out.output;
+        GPContents* out = p->compute(input, cur);
+        const auto& output_unit = out->contents;
         for (int j=0; j<output_unit.size(); ++j)
         {
-            inputMap.push_back(output_unit[j]);
-            children.push_back(output_unit[j].content);
+            childreninputs.push(output_unit[j]);
+            totalInputs.push(output_unit[j]);
         }
     }
     //Get status
-    vector<void*> constValue;
     for (int i=0; i<mStatus.size(); ++i)
     {
-        void* constValue_unit= mStatus[i]->content();
-        constValue.push_back(constValue_unit);
+        totalInputs.push(mStatus[i]->content(), mStatus[i]->type());
     }
-    vector<void*> totalInputs;
-    totalInputs.insert(totalInputs.begin(), constValue.begin(), constValue.end());
-    totalInputs.insert(totalInputs.begin(), inputs.begin(), inputs.end());
-    totalInputs.insert(totalInputs.begin(), children.begin(), children.end());
+    //Merge outside inputs
+    for (int i=0; i<outinputs.size(); ++i)
+    {
+        totalInputs.push(outinputs.contents[i]);
+    }
+
+    //totalInputs.insert(totalInputs.begin(), constValue.begin(), constValue.end());
+    //totalInputs.insert(totalInputs.begin(), inputs.begin(), inputs.end());
+    //totalInputs.insert(totalInputs.begin(), children.begin(), children.end());
+    GPContents* result;
     {
 #ifdef DEBUG_TIMES
         GP_Clock c(__LINE__, (mFunc->name).c_str());
 #endif
-        result = comp(totalInputs);
+        result = comp(&totalInputs);
     }
     //Free All children' memory
-    for (int i=0; i < inputMap.size(); ++i)
-    {
-        GP_Output::GP_Unit& out = inputMap[i];
-        if (NULL!=out.freeCallBack)
-        {
-            out.freeCallBack(out.content);
-        }
-    }
+    childreninputs.clear();
     return result;
 }
 
@@ -271,7 +267,7 @@ void GPTreeADF::save(std::ostream& res) const
     mRoot->xmlPrint(res);
 }
 
-GP_Output GPTreeADF::run(const GP_Input& inputs)
+GPContents* GPTreeADF::run(GPContents* inputs)
 {
     GPASSERT(NULL!=mRoot);
 #ifdef DEBUG_XML

@@ -37,12 +37,12 @@ void GPData::addData(void* content, const IStatusType& type)
     mData.push_back(d);
 }
 
-GP_Input GPData::expand() const
+GPContents* GPData::expand() const
 {
-    GP_Input res;
+    GPContents* res;
     for (int i=0; i<mData.size(); ++i)
     {
-        res.push_back(mData[i]->content);
+        res->push(mData[i]->content, NULL);
     }
     return res;
 }
@@ -58,7 +58,7 @@ void GPData::print(std::ostream& out) const
     out << "</"<<mName<<">\n";
 }
 /*Default Compare method, assume that all values is double*/
-double GPData::compare(const GP_Output& output)
+double GPData::compare(const GPContents& output)
 {
     double res = 0;
     do

@@ -23,16 +23,16 @@ void GPFormulaTest::run()
         {
             IGPAutoDefFunction* f = sys->vCreateFunctionFromFormula(formula);
             AUTOCLEAN(f);
-            GP_Input inp;
-            GP_Output out = f->run(inp);
-            inp.push_back(out[0]);
+            GPContents inp;
+            GPContents* out = f->run(&inp);
             IGPAutoDefFunction* comp = sys->vCreateFunctionFromName("TrPackageFitCompute");
-            AUTOCLEAN(comp);
-            GP_Output _fits = comp->run(inp);
-            double* __fit = (double*)_fits[0];
+            auto _fits = comp->run(out);
+            double* __fit = (double*)_fits->get(0);
             FUNC_PRINT_ALL(*__fit, f);
-            out.clear();
-            _fits.clear();
+            _fits->clear();
+            out->clear();
+            delete _fits;
+            delete out;
         }
     }
 }

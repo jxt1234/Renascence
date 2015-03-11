@@ -111,7 +111,7 @@ PFLOAT GPParticleSwarmOpt::max_distance(const std::vector<GPPtr<Particle> >& gro
     }
     return _max_distance;
 }
-GPPtr<GPParameter> GPParticleSwarmOpt::vFindBest(int n, GPPtr<IComputer> computer, PFLOAT* target) const
+GPPtr<GPParameter> GPParticleSwarmOpt::vFindBest(int n, IGPOptimizor::OPTFUNC computer, PFLOAT* target) const
 {
     GPASSERT(n>0);
     GPASSERT(mSize>=1);
@@ -124,7 +124,7 @@ GPPtr<GPParameter> GPParticleSwarmOpt::vFindBest(int n, GPPtr<IComputer> compute
     {
         GPPtr<Particle> p = (new Particle(n, mVmax, mThe1, mThe2));
         p->randomInit();
-        PFLOAT fit = computer->run(p->expand());
+        PFLOAT fit = computer(p->expand());
         p->setFit(fit);
         group.push_back(p);
     }
@@ -134,7 +134,7 @@ GPPtr<GPParameter> GPParticleSwarmOpt::vFindBest(int n, GPPtr<IComputer> compute
         for (int j=0; j<mSize; ++j)
         {
             GPPtr<Particle> p = group[j];
-            PFLOAT fit = computer->run(p->expand());
+            PFLOAT fit = computer(p->expand());
             p->updateFit(fit);
         }
         /*Find Best One*/

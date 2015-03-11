@@ -16,52 +16,45 @@
 #ifndef USER_PACKAGE_H
 #define USER_PACKAGE_H
 #include <vector>
+#include "status.h"
 
-/*We can not define a destructor function and use freeCallBack for GP_Output, because the freeCallBack is called by the system outside*/
-typedef void (*GP_FreeFunction)(void*);
-struct GP_Output
+/*We can not define a destructor function for GPContents, because it's handlered by system*/
+struct GPContents
 {
     struct GP_Unit
     {
         void* content;
-        void(*freeCallBack)(void*);
+        const IStatusType* type;
     };
-    std::vector<GP_Unit> output;
+    std::vector<GP_Unit> contents;
+
     //Function for convinent
-    void push(void* content, void(*freeCallBack)(void*))
+    void push(void* content, const IStatusType* type)
     {
         GP_Unit p;
         p.content = content;
-        p.freeCallBack = freeCallBack;
-        output.push_back(p);
+        p.type = type;
+        contents.push_back(p);
+    }
+    void push(const GP_Unit unit)
+    {
+        contents.push_back(unit);
     }
     void clear()
     {
-        for (int i=0; i<output.size(); ++i)
+        for (auto unit : contents)
         {
-            if (output[i].freeCallBack)
+            if (unit.content)
             {
-                output[i].freeCallBack(output[i].content);
+                unit.type->vFree(unit.content);
             }
         }
-        output.clear();
+        contents.clear();
     }
-    inline int size() const {return output.size();}
-    template <typename T>
-    T* get(int n)
-    {
-        return (T*)(output[n].content);
-    }
-    void* operator[](int n) const
-    {
-        return output[n].content;
-    }
+    inline void* get(size_t i) const {return contents[i].content;}
+    inline void* operator[](size_t i) const {return contents[i].content;}
+    inline size_t size() const {return contents.size();}
 };
 
-typedef std::vector<void*> GP_Input;
-
-
-#define GP_OUTPUT_SINGLE_EXIT(x, result) GP_Output x;x.output.push_back(result);return x;
-
-typedef GP_Output(*computeFunction)(GP_Input inputs);
+typedef GPContents*(*computeFunction)(GPContents* inputs);
 #endif

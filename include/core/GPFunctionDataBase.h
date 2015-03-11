@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef GP_COMPUTE_SYSTEM_H
 #define GP_COMPUTE_SYSTEM_H
-#include "core/function.h"
+#include "user/package.h"
 #include "user/status.h"
 #include <string>
 #include "core/IDataBase.h"

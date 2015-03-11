@@ -16,6 +16,7 @@
 #ifndef OPTIMIZOR_IGPOPTIMIZOR_H
 #define OPTIMIZOR_IGPOPTIMIZOR_H
 #include <stdlib.h>
+#include <functional>
 #include "head.h"
 /*A Seriers of numbers that in [0, 1]*/
 class GPParameter:public RefCount
@@ -36,14 +37,8 @@ class GPParameter:public RefCount
 class IGPOptimizor:public RefCount
 {
     public:
-        class IComputer:public RefCount
-        {
-            public:
-                virtual PFLOAT run(GPPtr<GPParameter> p) = 0;
-                IComputer(){}
-                virtual ~IComputer(){}
-        };
-        virtual GPPtr<GPParameter> vFindBest(int n, GPPtr<IComputer> computer, PFLOAT* target=NULL) const = 0;
+    typedef std::function<PFLOAT(GPPtr<GPParameter>)> OPTFUNC;
+    virtual GPPtr<GPParameter> vFindBest(int n, OPTFUNC computer, PFLOAT* target=NULL) const = 0;
         IGPOptimizor(){}
         virtual ~IGPOptimizor(){}
 };

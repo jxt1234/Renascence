@@ -103,33 +103,32 @@ bool _POINT::_flow(bool clean)
 {
     if (NULL != mFunc)
     {
-        GP_Input inputs;
+        GPContents inputs;
         /*Inputs from user or function*/
-        for (INPUT_ITER i = mInputs.begin(); i!=mInputs.end(); i++)
+        for (auto i = mInputs.begin(); i!=mInputs.end(); i++)
         {
-            void* c = i->second->content();
-            //GPASSERT(NULL!=c);
-            inputs.push_back(c);
+            inputs.push(i->second->warp());
         }
         /*Inputs from self status*/
         for (int i=0; i<mStatus.size(); ++i)
         {
-            inputs.push_back((mStatus.at(i))->content());
+            inputs.push((mStatus.at(i))->content(), (mStatus.at(i))->type());
         }
 
-        GP_Output out = mFunc->basic(inputs);
-        GPASSERT(out.size() == mOutputs.size());
+        auto out = mFunc->basic(&inputs);
+        GPASSERT(out->size() == mOutputs.size());
 
         /*Send output*/
-        for (int i=0; i<out.size(); ++i)
+        for (int i=0; i<out->size(); ++i)
         {
-            GPPtr<Unit> u = new Unit(out.output[i]);
+            GPPtr<Unit> u = new Unit(out->contents[i]);
             (mOutputs.at(i))->receive(u, this);
         }
         if (clean)
         {
             _clean();
         }
+        delete out;
     }
     for (OUTPUT_ITER i = mOutputs.begin(); i!=mOutputs.end(); i++)
     {
@@ -187,23 +186,23 @@ void _POINT::receive(GPPtr<GPGraphicADF::Unit> u, _POINT* source)
     GPASSERT(true == find);
 }
 
-GP_Output GPGraphicADF::run(const GP_Input& inputs)
+GPContents* GPGraphicADF::run(GPContents* inputs)
 {
-    GPASSERT(inputs.size() == mInputs.size());
-    for (int i=0; i<inputs.size(); ++i)
+    GPASSERT(inputs->size() == mInputs.size());
+    for (int i=0; i<inputs->size(); ++i)
     {
-        GPPtr<Unit> u = new Unit(inputs.at(i));
+        GPPtr<Unit> u = new Unit(inputs->contents[i]);
         (mInputs.at(i))->receive(u, NULL);
     }
     for (int i=0; i<mInputs.size(); ++i)
     {
         (mInputs.at(i))->flow(true);
     }
-    GP_Output result;
+    GPContents* result = new GPContents;
     for (int i=0; i<mOutputs.size(); ++i)
     {
         UNIT r = (mOutputs.at(i))->collect();
-        result.output.push_back(r);
+        result->push(r);
     }
     return result;
 }
@@ -279,10 +278,10 @@ void GPGraphicADF::save(std::ostream& os) const
         os << "<"<<GP_XmlString::status<<">\n";
         for (STATUS_ITER i=cur->mStatus.begin(); i!=cur->mStatus.end(); i++)
         {
-            const IStatusType& s = (*i)->type();
-            os << "<"<<s.name()<<">\n";
+            const IStatusType* s = (*i)->type();
+            os << "<"<<s->name()<<">\n";
             (*i)->print(os);
-            os << "</"<<s.name()<<">\n";
+            os << "</"<<s->name()<<">\n";
         }
         os << "</"<<GP_XmlString::status<<">\n";
         os << "</"<<GP_XmlString::node<<"_"<<cur<<">\n";

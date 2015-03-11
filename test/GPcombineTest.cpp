@@ -8,7 +8,8 @@
 #include <iostream>
 #include "head.h"
 using namespace std;
-
+/*TODO*/
+#if 0
 class GPcombineTest:public GPTest
 {
     public:
@@ -23,8 +24,8 @@ class GPcombineTest:public GPTest
                 const IStatusType* matrix = base->vQueryType(string("TrFilterMatrix"));
                 /*Construct compose function*/
                 vector<IGPAutoDefFunction*> funcs;
-                GP_Output bmpoutput;//For input
-                GP_Input bmpinput;
+                GPContents bmpoutput;//For input
+                GPContents bmpinput;
                 IGPAutoDefFunction* c1 = sys->createFunction(matrix);
                 funcs.push_back(c1);
                 {
@@ -87,3 +88,4 @@ class GPcombineTest:public GPTest
 };
 
 static GPTestRegister<GPcombineTest> a("GPcombineTest");
+#endif

@@ -12,13 +12,13 @@ GPNetSearchOpt::~GPNetSearchOpt()
 {
 }
 
-GPPtr<GPParameter> GPNetSearchOpt::vFindBest(int n, GPPtr<IComputer> computer, PFLOAT* target) const
+GPPtr<GPParameter> GPNetSearchOpt::vFindBest(int n, IGPOptimizor::OPTFUNC computer, PFLOAT* target) const
 {
     GPASSERT(n>0);
     carryArray array(n, mPrecision);
     GPPtr<GPParameter> result = new GPParameter(n);
 
-    PFLOAT max_fit = computer->run(result);
+    PFLOAT max_fit = computer(result);
     PFLOAT* _result = result->attach();
     GPPtr<GPParameter> p = new GPParameter(n);
     for (;!array.reachEnd();++array)
@@ -31,7 +31,7 @@ GPPtr<GPParameter> GPNetSearchOpt::vFindBest(int n, GPPtr<IComputer> computer, P
             if (v > 1.0) v = 1.0;
             _p[i] = v;
         }
-        PFLOAT fit = computer->run(p);
+        PFLOAT fit = computer(p);
         if (fit > max_fit)
         {
             max_fit = fit;

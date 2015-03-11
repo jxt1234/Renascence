@@ -17,7 +17,7 @@
 #define CORE_ABSTRACTGP_H
 #include <stdlib.h>
 #include "math/AbstractPoint.h"
-#include "core/function.h"
+#include "user/package.h"
 #include "core/GPFunctionDataBase.h"
 #include "core/IGPAutoDefFunction.h"
 #include "core/GPStatusContent.h"
@@ -45,7 +45,7 @@ class GPTreeADFPoint:public AbstractPoint
         /*Function needed*/
         void xmlPrint(std::ostream& res) const;
         //The cur means from which element to use, it's assumed that the numbers is valid and the status has been alloc
-        GP_Output compute(const GP_Input& input, int& cur);
+        GPContents* compute(GPContents* input, int& cur);
         //For recursive
         void getinput(std::vector<const IStatusType*>& tlist) const;
 
@@ -71,7 +71,7 @@ class GPTreeADF:public IGPAutoDefFunction
         //Basic API
         inline GPTreeADFPoint* root() const {return mRoot;}
         GPTreeADFPoint* find(float rate);/*rate must be [0,1), return n*rate's element*/
-        virtual GP_Output run(const GP_Input& inputs);
+        virtual GPContents* run(GPContents* inputs);
         /*Return all inputTypes in order*/
         virtual std::vector<const IStatusType*> vGetInputs() const;
         virtual std::vector<const IStatusType*> vGetOutputs() const;
