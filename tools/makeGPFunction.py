@@ -55,16 +55,16 @@ def producelist():
     return [headlist, gpfunctions]
 def constructFunction(function):
     name = renameFunction(function.name)
-    functionline = "GP_Output " + name + "(GP_Input inputs)"
+    functionline = "GPContents* " + name + "(GPContents* input)"
     outputname = function.output.replace("*", '')
     hline = functionline + ";\n"
     cppline = functionline + "\n{\n"
     inputnumbers = len(function.inputs)
-    cppline+="assert("+ '%d' %inputnumbers + " == inputs.size());\n"
-    cppline+="GP_Output out;\n"
+    cppline+="assert("+ '%d' %inputnumbers + " == inputs->size());\n"
+    cppline+="GPContents* out =  new GPContents;\n"
     for [i, var] in enumerate(function.inputs):
         num = '%d' %i
-        cppline+= var + " X" + num + " = (" + var + ")inputs[" + num + '];\n';
+        cppline+= var + " X" + num + " = (" + var + ")inputs->get(" + num + ');\n';
     cppline+=outputname + "* result"
     if (function.output.find("*")==-1):
         cppline+=" = new " + outputname + ";\n*result"
@@ -76,7 +76,7 @@ def constructFunction(function):
         num = '%d' %(inputnumbers-1)
         cppline+= 'X'+num
     cppline+=");\n"
-    cppline+="out.push(result," + turnFree(outputname) + ");\n"
+    cppline+="out->push(result,g" + outputname + ");\n"
     cppline+="return out;\n"
     cppline += '}\n'
     return [hline, cppline]
@@ -122,36 +122,33 @@ def generateTypeFiles(filelist, outputt, inputt):
     hfile = "#ifndef SRC_PACKAGE_GPTYPES_H\n"
     hfile += "#define SRC_PACKAGE_GPTYPES_H\n"
     hfile +="#include \"user/status.h\"\n"
+    totoaltype = set(outputt + inputt)
+    for t in totoaltype:
+        hfile += "extern IStatusType* g"+t+";\n"
     hfile += "extern \"C\"{\n"
     hfile +="IStatusType* GP_IStatusType_Create(const std::string& name);\n"
-    #Output
-    for t in outputt:
-        hfile+="void " + turnFree(t) +"(void*);\n"
     hfile+="}\n#endif\n"
     cppfile = "#include \"GPTypes.h\"\n"
     for f in filelist:
         cppfile+="#include \"" + f.replace("include/", "") + "\"\n"
-    for t in outputt:
-        cppfile+="void " + turnFree(t) +"(void* content)\n{\n"
-        cppfile+=t+'* c = ('+t+'*)content;\n'
-        cppfile+="/*TODO*/\n"
-        cppfile+='c->decRef();\n'
-        cppfile+='}\n'
     def turnType(n):
         return n+"_GPType"
-    for t in inputt:
+    for t in totoaltype:
         cppfile+="class "+turnType(t) + ":public IStatusType\n{\n"
         cppfile+='public:\n'
         cppfile+=turnType(t)+'():IStatusType(\"' + t +"\"){}\n"
         cppfile+='virtual void* vLoad(std::istream& input) const\n{\nreturn NULL;\n}\n'
         cppfile+='virtual void vSave(void* contents, std::ostream& output) const\n{\n}\n'
-        cppfile+='virtual void vFree(void* contents) const\n{\n}\n'
+        cppfile+='virtual void vFree(void* contents) const\n{\n'
+        cppfile+=t+'* c = ('+t+'*)contents;\nc->defRef();\n'
+        cppfile+='\n}\n'
         cppfile+='virtual int vMap(void** content, double* value) const\n{\nreturn 0;\n}\n'
         cppfile+="\n};\n"
+        cppfile+="IStatusType* g" + t + " = new "+turnType(t) + "();\n"
     cppfile+='IStatusType* GP_IStatusType_Create(const std::string& name)\n{\n'
     for t in inputt:
         cppfile+='if (name == \"'+t + '\")\n{\n'
-        cppfile+='return new ' + turnType(t) + '();\n}\n'
+        cppfile+='return g' + t + ';\n}\n'
     cppfile+='return NULL;\n}\n'
     with open(TYPEHEADFILE, 'w') as f:
         f.write(hfile);
