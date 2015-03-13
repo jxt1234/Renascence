@@ -24,3 +24,4 @@ output/*
 temp/*
 output_fix.jpg
 result.xml
+.*

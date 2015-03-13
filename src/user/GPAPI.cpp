@@ -7,28 +7,7 @@
 #include "optimizor/GPOptimizorFactory.h"
 #include <string>
 #include <sstream>
-/*Warp for GPFunctionDataBase and GPProducer*/
-class AGPProducer:public RefCount
-{
-    public:
-        AGPProducer(GPFunctionDataBase* f, GPProducer* p)
-        {
-            GPASSERT(NULL!=f);
-            GPASSERT(NULL!=p);
-            f->addRef();
-            p->addRef();
-            P=p;
-            F=f;
-        }
-        virtual ~AGPProducer()
-        {
-            P->decRef();
-            F->decRef();
-        }
-        GPProducer* P;
-        GPFunctionDataBase* F;
-};
-
+#include "AGPProducer.h"
 AGPProducer* GP_Producer_Create(std::istream& metaStream, IFunctionTable* table, int type)
 {
     FUNC_PRINT(type);
