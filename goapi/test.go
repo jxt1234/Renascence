@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	p := GPAPI.createProducer("func.xml", 0)
-	GPAPI.destroyProducer(p)
+	p := GPAPI.CreateProducer("func.xml", 0)
+	GPAPI.DestroyProducer(p)
 }

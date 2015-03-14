@@ -13,48 +13,47 @@ import (
 	"unsafe"
 )
 
-func createProducer(filename string, gptype int) unsafe.Pointer {
-	cstr, err := C.CString(filename)
-	res, err := C.GO_GP_Producer_Create(cstr, C.int(gptype))
+func CreateProducer(filename string, gptype int) unsafe.Pointer {
+	cstr := C.CString(filename)
+	res := C.GO_GP_Producer_Create(cstr, C.int(gptype))
 	C.free(unsafe.Pointer(cstr))
 	return unsafe.Pointer(res)
 }
 
-func destroyProducer(p unsafe.Pointer) {
+func DestroyProducer(p unsafe.Pointer) {
 	C.GO_GP_Producer_Destroy(p)
 }
 
-func createFuncByTypes(producer unsafe.Pointer, output string, input string, inputRepeat bool) unsafe.Pointer {
+func CreateFuncByTypes(producer unsafe.Pointer, output string, input string, inputRepeat int) unsafe.Pointer {
 	outputTypes := C.CString(output)
 	defer C.free(unsafe.Pointer(outputTypes))
 	inputTypes := C.CString(input)
 	defer C.free(unsafe.Pointer(inputTypes))
 	res := C.GO_GP_Function_Create_ByType(producer, outputTypes, inputTypes, C.int(inputRepeat))
-	return res
+	return unsafe.Pointer(res)
 }
 
-func createFuncByFile(producer unsafe.Pointer, filename string) unsafe.Pointer {
+func CreateFuncByFile(producer unsafe.Pointer, filename string) unsafe.Pointer {
 	filenamesc := C.CString(filename)
 	defer C.free(unsafe.Pointer(filenamesc))
-	return C.GO_GP_Function_Create_ByFile(producer, filenamesc)
+	return unsafe.Pointer(C.GO_GP_Function_Create_ByFile(producer, filenamesc))
 }
 
-func saveFuncAsFile(function unsafe.Pointer, filename string) {
+func SaveFuncAsFile(function unsafe.Pointer, filename string) {
 	cstring := C.CString(filename)
 	defer C.free(unsafe.Pointer(cstring))
 	C.GO_GP_Function_Save(function, cstring)
 }
 
-/*
-func runFunc(function unsafe.Pointer, inputs unsafe.Pointer) unsafe.Pointer {
-	return C.GO_GP_Function_Run(function, inputs)
+func RunFunc(functionp unsafe.Pointer, inputss unsafe.Pointer) unsafe.Pointer {
+	res := C.GO_GP_Function_Run(functionp, inputss)
+	return unsafe.Pointer(res)
 }
-*/
 
-func produceContent(producer unsafe.Pointer, types string, files string) unsafe.Pointer {
+func ProduceContent(producer unsafe.Pointer, types string, files string) unsafe.Pointer {
 	ctypes := C.CString(types)
 	cfiles := C.CString(files)
 	defer C.free(unsafe.Pointer(ctypes))
 	defer C.free(unsafe.Pointer(cfiles))
-	return C.GO_GP_CreateContentsByTypes(producer, ctypes, cfiles)
+	return unsafe.Pointer(C.GO_GP_CreateContentsByTypes(producer, ctypes, cfiles))
 }
