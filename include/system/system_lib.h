@@ -20,6 +20,8 @@
 #include <vector>
 #include "user/IFunctionTable.h"
 
+void system_set_path(const char* path);
+
 void* system_load_lib(const char* libName);
 
 void* system_find_func(void* handle, const char* funcName);

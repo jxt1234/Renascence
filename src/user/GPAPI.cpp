@@ -1,4 +1,5 @@
 #include "user/GPAPI.h"
+#include "system/system_lib.h"
 #include "core/IGPAutoDefFunction.h"
 #include "core/GPProducer.h"
 #include "core/GPFactory.h"
@@ -8,6 +9,15 @@
 #include <string>
 #include <sstream>
 #include "AGPProducer.h"
+
+void GP_Set_Lib_Path(const char* basic_path)
+{
+    if (NULL == basic_path)
+    {
+        return;
+    }
+    system_set_path(basic_path);
+}
 AGPProducer* GP_Producer_Create(std::istream& metaStream, IFunctionTable* table, int type)
 {
     FUNC_PRINT(type);

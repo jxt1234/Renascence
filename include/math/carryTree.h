@@ -34,6 +34,11 @@ public:
     {
         std::vector<outputType> result;
         searchUnit(result, 1);
+        if (result.empty())
+        {
+            outputType def;
+            return def;
+        }
         return *(result.begin());
     }
 protected:

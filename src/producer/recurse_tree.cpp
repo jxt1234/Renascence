@@ -81,6 +81,7 @@ bool computePoint::vGrow()
     GPASSERT(NULL!=mSys);
     const vector<int>& data = getData();
     vector<int> currentOutputId = getDependOutput();
+    
     for (int i=0; i<data.size(); ++i)
     {
         const GPFunctionDataBase::function* f = mSys->vQueryFunctionById(data[i]);

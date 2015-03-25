@@ -23,16 +23,28 @@
 #include "system/system_lib.h"
 using namespace std;
 
+static std::string gPath("");
+void system_set_path(const char* path)
+{
+    GPASSERT(NULL!=path);
+    gPath = path;
+}
 
 #define PATH_MAX_SIZE 1024
 void* system_load_lib(const char* libName)
 {
     /*Get absolute path*/
-    char current_absolute_path[PATH_MAX_SIZE];
-    char* c = getcwd(current_absolute_path, PATH_MAX_SIZE);
-
     ostringstream completeName;
-    completeName<<current_absolute_path << "/" << libName<<".so";
+    if (gPath == "")
+    {
+        char current_absolute_path[PATH_MAX_SIZE];
+        char* c = getcwd(current_absolute_path, PATH_MAX_SIZE);
+        completeName<<current_absolute_path << "/" << libName<<".so";
+    }
+    else
+    {
+        completeName << gPath <<"/"<< libName << ".so";
+    }
     return dlopen(completeName.str().c_str(), RTLD_NOW);
 }
 

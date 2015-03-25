@@ -29,6 +29,9 @@ extern "C"{
         GP_PRODUCER_GRAPHIC=1
     };
     typedef std::vector<const IStatusType*> GPTYPES;
+    /*Set basic path of lib*/
+    void GP_Set_Lib_Path(const char* basic_path);
+
     class AGPProducer;
     /*Create AGPProducer by function table, meta file and type
      * metaStream:

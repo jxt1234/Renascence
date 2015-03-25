@@ -37,7 +37,7 @@ class GPTreeProducer:public GPProducer
     private:
         const GPFunctionDataBase* mDataBase;
         void _searchAllSequences(std::vector<std::vector<int> >& res, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true) const;
-        void _findMatchedFuncton(std::vector<std::vector<int> >& warpOutput, const std::vector<const IStatusType*>& outputType) const;
+        void _findMatchedFuncton(std::vector<std::vector<int> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const;
         void _init();
 
         float mLargeVary;

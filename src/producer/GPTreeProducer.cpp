@@ -77,7 +77,7 @@ class formulaCopy:public AbstractPoint::IPointCopy
         const GPFunctionDataBase* mBase;
 };
 
-//TODO
+
 IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromFormula(const std::string& formula) const
 {
     FormulaTree tree;
@@ -138,26 +138,48 @@ void GPTreeProducer::setFunctionDataBase(const GPFunctionDataBase* comsys)
 
 
 /*FIXME Currently, we assume random be false and inputRepeat be true, just return the first short tree by algorithm*/
-/*FIXME currently the inputType has no use at all*/
 IGPAutoDefFunction* GPTreeProducer::vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, bool random) const
 {
     GPASSERT(NULL!=mDataBase);
+    if (!inputRepeat || random)
+    {
+        auto allfunctions = vCreateAllFunction(outputType,inputType, inputRepeat);
+        if (allfunctions.empty())
+        {
+            return NULL;
+        }
+        size_t cur = 0;
+        if (random)
+        {
+            cur = GPRandom::mid(0, allfunctions.size());
+        }
+        for (size_t i=0; i<allfunctions.size(); ++i)
+        {
+            if (cur != i)
+            {
+                allfunctions[i]->decRef();
+            }
+        }
+        return allfunctions[cur];
+    }
     /*TODO if inputType and outputType is the same as last one, return the cached one*/
-    GPTreeADF* gp = NULL;
-    IGPAutoDefFunction* res = NULL;
     /*Find all available output function*/
     vector<vector<int> > warpOutput;
-    _findMatchedFuncton(warpOutput, outputType);
+    _findMatchedFuncton(warpOutput, outputType, inputType);
+    if (warpOutput.empty())
+    {
+        return NULL;
+    }
     vector<int> avail(1,warpOutput.size()-1);
     /*Get All sequence*/
     computePoint* start = new computePoint(warpOutput, avail, inputType, mDataBase);
     computeSearchTree tree(start);
-    /*TODO random for result*/
     vector<int> queue = tree.searchOne();
-    //TODO Allow queue.empty()
-    GPASSERT(!queue.empty());
-    //if (result.empty()) return NULL;
-    gp = new GPTreeADF;
+    if (queue.empty())
+    {
+        return NULL;
+    }
+    auto gp = new GPTreeADF;
     {
         GPTreeADFPoint* p = gp->root();
         p->replacePoint(queue, mDataBase);
@@ -170,7 +192,11 @@ void GPTreeProducer::_searchAllSequences(std::vector<std::vector<int> >& res, co
     /*TODO if the inputType and outputType is the same as the last one, return the cached one*/
     /*Find all available output function*/
     vector<vector<int> > warpOutput;
-    _findMatchedFuncton(warpOutput, outputType);
+    _findMatchedFuncton(warpOutput, outputType, inputType);
+    if (warpOutput.empty())
+    {
+        return;
+    }
     vector<int> avail;
     for (int i=0; i<warpOutput.size(); ++i)
     {
@@ -182,24 +208,59 @@ void GPTreeProducer::_searchAllSequences(std::vector<std::vector<int> >& res, co
     res = tree.searchAll();
 }
 
+static bool makeOrder(std::vector<const IStatusType*> inputType, const std::vector<const IStatusType*>& realinputType, std::vector<size_t>& order/*output*/)
+{
+    bool result = true;
+    order.clear();
+    for (int i=0; i<realinputType.size(); ++i)
+    {
+        auto t = realinputType[i];
+        auto pos = std::find(inputType.begin(), inputType.end(), t);
+        if (pos == inputType.end())
+        {
+            result = false;
+            break;
+        }
+        *pos = NULL;//Remove the used input
+        auto id = pos - inputType.begin();
+        order.push_back(id);
+    }
+    return result;
+}
+
+
 std::vector<IGPAutoDefFunction*> GPTreeProducer::vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat) const
 {
     GPASSERT(NULL!=mDataBase);
-    GPTreeADF* gp = NULL;
     vector<IGPAutoDefFunction*> res;
     vector<vector<int> >queue;
     _searchAllSequences(queue, outputType, inputType, inputRepeat);
     for (int i=0; i<queue.size(); ++i)
     {
-        gp = new GPTreeADF;
+        auto gp = new GPTreeADF;
         gp->root()->replacePoint(queue[i], mDataBase);
-        res.push_back(gp);
+        if (!inputRepeat)
+        {
+            auto realinputtype = gp->vGetInputs();
+            std::vector<size_t> order;
+            bool ok = makeOrder(inputType, realinputtype, order);
+            if (ok)
+            {
+                auto agp = IGPAutoDefFunction::makeAdaptorFunction(gp, order, inputType);
+                res.push_back(agp);
+            }
+            gp->decRef();
+        }
+        else
+        {
+            res.push_back(gp);
+        }
     }
     return res;
 }
 
 
-void GPTreeProducer::_findMatchedFuncton(std::vector<std::vector<int> >& warpOutput, const std::vector<const IStatusType*>& outputType) const
+void GPTreeProducer::_findMatchedFuncton(std::vector<std::vector<int> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
 {
     for (int i=0; i < mDataBase->size(); ++i)
     {
@@ -214,6 +275,14 @@ void GPTreeProducer::_findMatchedFuncton(std::vector<std::vector<int> >& warpOut
                 break;
             }
         }
+        for (auto t:f->inputType)
+        {
+            if (find(inputType.begin(), inputType.end(), t) == inputType.end())
+            {
+                match = false;
+                break;
+            }
+        }
         if (match)
         {
             vector<int> output;
@@ -221,8 +290,6 @@ void GPTreeProducer::_findMatchedFuncton(std::vector<std::vector<int> >& warpOut
             warpOutput.push_back(output);
         }
     }
-    GPASSERT(!warpOutput.empty());
-    //if (warpOutput.empty()) return NULL;
 }
 
 void GPTreeProducer::vMutate(IGPAutoDefFunction* tree) const
