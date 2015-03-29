@@ -27,3 +27,11 @@ DEPENDS:libGP.so
 DIRS:
 SRCS:simple_main.cpp
 LINKS: ./libGP.so -ldl -lpthread
+
+##########
+
+TARGET:gptool.out
+DEPENDS:libGP.so
+DIRS:gptool
+SRCS:
+LINKS: ./libGP.so -ldl -lpthread

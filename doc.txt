@@ -212,19 +212,43 @@ e、compare.xml 表示用来比较期望输出和实际输出的函数，要求�
 1、实现算式构造（输入一个表达式，按表达式构建GP，同时也支持反向提取）（完成）
 
 2014.8.7
-1、规定默认状态类，以便在库使用这种类时，进行自动构建（CONTINUE）
+1、规定默认状态类，以便在库使用这种类时，进行自动构建（ABORT）
 
 2014.9.9
 1、编写网格搜索的演化类（完成）
-2、修改GPTreeProducer为依靠inputType确定依赖关系（存在设计问题，需要研究）
-3、多so支持（CONTINUE）
+2、修改GPTreeProducer为依靠inputType确定依赖关系（ABORT）
+3、多so支持（DONE）
 4、对于statusType，增加接口，允许用户判断相关的函数是否存在。（DONE）
 
 2014.9.21
 1、规定图状GP的xml表达文法，编写图状GP的生成类（暂只考虑从xml信息构建）（DONE）
 
 2014.9.26
-1、编写自动生成标准函数的py文件（CONTINUE）
+1、编写自动生成标准函数的py文件（DONE）
 
 2014.11.17
-1、架构修改，去除status类的load、save和mutate，以统一的map替代
+1、架构修改，去除status类的load、save和mutate，以统一的map替代(DONE)
+
+2015.3.29
+GP工具箱开发计划
+功能：
+1、构建函数
+（1）根据输入输出和基础xml表构建函数
+（2）根据输入的基准模板构建函数
+2、执行函数
+（1）根据函数表和模板表，创建函数，得到其输入输出信息
+（2）根据函数表和模板表，创建函数，并根据输入的文件名，构建输入流，创建相关输入，根据输出的文件名，导出输出
+
+目录规划：
+建gptool目录
+用C++和python两种语言编写
+C++的编译为gptool.out可执行文件
+用法：
+create
+run
+
+gptool.out create func.xml input=TrBmp, output=TrBmp fit=<NULL> outputfunc=outf.xml
+gptool.out create func.xml model=model.xml, fit=fitf.xml outputfunc=outf.xml
+
+gptool.out query func.xml outputfunc.xml
+gptool.out run func.xml outputfunc.xml input=1.txt,2.jpg output=3.jpg

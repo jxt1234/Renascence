@@ -44,7 +44,7 @@ extern "C"{
     /*Create a IGPAutoDefFunction by inputTypes and outputTypes, the types must be divided by space*/
     /*For example: IGPAutoDefFunction* f = GP_Create_Function_ByType("SkBitmap SkPaint", "SkStream")*/
     /*
-     * p: the AGPProducer created by GP_Create_Producer
+     * p: the AGPProducer created by GP_Producer_Create
      * outputTypes: the name of all output types
      * inputTypes: all the input types obtained for the IGPAutoDefFunction, not orderred, if set "", GP will not care about the input
      * inputRepeat: whethether the type of inputTypes can be use repeatly

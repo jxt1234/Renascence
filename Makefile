@@ -1,4 +1,4 @@
-all:libGP.so test.out gpsuit.out example.out 
+all:libGP.so test.out gpsuit.out example.out gptool.out 
 
 ALL_INCLUESlibGP.so= include//core/BasicComposeFunction.h include//core/genetic_operator.h include//core/GP_XmlString.h include//core/GPData.h include//core/GPFactory.h include//core/GPFunctionDataBase.h include//core/GPProducer.h include//core/GPStatusContent.h include//core/group.h include//core/IDataBase.h include//core/IGPAutoDefFunction.h include//core/xmlGPDataLoader.h include//evolution/GPEvolutionGroup.h include//head.h include//math/AbstractPoint.h include//math/carryArray.h include//math/carryGroup2.h include//math/carryPoint.h include//math/carryTree.h include//math/FormulaTree.h include//math/GPSingleTree.h include//optimizor/GPGoldenDivideOpt.h include//optimizor/GPNetSearchOpt.h include//optimizor/GPOptimizorFactory.h include//optimizor/GPParticleSwarmOpt.h include//optimizor/IGPOptimizor.h include//producer/GPGraphicADF.h include//producer/GPGraphicProducer.h include//producer/GPTreeADF.h include//producer/GPTreeProducer.h include//system/system_lib.h include//user/adapter.h include//user/GPAPI.h include//user/IFunctionTable.h include//user/package.h include//user/status.h include//utils/AutoClean.h include//utils/AutoStorage.h include//utils/BasicTree.h include//utils/debug.h include//utils/GP_Clock.h include//utils/GPRandom.h include//utils/RefCount.h include//utils/statusMachine.h include//xml/xmlReader.h include//xml/xmlTree.h
 
@@ -130,9 +130,17 @@ example.out:  build/simple_main.o libGP.so
 build/simple_main.o : simple_main.cpp libGP.so  ${ALL_INCLUESexample.out}
 	g++ -std=c++11 -O3 -fPIC -o build/simple_main.o -c simple_main.cpp -Iinclude 
 
+ALL_INCLUESgptool.out= include//core/BasicComposeFunction.h include//core/genetic_operator.h include//core/GP_XmlString.h include//core/GPData.h include//core/GPFactory.h include//core/GPFunctionDataBase.h include//core/GPProducer.h include//core/GPStatusContent.h include//core/group.h include//core/IDataBase.h include//core/IGPAutoDefFunction.h include//core/xmlGPDataLoader.h include//evolution/GPEvolutionGroup.h include//head.h include//math/AbstractPoint.h include//math/carryArray.h include//math/carryGroup2.h include//math/carryPoint.h include//math/carryTree.h include//math/FormulaTree.h include//math/GPSingleTree.h include//optimizor/GPGoldenDivideOpt.h include//optimizor/GPNetSearchOpt.h include//optimizor/GPOptimizorFactory.h include//optimizor/GPParticleSwarmOpt.h include//optimizor/IGPOptimizor.h include//producer/GPGraphicADF.h include//producer/GPGraphicProducer.h include//producer/GPTreeADF.h include//producer/GPTreeProducer.h include//system/system_lib.h include//user/adapter.h include//user/GPAPI.h include//user/IFunctionTable.h include//user/package.h include//user/status.h include//utils/AutoClean.h include//utils/AutoStorage.h include//utils/BasicTree.h include//utils/debug.h include//utils/GP_Clock.h include//utils/GPRandom.h include//utils/RefCount.h include//utils/statusMachine.h include//xml/xmlReader.h include//xml/xmlTree.h
+
+gptool.out:  build/gptool_main.o libGP.so
+	g++ -std=c++11  -O3 -fPIC -o gptool.out  build/gptool_main.o  ./libGP.so -ldl -lpthread ${SELF_VARIABLES}
+build/gptool_main.o : gptool/main.cpp libGP.so  ${ALL_INCLUESgptool.out}
+	g++ -std=c++11 -O3 -fPIC -o build/gptool_main.o -c gptool/main.cpp -Iinclude 
+
 clean:
 	rm build/*.o
 	rm libGP.so
 	rm test.out
 	rm gpsuit.out
 	rm example.out
+	rm gptool.out
