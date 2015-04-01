@@ -17,6 +17,7 @@
 #include <assert.h>
 #include <string.h>
 #include <fstream>
+#include <sstream>
 #define INFO(...)#__VA_ARGS__
 void dump_usage()
 {
@@ -56,7 +57,7 @@ void gp_run(int argc, char** argv)
     auto inputcur = cur;
     for (auto t:inputtype)
     {
-        assert(cur <= argc);
+        assert(cur < argc);
         printf("%s: %s\n", t->name().c_str(), argv[cur++]);
     }
     GPContents inputcontents;
@@ -72,6 +73,7 @@ void gp_run(int argc, char** argv)
     assert(outputcontents->size() == outputtype.size());
     for (int i=0; i<outputtype.size(); ++i)
     {
+        assert(outputcur < argc);
         std::ofstream outputs(argv[outputcur+i]);
         assert(!outputs.fail());
         auto t = outputtype[i];
@@ -85,6 +87,44 @@ void gp_run(int argc, char** argv)
 void gp_create(int argc, char** argv)
 {
     printf("In %s, %d\n", __func__, __LINE__);
+}
+void gp_opt(int argc, char** argv)
+{
+    printf("In %s, %d\n", __func__, __LINE__);
+    assert(argc>=6);
+    std::ifstream metadata(argv[2]);
+    assert(!metadata.fail());
+    auto base = GP_Producer_Create(metadata, NULL, 0);
+    std::ifstream model_(argv[3]);
+    assert(!model_.fail());
+    auto model = GP_Function_Create_ByStream(base, model_);
+    std::ifstream fitf_(argv[4]);
+    assert(!fitf_.fail());
+    auto fitf = GP_Function_Create_ByStream(base, fitf_);
+    /*TODO Add input*/
+    GPContents inputs;
+
+    auto fitfunction = [&](IGPAutoDefFunction* target) {
+        auto output = GP_Function_Run(target, &inputs);
+        auto fit = GP_Function_Run(fitf, output);
+        assert(1 == fit->size());
+        double fitness;
+        auto c = fit->contents[0];
+        std::ostringstream foutput_;
+        (c.type)->vSave(c.content, foutput_);
+        std::istringstream input_(foutput_.str());
+        input_ >> fitness;
+        GPContents::destroy(output);
+        GPContents::destroy(fit);
+        return fitness;
+    };
+    GP_Function_Optimize(model, fitfunction, 1, 10);
+    std::ostringstream outputfuncfile(argv[5]);
+    GP_Function_Save(model, outputfuncfile);
+    inputs.clear();
+    GP_Function_Destroy(model);
+    GP_Function_Destroy(fitf);
+    GP_Producer_Destroy(base);
 }
 int main(int argc, char** argv)
 {

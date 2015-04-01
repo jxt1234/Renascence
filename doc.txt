@@ -247,8 +247,6 @@ C++的编译为gptool.out可执行文件
 create
 run
 
-gptool.out create func.xml input=TrBmp, output=TrBmp fit=<NULL> outputfunc=outf.xml
-gptool.out create func.xml model=model.xml, fit=fitf.xml outputfunc=outf.xml
-
-gptool.out query func.xml outputfunc.xml
+gptool.out create func.xml input=TrBmp, output=TrBmp fit=NULL outputfunc=outf.xml
+gptool.out opt func.xml model.xml fitf.xml outf.xml
 gptool.out run func.xml outputfunc.xml input=1.txt,2.jpg output=3.jpg
