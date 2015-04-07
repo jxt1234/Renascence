@@ -156,7 +156,18 @@ def generateTypeFiles(filelist, outputt, inputt):
         f.write(cppfile)
     return
 def generateXML(functions):
-    return
+    xmlcontents = '<NULL>\n'
+    for func in functions:
+        xmlcontents += '<'+renameFunction(func.name)+'>\n'
+        xmlcontents += '<output>' + func.output + '</output>\n'
+        xmlcontents += '<status></status>\n'
+        xmlcontents += '<inputType>'
+        for t in func.inputs:
+            xmlcontents += t.replace('*', '') + ' '
+        xmlcontents += '</inputType>\n'
+        xmlcontents += '</'+renameFunction(func.name)+'>\n'
+    xmlcontents += '</NULL>\n'
+    return xmlcontents
 
 
 if __name__=='__main__':
@@ -166,3 +177,27 @@ if __name__=='__main__':
         os.makedirs("src/package")
     generateFunctionfiles(filelist, allfunctions);
     generateTypeFiles(filelist, outputtype, inputtype)
+    #Default Function Table
+    if (not os.path.exists("include/package")):
+        os.makedirs("include/package")
+    classname = 'DefaultFunctionTable'
+    #Generate head contents
+    headcontent = ''
+    headcontent += '#include \"user/IFunctionTable.h\"\n'
+    headcontent += 'class ' + classname + ': public IFunctionTable\n'
+    headcontent += '{\n' + 'public:\n' + 'virtual void* vGetFunction(const std::string& name);\n' + '};\n'
+    with open('include/package/'+classname+'.h', 'w') as f:
+        f.write(headcontent)
+    cppcontent = ''
+    cppcontent += '#include \"package/DefaultFunctionTable.h\"\n'
+    cppcontent += 'void* ' + classname + '::vGetFunction(const std::string& name)\n{\n'
+    for f in allfunctions:
+        fname = renameFunction(f.name)
+        cppcontent += 'if (name == \"' + fname + '\")\n{\n' + 'return (void*)' + fname + ';\n}\n'
+    cppcontent += 'return NULL;\n}\n'
+    with open('src/package/'+ classname + '.cpp', 'w') as f:
+        f.write(cppcontent)
+
+    xmlcontents = generateXML(allfunctions)
+    with open('DefaultFunctionTable.xml', 'w') as f:
+        f.write(xmlcontents)
