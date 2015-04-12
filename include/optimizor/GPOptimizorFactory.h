@@ -26,6 +26,6 @@ class GPOptimizorFactory
             NET_SEARCH,
             PSO_SEARCH
         }TYPE;
-        static GPPtr<IGPOptimizor> create(TYPE t, std::istream* parameter=NULL);
+        static GPPtr<IGPOptimizor> create(TYPE t, const char* describe = NULL);
 };
 #endif

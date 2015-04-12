@@ -84,7 +84,7 @@ extern "C"{
      type: 0 (use PSO, will compute maxTimes), 1(Use random golden divide Optimization, fast but not very accuracy)
      maxTimes: the maxTimes to run IGPAutoDefFunction in these api, will affect the algorithm of PSO and GDO, if set 0, GP will automatically determine how to terminate algorithm
      */
-    void GP_Function_Optimize(IGPAutoDefFunction* f, std::function< double(IGPAutoDefFunction*)> fit_fun, int type, int maxTimes);
+    void GP_Function_Optimize(IGPAutoDefFunction* f, std::function< double(IGPAutoDefFunction*)> fit_fun, int type, const char* describe);
     /*Evolution Method to find best function, it will take a long time*/
     /*fit_func: the function to compute the fitness of IGPAutoDefFunction*/
     /*TODO Let User control the speed of training*/

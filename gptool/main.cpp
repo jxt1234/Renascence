@@ -118,7 +118,7 @@ void gp_opt(int argc, char** argv)
         GPContents::destroy(fit);
         return fitness;
     };
-    GP_Function_Optimize(model, fitfunction, 1, 10);
+    GP_Function_Optimize(model, fitfunction, 1, NULL);
     std::ostringstream outputfuncfile(argv[5]);
     GP_Function_Save(model, outputfuncfile);
     inputs.clear();

@@ -55,12 +55,14 @@ def producelist():
     return [headlist, gpfunctions]
 def constructFunction(function):
     name = renameFunction(function.name)
-    functionline = "GPContents* " + name + "(GPContents* input)"
+    functionline = "GPContents* " + name + "(GPContents* inputs)"
     outputname = function.output.replace("*", '')
     hline = functionline + ";\n"
     cppline = functionline + "\n{\n"
     inputnumbers = len(function.inputs)
     cppline+="assert("+ '%d' %inputnumbers + " == inputs->size());\n"
+    for [i, inp] in enumerate(function.inputs):
+        cppline+='assert(inputs->contents[%d].type == g' %i + inp.replace('*', '') + ');\n'
     cppline+="GPContents* out =  new GPContents;\n"
     for [i, var] in enumerate(function.inputs):
         num = '%d' %i
@@ -140,7 +142,7 @@ def generateTypeFiles(filelist, outputt, inputt):
         cppfile+='virtual void* vLoad(std::istream& input) const\n{\nreturn NULL;\n}\n'
         cppfile+='virtual void vSave(void* contents, std::ostream& output) const\n{\n}\n'
         cppfile+='virtual void vFree(void* contents) const\n{\n'
-        cppfile+=t+'* c = ('+t+'*)contents;\nc->defRef();\n'
+        cppfile+=t+'* c = ('+t+'*)contents;\nc->decRef();\n'
         cppfile+='\n}\n'
         cppfile+='virtual int vMap(void** content, double* value) const\n{\nreturn 0;\n}\n'
         cppfile+="\n};\n"
@@ -159,17 +161,18 @@ def generateXML(functions):
     xmlcontents = '<NULL>\n'
     for func in functions:
         xmlcontents += '<'+renameFunction(func.name)+'>\n'
-        xmlcontents += '<output>' + func.output + '</output>\n'
+        xmlcontents += '<output>' + func.output.replace('*', '') + '</output>\n'
         xmlcontents += '<status></status>\n'
         xmlcontents += '<inputType>'
         for t in func.inputs:
             xmlcontents += t.replace('*', '') + ' '
         xmlcontents += '</inputType>\n'
-        xmlcontents += '</'+renameFunction(func.name)+'>\n'
+        xmlcontents += '</'+renameFunction(func.name)+'>\n\n'
     xmlcontents += '</NULL>\n'
     return xmlcontents
 
 
+import sys
 if __name__=='__main__':
     [filelist, allfunctions] = producelist()
     [outputtype, inputtype] = findAllType(allfunctions)
@@ -190,6 +193,7 @@ if __name__=='__main__':
         f.write(headcontent)
     cppcontent = ''
     cppcontent += '#include \"package/DefaultFunctionTable.h\"\n'
+    cppcontent += '#include \"GPPackage.h\"\n'
     cppcontent += 'void* ' + classname + '::vGetFunction(const std::string& name)\n{\n'
     for f in allfunctions:
         fname = renameFunction(f.name)

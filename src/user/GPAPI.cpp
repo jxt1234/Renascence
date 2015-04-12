@@ -143,17 +143,17 @@ void GP_Function_Destroy(IGPAutoDefFunction* f)
     }
 }
 
-void GP_Function_Optimize(IGPAutoDefFunction* f, std::function< double(IGPAutoDefFunction*)> fit_fun, int type, int maxTimes)
+void GP_Function_Optimize(IGPAutoDefFunction* f, std::function< double(IGPAutoDefFunction*)> fit_fun, int type, const char* describe)
 {
     /*TODO*/
     GPPtr<IGPOptimizor> opt;
     switch(type)
     {
         case 0:
-            opt = GPOptimizorFactory::create(GPOptimizorFactory::PSO_SEARCH);
+            opt = GPOptimizorFactory::create(GPOptimizorFactory::PSO_SEARCH, describe);
             break;
         case 1:
-            opt = GPOptimizorFactory::create(GPOptimizorFactory::GOLDEN_DIVIDE);
+            opt = GPOptimizorFactory::create(GPOptimizorFactory::GOLDEN_DIVIDE, describe);
             break;
         default:
             break;

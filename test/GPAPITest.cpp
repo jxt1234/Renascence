@@ -63,7 +63,7 @@ static int test_main()
         {
             string formula = "TrPackageCompse(TrPackageSaturation(TrPackageInput()), TrPackageFilterMatrix(TrPackageInput()))";
             auto adf  = GP_Function_Create_ByFormula(producer, formula.c_str());
-            GP_Function_Optimize(adf, fitfunction, 1, 10);
+            GP_Function_Optimize(adf, fitfunction, 1, "time=10");
             cout << fitfunction(adf) << endl;
             ofstream orzzz("output/GPAPI_Formula_SOpt.txt");
             GP_Function_Save(adf, orzzz);
