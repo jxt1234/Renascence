@@ -186,7 +186,7 @@ void _POINT::receive(GPPtr<GPGraphicADF::Unit> u, _POINT* source)
     GPASSERT(true == find);
 }
 
-GPContents* GPGraphicADF::run(GPContents* inputs)
+GPContents* GPGraphicADF::vRun(GPContents* inputs)
 {
     GPASSERT(inputs->size() == mInputs.size());
     for (int i=0; i<inputs->size(); ++i)
@@ -206,8 +206,9 @@ GPContents* GPGraphicADF::run(GPContents* inputs)
     }
     return result;
 }
-IGPAutoDefFunction* GPGraphicADF::copy() const
+IGPAutoDefFunction* GPGraphicADF::vCopy() const
 {
+    /*TODO*/
     return NULL;
 }
 
@@ -235,7 +236,7 @@ void GPGraphicADF::_findAllPoints(std::set<Point*>& allPoints) const
     }
 }
 
-void GPGraphicADF::save(std::ostream& os) const
+void GPGraphicADF::vSave(std::ostream& os) const
 {
     /*Find all points*/
     std::set<Point*> allPoints;
@@ -301,6 +302,10 @@ GPGraphicADF::GPGraphicADF()
 {
 }
 
+void GPGraphicADF::vMutate()
+{
+    /*TODO*/
+}
 void GPGraphicADF::_loadMain(const xmlReader::package* root, std::map<std::string, Point*>& allPoints, const GPFunctionDataBase* base) const
 {
     const std::vector<xmlReader::package*>& children = root->children;
@@ -339,9 +344,8 @@ void GPGraphicADF::_loadMain(const xmlReader::package* root, std::map<std::strin
 
 void GPGraphicADF::_loadStatus(const xmlReader::package* attach, const GPFunctionDataBase* base, Point* currentPoint) const
 {
-    int n = (currentPoint->mFunc->statusType).size();
+    auto n = (currentPoint->mFunc->statusType).size();
     GPASSERT(n == attach->children.size());
-    int cur = 0;
     std::vector<std::istream*> statusContents;
     statusContents.reserve(n);
     for (PITER iter_status=attach->children.begin(); iter_status!=attach->children.end(); iter_status++)

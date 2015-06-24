@@ -24,9 +24,9 @@ void GPFormulaTest::run()
             IGPAutoDefFunction* f = sys->vCreateFunctionFromFormula(formula);
             AUTOCLEAN(f);
             GPContents inp;
-            GPContents* out = f->run(&inp);
+            GPContents* out = f->vRun(&inp);
             IGPAutoDefFunction* comp = sys->vCreateFunctionFromName("TrPackageFitCompute");
-            auto _fits = comp->run(out);
+            auto _fits = comp->vRun(out);
             double* __fit = (double*)_fits->get(0);
             FUNC_PRINT_ALL(*__fit, f);
             _fits->clear();

@@ -28,16 +28,16 @@ class GPloadXmlTreeTest2:public GPTest
                     f.close();
                     ofstream file;
                     file.open("output/GPloadXmlTreeTest.xml");
-                    gp->save(file);
+                    gp->vSave(file);
                     file.close();
-                    IGPAutoDefFunction* gp2 = gp->copy();
+                    IGPAutoDefFunction* gp2 = gp->vCopy();
                     AUTOCLEAN(gp2);
                     file.open("output/GPloadXmlTreeTest_copy.xml");
-                    gp2->save(file);
+                    gp2->vSave(file);
                     file.close();
                     file.open("output/GPloadXmlTreeTest_mutate.xml");
-                    gen->vMutate(gp2);
-                    gp2->save(file);
+                    gp2->vMutate();
+                    gp2->vSave(file);
                     file.close();
                 }
             }

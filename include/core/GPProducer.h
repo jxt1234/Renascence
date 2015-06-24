@@ -36,8 +36,6 @@ class GPProducer:public RefCount
         virtual void vPrint(std::ostream& os) const{}
         /*Create GP from xml files*/
         virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is) const = 0;
-        /*For evolution*/
-        virtual void vMutate(IGPAutoDefFunction* f) const {}
         /*Create a IGPAutoDefFunction which use the inputType to output the same content in outputType, inputRepeat means the content of inputType can be used repeated*/
         /*The function can't be recursive, which can be modified by mutate*/
         virtual IGPAutoDefFunction* vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true, bool random = false) const = 0;

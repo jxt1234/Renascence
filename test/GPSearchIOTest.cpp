@@ -26,7 +26,7 @@ class GPSearchIOTest:public GPTest
                 vector<const IStatusType*> inp;
                 IGPAutoDefFunction* f = gen.vCreateFunction(out, inp);
                 GPContents GPinp;
-                auto _output = f->run(&GPinp);
+                auto _output = f->vRun(&GPinp);
                 GPASSERT(_output->size()==1);
                 ist->vSave(_output->get(0), cout);
                 cout <<endl;
@@ -43,13 +43,13 @@ class GPSearchIOTest:public GPTest
                     fileName << "output/GPSearchIOTest"<<i<<".xml";
                     ofstream output(fileName.str().c_str());
                     f = f_mul[i];
-                    auto _output2 = f->run(&GPinp);
+                    auto _output2 = f->vRun(&GPinp);
                     GPASSERT(_output2->size()==1);
                     ist->vSave(_output2->get(0), cout);
                     cout << endl;
                     _output2->clear();
                     delete _output2;
-                    f->save(output);
+                    f->vSave(output);
                     f->decRef();
                     output.close();
                 }

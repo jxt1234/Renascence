@@ -25,20 +25,27 @@
 class IGPAutoDefFunction:public RefCount
 {
 public:
-    virtual GPContents* run(GPContents* inputs) = 0;
-    virtual void save(std::ostream& os) const{}
+    virtual GPContents* vRun(GPContents* inputs) = 0;
+    virtual void vSave(std::ostream& os) const{}
     /*Return a new copy of this Function*/
-    virtual IGPAutoDefFunction* copy() const= 0;
+    virtual IGPAutoDefFunction* vCopy() const= 0;
+    /*Mutate function, for evolution*/
+    virtual void vMutate() = 0;
     /*Return the number of parameter needed, do nothing if para.get()==null*/
     virtual int vMap(GPPtr<GPParameter> para) = 0;
+    
     /*Return all inputTypes in order*/
-    virtual std::vector<const IStatusType*> vGetInputs() const = 0;
+    inline const std::vector<const IStatusType*>& getInputTypes() const {return mInputTypes;}
     /*Return all outputTypes in order*/
-    virtual std::vector<const IStatusType*> vGetOutputs() const = 0;
+    inline const std::vector<const IStatusType*>& getOutputTypes() const {return mOutputTypes;}
+
     //Basic Function
     IGPAutoDefFunction(){}
     virtual ~IGPAutoDefFunction(){}
     static IGPAutoDefFunction* makeAdaptorFunction(IGPAutoDefFunction* base, const std::vector<size_t>& order, const std::vector<const IStatusType*>& inputs);
+protected:
+    std::vector<const IStatusType*> mInputTypes;
+    std::vector<const IStatusType*> mOutputTypes;
 };
 
 #endif

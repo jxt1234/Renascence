@@ -104,20 +104,20 @@ void GP_Function_Get_Inputs(const IGPAutoDefFunction* f, GPTYPES* output)
 {
     GPASSERT(NULL!=f);//FIXME
     GPASSERT(NULL!=output);
-    *output = f->vGetInputs();
+    *output = f->getInputTypes();
 }
 
 void GP_Function_Get_Outputs(const IGPAutoDefFunction* f, GPTYPES* output)
 {
     GPASSERT(NULL!=f);//FIXME
     GPASSERT(NULL!=output);
-    *output = f->vGetOutputs();
+    *output = f->getOutputTypes();
 }
 
 GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input)
 {
     GPASSERT(NULL!=f);//FIXME
-    return f->run(input);
+    return f->vRun(input);
 }
 
 IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, std::istream& xmlFile)
@@ -132,7 +132,7 @@ IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, std::istre
 void GP_Function_Save(IGPAutoDefFunction* f, std::ostream& output)
 {
     GPASSERT(NULL!=f);//FIXME
-    f->save(output);
+    f->vSave(output);
 }
 
 void GP_Function_Destroy(IGPAutoDefFunction* f)

@@ -15,11 +15,12 @@
 ******************************************************************/
 #include "core/GP_XmlString.h"
 #include "producer/GPTreeADF.h"
+#include "producer/GPTreeProducer.h"
 #include <algorithm>
 #include <sstream>
 #include <fstream>
 #include "utils/debug.h"
-#include <utils/debug.h>
+#include "utils/GPRandom.h"
 //#define DEBUG_TIMES
 //#define DEBUG_XML
 
@@ -168,19 +169,6 @@ void GPTreeADFPoint::getinput(std::vector<const IStatusType*>& tlist) const
 }
 
 
-std::vector<const IStatusType*> GPTreeADF::vGetOutputs() const
-{
-    GPASSERT(NULL!=mRoot);
-    return mRoot->mFunc->outputType;
-}
-std::vector<const IStatusType*> GPTreeADF::vGetInputs() const
-{
-    GPASSERT(NULL!=mRoot);
-    vector<const IStatusType*> res;
-    mRoot->getinput(res);
-    return res;
-}
-
 
 GPContents* GPTreeADFPoint::compute(GPContents* input, int& cur)
 {
@@ -233,14 +221,13 @@ GPContents* GPTreeADFPoint::compute(GPContents* input, int& cur)
     return result;
 }
 
-GPTreeADF::GPTreeADF()
+GPTreeADF::GPTreeADF(GPTreeADFPoint* root, const GPTreeProducer* p)
 {
-    mRoot = new GPTreeADFPoint;
-}
-GPTreeADF::GPTreeADF(GPTreeADFPoint* root)
-{
+    GPASSERT(NULL!=p);
     GPASSERT(NULL!=root);
     mRoot = root;
+    mProducer = p;
+    _refreshInputsAndOutputs();
 }
 GPTreeADF::~GPTreeADF()
 {
@@ -262,30 +249,30 @@ void GPTreeADF::loadUnitFunction(vector<int>& result, int functionId, int status
     result.push_back(number);
 }
 
-void GPTreeADF::save(std::ostream& res) const
+void GPTreeADF::vSave(std::ostream& res) const
 {
     GPASSERT(NULL!=mRoot);
     mRoot->xmlPrint(res);
 }
 
-GPContents* GPTreeADF::run(GPContents* inputs)
+GPContents* GPTreeADF::vRun(GPContents* inputs)
 {
     GPASSERT(NULL!=mRoot);
 #ifdef DEBUG_XML
     ofstream os("GPTreeADF.xml");
-    this->save(os);
+    this->vSave(os);
     os.close();
 #endif
     int cur = 0;
     return mRoot->compute(inputs, cur);
 }
 
-IGPAutoDefFunction* GPTreeADF::copy() const
+IGPAutoDefFunction* GPTreeADF::vCopy() const
 {
     GPTreeADFPoint::GPTreeADFCopy c;
     GPTreeADFPoint* root = mRoot;
     GPTreeADFPoint* p = (GPTreeADFPoint*)AbstractPoint::deepCopy(root, &c);
-    return new GPTreeADF(p);
+    return new GPTreeADF(p, mProducer);
 }
 int GPTreeADF::vMap(GPPtr<GPParameter> para)
 {
@@ -322,3 +309,41 @@ int GPTreeADF::vMap(GPPtr<GPParameter> para)
     }
     return sum;
 }
+
+void GPTreeADF::vMutate()
+{
+    float pos = GPRandom::rate();
+    GPTreeADFPoint* p = find(pos);
+    /*Replace or mutate status*/
+    if (GPRandom::rate() < mProducer->getLargetVary())
+    {
+        const vector<const IStatusType*> outputs = p->func()->outputType;
+        //TODO If outputs is empty, Use function name to vary
+        if (!outputs.empty())
+        {
+            vector<const IStatusType*> inputs;
+            p->pGetInputs(inputs);
+            vector<vector<int> > queue;
+            mProducer->searchAllSequences(queue, outputs, inputs);
+            GPASSERT(!queue.empty());
+            int n = GPRandom::mid(0, queue.size());
+            p->replacePoint(queue[n], mProducer->getDataBase());
+            _refreshInputsAndOutputs();
+        }
+    }
+    const std::vector<GPStatusContent*>& mStatus = p->status();
+    for (int i=0; i<mStatus.size(); ++i)
+    {
+        mStatus[i]->mutate();
+    }
+}
+
+void GPTreeADF::_refreshInputsAndOutputs()
+{
+    GPASSERT(NULL!=mRoot);
+    vector<const IStatusType*> res;
+    mOutputTypes = mRoot->mFunc->outputType;
+    mRoot->getinput(res);
+    mInputTypes = res;
+}
+

@@ -18,12 +18,12 @@ class GPGraphicTest:public GPTest
                 GPPtr<IGPAutoDefFunction> gp = gen->vCreateFunctionFromIS(f);
                 f.close();
                 ofstream out("output/GPGraphicTest.xml");
-                gp->save(out);
+                gp->vSave(out);
                 out.close();
                 {
                     GPContents contents;
                     contents.push(NULL, NULL);
-                    GPContents* out = gp->run(&contents);
+                    GPContents* out = gp->vRun(&contents);
                     GPASSERT(out->size() == 1);
                     double* result = (double*)out->get(0);
                     cout << *result <<endl;

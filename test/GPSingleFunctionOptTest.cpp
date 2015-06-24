@@ -19,14 +19,14 @@ void GPSingleFunctionOptTest::run()
         GPPtr<IGPOptimizor> opt = GPOptimizorFactory::create(GPOptimizorFactory::PSO_SEARCH);
 
         GPPtr<IGPAutoDefFunction> origin = sys->vCreateFunction(base->queryType("TrBmp"), base->queryType(""));
-        origin->save(std::cout);
+        origin->vSave(std::cout);
         GPPtr<GPParameter> nullp;
         int n = origin->vMap(nullp);
         auto optfunc = [&](GPPtr<GPParameter> p){
             origin->vMap(p);
             GPContents firstinputs;
-            GPContents* result = origin->run(&firstinputs);
-            GPContents* fit = func->run(result);
+            GPContents* result = origin->vRun(&firstinputs);
+            GPContents* fit = func->vRun(result);
             double r = *(double*)fit->get(0);
             result->clear();
             fit->clear();

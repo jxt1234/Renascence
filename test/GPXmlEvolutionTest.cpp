@@ -30,8 +30,8 @@ class GPXmlEvolutionTest:public GPTest
                 IGPAutoDefFunction* fit = gen.createFunction(doubleId, bmp);
                 auto fitfunc = [&](IGPAutoDefFunction* f){
                     GPContents nullinput;
-                    GPContents* result = f->run(&nullinput);
-                    GPContents* fits = fit->run(result);
+                    GPContents* result = f->vRun(&nullinput);
+                    GPContents* fits = fit->vRun(result);
                     double fitresult = *(double*)fits->get(0);
                     result->clear();
                     delete result;
@@ -48,7 +48,7 @@ class GPXmlEvolutionTest:public GPTest
 
                 delete group;
                 ofstream outputF("output/result.xml");
-                result->save(outputF);
+                result->vSave(outputF);
                 outputF.close();
                 result->decRef();
             }

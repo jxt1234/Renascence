@@ -20,14 +20,14 @@ IGPAutoDefFunction* IGPAutoDefFunction::makeAdaptorFunction(IGPAutoDefFunction* 
             base->addRef();
             mBase = base;
             mInputOrder = order;
-            mOutputTypes = base->vGetOutputs();
+            mOutputTypes = base->getOutputTypes();
             mInputTypes = inputs;
         }
         ~adpatergp()
         {
             mBase->decRef();
         }
-        virtual GPContents* run(GPContents* input)
+        virtual GPContents* vRun(GPContents* input)
         {
             GPContents newContents;
             for (int i=0; i<mInputOrder.size(); ++i)
@@ -35,9 +35,9 @@ IGPAutoDefFunction* IGPAutoDefFunction::makeAdaptorFunction(IGPAutoDefFunction* 
                 auto id = mInputOrder[i];
                 newContents.push(input->contents[id]);
             }
-            return mBase->run(&newContents);
+            return mBase->vRun(&newContents);
         }
-        virtual void save(std::ostream& os) const
+        virtual void vSave(std::ostream& os) const
         {
             os << "<AdaptorGP>\n";
             os << "<Order>";
@@ -47,21 +47,12 @@ IGPAutoDefFunction* IGPAutoDefFunction::makeAdaptorFunction(IGPAutoDefFunction* 
             }
             os << "</Order>\n";
             os << "<BaseFunction>\n";
-            mBase->save(os);
+            mBase->vSave(os);
             os << "</BaseFunction>\n";
             os << "</AdaptorGP>\n";
         }
-        virtual std::vector<const IStatusType*> vGetInputs() const
-        {
-            return mInputTypes;
-        }
-        /*Return all outputTypes in order*/
-        virtual std::vector<const IStatusType*> vGetOutputs() const
-        {
-            return mOutputTypes;
-        }
         
-        virtual IGPAutoDefFunction* copy() const
+        virtual IGPAutoDefFunction* vCopy() const
         {
             IGPAutoDefFunction* r = new adpatergp(mBase, mInputOrder, mInputTypes);
             return r;
@@ -70,11 +61,13 @@ IGPAutoDefFunction* IGPAutoDefFunction::makeAdaptorFunction(IGPAutoDefFunction* 
         {
             return mBase->vMap(para);
         }
+        virtual void vMutate()
+        {
+            mBase->vMutate();
+        }
     private:
         IGPAutoDefFunction* mBase;
         std::vector<size_t> mInputOrder;
-        std::vector<const IStatusType*> mInputTypes;
-        std::vector<const IStatusType*> mOutputTypes;
     };
     return new adpatergp(base, inputorder, inputs);
 }

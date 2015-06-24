@@ -20,7 +20,7 @@ GPBoolADF::~GPBoolADF()
 
 bool GPBoolADF::value(GPContents* inputs)
 {
-    GPContents* out = mGP->run(inputs);
+    GPContents* out = mGP->vRun(inputs);
     bool* res = (bool*)out->get(0);
     bool r = *res;
     out->clear();
@@ -36,6 +36,10 @@ GPCombineADF::GPCombineADF(std::vector<IGPAutoDefFunction*> funcs)
     for (int i=0; i<mFunctions.size(); ++i)
     {
         mFunctions[i]->addRef();
+        auto inputs = mFunctions[i]->getInputTypes();
+        mInputTypes.insert(mInputTypes.end(), inputs.begin(), inputs.end());
+        auto outputs = mFunctions[i]->getOutputTypes();
+        mOutputTypes.insert(mOutputTypes.end(), outputs.begin(), outputs.end());
     }
 }
 
@@ -47,13 +51,13 @@ GPCombineADF::~GPCombineADF()
     }
 }
 
-GPContents* GPCombineADF::run(GPContents* inputs)
+GPContents* GPCombineADF::vRun(GPContents* inputs)
 {
     GPContents* res = new GPContents;
     int cur = 0;
     for (int i=0; i<mFunctions.size(); ++i)
     {
-        size_t n = (mFunctions[i]->vGetInputs()).size();
+        size_t n = (mFunctions[i]->getInputTypes()).size();
         //printf("n=%d, i=%d, cur=%d, inputsize=%d\n", n, i, cur, inputs.size());
         GPASSERT(0<=n);
         GPASSERT(inputs->size() >= cur+n);
@@ -63,7 +67,7 @@ GPContents* GPCombineADF::run(GPContents* inputs)
             input.push(inputs->contents[cur+j]);
         }
         cur+=n;
-        GPContents* out = (mFunctions[i])->run(&input);
+        GPContents* out = (mFunctions[i])->vRun(&input);
         for (auto p : out->contents)
         {
             res->push(p);
@@ -76,44 +80,32 @@ int GPCombineADF::vMap(GPPtr<GPParameter> para)
 {
     return 0;
 }
-void GPCombineADF::save(std::ostream& os)
+void GPCombineADF::vSave(std::ostream& os)
 {
     os << "<Combine>\n";
     for (int i=0; i<mFunctions.size(); ++i)
     {
         os << "<Function_"<<i<<">\n";
-        (mFunctions[i])->save(os);
+        (mFunctions[i])->vSave(os);
         os << "</Function_"<<i<<">\n";
     }
     os << "</Combine>\n";
 }
 
-IGPAutoDefFunction* GPCombineADF::copy() const
+IGPAutoDefFunction* GPCombineADF::vCopy() const
 {
     return new GPCombineADF(mFunctions);
 }
 
+void GPCombineADF::vMutate()
+{
+    for (auto f:mFunctions)
+    {
+        f->vMutate();
+    }
+}
 
-vector<const IStatusType*> GPCombineADF::vGetInputs() const
-{
-    vector<const IStatusType*> t;
-    for (int i=0; i<mFunctions.size(); ++i)
-    {
-        vector<const IStatusType*> _t = mFunctions[i]->vGetInputs();
-        t.insert(t.end(), _t.begin(), _t.end());
-    }
-    return t;
-}
-vector<const IStatusType*> GPCombineADF::vGetOutputs() const
-{
-    vector<const IStatusType*> t;
-    for (int i=0; i<mFunctions.size(); ++i)
-    {
-        vector<const IStatusType*> _t = mFunctions[i]->vGetOutputs();
-        t.insert(t.end(), _t.begin(), _t.end());
-    }
-    return t;
-}
+
 GPSwitchADF::GPSwitchADF(IGPAutoDefFunction* _s, IGPAutoDefFunction* _a, IGPAutoDefFunction* _b)
 {
     GPASSERT(NULL!=_s);
@@ -141,6 +133,7 @@ GPSwitchADF::GPSwitchADF(GPBoolADF* _s, IGPAutoDefFunction* _a, IGPAutoDefFuncti
     s->addRef();
     a->addRef();
     b->addRef();
+    /*TODO: Setup mInputTypes and mOutputTypes*/
 }
 
 GPSwitchADF::~GPSwitchADF()
@@ -150,20 +143,20 @@ GPSwitchADF::~GPSwitchADF()
     b->decRef();
 }
 
-IGPAutoDefFunction* GPSwitchADF::copy() const
+IGPAutoDefFunction* GPSwitchADF::vCopy() const
 {
     IGPAutoDefFunction* r = new GPSwitchADF(s,a,b);
     return r;
 }
-GPContents* GPSwitchADF::run(GPContents* inputs)
+GPContents* GPSwitchADF::vRun(GPContents* inputs)
 {
     bool swi = false;
-    int cur = 0;
+    size_t cur = 0;
     size_t n = 0;
     IGPAutoDefFunction* tar = NULL;
     //If operator
     {
-        n = (s->get()->vGetInputs()).size();
+        n = (s->get()->getInputTypes()).size();
         GPContents inp;
         for (int i=0; i<n; ++i)
         {
@@ -173,14 +166,14 @@ GPContents* GPSwitchADF::run(GPContents* inputs)
     }
     if (swi)
     {
-        cur = (s->get()->vGetInputs()).size();
-        n = (a->vGetInputs()).size();
+        cur = (s->get()->getInputTypes()).size();
+        n = (a->getInputTypes()).size();
         tar = a;
     }
     else
     {
-        cur = (s->get()->vGetInputs()).size() + (a->vGetInputs()).size();
-        n = (b->vGetInputs()).size();
+        cur = (s->get()->getInputTypes()).size() + (a->getInputTypes()).size();
+        n = (b->getInputTypes()).size();
         tar = b;
     }
     GPContents inp;
@@ -188,35 +181,30 @@ GPContents* GPSwitchADF::run(GPContents* inputs)
     {
         inp.push(inputs->contents[i+cur]);
     }
-    return tar->run(&inp);
+    return tar->vRun(&inp);
 }
-void GPSwitchADF::save(std::ostream& os)
+void GPSwitchADF::vSave(std::ostream& os)
 {
     os << "<Switch>\n";
     os << "<Just>\n";
-    s->get()->save(os);
+    s->get()->vSave(os);
     os << "</Just>\n";
     os << "<Option_1>\n";
-    a->save(os);
+    a->vSave(os);
     os << "</Option_1>\n";
     os << "<Option_2>\n";
-    b->save(os);
+    b->vSave(os);
     os << "</Option_2>\n";
     os << "</Switch>\n";
 }
 
-/*TODO Complete these*/
-vector<const IStatusType*> GPSwitchADF::vGetInputs() const
-{
-    vector<const IStatusType*> t;
-    return t;
-}
-vector<const IStatusType*> GPSwitchADF::vGetOutputs() const
-{
-    vector<const IStatusType*> t;
-    return t;
-}
 int GPSwitchADF::vMap(GPPtr<GPParameter> para)
 {
     return 0;
+}
+
+void GPSwitchADF::vMutate()
+{
+    a->vMutate();
+    b->vMutate();
 }

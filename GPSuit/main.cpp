@@ -75,7 +75,7 @@ int main(int argc, char** argv)
             GPData* inp = lin.get();
             GPData* out = lout.get();
             GPContents* gp_inp = inp->expand();
-            GPContents* gp_out = function->run(gp_inp);
+            GPContents* gp_out = function->vRun(gp_inp);
             double res = out->compare(*gp_out);
             result_os <<res <<"\n";
             gp_out->clear();
