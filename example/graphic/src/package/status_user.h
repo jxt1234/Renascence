@@ -13,7 +13,7 @@ extern "C"
 #include "regress/graphic_regress.h"
 }
 #include <stdlib.h>
-#include "user/status.h"
+#include "user/IStatusType.h"
 class TrFilterMatrixType:public IStatusType
 {
     public:

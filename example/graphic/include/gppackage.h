@@ -1,4 +1,4 @@
-#include "user/package.h"
+#include "user/GPContents.h"
 extern"C"
 {
     /*GP BEGIN*/

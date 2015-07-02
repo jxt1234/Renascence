@@ -17,10 +17,15 @@ gDepends = []
 gDirs = []
 gSrcFiles = []
 gLinks = []
-include_Flag = '-Iinclude'
+include_Flag = ''
 
 with open('config.txt') as f:
-    contents = f.read().split('##########')
+    filc_tt = f.read().split('**********')
+    for s in filc_tt[0].split(':')[1].split(' '):
+        include_Flag += '-I' + s + ' '
+
+    print include_Flag
+    contents = filc_tt[1].split('##########')
     for c in contents:
         lines = c.split('\n')
         lines = [l for l in lines if len(l)>2]

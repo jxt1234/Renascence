@@ -103,7 +103,7 @@ TYPECPPFILE = "src/package/GPTypes.cpp"
 def generateFunctionfiles(filelist, functions):
     hfile = "#ifndef SRC_PACKAGE_GPFUNCTIONS_H\n"
     hfile += "#define SRC_PACKAGE_GPFUNCTIONS_H\n"
-    hfile += "#include \"user/package.h\"\n"
+    hfile += "#include \"user/GPContents.h\"\n"
     hfile += "extern \"C\"{\n"
     cppfile = "#include \"GPPackage.h\"\n"
     cppfile += "#include \"GPTypes.h\"\n"
@@ -123,7 +123,7 @@ def generateTypeFiles(filelist, outputt, inputt):
     #Output is to make free callback function, input is to make status class
     hfile = "#ifndef SRC_PACKAGE_GPTYPES_H\n"
     hfile += "#define SRC_PACKAGE_GPTYPES_H\n"
-    hfile +="#include \"user/status.h\"\n"
+    hfile +="#include \"user/IStatusType.h\"\n"
     totoaltype = set(outputt + inputt)
     for t in totoaltype:
         hfile += "extern IStatusType* g"+t+";\n"
