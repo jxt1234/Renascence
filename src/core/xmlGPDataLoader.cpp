@@ -53,7 +53,7 @@ void xmlGPDataLoader::attributeUnflatten()
         else
         {
             std::ostringstream os;
-            int l = attr.size();
+            auto l = attr.size();
             for (int j=0; j<l-1; ++j)
             {
                 os << attr[j] << " ";

@@ -77,7 +77,6 @@ double GPData::compare(const GPContents& output)
             t.vSave(output[i], _out);
             istringstream data(_data.str());
             istringstream out(_out.str());
-            bool hasContent = true;
             double _d;
             double _o;
             double sum = 0;

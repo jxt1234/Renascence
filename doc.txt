@@ -250,3 +250,7 @@ run
 gptool.out create func.xml input=TrBmp, output=TrBmp fit=NULL outputfunc=outf.xml
 gptool.out opt func.xml model.xml fitf.xml outf.xml
 gptool.out run func.xml outputfunc.xml input=1.txt,2.jpg output=3.jpg
+
+
+2015.6.29
+1、引入流机制
