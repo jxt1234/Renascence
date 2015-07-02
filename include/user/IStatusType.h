@@ -39,6 +39,16 @@ public:
      * If *content is NULL and value is not NULL, alloc a new one.
      */
     virtual int vMap(void** content, double* value) const = 0;
+    /* Check(Optional)
+     * For Continue Data (Stream), Check if the data is completed, content must be not null
+     */
+    virtual bool vCheckCompleted(void* content) const {return true;}
+    /* Merge(Optional)
+     * For Continue Data (Stream), Merge the src data to dst, dst and src must be not null
+     * Normally, src will be freed after calling this api
+     * return true if the merge is success, return false means can't merge
+     */
+    virtual bool vMerge(void* dst, void* src) const {return false;}
 
 private:
     std::string mName;

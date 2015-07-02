@@ -14,6 +14,7 @@
    limitations under the License.
 ******************************************************************/
 #include "utils/debug.h"
+#include <execinfo.h>
 #ifndef BUILD_FOR_ANDROID
 void dump_stack()
 {
