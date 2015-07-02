@@ -17,7 +17,7 @@
 #define CORE_ABSTRACTGP_H
 #include <stdlib.h>
 #include "math/AbstractPoint.h"
-#include "user/package.h"
+#include "user/GPContents.h"
 #include "core/GPFunctionDataBase.h"
 #include "core/IGPAutoDefFunction.h"
 #include "core/GPStatusContent.h"

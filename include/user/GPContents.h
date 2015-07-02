@@ -16,7 +16,7 @@
 #ifndef USER_PACKAGE_H
 #define USER_PACKAGE_H
 #include <vector>
-#include "status.h"
+#include "IStatusType.h"
 
 /*We can not define a destructor function for GPContents, because it's handlered by system*/
 struct GPContents

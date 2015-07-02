@@ -16,9 +16,7 @@
 #ifndef CORE_GPDATA_H
 #define CORE_GPDATA_H
 #include "utils/RefCount.h"
-#include "user/package.h"
-#include "user/status.h"
-#include "user/package.h"
+#include "user/GPContents.h"
 #include <ostream>
 #include <string>
 class GPData:public RefCount

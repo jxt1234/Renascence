@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef CORE_IGPAUTODEFFUNCTION_H
 #define CORE_IGPAUTODEFFUNCTION_H
-#include "user/package.h"
+#include "user/GPContents.h"
 #include "GPFunctionDataBase.h"
 #include <istream>
 #include <ostream>

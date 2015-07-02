@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef XML_XMLGPDATALOADER_H
 #define XML_XMLGPDATALOADER_H
-#include "user/status.h"
+#include "user/IStatusType.h"
 #include "xml/xmlReader.h"
 #include "GPData.h"
 #include "GPFunctionDataBase.h"

@@ -16,8 +16,7 @@
 #ifndef USER_GPAPI_H
 #define USER_GPAPI_H
 class IGPAutoDefFunction;
-#include "package.h"
-#include "status.h"
+#include "GPContents.h"
 #include "IFunctionTable.h"
 #include <functional>
 #include <istream>

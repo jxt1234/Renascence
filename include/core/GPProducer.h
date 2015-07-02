@@ -15,11 +15,10 @@
 ******************************************************************/
 #ifndef CORE_GPPRODUCER_H
 #define CORE_GPPRODUCER_H
-#include "user/package.h"
+#include "user/GPContents.h"
 #include "utils/RefCount.h"
-#include "user/status.h"
+#include "user/IStatusType.h"
 #include "user/IFunctionTable.h"
-#include "user/package.h"
 #include "IGPAutoDefFunction.h"
 
 class GPProducer:public RefCount
