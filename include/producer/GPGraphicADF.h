@@ -113,10 +113,6 @@ public:
         static int gNumber;//FIXME for debug
         friend class GPGraphicADF;
     };
-    typedef std::vector<std::pair<Point*, GPPtr<Unit> > >::iterator INPUT_ITER;
-    typedef std::vector<std::pair<Point*, GPPtr<Unit> > >::const_iterator INPUT_ITER_CONST;
-    typedef std::vector<GPPtr<Point> >::iterator OUTPUT_ITER;
-    typedef std::vector<GPPtr<GPStatusContent> >::iterator STATUS_ITER;
 private:
     void _findAllPoints(std::set<Point*>& allPoints) const;
     void _loadMain(const xmlReader::package* root, std::map<std::string, Point*>& allPoints, const GPFunctionDataBase* base) const;

@@ -20,7 +20,6 @@
 #include <map>
 #include <sstream>
 
-typedef std::vector<xmlReader::package*>::const_iterator PITER;;
 /*For debug*/
 static void valid(const std::string& name)
 {
@@ -74,7 +73,7 @@ void _POINT::initStatus(const std::vector<std::istream*>& statusInput)
 
 void _POINT::_clean()
 {
-    for (INPUT_ITER i = mInputs.begin(); i!=mInputs.end(); i++)
+    for (auto i = mInputs.begin(); i!=mInputs.end(); i++)
     {
         i->second = NULL;//The Unit will be unreference
     }
@@ -83,7 +82,7 @@ void _POINT::_clean()
 void _POINT::_reset()
 {
     _clean();
-    for (OUTPUT_ITER i=mOutputs.begin(); i!=mOutputs.end(); i++)
+    for (auto i=mOutputs.begin(); i!=mOutputs.end(); i++)
     {
         (*i)->_reset();
     }
@@ -130,7 +129,7 @@ bool _POINT::_flow(bool clean)
         }
         delete out;
     }
-    for (OUTPUT_ITER i = mOutputs.begin(); i!=mOutputs.end(); i++)
+    for (auto i = mOutputs.begin(); i!=mOutputs.end(); i++)
     {
         if ((*i)->ready())
         {
@@ -142,7 +141,7 @@ bool _POINT::_flow(bool clean)
 bool _POINT::ready() const
 {
     bool result = true;
-    for (INPUT_ITER_CONST i = mInputs.begin(); i!=mInputs.end(); i++)
+    for (auto i = mInputs.begin(); i!=mInputs.end(); i++)
     {
         if (NULL == (i->second).get())
         {
@@ -174,7 +173,7 @@ void _POINT::receive(GPPtr<GPGraphicADF::Unit> u, _POINT* source)
     }
     /*Mid points should has position for the data, otherwise the connection is wrong*/
     bool find = false;
-    for (INPUT_ITER i=mInputs.begin(); i!=mInputs.end(); i++)
+    for (auto i=mInputs.begin(); i!=mInputs.end(); i++)
     {
         if (i->first == source)
         {
@@ -265,19 +264,19 @@ void GPGraphicADF::vSave(std::ostream& os) const
             os << "</"<<GP_XmlString::type<<">\n";
         }
         os << "<"<<GP_XmlString::inputs<<">\n";
-        for (INPUT_ITER i=cur->mInputs.begin(); i!=cur->mInputs.end();i++)
+        for (auto i=cur->mInputs.begin(); i!=cur->mInputs.end();i++)
         {
             os << GP_XmlString::node<<"_"<<i->first<<"\n";
         }
         os << "</"<<GP_XmlString::inputs<<">\n";
         os << "<"<<GP_XmlString::outputs<<">\n";
-        for (OUTPUT_ITER i=cur->mOutputs.begin(); i!=cur->mOutputs.end();i++)
+        for (auto i=cur->mOutputs.begin(); i!=cur->mOutputs.end();i++)
         {
             os << GP_XmlString::node<<"_"<<i->get()<<"\n";
         }
         os << "</"<<GP_XmlString::outputs<<">\n";
         os << "<"<<GP_XmlString::status<<">\n";
-        for (STATUS_ITER i=cur->mStatus.begin(); i!=cur->mStatus.end(); i++)
+        for (auto i=cur->mStatus.begin(); i!=cur->mStatus.end(); i++)
         {
             const IStatusType* s = (*i)->type();
             os << "<"<<s->name()<<">\n";
@@ -348,7 +347,7 @@ void GPGraphicADF::_loadStatus(const xmlReader::package* attach, const GPFunctio
     GPASSERT(n == attach->children.size());
     std::vector<std::istream*> statusContents;
     statusContents.reserve(n);
-    for (PITER iter_status=attach->children.begin(); iter_status!=attach->children.end(); iter_status++)
+    for (auto iter_status=attach->children.begin(); iter_status!=attach->children.end(); iter_status++)
     {
         const xmlReader::package* s = *iter_status;
         std::ostringstream out;
@@ -409,11 +408,11 @@ GPGraphicADF::GPGraphicADF(std::istream& is, const GPFunctionDataBase* base)
     std::map<std::string, Point*> allPoints;
     _loadMain(root, allPoints, base);
     /*Connect all points and Construct status*/
-    for (PITER iter=root->children.begin(); iter!=root->children.end(); iter++)
+    for (auto iter=root->children.begin(); iter!=root->children.end(); iter++)
     {
         const xmlReader::package* node = *iter;
         Point* currentPoint = (allPoints.find(node->name))->second;
-        for (PITER iter_node=node->children.begin(); iter_node!=node->children.end(); iter_node++)
+        for (auto iter_node=node->children.begin(); iter_node!=node->children.end(); iter_node++)
         {
             const xmlReader::package* attach = *iter_node;
             if (attach->name == GP_XmlString::status)

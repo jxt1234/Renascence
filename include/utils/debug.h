@@ -34,13 +34,6 @@
 
 #define CHECK_POINTER(x) {if(NULL==x){FUNC_PRINT_ALL(x,p);break;}}
 
-#ifdef __cplusplus
-extern "C"{
-#endif
-void dump_stack();
-#ifdef __cplusplus
-}
-#endif
 #ifndef BUILD_FOR_ANDROID
 #define GPASSERT(x) assert(x)
 #else

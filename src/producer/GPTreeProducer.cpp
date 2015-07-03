@@ -200,6 +200,18 @@ void GPTreeProducer::searchAllSequences(std::vector<std::vector<int> >& res, con
     res = tree.searchAll();
 }
 
+static bool inOrder(const std::vector<size_t>& order)
+{
+    for (int i=0; i<order.size(); ++i)
+    {
+        if (i!=order[i])
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 static bool makeOrder(std::vector<const IStatusType*> inputType, const std::vector<const IStatusType*>& realinputType, std::vector<size_t>& order/*output*/)
 {
     bool result = true;
@@ -239,8 +251,16 @@ std::vector<IGPAutoDefFunction*> GPTreeProducer::vCreateAllFunction(const std::v
             bool ok = makeOrder(inputType, realinputtype, order);
             if (ok)
             {
-                auto agp = IGPAutoDefFunction::makeAdaptorFunction(gp, order, inputType);
-                res.push_back(agp);
+                if (inOrder(order))
+                {
+                    auto agp = IGPAutoDefFunction::makeAdaptorFunction(gp, order, inputType);
+                    res.push_back(agp);
+                }
+                else
+                {
+                    gp->addRef();
+                    res.push_back(gp);
+                }
             }
             gp->decRef();
         }
