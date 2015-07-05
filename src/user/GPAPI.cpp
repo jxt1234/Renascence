@@ -1,14 +1,14 @@
-#include "user/GPAPI.h"
 #include "system/system_lib.h"
 #include "core/IGPAutoDefFunction.h"
 #include "core/GPProducer.h"
 #include "core/GPFactory.h"
-#include "core/GPFunctionDataBase.h"
 #include "evolution/GPEvolutionGroup.h"
 #include "optimizor/GPOptimizorFactory.h"
 #include <string>
 #include <sstream>
 #include "AGPProducer.h"
+#include "user/GPAPI.h"
+class GPFunctionDataBase;
 
 void GP_Set_Lib_Path(const char* basic_path)
 {
@@ -21,14 +21,13 @@ void GP_Set_Lib_Path(const char* basic_path)
 AGPProducer* GP_Producer_Create(std::istream& metaStream, IFunctionTable* table, int type)
 {
     FUNC_PRINT(type);
-    GPFunctionDataBase* f = new GPFunctionDataBase;
+    GPFunctionDataBase* f = GPFactory::createDataBase(metaStream, table);
     if (NULL == f)
     {
         FUNC_PRINT_ALL(f, p);
         return NULL;
     }
     AUTOUNREF(f);
-    f->loadXml(metaStream, table);
     GPProducer* p = NULL;
     switch(type)
     {

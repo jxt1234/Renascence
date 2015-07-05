@@ -14,9 +14,9 @@
    limitations under the License.
 ******************************************************************/
 #include "core/GPFactory.h"
-#include "core/GPFunctionDataBase.h"
 #include "producer/GPTreeProducer.h"
 #include "producer/GPGraphicProducer.h"
+#include <fstream>
 
 GPProducer* GPFactory::createProducer(const GPFunctionDataBase* base, GPFactory::TYPE t)
 {
@@ -34,12 +34,19 @@ GPProducer* GPFactory::createProducer(const GPFunctionDataBase* base, GPFactory:
     }
     return res;
 }
-GPFunctionDataBase* GPFactory::createDataBase(const char* file, IFunctionTable* t)
+GPFunctionDataBase* GPFactory::createDataBase(const char* metafile, IFunctionTable* t)
+{
+    GPASSERT(NULL!=metafile);
+    GPFunctionDataBase* base = new GPFunctionDataBase;
+    std::ifstream file(metafile);
+    GPASSERT(!file.fail());
+    base->loadXml(file, t);
+    return base;
+}
+
+GPFunctionDataBase* GPFactory::createDataBase(std::istream& file, IFunctionTable* t)
 {
     GPFunctionDataBase* base = new GPFunctionDataBase;
-    if (file!=NULL)
-    {
-        base->loadXml(file, t);
-    }
+    base->loadXml(file, t);
     return base;
 }

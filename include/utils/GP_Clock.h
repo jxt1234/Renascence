@@ -23,7 +23,7 @@ class GP_Clock
         ~GP_Clock();
         int reset();
     protected:
-        int mStart;
+        size_t mStart;
         int mId;
         char* mName;
 };
