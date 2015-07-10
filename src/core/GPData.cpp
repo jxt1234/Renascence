@@ -74,7 +74,7 @@ double GPData::compare(const GPContents& output)
             const IStatusType& t = d->type;
             ostringstream _data, _out;
             t.vSave(d->content, _data);
-            t.vSave(output[i], _out);
+            t.vSave(output.get(i), _out);
             istringstream data(_data.str());
             istringstream out(_out.str());
             double _d;

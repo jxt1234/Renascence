@@ -16,18 +16,18 @@
 #ifndef USER_GPAPI_H
 #define USER_GPAPI_H
 class IGPAutoDefFunction;
-#include "GPContents.h"
-#include "IFunctionTable.h"
 #include <functional>
 #include <istream>
 #include <ostream>
+#include "GPContents.h"
+#include "IFunctionTable.h"
+typedef std::vector<const IStatusType*> GPTYPES;
 extern "C"{
     enum
     {
         GP_PRODUCER_TREE=0,
         GP_PRODUCER_GRAPHIC=1
     };
-    typedef std::vector<const IStatusType*> GPTYPES;
     /*Set basic path of lib*/
     void GP_Set_Lib_Path(const char* basic_path);
 

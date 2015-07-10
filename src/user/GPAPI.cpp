@@ -1,15 +1,13 @@
+#include <string>
+#include <sstream>
 #include "system/system_lib.h"
 #include "core/IGPAutoDefFunction.h"
 #include "core/GPProducer.h"
 #include "core/GPFactory.h"
 #include "evolution/GPEvolutionGroup.h"
 #include "optimizor/GPOptimizorFactory.h"
-#include <string>
-#include <sstream>
 #include "AGPProducer.h"
 #include "user/GPAPI.h"
-class GPFunctionDataBase;
-
 void GP_Set_Lib_Path(const char* basic_path)
 {
     if (NULL == basic_path)

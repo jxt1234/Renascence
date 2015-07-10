@@ -15,10 +15,10 @@
  ******************************************************************/
 #ifndef CORE_GPFACTORY_H
 #define CORE_GPFACTORY_H
-class GPProducer;
 #include "GPFunctionDataBase.h"
-class IFunctionTable;
 #include <istream>
+class GPProducer;
+class IFunctionTable;
 class GPFactory
 {
 public:

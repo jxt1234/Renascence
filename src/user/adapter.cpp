@@ -8,6 +8,7 @@ using namespace std;
 extern "C"{
 #include "user/adapter.h"
 };
+
 void* GO_GP_Producer_Create(const char* metadataname, int type)
 {
     /*FIXME*/
@@ -64,3 +65,4 @@ void GO_GP_Function_Save(void* vf, const char* file)
     ofstream output(file);
     GP_Function_Save(f, output);
 }
+

@@ -40,6 +40,16 @@ struct GPContents
     {
         contents.push_back(unit);
     }
+    void clearContents()
+    {
+        for (auto unit : contents)
+        {
+            if (unit.content && unit.type)
+            {
+                unit.type->vFree(unit.content);
+            }
+        }
+    }
     void clear()
     {
         for (auto unit : contents)
@@ -52,7 +62,7 @@ struct GPContents
         contents.clear();
     }
     inline void* get(size_t i) const {return contents[i].content;}
-    inline void* operator[](size_t i) const {return contents[i].content;}
+    inline const GP_Unit& operator[](size_t i) const {return contents[i];}
     inline size_t size() const {return contents.size();}
     static void destroy(GPContents* c)
     {

@@ -1,11 +1,19 @@
 INCLUDE:include
 **********
 
+TARGET:libGP.a
+DEPENDS:
+DIRS:src
+SRCS:
+LINKS:
+
+##########
+
 TARGET:libGP.so
 DEPENDS:
 DIRS:src
 SRCS:
-LINKS: -lpthread -ldl
+LINKS:-lpthread -ldl
 
 ##########
 
