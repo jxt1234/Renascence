@@ -3,8 +3,6 @@
 
 #include "graphic.h"
 #include "transform_high.h"
-#include "regress/f2c.h"
-#include "regress/clapack.h"
 
 typedef struct TrRegreeMode
 {
@@ -20,10 +18,6 @@ typedef struct TrRegreeMode
 /*Reverse function of TrMixPicture*/
 void TrRegressMixFactor(TrBmp* dst, TrBmp** src, int inputNumber, float* parameters);
 
-
-/*Currently privately, but may be used as public in future*/
-/*Expand the src to a M*N float matrix, with the TrRegreeMode mode*/
-void TrRegressExpand(TrBmp* src, TrRegreeMode* mode, float* X, integer* M, integer* N, int hasConst);
 
 
 TrRegreeMode* TrRegreeModeAlloc(int dim);

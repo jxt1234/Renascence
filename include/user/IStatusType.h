@@ -42,7 +42,7 @@ public:
     /* Check(Optional)
      * For Continue Data (Stream), Check if the data is completed, content must be not null
      */
-    virtual bool vCheckCompleted(void* content) const {return true;}
+    virtual bool vCheckCompleted(void* content) const {return NULL!=content;}
     /* Merge(Optional)
      * For Continue Data (Stream), Merge the src data to dst, dst and src must be not null
      * Normally, src will be freed after calling this api

@@ -70,6 +70,7 @@ void GPFunctionDataBase::loadXml(std::istream& is, IFunctionTable* table, std::o
         }
         function* warpf = new function;
         warpf->name = func->name;
+        warpf->shortname = func->name;//Default
         warpf->basic = f;
         mFunctionTable.push_back(warpf);
     }
@@ -88,7 +89,14 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
     for (int i=0; i<func->children.size(); ++i)
     {
         const xmlReader::package* cur = (func->children).at(i);
-        if (cur->name == "inputs")
+        if (cur->name == "shortName")
+        {
+            if (cur->attr.size() > 0)
+            {
+                warpf->shortname = cur->attr[0];
+            }
+        }
+        else if (cur->name == "inputs")
         {
             vector<int> input;
             for (int j=0; j<cur->attr.size(); ++j)
@@ -226,7 +234,7 @@ void GPFunctionDataBase::print(ostream& os)
     for (int i=0; i<mFunctionTable.size(); ++i)
     {
         GPFunctionDataBase::function* fc = mFunctionTable[i];
-        os << i << ": "<<fc->name<<" : "<<fc->libName<<endl;
+        os << i << ": "<<fc->name<<" : "<<fc->shortname<<endl;
         os << "Required inputType is ";
         for (int j=0; j<fc->inputType.size(); ++j)
         {
@@ -271,6 +279,18 @@ const IStatusType* GPFunctionDataBase::vQueryType(const std::string& name) const
     }
     return res;
 }
+const GPFunctionDataBase::function* GPFunctionDataBase::vQueryFunctionByShortName(const std::string& name) const
+{
+    for (int i=0; i<mFunctionTable.size(); ++i)
+    {
+        if (mFunctionTable[i]->shortname == name)
+        {
+            return mFunctionTable[i];
+        }
+    }
+    return NULL;
+}
+
 const GPFunctionDataBase::function* GPFunctionDataBase::vQueryFunction (const string& name) const
 {
     for (int i=0; i<mFunctionTable.size(); ++i)

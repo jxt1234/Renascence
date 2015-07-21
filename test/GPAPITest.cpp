@@ -24,7 +24,7 @@ static int test_main()
     }
     /*Formula*/
     {
-        string formula = "TrPackageCompse(TrPackageSaturation(TrPackageInput()), TrPackageFilterMatrix(TrPackageInput()))";
+        string formula = "C(S(I()), F(I()))";
         auto adf = GP_Function_Create_ByFormula(producer, formula.c_str());
         ofstream output("output/GPAPI_Formula.txt");
         GP_Function_Save(adf, output);
@@ -61,7 +61,7 @@ static int test_main()
         };
         /*Single Opt*/
         {
-            string formula = "TrPackageCompse(TrPackageSaturation(TrPackageInput()), TrPackageFilterMatrix(TrPackageInput()))";
+            string formula = "C(S(I()), F(I()))";
             auto adf  = GP_Function_Create_ByFormula(producer, formula.c_str());
             GP_Function_Optimize(adf, fitfunction, 1, "time=10");
             cout << fitfunction(adf) << endl;
@@ -71,7 +71,7 @@ static int test_main()
         }
         /*Find Best, evolution group*/
         {
-            auto bestf = GP_Function_CreateBest_ByType(producer, "TrBmp", "", true, fitfunction, 1000);
+            auto bestf = GP_Function_CreateBest_ByType(producer, "TrBmp", "", true, fitfunction, 10);
             cout << fitfunction(bestf) << endl;
             ofstream orzzz("output/GPAPI_Evolution.txt");
             GP_Function_Save(bestf, orzzz);

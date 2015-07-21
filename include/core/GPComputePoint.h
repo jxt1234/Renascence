@@ -16,18 +16,20 @@
 #ifndef CORE_GPCOMPUTEPOINT_H
 #define CORE_GPCOMPUTEPOINT_H
 #include "head.h"
+#include "GPFunctionDataBase.h"
 #include "user/GPContents.h"
 class GPComputePoint:public RefCount
 {
 public:
-    GPComputePoint(computeFunction f, int n);
-    GPComputePoint(computeFunction f, const std::vector<bool>& completeFlags);
+    GPComputePoint(const GPFunctionDataBase::function* f, int n);
+    GPComputePoint(const GPFunctionDataBase::function* f, const std::vector<bool>& completeFlags);
     virtual ~GPComputePoint();
     bool vReceive(GPContents* inputs);
     inline bool completed() const {return mComplte;}
     GPContents* vCompute();
 private:
-    computeFunction mF;
+    bool _computeCompleteStatus() const;
+    const GPFunctionDataBase::function* mF;
     std::vector<bool> mFlags;
     GPContents mCache;
     bool mComplte;

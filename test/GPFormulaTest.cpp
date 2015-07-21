@@ -15,7 +15,8 @@ class GPFormulaTest:public GPTest
 };
 void GPFormulaTest::run()
 {
-    string formula = "TrPackageCompse(TrPackageSaturation(TrPackageInput()), TrPackageFilterMatrix(TrPackageInput()))";
+    //string formula = "TrPackageCompse(TrPackageSaturation(TrPackageInput()), TrPackageFilterMatrix(TrPackageInput()))";
+    string formula = "C(S(I()), F(I()))";
     GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
     AUTOCLEAN(base);
     {

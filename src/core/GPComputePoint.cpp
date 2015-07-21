@@ -7,7 +7,7 @@
 //
 
 #include "core/GPComputePoint.h"
-GPComputePoint::GPComputePoint(computeFunction f, int n)
+GPComputePoint::GPComputePoint(const GPFunctionDataBase::function* f, int n)
 {
     mF = f;
     for (int i=0; i<n;++i)
@@ -15,9 +15,9 @@ GPComputePoint::GPComputePoint(computeFunction f, int n)
         mFlags.push_back(false);
         mCache.push(NULL, NULL);
     }
-    mComplte = false;
+    mComplte = _computeCompleteStatus();
 }
-GPComputePoint::GPComputePoint(computeFunction f, const std::vector<bool>& completeFlags)
+GPComputePoint::GPComputePoint(const GPFunctionDataBase::function* f, const std::vector<bool>& completeFlags)
 {
     mF = f;
     mFlags = completeFlags;
@@ -25,6 +25,7 @@ GPComputePoint::GPComputePoint(computeFunction f, const std::vector<bool>& compl
     {
         mCache.push(NULL, NULL);
     }
+    mComplte = _computeCompleteStatus();
 }
 GPComputePoint::~GPComputePoint()
 {
@@ -51,7 +52,12 @@ bool GPComputePoint::vReceive(GPContents* inputs)
             dst.type->vMerge(dst.content, src.content);
         }
     }
-    mComplte = true;
+    mComplte = _computeCompleteStatus();
+    return mComplte;
+}
+bool GPComputePoint::_computeCompleteStatus() const
+{
+    bool res = true;
     for (int i=0; i<mFlags.size(); ++i)
     {
         if (mFlags[i])
@@ -59,12 +65,12 @@ bool GPComputePoint::vReceive(GPContents* inputs)
             auto c = mCache[i];
             if (!(c.type->vCheckCompleted(c.content)))
             {
-                mComplte = false;
+                res = false;
                 break;
             }
         }
     }
-    return mComplte;
+    return res;
 }
 GPContents* GPComputePoint::vCompute()
 {
@@ -72,9 +78,9 @@ GPContents* GPComputePoint::vCompute()
     GPContents* dst = NULL;
     if (mComplte)
     {
-        dst = mF(&mCache);
+        dst = mF->basic(&mCache);
         mCache.clearContents();
-        mComplte = false;
+        mComplte = _computeCompleteStatus();
     }
     return dst;
 }

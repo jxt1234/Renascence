@@ -1,6 +1,7 @@
 <libpics>
 
 <TrPackageCompse>
+    <shortName>C</shortName>
 
 	<inputs>TrPackageFilterMatrix, TrPackageFilterMatrix</inputs>
 	<inputs>TrPackageInput, TrPackageFilterMatrix</inputs>
@@ -10,6 +11,7 @@
 </TrPackageCompse>
 
 <TrPackageSaturation>
+    <shortName>S</shortName>
 
 	<inputs>TrPackageInput</inputs>
 	<inputs>TrPackageFilterMatrix</inputs>
@@ -19,6 +21,7 @@
 </TrPackageSaturation>
 
 <TrPackageFilterMatrix>
+    <shortName>F</shortName>
 	<inputs>TrPackageInput</inputs>
 	<status>TrFilterMatrix</status>
 </TrPackageFilterMatrix>
@@ -43,6 +46,7 @@
 </TrPackageFilterTransformFromRegress>
 
 <TrPackageInput>
+    <shortName>I</shortName>
 </TrPackageInput>
 
 <TrPackageInputTarget>

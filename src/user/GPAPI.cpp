@@ -177,7 +177,13 @@ IGPAutoDefFunction* GP_Function_CreateBest_ByType(const AGPProducer* p, const ch
         FUNC_PRINT(1);
         return NULL;
     }
-    GPPtr<GPEvolutionGroup> group = new GPEvolutionGroup(p->P, 100, 20);//FIXME Set it from parameter
+    const int size = 20;
+    int gens = maxTimes/size;
+    if (gens < 1)
+    {
+        gens = 1;
+    }
+    GPPtr<GPEvolutionGroup> group = new GPEvolutionGroup(p->P, gens, size);//FIXME Set it from parameter
     std::vector<const IStatusType*> inputs = _transform(inputTypes, p);
     std::vector<const IStatusType*> outputs = _transform(outputTypes, p);
     group->vSetInput(inputs);

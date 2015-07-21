@@ -74,7 +74,7 @@ void GPTreeADFPoint::initStatus(const std::vector<std::istream*>& statusInput)
 void GPTreeADFPoint::xmlPrint(std::ostream& res) const
 {
     res << "<"<< GP_XmlString::node<<">"<<endl;
-    res<<"<"<<GP_XmlString::lib<<">"<<mFunc->libName<<"</"<<GP_XmlString::lib<<">\n";
+    res<<"<"<<GP_XmlString::lib<<">"<<mFunc->shortname<<"</"<<GP_XmlString::lib<<">\n";
     res<<"<"<<GP_XmlString::func<<">"<<mFunc->name<<"</"<<GP_XmlString::func<<">\n";
     res<<"<"<<GP_XmlString::status<<">\n";
     for (int j=0; j<mStatus.size(); ++j)

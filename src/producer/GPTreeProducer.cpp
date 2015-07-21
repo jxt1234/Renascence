@@ -64,13 +64,13 @@ public:
     virtual ~formulaCopy(){}
     virtual AbstractPoint* copy(AbstractPoint* src)
     {
-        FormulaTreePoint* point = dynamic_cast<FormulaTreePoint*>(src);
+        FormulaTreePoint* point = (FormulaTreePoint*)(src);
         GPASSERT(NULL!=point);
         if (FormulaTreePoint::NUM == point->type())
         {
             return NULL;
         }
-        const GPFunctionDataBase::function* f = mBase->vQueryFunction(point->name());
+        const GPFunctionDataBase::function* f = mBase->vQueryFunctionByShortName(point->name());
         GPTreeADFPoint* p = new GPTreeADFPoint(f);
         return p;
     }
