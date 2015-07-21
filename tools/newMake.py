@@ -19,6 +19,8 @@ gSrcFiles = []
 gLinks = []
 include_Flag = ''
 
+gHistoryFile = []
+
 with open('config.txt') as f:
     filc_tt = f.read().split('**********')
     for s in filc_tt[0].split(':')[1].split(' '):
@@ -85,6 +87,9 @@ def Generate_Output(outName, srcDirs, srcFiles, CLINK, depend):
     def getSequencesAndAppend(src, program):
         obj = getNameWithofO(src)
         objs.append(obj)
+        if src in gHistoryFile:
+            return
+        gHistoryFile.append(src)
         sequence = MIDPATH + obj + ' : ' + src + " "+depend+" "+' ${'+include + '}\n'
         sequence += '\t' + program + CFLAGS + ' -o ' + MIDPATH + obj + ' -c ' + src + ' '+include_Flag+' \n'
         sequences.append(sequence)
@@ -109,10 +114,10 @@ def Generate_Output(outName, srcDirs, srcFiles, CLINK, depend):
     if (main.find('.a')!=-1):
         fileContents+=('\t' + 'ar rcs '  + main+' ')
     else:
-        fileContents+=('\t' + CPP + " " + CFLAGS +target+' -o ' + main+' ')
+        fileContents+=('\t' + CPP + " " + CFLAGS + ' ' + target  + ' ' + CLINK  +' -o ' + main+' ')
     for obj in objs:
         fileContents+=(' '+MIDPATH+obj)
-    fileContents+=(' '+ CLINK  + ' ${SELF_VARIABLES}' + '\n')
+    fileContents+=(' ${SELF_VARIABLES}' + '\n')
     #All objs' make 
     for sequence in sequences:
         fileContents+=sequence

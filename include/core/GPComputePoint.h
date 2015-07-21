@@ -24,10 +24,12 @@ public:
     GPComputePoint(computeFunction f, const std::vector<bool>& completeFlags);
     virtual ~GPComputePoint();
     bool vReceive(GPContents* inputs);
+    inline bool completed() const {return mComplte;}
     GPContents* vCompute();
 private:
     computeFunction mF;
     std::vector<bool> mFlags;
     GPContents mCache;
+    bool mComplte;
 };
 #endif
