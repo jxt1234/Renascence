@@ -15,42 +15,61 @@
 ******************************************************************/
 #ifndef USER_GPSTREAM_H
 #define USER_GPSTREAM_H
-class GPStream
+#include <stdlib.h>
+struct GPStream
 {
-public:
     /*If the buffer is NULL, it means skip size bytes, return the fact bytes it read*/
-    virtual size_t vRead(void* buffer, size_t size) = 0;
-    
+    size_t(*mRead)(void* meta, void* buffer, size_t size);
     /*Return true if the stream has moved to end*/
-    virtual bool vIsEnd() const = 0;
+    bool(*mIsEnd)(void* meta);
+    
+    size_t read(void* buffer, size_t size) const
+    {
+        return mRead(mMetaData, buffer, size);
+    }
+    
+    bool isEnd() const
+    {
+        return mIsEnd(mMetaData);
+    }
     
     template <typename T>
-    T read()
+    T readUnit()
     {
         T buffer;
-        this->vRead(&buffer, sizeof(T));
+        this->mRead(mMetaData, &buffer, sizeof(T));
         return buffer;
     }
-protected:
-    GPStream() = default;
-    virtual ~GPStream() = default;
-private:
-    GPStream(const GPStream& stream) = default;
-    GPStream& operator=(const GPStream& stream) = default;
+    void* mMetaData;
+    
+    bool isValid() const
+    {
+        return NULL!=mMetaData && NULL!=mRead && NULL!=mIsEnd;
+    }
 };
-class GPWStream
+struct GPWStream
 {
-public:
-    virtual size_t vWrite(const void* buffer, size_t size) = 0;
-    virtual bool vFlush() = 0;
+    size_t(*mWrite)(void* meta, const void* buffer, size_t size);
+    bool(*mFlush)(void* meta);
+    size_t write(const void* buffer, size_t size)
+    {
+        return mWrite(mMetaData, buffer, size);
+    }
+    bool flush()
+    {
+        return mFlush(mMetaData);
+    }
     
     template<typename T>
-    bool write(T v)
+    bool writeUnit(T v)
     {
-        return this->vWrite(&v, sizeof(T));
+        return this->mWrite(mMetaData, &v, sizeof(T));
     }
-protected:
-    GPWStream() = default;
-    virtual ~GPWStream() = default;
+    void* mMetaData;
+    
+    bool isValid() const
+    {
+        return NULL!=mWrite && NULL!=mFlush && NULL!=mMetaData;
+    }
 };
 #endif
