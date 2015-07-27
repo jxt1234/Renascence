@@ -15,4 +15,30 @@
 ******************************************************************/
 #ifndef CORE_GPSTREAMFACTORY_H
 #define CORE_GPSTREAMFACTORY_H
+#include "user/GPStream.h"
+#include "utils/RefCount.h"
+class GPStreamWrap:public GPStream, public RefCount
+{
+public:
+    GPStreamWrap(){}
+    virtual ~GPStreamWrap(){}
+};
+class GPWStreamWrap:public GPWStream, public RefCount
+{
+public:
+    GPWStreamWrap(){}
+    virtual ~GPWStreamWrap(){}
+};
+
+class GPStreamFactory
+{
+public:
+    typedef enum{
+        FILE,
+        BUFFER
+    } MODE;
+    static GPStreamWrap* NewStream(const char* meta, MODE m);
+    static GPWStreamWrap* NewWStream(const char* meta, MODE m);
+};
+
 #endif

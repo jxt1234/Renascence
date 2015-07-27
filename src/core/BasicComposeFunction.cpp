@@ -58,13 +58,12 @@ GPContents* GPCombineADF::vRun(GPContents* inputs)
     for (int i=0; i<mFunctions.size(); ++i)
     {
         size_t n = (mFunctions[i]->getInputTypes()).size();
-        //printf("n=%d, i=%d, cur=%d, inputsize=%d\n", n, i, cur, inputs.size());
         GPASSERT(0<=n);
         GPASSERT(inputs->size() >= cur+n);
         GPContents input;
         for (int j=0; j<n; ++j)
         {
-            input.push(inputs->contents[cur+j]);
+            input.push((*inputs)[cur+j]);
         }
         cur+=n;
         GPContents* out = (mFunctions[i])->vRun(&input);
@@ -80,7 +79,7 @@ int GPCombineADF::vMap(GPPtr<GPParameter> para)
 {
     return 0;
 }
-void GPCombineADF::vSave(std::ostream& os)
+void GPCombineADF::vSave(std::ostream& os) const
 {
     os << "<Combine>\n";
     for (int i=0; i<mFunctions.size(); ++i)
@@ -183,7 +182,7 @@ GPContents* GPSwitchADF::vRun(GPContents* inputs)
     }
     return tar->vRun(&inp);
 }
-void GPSwitchADF::vSave(std::ostream& os)
+void GPSwitchADF::vSave(std::ostream& os) const
 {
     os << "<Switch>\n";
     os << "<Just>\n";

@@ -1,13 +1,13 @@
-#include "user/GPStream.h"
+#include "core/GPStreamFactory.h"
 
-class GPFileStream:public GPStream
+class GPFileStream:public GPStreamWrap
 {
 public:
     GPFileStream(const char* filename);
     virtual ~GPFileStream();
 };
 
-class GPFileWStream:public GPWStream
+class GPFileWStream:public GPWStreamWrap
 {
 public:
     GPFileWStream(const char* filename);

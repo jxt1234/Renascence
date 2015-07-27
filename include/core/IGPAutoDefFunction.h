@@ -26,7 +26,7 @@ class IGPAutoDefFunction:public RefCount
 {
 public:
     virtual GPContents* vRun(GPContents* inputs) = 0;
-    virtual void vSave(std::ostream& os) const{}
+    virtual void vSave(std::ostream& os) const = 0;
     /*Return a new copy of this Function*/
     virtual IGPAutoDefFunction* vCopy() const= 0;
     /*Mutate function, for evolution*/

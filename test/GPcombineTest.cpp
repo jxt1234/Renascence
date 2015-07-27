@@ -9,7 +9,6 @@
 #include "head.h"
 using namespace std;
 /*TODO*/
-#if 0
 class GPcombineTest:public GPTest
 {
     public:
@@ -20,11 +19,10 @@ class GPcombineTest:public GPTest
                 GPProducer* sys = GPFactory::createProducer(base.get());
                 AUTOCLEAN(sys);
                 const IStatusType* bmp = base->vQueryType(string("TrBmp"));
-                const IStatusType* doubleId = base->vQueryType(string("double"));
                 const IStatusType* matrix = base->vQueryType(string("TrFilterMatrix"));
                 /*Construct compose function*/
                 vector<IGPAutoDefFunction*> funcs;
-                GPContents bmpoutput;//For input
+                GPContents* bmpoutput;//For input
                 GPContents bmpinput;
                 IGPAutoDefFunction* c1 = sys->createFunction(matrix);
                 funcs.push_back(c1);
@@ -38,48 +36,49 @@ class GPcombineTest:public GPTest
                         funcs.push_back(fs[i]);
                     }
                     GPASSERT(fs.size()>0);
-                    GP_Input inp;
-                    bmpoutput = fs[0]->run(inp);
-                    bmpinput.push_back(bmpoutput[0]);
+                    GPContents inp;
+                    bmpoutput = fs[0]->vRun(&inp);
                 }
                 IGPAutoDefFunction* fit = sys->vCreateFunctionFromName(string("TrPackageFitCompute"));
                 funcs.push_back(fit);
-
-                FUNC_PRINT(funcs.size());
 
                 IGPAutoDefFunction* compf = new GPCombineADF(funcs);
                 for (int i=0; i<funcs.size(); ++i)
                 {
                     funcs[i]->decRef();
                 }
-
-                GP_Output alloutput = compf->run(bmpinput);
-                FUNC_PRINT(alloutput.size());
+                FUNC_PRINT(bmpoutput->size());
                 {
                     ofstream os("output/GPcombineTest.xml");
-                    compf->save(os);
+                    compf->vSave(os);
                     os.close();
                 }
+                GPContents* alloutput = compf->vRun(bmpoutput);
+                FUNC_PRINT(alloutput->size());
 
 
                 //The first is TrFilterMatrix
-                matrix->vSave(alloutput[0], cout);
+                auto unit = (*alloutput)[0];
+                unit.type->vSave(unit.content, cout);
                 cout << endl;
                 //Mids are all bmps
-                for (int i=1; i<alloutput.size()-1; ++i)
+                for (int i=1; i<alloutput->size()-1; ++i)
                 {
-                    GP_Input inp;
-                    inp.push_back(alloutput[i]);
-                    GP_Output fit_bmp = fit->run(inp);
-                    double* __fit = (double*)fit_bmp[0];
+                    FUNC_PRINT(i);
+                    GPContents inp;
+                    inp.push((*alloutput)[i]);
+                    FUNC_PRINT_ALL((*alloutput)[i].type->name().c_str(),s);
+                    GPContents* fit_bmp = fit->vRun(&inp);
+                    double* __fit = (double*)fit_bmp->get(0);
                     FUNC_PRINT_ALL(*__fit, f);
-                    fit_bmp.clear();
+                    GPContents::destroy(fit_bmp);
                 }
-                double* __fit = (double*)alloutput[alloutput.size()-1];
+                double* __fit = (double*)alloutput->get(alloutput->size()-1);
                 FUNC_PRINT_ALL(*__fit, f);
 
-                alloutput.clear();
-                bmpoutput.clear();
+                GPContents::destroy(alloutput);
+                GPContents::destroy(bmpoutput);
+
                 compf->decRef();
             }
         }
@@ -88,4 +87,3 @@ class GPcombineTest:public GPTest
 };
 
 static GPTestRegister<GPcombineTest> a("GPcombineTest");
-#endif
