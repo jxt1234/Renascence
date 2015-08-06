@@ -3,13 +3,18 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+
+/*TODO*/
+#include "core/GPStreamFactory.h"
 using namespace std;
 
 int test_main()
 {
-    ifstream soxml("/Users/jiangxiaotang/Documents/Genetic-Program-Frame/func.xml");
+    const char* soxmlname = "/Users/jiangxiaotang/Documents/Genetic-Program-Frame/func.xml";
+    GPPtr<GPStreamWrap> soxml = GPStreamFactory::NewStream(soxmlname, GPStreamFactory::FILE);
+    GPPtr<GPWStreamWrap> screenstream = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
     GP_Set_Lib_Path("/Users/jiangxiaotang/Documents/Genetic-Program-Frame");
-    auto producer = GP_Producer_Create(soxml, NULL, 0);
+    auto producer = GP_Producer_Create(soxml.get(), NULL, 0);
     /*Optimize*/
     {
         auto fitf = GP_Function_Create_ByType(producer, "double", "TrBmp", false);
@@ -25,15 +30,14 @@ int test_main()
             GPContents::destroy(foutput);
             return res;
         };
-        GP_Function_Save(fitf, cout);
-        cout.flush();
+        GP_Function_Save(fitf, screenstream.get());
         /*Find Best, evolution group*/
         if (1)
         {
             auto bestf = GP_Function_CreateBest_ByType(producer, "TrBmp", "", true, fitfunction, 1000);
             cout << endl << "Best Fit is " << fitfunction(bestf) << endl;
-            ofstream orzzz("/Users/jiangxiaotang/Documents/Genetic-Program-Frame/output/GPAPI_Evolution.txt");
-            GP_Function_Save(bestf, orzzz);
+            GPPtr<GPWStreamWrap> orzzz = GPStreamFactory::NewWStream("/Users/jiangxiaotang/Documents/Genetic-Program-Frame/output/GPAPI_Evolution.txt", GPStreamFactory::FILE);
+            GP_Function_Save(bestf, orzzz.get());
             GP_Function_Destroy(bestf);
         }
         GP_Function_Destroy(fitf);

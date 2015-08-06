@@ -30,6 +30,6 @@ public:
     }TYPE;
     static GPProducer* createProducer(const GPFunctionDataBase* base, TYPE t = TREE);
     static GPFunctionDataBase* createDataBase(const char* metafile, IFunctionTable* t);
-    static GPFunctionDataBase* createDataBase(std::istream& metafile, IFunctionTable* t);
+    static GPFunctionDataBase* createDataBase(GPStream* metafile, IFunctionTable* t);
 };
 #endif

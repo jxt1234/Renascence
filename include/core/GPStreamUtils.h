@@ -13,33 +13,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef CORE_GPSTREAMFACTORY_H
-#define CORE_GPSTREAMFACTORY_H
+#ifndef CORE_GPSTREAMUTILS_H
+#define CORE_GPSTREAMUTILS_H
 #include "user/GPStream.h"
-#include "utils/RefCount.h"
-class GPStreamWrap:public GPStream, public RefCount
+#include "utils/GPBlock.h"
+class GPStreamUtils
 {
 public:
-    GPStreamWrap(){}
-    virtual ~GPStreamWrap(){}
+    static GPPtr<GPBlock> read(GPStream* input, bool merge=false);
+    static void write(GPWStream* output, GPPtr<GPBlock> content);
 };
-class GPWStreamWrap:public GPWStream, public RefCount
-{
-public:
-    GPWStreamWrap(){}
-    virtual ~GPWStreamWrap(){}
-};
-
-class GPStreamFactory
-{
-public:
-    typedef enum{
-        FILE,
-        BUFFER,
-        USER
-    } MODE;
-    static GPStreamWrap* NewStream(const char* meta, MODE m);
-    static GPWStreamWrap* NewWStream(const char* meta, MODE m);
-};
-
 #endif

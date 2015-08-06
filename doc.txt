@@ -254,3 +254,6 @@ gptool.out run func.xml outputfunc.xml input=1.txt,2.jpg output=3.jpg
 
 2015.6.29
 1、引入流机制
+
+2015.7.27
+1、ADF导入导出机制重构

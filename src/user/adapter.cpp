@@ -1,4 +1,5 @@
 #include "core/GPProducer.h"
+#include "core/GPStreamFactory.h"
 #include "user/GPAPI.h"
 #include "AGPProducer.h"
 #include <sstream>
@@ -13,8 +14,8 @@ void* GO_GP_Producer_Create(const char* metadataname, int type)
 {
     /*FIXME*/
     GPASSERT(NULL!=metadataname);
-    ifstream input(metadataname);
-    return (void*)GP_Producer_Create(input, NULL, type);
+    GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream(metadataname, GPStreamFactory::FILE);
+    return (void*)GP_Producer_Create(input.get(), NULL, type);
 }
 void GO_GP_Producer_Destroy(void* p)
 {
@@ -55,14 +56,14 @@ void* GO_GP_Function_Run(void* f, void* input)
 }
 void* GO_GP_Function_Create_ByFile(void* vp, const char* file)
 {
-    ifstream inputs(file);
+    GPPtr<GPStreamWrap> inputs = GPStreamFactory::NewStream(file, GPStreamFactory::FILE);
     AGPProducer* p = (AGPProducer*)vp;
-    return (void*)GP_Function_Create_ByStream(p, inputs);
+    return (void*)GP_Function_Create_ByStream(p, inputs.get());
 }
 void GO_GP_Function_Save(void* vf, const char* file)
 {
     IGPAutoDefFunction* f = (IGPAutoDefFunction*)vf;
-    ofstream output(file);
-    GP_Function_Save(f, output);
+    GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream(file, GPStreamFactory::FILE);
+    GP_Function_Save(f, output.get());
 }
 

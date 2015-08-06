@@ -17,27 +17,27 @@
 #define USER_GPAPI_H
 class IGPAutoDefFunction;
 #include <functional>
-#include <istream>
-#include <ostream>
 #include "GPContents.h"
+#include "GPStream.h"
 #include "IFunctionTable.h"
 typedef std::vector<const IStatusType*> GPTYPES;
 extern "C"{
+    class AGPProducer;
     enum
     {
         GP_PRODUCER_TREE=0,
         GP_PRODUCER_GRAPHIC=1
     };
+    
     /*Set basic path of lib*/
     void GP_Set_Lib_Path(const char* basic_path);
 
-    class AGPProducer;
     /*Create AGPProducer by function table, meta file and type
      * metaStream:
      * table: obtain the method to get function, can be NULL, then GP will create table by the path decribed by meta file
      * type: TREE:0, GRAPIC:1
      */
-    AGPProducer* GP_Producer_Create(std::istream& metaStream, IFunctionTable* table, int type);
+    AGPProducer* GP_Producer_Create(GPStream* metaStream, IFunctionTable* table, int type);
     /*Destroy the AGPProducer, before using this API, Make sure that all function created by p is destroyed*/
     void GP_Producer_Destroy(AGPProducer* p);
     /*Create a IGPAutoDefFunction by inputTypes and outputTypes, the types must be divided by space*/
@@ -72,8 +72,9 @@ extern "C"{
      is(out.str());
      IGPAutoDefFunction* f2 = GP_Function_Create_ByStream(producer, is);
      */
-    IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, std::istream& xmlFile);
-    void GP_Function_Save(IGPAutoDefFunction* f, std::ostream& output);
+    IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, GPStream* xmlFile);
+    void GP_Function_Save(IGPAutoDefFunction* f, GPWStream* output);
+
     /*Optimize IGPAutoDefFunction by adjust parameters*/
     /*REMIND: the f's parameters will be changed after this api*/
     /*If fit_fun is not random, this api make sure that fit_fun(f) will at least not decrease*/

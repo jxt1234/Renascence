@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include "core/GPStreamFactory.h"
 #include "GPFileStream.h"
+#include "GPUserStream.h"
 
 GPStreamWrap* GPStreamFactory::NewStream(const char* meta, MODE m)
 {
@@ -30,6 +31,9 @@ GPWStreamWrap* GPStreamFactory::NewWStream(const char* meta, MODE m)
     {
         case FILE:
             r = new GPFileWStream(meta);
+            break;
+        case USER:
+            r = new GPUserWStream(NULL);
             break;
         default:
             break;

@@ -16,7 +16,7 @@ void GP_Set_Lib_Path(const char* basic_path)
     }
     system_set_path(basic_path);
 }
-AGPProducer* GP_Producer_Create(std::istream& metaStream, IFunctionTable* table, int type)
+AGPProducer* GP_Producer_Create(GPStream* metaStream, IFunctionTable* table, int type)
 {
     FUNC_PRINT(type);
     GPFunctionDataBase* f = GPFactory::createDataBase(metaStream, table);
@@ -117,7 +117,7 @@ GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input)
     return f->vRun(input);
 }
 
-IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, std::istream& xmlFile)
+IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, GPStream* xmlFile)
 {
     if (NULL == p)
     {
@@ -126,7 +126,7 @@ IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, std::istre
     }
     return p->P->vCreateFunctionFromIS(xmlFile);
 }
-void GP_Function_Save(IGPAutoDefFunction* f, std::ostream& output)
+void GP_Function_Save(IGPAutoDefFunction* f, GPWStream* output)
 {
     GPASSERT(NULL!=f);//FIXME
     f->vSave(output);

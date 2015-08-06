@@ -16,8 +16,13 @@
 #include "xml/xmlReader.h"
 #include <list>
 #include <iostream>
+#include <sstream>
 #include <fstream>
-#include <utils/debug.h>
+#include <string>
+#include "core/GPStreamUtils.h"
+#include "core/GPStreamFactory.h"
+#include "utils/debug.h"
+#include "utils/AutoStorage.h"
 
 using namespace std;
 
@@ -51,7 +56,7 @@ void xmlReader::clear()
     this->subClear();
 }
 
-XMLAPI const xmlReader::package* xmlReader::loadStream(istream& input)
+XMLAPI const xmlReader::package* xmlReader::loadStream(GPStream* input)
 {
     clear();
     loadPackage(input);
@@ -61,15 +66,11 @@ XMLAPI const xmlReader::package* xmlReader::loadStream(istream& input)
 
 XMLAPI const xmlReader::package* xmlReader::loadFile(const char* file)
 {
-    //TODO return NULL
     GPASSERT(NULL!=file);
-    ifstream read;
-    read.open(file, ios::in);
-    GPASSERT(!read.fail());
     clear();
-    loadPackage(read);
+    GPPtr<GPStreamWrap> filestream = GPStreamFactory::NewStream(file, GPStreamFactory::FILE);
+    loadPackage(filestream.get());
     this->attributeUnflatten();
-    read.close();
     return mAttributes;
 }
 
@@ -191,10 +192,14 @@ void xmlReader::analysisLine(const string& line)
     }
 }
 
-xmlReader::package* xmlReader::loadPackage(istream& input)
+xmlReader::package* xmlReader::loadPackage(GPStream* input)
 {
     string tempLine;
-    while(getline(input, tempLine, '\n'))
+    GPPtr<GPBlock> content = GPStreamUtils::read(input, true);
+    const char* c = content->contents();
+    string total = c;
+    istringstream inp(total);
+    while(getline(inp, tempLine, '\n'))
     {
         analysisLine(tempLine);
     }

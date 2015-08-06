@@ -15,6 +15,7 @@
 ******************************************************************/
 #ifndef XML_READER_H
 #define XML_READER_H
+#include "user/GPStream.h"
 #include <string>
 #include <vector>
 #include <istream>
@@ -32,7 +33,7 @@ class xmlReader
             std::vector<package*> children;
         };
         XMLAPI const package* loadFile(const char* file);
-        XMLAPI const package* loadStream(std::istream& input);
+        XMLAPI const package* loadStream(GPStream* input);
         XMLAPI void writeFile(const char* file);
         xmlReader();
         virtual ~xmlReader();
@@ -42,7 +43,7 @@ class xmlReader
         //For child class to clear their self data
         virtual void subClear(){}
         void analysisLine(const std::string& line);
-        package* loadPackage(std::istream& input);
+        package* loadPackage(GPStream* input);
         package* mAttributes;
     private:
         std::vector<package*> mPackage;

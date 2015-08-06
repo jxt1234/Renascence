@@ -16,6 +16,7 @@
 #include "core/GPFactory.h"
 #include "producer/GPTreeProducer.h"
 #include "producer/GPGraphicProducer.h"
+#include "core/GPStreamFactory.h"
 #include <fstream>
 
 GPProducer* GPFactory::createProducer(const GPFunctionDataBase* base, GPFactory::TYPE t)
@@ -38,13 +39,12 @@ GPFunctionDataBase* GPFactory::createDataBase(const char* metafile, IFunctionTab
 {
     GPASSERT(NULL!=metafile);
     GPFunctionDataBase* base = new GPFunctionDataBase;
-    std::ifstream file(metafile);
-    GPASSERT(!file.fail());
-    base->loadXml(file, t);
+    GPPtr<GPStreamWrap> s = GPStreamFactory::NewStream(metafile, GPStreamFactory::FILE);
+    base->loadXml(s.get(), t);
     return base;
 }
 
-GPFunctionDataBase* GPFactory::createDataBase(std::istream& file, IFunctionTable* t)
+GPFunctionDataBase* GPFactory::createDataBase(GPStream* file, IFunctionTable* t)
 {
     GPFunctionDataBase* base = new GPFunctionDataBase;
     base->loadXml(file, t);

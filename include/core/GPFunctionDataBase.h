@@ -18,6 +18,7 @@
 #include "user/GPContents.h"
 #include <string>
 #include "core/IDataBase.h"
+#include "user/GPStream.h"
 #include "user/IFunctionTable.h"
 #include "xml/xmlReader.h"
 #include "head.h"
@@ -41,15 +42,17 @@ public:
     //Basic Api
     virtual const function* vQueryFunction(const std::string& name) const;
     virtual const function* vQueryFunctionByShortName(const std::string& name) const;
+    virtual const IStatusType* vQueryType(const std::string& name) const;
+    //TODO Find better way to organnize it
+    void loadXml(GPStream* is, IFunctionTable* table=NULL, std::ostream* print = NULL);
     
     //In Future may delete these two API
-    virtual const function* vQueryFunctionById (int id) const;
+    virtual const function* vQueryFunctionById (int ids) const;
     virtual int size() const;
-    virtual const IStatusType* vQueryType(const std::string& name) const;
-    void loadXml(const char* file, IFunctionTable* table=NULL, std::ostream* print = NULL);
-    void loadXml(std::istream& is, IFunctionTable* table=NULL, std::ostream* print = NULL);
-    //Find Function that has outputType of t
+//Find Function that has outputType of t
     virtual std::vector<const function*> vSearchFunction(const IStatusType* t) const;
+    
+    /*For debug*/
     void print(std::ostream& os);
     GPFunctionDataBase();
     virtual ~GPFunctionDataBase();

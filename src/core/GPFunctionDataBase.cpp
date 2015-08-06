@@ -40,13 +40,7 @@ GPFunctionDataBase::GPFunctionDataBase()
 {
 }
 
-void GPFunctionDataBase::loadXml(const char* file, IFunctionTable* table, std::ostream* print)
-{
-    ifstream is(file);
-    GPASSERT(!is.fail());
-    loadXml(is, table, print);
-}
-void GPFunctionDataBase::loadXml(std::istream& is, IFunctionTable* table, std::ostream* print)
+void GPFunctionDataBase::loadXml(GPStream* is, IFunctionTable* table, std::ostream* print)
 {
     _clear();
     xmlReader reader;
