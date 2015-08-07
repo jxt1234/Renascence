@@ -13,7 +13,8 @@
 static size_t _Read(void* meta, void* buffer, size_t size)
 {
     FILE* f = (FILE*)meta;
-    return fread(buffer, size, 1, f);
+    auto s = fread(buffer, 1, size, f);
+    return s;
 }
 
 static bool _IsEnd(void* meta)
@@ -39,9 +40,9 @@ GPFileStream::~GPFileStream()
 static size_t _Write(void* meta, const void* buffer, size_t size)
 {
     FILE* f = (FILE*)meta;
-    return fwrite(buffer, size, 1, f);
+    return fwrite(buffer, 1, size, f);
 }
-bool _Flush(void* meta)
+static bool _Flush(void* meta)
 {
     FILE* f = (FILE*)meta;
     return 0 == fflush(f);
@@ -51,6 +52,7 @@ bool _Flush(void* meta)
 GPFileWStream::GPFileWStream(const char* name)
 {
     FILE* f = fopen(name, "wb");
+    GPASSERT(NULL!=f);
     mMetaData = (void*)f;
     mWrite = _Write;
     mFlush = _Flush;

@@ -29,18 +29,19 @@ void dump_usage()
                 gptool.out query func.xml outputfunc.xml
                 gptool.out run outputfunc.xml input=<1.txt,2.jpg> output=<3.jpg>));
 }
+
 void gp_run(int argc, char** argv)
 {
     printf("In %s, %d\n", __func__, __LINE__);
     assert(argc>=4);
-    std::ifstream metadata(argv[2]);
-    assert(!metadata.fail());
-    std::ifstream funcfile(argv[3]);
-    assert(!funcfile.fail());
+    GPStream* metadata = GP_Stream_Create(argv[2]);
+    GPStream* funcfile = GP_Stream_Create(argv[3]);
     auto base = GP_Producer_Create(metadata, NULL, 0);
     assert(NULL!=base);
     auto adf = GP_Function_Create_ByStream(base, funcfile);
     assert(NULL!=adf);
+    GP_Stream_Destroy(metadata);
+    GP_Stream_Destroy(funcfile);
     GPTYPES outputtype;
     GPTYPES inputtype;
     GP_Function_Get_Inputs(adf, &inputtype);
@@ -63,10 +64,10 @@ void gp_run(int argc, char** argv)
     GPContents inputcontents;
     for (int i=0; i<inputtype.size(); i++)
     {
-        std::ifstream inputs(argv[inputcur+i]);
-        assert(!inputs.fail());
+        GPStream* inputs = GP_Stream_Create(argv[inputcur+i]);
         auto t = inputtype[i];
         inputcontents.push(t->vLoad(inputs), t);
+        GP_Stream_Destroy(inputs);
     }
     GPContents* outputcontents = GP_Function_Run(adf, &inputcontents);
     inputcontents.clear();
@@ -74,10 +75,10 @@ void gp_run(int argc, char** argv)
     for (int i=0; i<outputtype.size(); ++i)
     {
         assert(outputcur < argc);
-        std::ofstream outputs(argv[outputcur+i]);
-        assert(!outputs.fail());
+        GPWStream* outputs = GP_WStream_Create(argv[outputcur+i]);
         auto t = outputtype[i];
         t->vSave(outputcontents->get(i), outputs);
+        GP_WStream_Destroy(outputs);
     }
     outputcontents->clear();
     delete outputcontents;
@@ -92,15 +93,17 @@ void gp_opt(int argc, char** argv)
 {
     printf("In %s, %d\n", __func__, __LINE__);
     assert(argc>=6);
-    std::ifstream metadata(argv[2]);
-    assert(!metadata.fail());
+    GPStream* metadata = GP_Stream_Create(argv[2]);
     auto base = GP_Producer_Create(metadata, NULL, 0);
-    std::ifstream model_(argv[3]);
-    assert(!model_.fail());
+    GP_Stream_Destroy(metadata);
+    
+    GPStream* model_ = GP_Stream_Create(argv[3]);
     auto model = GP_Function_Create_ByStream(base, model_);
-    std::ifstream fitf_(argv[4]);
-    assert(!fitf_.fail());
+    GP_Stream_Destroy(model_);
+    
+    GPStream* fitf_ = GP_Stream_Create(argv[4]);
     auto fitf = GP_Function_Create_ByStream(base, fitf_);
+    GP_Stream_Destroy(fitf_);
     /*TODO Add input*/
     GPContents inputs;
 
@@ -110,17 +113,17 @@ void gp_opt(int argc, char** argv)
         assert(1 == fit->size());
         double fitness;
         auto c = fit->contents[0];
-        std::ostringstream foutput_;
-        (c.type)->vSave(c.content, foutput_);
-        std::istringstream input_(foutput_.str());
-        input_ >> fitness;
+        fitness = *(double*)(c.content);
         GPContents::destroy(output);
         GPContents::destroy(fit);
         return fitness;
     };
     GP_Function_Optimize(model, fitfunction, 1, NULL);
-    std::ostringstream outputfuncfile(argv[5]);
+    
+    GPWStream* outputfuncfile = GP_WStream_Create(argv[5]);
     GP_Function_Save(model, outputfuncfile);
+    GP_WStream_Destroy(outputfuncfile);
+    
     inputs.clear();
     GP_Function_Destroy(model);
     GP_Function_Destroy(fitf);

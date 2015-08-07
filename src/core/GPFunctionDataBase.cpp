@@ -21,6 +21,7 @@
 #include <algorithm>
 #include "system/system_lib.h"
 #include "core/GP_XmlString.h"
+#include "utils/GPStringHelper.h"
 
 using namespace std;
 
@@ -44,33 +45,33 @@ void GPFunctionDataBase::loadXml(GPStream* is, IFunctionTable* table, std::ostre
 {
     _clear();
     xmlReader reader;
-    const xmlReader::package* root = reader.loadStream(is);
+    const GPTreeNode* root = reader.loadStream(is);
     if (NULL==table)
     {
-        table = new system_lib(root->name);
+        table = new system_lib(root->name());
         mHandle.push_back(table);
     }
-    const vector<xmlReader::package*>& functions = root->children;
+    auto functions = root->getChildren();
     /*First time construct all functions*/
     for (int i=0; i<functions.size(); ++i)
     {
-        const xmlReader::package* func = functions.at(i);
+        const GPTreeNode* func = functions.at(i).get();
         GPASSERT(NULL!=func);
-        computeFunction f = (computeFunction)(table->vGetFunction(func->name));
+        computeFunction f = (computeFunction)(table->vGetFunction(func->name()));
         if (NULL == f)
         {
-            FUNC_PRINT_ALL((func->name).c_str(), s);
+            FUNC_PRINT_ALL((func->name()).c_str(), s);
             GPASSERT(NULL!=f);//TODO throw error when no function in the table
         }
         function* warpf = new function;
-        warpf->name = func->name;
-        warpf->shortname = func->name;//Default
+        warpf->name = func->name();
+        warpf->shortname = func->name();//Default
         warpf->basic = f;
         mFunctionTable.push_back(warpf);
     }
     for (int i=0; i<functions.size(); ++i)
     {
-        this->_addFunction(mFunctionTable.at(i), functions.at(i), table);
+        this->_addFunction(mFunctionTable.at(i), functions.at(i).get(), table);
     }
     if (print)
     {
@@ -78,24 +79,21 @@ void GPFunctionDataBase::loadXml(GPStream* is, IFunctionTable* table, std::ostre
     }
 }
 
-void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const xmlReader::package* func, IFunctionTable* table)
+void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const GPTreeNode* func, IFunctionTable* table)
 {
-    for (int i=0; i<func->children.size(); ++i)
+    for (auto cur : func->getChildren())
     {
-        const xmlReader::package* cur = (func->children).at(i);
-        if (cur->name == "shortName")
+        if (cur->name() == "shortName")
         {
-            if (cur->attr.size() > 0)
-            {
-                warpf->shortname = cur->attr[0];
-            }
+            warpf->shortname = cur->attr();
         }
-        else if (cur->name == "inputs")
+        else if (cur->name() == "inputs")
         {
             vector<int> input;
-            for (int j=0; j<cur->attr.size(); ++j)
+            auto inputsfuncname = GPStringHelper::divideString(cur->attr());
+            for (auto name : inputsfuncname)
             {
-                int inp = _findFunction(cur->attr[j]);
+                int inp = _findFunction(name);
                 if (-1==inp)
                 {
                     input.clear();
@@ -108,29 +106,32 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
                 (warpf->fixTable).push_back(input);
             }
         }
-        else if(cur->name == "status")
+        else if(cur->name() == "status")
         {
-            for (int j=0; j<cur->attr.size(); ++j)
+            auto attrs = GPStringHelper::divideString(cur->attr());
+            for (auto attr : attrs)
             {
-                const IStatusType* sta = _findAndLoadStatus(cur->attr[j], table);
+                const IStatusType* sta = _findAndLoadStatus(attr, table);
                 GPASSERT(NULL!=sta);//FIXME
                 (warpf->statusType).push_back(sta);
             }
         }
-        else if(cur->name == "output")
+        else if(cur->name() == "output")
         {
-            for (int j=0; j<cur->attr.size(); ++j)
+            auto attrs = GPStringHelper::divideString(cur->attr());
+            for (auto attr : attrs)
             {
-                const IStatusType* sta = _findAndLoadStatus(cur->attr[j], table);
+                const IStatusType* sta = _findAndLoadStatus(attr, table);
                 GPASSERT(NULL!=sta);//FIXME
                 (warpf->outputType).push_back(sta);
             }
         }
-        else if (cur->name == "inputType")
+        else if (cur->name() == "inputType")
         {
-            for (int j=0; j<cur->attr.size(); ++j)
+            auto attrs = GPStringHelper::divideString(cur->attr());
+            for (auto attr : attrs)
             {
-                const IStatusType* sta = _findAndLoadStatus(cur->attr[j], table);
+                const IStatusType* sta = _findAndLoadStatus(attr, table);
                 GPASSERT(NULL!=sta);//FIXME
                 (warpf->inputType).push_back(sta);
             }

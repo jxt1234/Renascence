@@ -44,6 +44,7 @@ GPBlock* GPBlock::merge(GPBlock* b)
     {
         auto content = iter->contents();
         ::memcpy(rescontent, content, iter->size());
+        iter = iter->getNext();
     }
     rescontent[sum] = 0;
     return res;
@@ -51,6 +52,6 @@ GPBlock* GPBlock::merge(GPBlock* b)
 
 void GPBlock::resize(size_t newsize)
 {
-    GPASSERT(newsize<=mSize && 0<=newsize);
+    GPASSERT(newsize<=mSize && 0<newsize);
     mSize = newsize;
 }

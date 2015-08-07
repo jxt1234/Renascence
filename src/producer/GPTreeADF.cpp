@@ -71,28 +71,26 @@ void GPTreeADFPoint::initStatus(const std::vector<std::istream*>& statusInput)
 }
 
 
-void GPTreeADFPoint::xmlPrint(std::ostream& res) const
+GPTreeNode* GPTreeADFPoint::xmlPrint() const
 {
-    res << "<"<< GP_XmlString::node<<">"<<endl;
-    res<<"<"<<GP_XmlString::shortName<<">"<<mFunc->shortname<<"</"<<GP_XmlString::shortName<<">\n";
-    res<<"<"<<GP_XmlString::func<<">"<<mFunc->name<<"</"<<GP_XmlString::func<<">\n";
-    res<<"<"<<GP_XmlString::status<<">\n";
+    GPTreeNode* root = new GPTreeNode(GP_XmlString::func, mFunc->name);
+    GPPtr<GPTreeNode> status = new GPTreeNode(GP_XmlString::status, "");
+    root->addChild(status);
     for (int j=0; j<mStatus.size(); ++j)
     {
         const IStatusType* s = mStatus[j]->type();
-        res << "<" << s->name() <<">"<<endl;
-        mStatus[j]->print(res);
-        res << endl<<"</" << s->name() <<">"<<endl;
+        std::ostringstream values;
+        mStatus[j]->print(values);
+        status->addChild(s->name(), values.str());
     }
-    res<<"</"<<GP_XmlString::status<<">\n";
-    res <<"<"<< GP_XmlString::children<<">"<<endl;
+    GPPtr<GPTreeNode> children = new GPTreeNode(GP_XmlString::children, "");
+    root->addChild(children);
     for (int i=0; i<mChildren.size(); ++i)
     {
         GPTreeADFPoint* p = (GPTreeADFPoint*)(mChildren[i]);
-        p->xmlPrint(res);
+        children->addChild(p->xmlPrint());
     }
-    res <<"</"<< GP_XmlString::children<<">"<<endl;
-    res << "</"<< GP_XmlString::node<<">"<<endl;
+    return root;
 }
 AbstractPoint* GPTreeADFPoint::GPTreeADFCopy::copy(AbstractPoint* src)
 {
@@ -249,20 +247,15 @@ void GPTreeADF::loadUnitFunction(vector<int>& result, int functionId, int status
     result.push_back(number);
 }
 
-void GPTreeADF::vSave(std::ostream& res) const
+GPTreeNode* GPTreeADF::vSave() const
 {
     GPASSERT(NULL!=mRoot);
-    mRoot->xmlPrint(res);
+    return mRoot->xmlPrint();
 }
 
 GPContents* GPTreeADF::vRun(GPContents* inputs)
 {
     GPASSERT(NULL!=mRoot);
-#ifdef DEBUG_XML
-    ofstream os("GPTreeADF.xml");
-    this->vSave(os);
-    os.close();
-#endif
     int cur = 0;
     return mRoot->compute(inputs, cur);
 }

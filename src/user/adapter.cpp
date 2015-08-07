@@ -28,6 +28,9 @@ void* GO_GP_Function_Create_ByType(void* p, const char* outputTypes, const char*
 /*The files contents n file name, which is the same as types number*/
 void* GO_GP_CreateContentsByTypes(void* vp, const char* types, const char* files)
 {
+    /*TODO*/
+    return NULL;
+#if 0
     /*FIXME*/
     AGPProducer* p = (AGPProducer*)vp;
     GPASSERT(NULL!=files);
@@ -48,6 +51,7 @@ void* GO_GP_CreateContentsByTypes(void* vp, const char* types, const char* files
         }
     }
     return (void*)result;
+#endif
 }
 
 void* GO_GP_Function_Run(void* f, void* input)

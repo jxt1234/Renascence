@@ -18,31 +18,28 @@ class TrFilterMatrixType:public IStatusType
 {
     public:
         TrFilterMatrixType():IStatusType("TrFilterMatrix"){}
-        virtual void* vLoad(std::istream& input) const
+        virtual void* vLoad(GPStream* input) const
         {
-            //std::cout << src<<std::endl;
-            std::istream& inp = input;
-            int dim;
-            inp>>dim;
+            GPStream* inp = input;
+            int dim = inp->readUnit<int>();
             TrFilterMatrix* m = TrFilterMatrixAlloc(dim);
-            inp>>m->offset;
+            m->offset = inp->readUnit<int>();
             for (int i=0; i<dim*dim; ++i)
             {
-                inp >> m->data[i];
-                //std::cout << m->data[i]<<"\t";
+                m->data[i] = inp->readUnit<float>();
             }
-            //std::cout << std::endl;
             return (void*)m;
         }
-        virtual void vSave(void* contents, std::ostream& output) const
+        virtual void vSave(void* contents, GPWStream* output) const
         {
-            std::ostream& res = output;
+            std::ostringstream res;
             TrFilterMatrix* m = (TrFilterMatrix*)contents;
             res << m->dim<<" "<<m->offset<<" ";
             for (int i=0; i<(m->dim)*(m->dim); ++i)
             {
                 res << m->data[i]<<" ";
             }
+            output->write(res.str().c_str(), res.str().size());
         }
         virtual void vFree(void* content) const
         {
@@ -78,22 +75,19 @@ class TrFloatType:public IStatusType
 {
     public:
         TrFloatType():IStatusType("float"){}
-        virtual void* vLoad(std::istream& input) const
+        virtual void* vLoad(GPStream* input) const
         {
-            float* f = (float*)malloc(sizeof(float)*MAX_GRAPHIC_NUM);
-            for (int i=0; i<MAX_GRAPHIC_NUM; ++i)
-            {
-                input >> f[i];
-            }
-            return (void*)f;
+            return NULL;
         }
-        virtual void vSave(void* contents, std::ostream& output) const
+        virtual void vSave(void* contents, GPWStream* out) const
         {
+            std::ostringstream output;
             float* f = (float*)contents;
             for (int i=0; i<MAX_GRAPHIC_NUM; ++i)
             {
                 output << f[i] <<" ";
             }
+            out->write(output.str().c_str(), output.str().size());
         }
         virtual void vFree(void* contents) const
         {
@@ -126,25 +120,20 @@ class TrRegreeModeType:public IStatusType
 {
     public:
         TrRegreeModeType():IStatusType("TrRegreeMode"){}
-        virtual void* vLoad(std::istream& src) const
+        virtual void* vLoad(GPStream* src) const
         {
-            int dim;
-            src >> dim;
-            TrRegreeMode* mode = TrRegreeModeAlloc(dim);
-            for(int i=0; i<dim*dim; ++i)
-            {
-                src >> mode->mode[i];
-            }
-            return (void*)mode;
+            return NULL;
         }
-        virtual void vSave(void* src, std::ostream& out) const
+        virtual void vSave(void* src, GPWStream* output) const
         {
+            std::ostringstream out;
             TrRegreeMode* m = (TrRegreeMode*)src;
             out << m->dim<<" ";
             for (int i=0; i<m->dim*m->dim; ++i)
             {
                 out << m->mode[i]<<" ";
             }
+            output->write(out.str().c_str(), out.str().size());
         }
         virtual void vFree(void* contents) const
         {
@@ -183,14 +172,14 @@ class TrBmpType:public IStatusType
 {
     public:
         TrBmpType():IStatusType("TrBmp"){}
-        virtual void* vLoad(std::istream& input) const
+        virtual void* vLoad(GPStream* input) const
         {
-            std::string s;
-            input >> s;
-            return TrLoadPixels(s.c_str());
+            /*TODO*/
+            return NULL;
         }
-        virtual void vSave(void* contents, std::ostream& output) const
+        virtual void vSave(void* contents, GPWStream* output) const
         {
+            /*TODO*/
             return;
         }
         virtual void vFree(void* contents) const
@@ -207,11 +196,11 @@ class TrDoubleType:public IStatusType
 {
     public:
         TrDoubleType():IStatusType("double"){}
-        virtual void* vLoad(std::istream& input) const
+        virtual void* vLoad(GPStream* input) const
         {
             return NULL;
         }
-        virtual void vSave(void* contents, std::ostream& output) const
+        virtual void vSave(void* contents, GPWStream* output) const
         {
         }
         virtual void vFree(void* contents) const

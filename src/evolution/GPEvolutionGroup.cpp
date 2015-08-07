@@ -139,14 +139,14 @@ void GPEvolutionGroup::_mutate()
     }
 }
 
-void GPEvolutionGroup::loadBest(istream& input)
+void GPEvolutionGroup::loadBest(const GPTreeNode* node)
 {
     GPASSERT(NULL!=mSys);
     if (NULL!=mBest)
     {
         mBest->decRef();
     }
-    mBest = mSys->vCreateFunctionFromIS(input);
+    mBest = mSys->vCreateFunctionFromNode(node);
 }
 
 void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func)

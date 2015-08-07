@@ -35,28 +35,13 @@ xmlReader::~xmlReader(){clear();}
 
 void xmlReader::clear()
 {
-    list<xmlReader::package*> queue;
-    queue.push_back(mAttributes);
-    while(!queue.empty())
-    {
-        xmlReader::package* cur = *(queue.begin());
-        if (NULL!=cur)
-        {
-            for (int j=0; j<cur->children.size(); ++j)
-            {
-                queue.push_back(cur->children[j]);
-            }
-            delete cur;
-        }
-        queue.erase(queue.begin());
-    }
+    delete mAttributes;
     mAttributes = NULL;
     mCurPackage = NULL;
     mString.clear();
-    this->subClear();
 }
 
-XMLAPI const xmlReader::package* xmlReader::loadStream(GPStream* input)
+XMLAPI const GPTreeNode* xmlReader::loadStream(GPStream* input)
 {
     clear();
     loadPackage(input);
@@ -64,7 +49,7 @@ XMLAPI const xmlReader::package* xmlReader::loadStream(GPStream* input)
     return mAttributes;
 }
 
-XMLAPI const xmlReader::package* xmlReader::loadFile(const char* file)
+XMLAPI const GPTreeNode* xmlReader::loadFile(const char* file)
 {
     GPASSERT(NULL!=file);
     clear();
@@ -75,13 +60,13 @@ XMLAPI const xmlReader::package* xmlReader::loadFile(const char* file)
 }
 
 
-bool xmlReader_endPackage(const string& line, int pos)
+static bool xmlReader_endPackage(const string& line, int pos)
 {
     bool result =  line.find("</")!=string::npos;
     return result;
 }
 
-bool xmlReader_startPackage(const string& line, int& cur)
+static bool xmlReader_startPackage(const string& line, int& cur)
 {
     bool result = true;
     cur = line.find("<", cur);
@@ -103,7 +88,7 @@ bool xmlReader_startPackage(const string& line, int& cur)
     return result;
 }
 
-string xmlReader_getPackageName(const string& line, int& sta)
+static string xmlReader_getPackageName(const string& line, int& sta)
 {
     int cur = sta;
     string result;
@@ -115,7 +100,7 @@ string xmlReader_getPackageName(const string& line, int& sta)
 }
 
 
-string xmlReader_getAttribute(const string& line, int& pos)
+static string xmlReader_getAttribute(const string& line, int& pos)
 {
     int newPos = line.find("</", pos);
     if (string::npos == newPos)
@@ -127,7 +112,7 @@ string xmlReader_getAttribute(const string& line, int& pos)
     return result;
 }
 
-bool xmlReader_divider(char c)
+static bool xmlReader_divider(char c)
 {
     return (c == ' ') || (c == '\t')||(c == ',');
 }
@@ -160,15 +145,16 @@ void xmlReader::analysisLine(const string& line)
     if (xmlReader_startPackage(line, cur))
     {
         string name = xmlReader_getPackageName(line, cur);
-        xmlReader::package* newpackage = new xmlReader::package;;
-        newpackage->name = name;
+        GPTreeNode* newpackage = new GPTreeNode(name, "");
         if (NULL!=mCurPackage)
         {
-            (mCurPackage->children).push_back(newpackage);
+            mCurPackage->addChild(newpackage);
         }
         //Save current string to current package
-        vector<string> current = xmlReader_divideString(mString);
-        for (int i=0; i<current.size();++i) mCurPackage->attr.push_back(current[i]);
+        if (mString!="")
+        {
+            mCurPackage->setAttributes(mString);
+        }
         mString.clear();
         //Turn to new package
         mCurPackage = newpackage;
@@ -180,8 +166,10 @@ void xmlReader::analysisLine(const string& line)
     if (xmlReader_endPackage(line, cur))
     {
         //Save current string to current package
-        vector<string> current = xmlReader_divideString(mString);
-        for (int i=0; i<current.size();++i) mCurPackage->attr.push_back(current[i]);
+        if (""!=mString)
+        {
+            mCurPackage->setAttributes(mString);
+        }
         mString.clear();
         //Turn to new package
         mPackage.pop_back();
@@ -192,18 +180,18 @@ void xmlReader::analysisLine(const string& line)
     }
 }
 
-xmlReader::package* xmlReader::loadPackage(GPStream* input)
+GPTreeNode* xmlReader::loadPackage(GPStream* input)
 {
     string tempLine;
     GPPtr<GPBlock> content = GPStreamUtils::read(input, true);
     const char* c = content->contents();
-    string total = c;
-    istringstream inp(total);
+    istringstream inp(c);
     while(getline(inp, tempLine, '\n'))
     {
         analysisLine(tempLine);
     }
     mAttributes = mCurPackage;
+    attributeUnflatten();
     return mAttributes;
 }
 
@@ -211,19 +199,32 @@ void xmlReaderTest::print()
 {
     printUnit(mAttributes);
 }
-void xmlReaderTest::printUnit(xmlReader::package* p)
+
+void xmlReader::dumpNodes(const GPTreeNode* node, GPWStream* output)
+{
+    ostringstream os;
+    os << "<"<<node->name()<<">\n";
+    os <<node->attr()<<"\n";
+    output->write(os.str().c_str(), os.str().size());
+    for (auto c : node->getChildren())
+    {
+        dumpNodes(c.get(), output);
+    }
+    os.str("");
+    os << "</"<<node->name()<<">\n";
+    output->write(os.str().c_str(), os.str().size());
+}
+
+
+void xmlReaderTest::printUnit(GPTreeNode* p)
 {
     if (NULL == p) return;
-    cout << endl<<"Name = "<<p->name <<endl;
-    cout << "attribute list has :"<<p->attr.size()<<" elements"<<endl;
-    const vector<string>& attr = p->attr;
-    for (int i=0; i<attr.size(); ++i)
+    cout << endl<<"Name = "<<p->name() <<endl;
+    cout << "attribute:"<<p->attr()<<endl;
+    cout << "Has "<<p->getChildren().size()<<" children"<<endl;
+    for (auto c:p->getChildren())
     {
-        cout << "The " << i << "attribute:" <<attr[i]<<endl;
-    }
-    cout << "Has "<<p->children.size()<<" children"<<endl;
-    for (int i=0; i< p->children.size(); ++i)
-    {
-        printUnit(p->children[i]);
+        printUnit(c.get());
     }
 }
+

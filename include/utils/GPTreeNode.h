@@ -13,37 +13,25 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef CORE_GPSTREAMFACTORY_H
-#define CORE_GPSTREAMFACTORY_H
-#include "user/GPStream.h"
-#include "utils/RefCount.h"
+#ifndef UTILS_GPTREENODE_H
+#define UTILS_GPTREENODE_H
 #include <string>
-class GPStreamWrap:public GPStream, public RefCount
+#include <map>
+#include "AbstractPoint.h"
+class GPTreeNode:public RefCount
 {
 public:
-    GPStreamWrap(){}
-    virtual ~GPStreamWrap(){}
-};
-class GPWStreamWrap:public GPWStream, public RefCount
-{
-public:
-    GPWStreamWrap(){}
-    virtual ~GPWStreamWrap(){}
-};
-
-class GPStreamFactory
-{
-public:
-    typedef enum{
-        FILE,
-        BUFFER,
-        USER
-    } MODE;
-    static GPStreamWrap* NewStream(const char* meta, MODE m=FILE);
-    static GPWStreamWrap* NewWStream(const char* meta, MODE m=FILE);
-    static void setParentPath(const char* path);
+    GPTreeNode(const std::string& name, const std::string& attr);
+    virtual ~GPTreeNode();
+    void addChild(GPPtr<GPTreeNode> n);
+    void addChild(const std::string& name, const std::string& attr);
+    inline void setAttributes(const std::string& attr){mAttr = attr;}
+    inline const std::string& attr() const {return mAttr;}
+    inline const std::vector<GPPtr<GPTreeNode> >& getChildren() const {return mChildren;}
+    inline const std::string& name() const {return mName;}
 private:
-    static std::string gPath;
+    std::string mName;
+    std::string mAttr;
+    std::vector<GPPtr<GPTreeNode> > mChildren;
 };
-
 #endif

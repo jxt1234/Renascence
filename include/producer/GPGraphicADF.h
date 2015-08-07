@@ -29,7 +29,7 @@ class GPGraphicADF:public IGPAutoDefFunction
 public:
     typedef GPContents::GP_Unit UNIT;
     virtual GPContents* vRun(GPContents*  inputs);
-    virtual void vSave(std::ostream& os) const;
+    virtual GPTreeNode* vSave() const;
     /*Return a new copy of this Function*/
     virtual IGPAutoDefFunction* vCopy() const;
     virtual void vMutate();
@@ -41,7 +41,7 @@ public:
     /*Return all outputTypes in order*/
     virtual std::vector<const IStatusType*> vGetOutputs() const;
     GPGraphicADF();
-    GPGraphicADF(std::istream& is, const GPFunctionDataBase* base);
+    GPGraphicADF(const GPTreeNode* node, const GPFunctionDataBase* base);
     virtual ~GPGraphicADF();
     class Unit:public RefCount
     {
@@ -115,10 +115,10 @@ public:
     };
 private:
     void _findAllPoints(std::set<Point*>& allPoints) const;
-    void _loadMain(const xmlReader::package* root, std::map<std::string, Point*>& allPoints, const GPFunctionDataBase* base) const;
-    void _loadStatus(const xmlReader::package* attach, const GPFunctionDataBase* base, Point* currentPoint) const;
-    void _loadInputs(const xmlReader::package* attach, const std::map<std::string, Point*>& allPoints, Point* currentPoint);
-    void _loadOutputs(const xmlReader::package* attach, const std::map<std::string, Point*>& allPoints, Point* currentPoint);
+    void _loadMain(const GPTreeNode* root, std::map<std::string, Point*>& allPoints, const GPFunctionDataBase* base) const;
+    void _loadStatus(const GPTreeNode* attach, const GPFunctionDataBase* base, Point* currentPoint) const;
+    void _loadInputs(const GPTreeNode* attach, const std::map<std::string, Point*>& allPoints, Point* currentPoint);
+    void _loadOutputs(const GPTreeNode* attach, const std::map<std::string, Point*>& allPoints, Point* currentPoint);
     /*Every Point receive only one input*/
     std::vector<GPPtr<Point> > mInputs;
     /*Every Point collect one or more output*/

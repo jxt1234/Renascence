@@ -8,6 +8,8 @@
 #include "optimizor/GPOptimizorFactory.h"
 #include "AGPProducer.h"
 #include "user/GPAPI.h"
+#include "xml/xmlReader.h"
+#include "core/GPStreamFactory.h"
 void GP_Set_Lib_Path(const char* basic_path)
 {
     if (NULL == basic_path)
@@ -124,12 +126,15 @@ IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, GPStream* 
         FUNC_PRINT(1);
         return NULL;
     }
-    return p->P->vCreateFunctionFromIS(xmlFile);
+    xmlReader r;
+    const GPTreeNode* root = r.loadStream(xmlFile);
+    return p->P->vCreateFunctionFromNode(root);
 }
 void GP_Function_Save(IGPAutoDefFunction* f, GPWStream* output)
 {
     GPASSERT(NULL!=f);//FIXME
-    f->vSave(output);
+    GPPtr<GPTreeNode> node = f->vSave();
+    xmlReader::dumpNodes(node.get(), output);
 }
 
 void GP_Function_Destroy(IGPAutoDefFunction* f)
@@ -193,3 +198,30 @@ IGPAutoDefFunction* GP_Function_CreateBest_ByType(const AGPProducer* p, const ch
     best->addRef();
     return best;
 }
+
+
+GPStream* GP_Stream_Create(const char* file)
+{
+    return GPStreamFactory::NewStream(file);
+}
+void GP_Stream_Destroy(GPStream* s)
+{
+    GPStreamWrap* p = (GPStreamWrap*)s;
+    p->decRef();
+}
+
+GPWStream* GP_WStream_Create(const char* file)
+{
+    return GPStreamFactory::NewWStream(file);
+}
+void GP_WStream_Destroy(GPWStream* s)
+{
+    GPWStreamWrap* p = (GPWStreamWrap*)s;
+    p->decRef();
+}
+
+void GP_Set_Stream_Path(const char* basic_path)
+{
+    GPStreamFactory::setParentPath(basic_path);
+}
+

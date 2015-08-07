@@ -27,10 +27,9 @@ public:
     virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true) const;
     virtual IGPAutoDefFunction* vCreateFunctionFromName(const std::string& name) const;
     virtual IGPAutoDefFunction* vCreateFunctionFromFormula(const std::string& formula) const;
-    virtual IGPAutoDefFunction* vCreateFunctionFromIS(std::istream& is) const;
+    virtual IGPAutoDefFunction* vCreateFunctionFromNode(const GPTreeNode* node) const;
     
-    GPTreeProducer():mDataBase(NULL){_init();}
-    GPTreeProducer(const GPFunctionDataBase* sys){setFunctionDataBase(sys);_init();}
+    GPTreeProducer(const GPFunctionDataBase* sys);
     virtual ~GPTreeProducer(){}
     void setFunctionDataBase(const GPFunctionDataBase* comsys);
     

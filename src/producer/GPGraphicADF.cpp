@@ -14,11 +14,11 @@
    limitations under the License.
 ******************************************************************/
 #include <list>
+#include <sstream>
+#include <map>
 #include "core/GP_XmlString.h"
 #include "producer/GPGraphicADF.h"
-#include "xml/xmlReader.h"
-#include <map>
-#include <sstream>
+#include "utils/GPStringHelper.h"
 
 /*For debug*/
 static void valid(const std::string& name)
@@ -234,59 +234,66 @@ void GPGraphicADF::_findAllPoints(std::set<Point*>& allPoints) const
         cachePoints.pop_front();
     }
 }
+static std::string combinenode(_POINT* p)
+{
+    std::ostringstream os;
+    os << GP_XmlString::node << "_"<<p;
+    return os.str();
+}
 
-void GPGraphicADF::vSave(std::ostream& os) const
+GPTreeNode* GPGraphicADF::vSave() const
 {
     /*Find all points*/
     std::set<Point*> allPoints;
     _findAllPoints(allPoints);
     GPASSERT(!allPoints.empty());
     /*Print Points, Don't care about the Order*/
-    os << "<GPGraphicADF>\n";
+    GPTreeNode* root = new GPTreeNode("GPGraphicADF", "");
     std::set<Point*>::iterator iter = allPoints.begin();
     for (;iter!=allPoints.end(); iter++)
     {
         Point* cur = *iter;
-        os << "<"<<GP_XmlString::node<<"_"<<cur<<">\n";
+        GPPtr<GPTreeNode> node = new GPTreeNode(combinenode(cur), "");
+        root->addChild(node);
         if (NULL!=cur->mFunc)
         {
-            os << "<"<<GP_XmlString::func<<">";
-            os << cur->mFunc->name;
-            os << "</"<<GP_XmlString::func<<">\n";
+            node->addChild(GP_XmlString::func, cur->mFunc->name);
         }
         else
         {
-            os << "<"<<GP_XmlString::type<<">";
             if (NULL!=cur->mType)
             {
-                os << cur->mType->name();
+                node->addChild(GP_XmlString::type, cur->mType->name());
             }
-            os << "</"<<GP_XmlString::type<<">\n";
+            else
+            {
+                node->addChild(GP_XmlString::type, "NULL");
+            }
         }
-        os << "<"<<GP_XmlString::inputs<<">\n";
+        GPPtr<GPTreeNode> inputsnode = new GPTreeNode(GP_XmlString::inputs, "");
+        node->addChild(inputsnode);
         for (auto i=cur->mInputs.begin(); i!=cur->mInputs.end();i++)
         {
-            os << GP_XmlString::node<<"_"<<i->first<<"\n";
+            inputsnode->addChild(combinenode(i->first), "");
         }
-        os << "</"<<GP_XmlString::inputs<<">\n";
-        os << "<"<<GP_XmlString::outputs<<">\n";
+        GPPtr<GPTreeNode> outputnodes = new GPTreeNode(GP_XmlString::outputs, "");
+        node->addChild(outputnodes);
         for (auto i=cur->mOutputs.begin(); i!=cur->mOutputs.end();i++)
         {
-            os << GP_XmlString::node<<"_"<<i->get()<<"\n";
+            outputnodes->addChild(combinenode(i->get()), "");
         }
-        os << "</"<<GP_XmlString::outputs<<">\n";
-        os << "<"<<GP_XmlString::status<<">\n";
+        GPPtr<GPTreeNode> statusnode = new GPTreeNode(GP_XmlString::status, "");
+        node->addChild(statusnode);
         for (auto i=cur->mStatus.begin(); i!=cur->mStatus.end(); i++)
         {
             const IStatusType* s = (*i)->type();
-            os << "<"<<s->name()<<">\n";
+            std::ostringstream os;
             (*i)->print(os);
-            os << "</"<<s->name()<<">\n";
+            GPPtr<GPTreeNode> piecestatus = new GPTreeNode(s->name(), os.str());
+            statusnode->addChild(piecestatus);
         }
-        os << "</"<<GP_XmlString::status<<">\n";
-        os << "</"<<GP_XmlString::node<<"_"<<cur<<">\n";
     }
-    os << "</GPGraphicADF>\n";
+    return root;
 }
 std::vector<const IStatusType*> GPGraphicADF::vGetInputs() const
 {
@@ -305,57 +312,45 @@ void GPGraphicADF::vMutate()
 {
     /*TODO*/
 }
-void GPGraphicADF::_loadMain(const xmlReader::package* root, std::map<std::string, Point*>& allPoints, const GPFunctionDataBase* base) const
+void GPGraphicADF::_loadMain(const GPTreeNode* root, std::map<std::string, Point*>& allPoints, const GPFunctionDataBase* base) const
 {
-    const std::vector<xmlReader::package*>& children = root->children;
-    std::vector<xmlReader::package*>::const_iterator iter;
-    for (iter=children.begin(); iter!=children.end(); iter++)
+    auto children = root->getChildren();
+    for (auto iter : children)
     {
-        const xmlReader::package* node = *iter;
-        valid(node->name);
-        GPASSERT(allPoints.find(node->name)==allPoints.end());//FIXME Print Error instead of GPASSERT
-        /*Find function name*/
-        std::vector<xmlReader::package*>::const_iterator iter_func;
+        const GPTreeNode* node = iter.get();
+        valid(node->name());
+        GPASSERT(allPoints.find(node->name())==allPoints.end());//FIXME Print Error instead of GPASSERT
+        auto funcattr = node->getChildren();
+        GPASSERT(funcattr.size()>1);
+        auto first = funcattr[0];
         Point* p = NULL;
-        for (iter_func=node->children.begin(); iter_func!=node->children.end(); iter_func++)
+        if (first->name() == GP_XmlString::func)
         {
-            const xmlReader::package* func = *iter_func;
-            if (func->name == GP_XmlString::func)
-            {
-                GPASSERT(func->attr.size() == 1);//FIXME for debug
-                const GPFunctionDataBase::function* _f = base->vQueryFunction(func->attr[0]);
-                GPASSERT(_f!=NULL);
-                p = new Point(_f, NULL);
-                break;
-            }
-            if (func->name == GP_XmlString::type)
-            {
-                GPASSERT(func->attr.size() == 1);//FIXME for debug
-                const IStatusType* type = base->vQueryType(func->attr[0]);
-                p = new Point(NULL, type);
-                break;
-            }
+            const GPFunctionDataBase::function* _f = base->vQueryFunction(first->attr());
+            GPASSERT(NULL!=_f);
+            p = new Point(_f, NULL);
+        }
+        else if (first->name() == GP_XmlString::type)
+        {
+            const IStatusType* type = base->vQueryType(first->attr());
+            p = new Point(NULL, type);
         }
         GPASSERT(NULL!=p);//FIXME Print error instead of GPASSERT
-        allPoints.insert(std::make_pair(node->name, p));
+        allPoints.insert(std::make_pair(node->name(), p));
     }
 }
 
-void GPGraphicADF::_loadStatus(const xmlReader::package* attach, const GPFunctionDataBase* base, Point* currentPoint) const
+void GPGraphicADF::_loadStatus(const GPTreeNode* attach, const GPFunctionDataBase* base, Point* currentPoint) const
 {
     auto n = (currentPoint->mFunc->statusType).size();
-    GPASSERT(n == attach->children.size());
+    auto statuses = attach->getChildren();
+    GPASSERT(n == statuses.size());
     std::vector<std::istream*> statusContents;
     statusContents.reserve(n);
-    for (auto iter_status=attach->children.begin(); iter_status!=attach->children.end(); iter_status++)
+    for (auto iter_status : statuses)
     {
-        const xmlReader::package* s = *iter_status;
-        std::ostringstream out;
-        for (int i=0; i<s->attr.size(); ++i)
-        {
-            out<<s->attr[i]<<" ";//TODO Modified xmlReader, reduce this combine
-        }
-        statusContents.push_back(new std::istringstream(out.str()));
+        const GPTreeNode* s = iter_status.get();
+        statusContents.push_back(new std::istringstream(s->attr()));
     }
     currentPoint->initStatus(statusContents);
     for (int i=0; i<statusContents.size(); ++i)
@@ -366,32 +361,34 @@ void GPGraphicADF::_loadStatus(const xmlReader::package* attach, const GPFunctio
         }
     }
 }
-void GPGraphicADF::_loadInputs(const xmlReader::package* attach, const std::map<std::string, Point*>& allPoints, Point* currentPoint)
+void GPGraphicADF::_loadInputs(const GPTreeNode* attach, const std::map<std::string, Point*>& allPoints, Point* currentPoint)
 {
-    for (int i=0; i<attach->attr.size(); ++i)
+    auto childrens = GPStringHelper::divideString(attach->attr());
+    for (int i=0; i<childrens.size(); ++i)
     {
-        Point* p = (allPoints.find(attach->attr[i]))->second;
+        Point* p = (allPoints.find(childrens[i]))->second;
         currentPoint->connectInput(p);
     }
     //Has inputs points but no function to handle it, mean it's output point
-    if (NULL == currentPoint->mFunc && !attach->attr.empty())
+    if (NULL == currentPoint->mFunc && !childrens.empty())
     {
         GPPtr<Point> warp = currentPoint;
         mOutputs.push_back(warp);
         currentPoint->addRef();
     }
 }
-void GPGraphicADF::_loadOutputs(const xmlReader::package* attach, const std::map<std::string, Point*>& allPoints, Point* currentPoint)
+void GPGraphicADF::_loadOutputs(const GPTreeNode* attach, const std::map<std::string, Point*>& allPoints, Point* currentPoint)
 {
-    for (int i=0; i<attach->attr.size(); ++i)
+    auto childrens = GPStringHelper::divideString(attach->attr());
+    for (int i=0; i<childrens.size(); ++i)
     {
-        Point* p = (allPoints.find(attach->attr[i]))->second;
+        Point* p = (allPoints.find(childrens[i]))->second;
         p->addRef();
         /*The GPPtr will auto dec reference for p, so add reference before construct GPPtr*/
         GPPtr<Point> warp = p;
         currentPoint->connectOutput(warp);
     }
-    if (NULL == currentPoint->mFunc && !attach->attr.empty())
+    if (NULL == currentPoint->mFunc && !childrens.empty())
     {
         //Has Outputs points but no function to compute to Output, mean it's input point
         GPPtr<Point> warp = currentPoint;
@@ -400,30 +397,28 @@ void GPGraphicADF::_loadOutputs(const xmlReader::package* attach, const std::map
     }
 }
 
-GPGraphicADF::GPGraphicADF(std::istream& is, const GPFunctionDataBase* base)
+GPGraphicADF::GPGraphicADF(const GPTreeNode* root, const GPFunctionDataBase* base)
 {
-    xmlReader r;
-    const xmlReader::package* root = r.loadStream(is);
     /*Construct all Node firstly*/
     std::map<std::string, Point*> allPoints;
     _loadMain(root, allPoints, base);
     /*Connect all points and Construct status*/
-    for (auto iter=root->children.begin(); iter!=root->children.end(); iter++)
+    for (auto iter : root->getChildren())
     {
-        const xmlReader::package* node = *iter;
-        Point* currentPoint = (allPoints.find(node->name))->second;
-        for (auto iter_node=node->children.begin(); iter_node!=node->children.end(); iter_node++)
+        const GPTreeNode* node = iter.get();
+        Point* currentPoint = (allPoints.find(node->name()))->second;
+        for (auto iter_node : node->getChildren())
         {
-            const xmlReader::package* attach = *iter_node;
-            if (attach->name == GP_XmlString::status)
+            auto attach = iter_node.get();
+            if (attach->name() == GP_XmlString::status)
             {
                 _loadStatus(attach, base, currentPoint);
             }
-            else if(attach->name == GP_XmlString::inputs)
+            else if(attach->name() == GP_XmlString::inputs)
             {
                 _loadInputs(attach, allPoints, currentPoint);
             }
-            else if(attach->name == GP_XmlString::outputs)
+            else if(attach->name() == GP_XmlString::outputs)
             {
                 _loadOutputs(attach, allPoints, currentPoint);
             }

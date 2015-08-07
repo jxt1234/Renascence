@@ -37,7 +37,7 @@ static size_t _Write(void* meta, const void* buffer, size_t size)
     cout.write((char*)buffer, size);
     return 0;
 }
-bool _Flush(void* meta)
+static bool _Flush(void* meta)
 {
     cout.flush();
     return true;

@@ -1,5 +1,6 @@
 #include "test/GPTest.h"
 #include "xml/xmlTree.h"
+#include "xml/xmlReader.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -9,8 +10,9 @@ class GPxmlTreeTest:public GPTest
     public:
         virtual void run()
         {
-            xmlTree tree;
-            tree.loadFile("result.xml");
+            xmlReader r;
+            auto n = r.loadFile("result.xml");
+            xmlTree tree(n);
             ofstream file("output/result_test.xml");
             tree.print(file);
         }

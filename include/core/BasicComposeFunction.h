@@ -40,7 +40,7 @@ class GPCombineADF:public IGPAutoDefFunction
 public:
     GPCombineADF(std::vector<IGPAutoDefFunction*> funcs);
     virtual GPContents* vRun(GPContents* inputs);
-    virtual void vSave(std::ostream& os) const;
+    virtual GPTreeNode* vSave() const;
     virtual ~GPCombineADF();
     virtual IGPAutoDefFunction* vCopy() const;
     virtual int vMap(GPPtr<GPParameter> para);
@@ -57,7 +57,7 @@ public:
     GPSwitchADF(GPBoolADF* _s, IGPAutoDefFunction* _a, IGPAutoDefFunction* _b);
     virtual ~GPSwitchADF();
     virtual GPContents* vRun(GPContents* inputs);
-    virtual void vSave(std::ostream& os) const;
+    virtual GPTreeNode* vSave() const;
     virtual void vMutate();
     virtual IGPAutoDefFunction* vCopy() const;
     virtual int vMap(GPPtr<GPParameter> para);

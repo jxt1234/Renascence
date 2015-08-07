@@ -16,6 +16,7 @@
 #ifndef CORE_IGPAUTODEFFUNCTION_H
 #define CORE_IGPAUTODEFFUNCTION_H
 #include "user/GPContents.h"
+#include "utils/GPTreeNode.h"
 #include "GPFunctionDataBase.h"
 #include <istream>
 #include <ostream>
@@ -26,7 +27,7 @@ class IGPAutoDefFunction:public RefCount
 {
 public:
     virtual GPContents* vRun(GPContents* inputs) = 0;
-    virtual void vSave(std::ostream& os) const = 0;
+    virtual GPTreeNode* vSave() const = 0;
     /*Return a new copy of this Function*/
     virtual IGPAutoDefFunction* vCopy() const= 0;
     /*Mutate function, for evolution*/

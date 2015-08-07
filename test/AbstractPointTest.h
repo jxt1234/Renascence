@@ -1,4 +1,4 @@
-#include "math/AbstractPoint.h"
+#include "utils/AbstractPoint.h"
 
 class AbstractPointTest:public AbstractPoint
 {

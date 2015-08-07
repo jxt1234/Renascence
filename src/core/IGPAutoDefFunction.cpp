@@ -7,6 +7,7 @@
 //
 
 #include "core/IGPAutoDefFunction.h"
+#include <sstream>
 
 
 IGPAutoDefFunction* IGPAutoDefFunction::makeAdaptorFunction(IGPAutoDefFunction* base, const std::vector<size_t>& inputorder, const std::vector<const IStatusType*>& inputs)
@@ -37,19 +38,17 @@ IGPAutoDefFunction* IGPAutoDefFunction::makeAdaptorFunction(IGPAutoDefFunction* 
             }
             return mBase->vRun(&newContents);
         }
-        virtual void vSave(std::ostream& os) const
+        virtual GPTreeNode* vSave() const
         {
-            os << "<AdaptorGP>\n";
-            os << "<Order>";
+            GPTreeNode* root = new GPTreeNode("AdaptorGP", "");
+            std::ostringstream orderid;
             for (auto id : mInputOrder)
             {
-                os << id << " ";
+                orderid << id << " ";
             }
-            os << "</Order>\n";
-            os << "<BaseFunction>\n";
-            mBase->vSave(os);
-            os << "</BaseFunction>\n";
-            os << "</AdaptorGP>\n";
+            root->addChild(new GPTreeNode("Order", orderid.str()));
+            root->addChild(mBase->vSave());
+            return root;
         }
         
         virtual IGPAutoDefFunction* vCopy() const

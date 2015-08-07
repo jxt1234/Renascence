@@ -34,7 +34,7 @@ class GPEvolutionGroup:public RefCount
         virtual void vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func);
         inline IGPAutoDefFunction* getBest(){return mBest;}
         inline double getBestFit() const {return mBestFit;}
-        void loadBest(std::istream& input);
+        void loadBest(const GPTreeNode* node);
         void optimizeParameters(IGPAutoDefFunction* g, IGPAutoDefFunction* fit) const;
     private:
         double _fitCompute(IGPAutoDefFunction* g, IGPAutoDefFunction* fit) const;

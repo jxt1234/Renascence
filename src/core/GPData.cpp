@@ -47,19 +47,26 @@ GPContents* GPData::expand() const
     return res;
 }
 
-void GPData::print(std::ostream& out) const
+void GPData::print(GPWStream* out) const
 {
-    out << "<"<<mName<<">\n";
+    ostringstream taghead;
+    taghead << "<"<<mName<<">\n";
+    out->write(taghead.str().c_str(), taghead.str().size());
     for (int i=0; i<mData.size(); ++i)
     {
         GPData::data* d = mData[i];
         (d->type).vSave(d->content, out);
     }
-    out << "</"<<mName<<">\n";
+    ostringstream tagtail;
+    tagtail << "</"<<mName<<">\n";
+    out->write(tagtail.str().c_str(), tagtail.str().size());
 }
 /*Default Compare method, assume that all values is double*/
 double GPData::compare(const GPContents& output)
 {
+    /*TODO*/
+    return 0;
+#if 0
     double res = 0;
     do
     {
@@ -94,4 +101,5 @@ double GPData::compare(const GPContents& output)
         res = res/(double)(mData.size());
     }while(0);
     return res;
+#endif
 }

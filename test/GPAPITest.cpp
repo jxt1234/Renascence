@@ -1,4 +1,5 @@
 #include "test/GPTest.h"
+#include "core/GPStreamFactory.h"
 #include "user/GPAPI.h"
 #include <assert.h>
 #include <fstream>
@@ -8,26 +9,31 @@ using namespace std;
 
 static int test_main()
 {
-    ifstream soxml("func.xml");
-    auto producer = GP_Producer_Create(soxml, NULL, 0);
+    GPPtr<GPStreamWrap> soxml = GPStreamFactory::NewStream("func.xml", GPStreamFactory::FILE);
+    auto producer = GP_Producer_Create(soxml.get(), NULL, 0);
+    GPPtr<GPWStreamWrap> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
     /*Input and output*/
     {
         auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "", true);
-        ofstream output("output/GPAPI_base.txt");
-        GP_Function_Save(adf, output);
+        {
+            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_base.txt");
+            GP_Function_Save(adf, output.get());
+        }
         GP_Function_Destroy(adf);
-		ifstream input("output/GPAPI_base.txt");
-		auto adf2 = GP_Function_Create_ByStream(producer, input);
-		ofstream output2("output/GPAPI_base2.txt");
-        GP_Function_Save(adf2, output2);
+        GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream("output/GPAPI_base.txt");
+		auto adf2 = GP_Function_Create_ByStream(producer, input.get());
+        {
+            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_base2.txt");
+            GP_Function_Save(adf2, output.get());
+        }
 		GP_Function_Destroy(adf2);
     }
     /*Formula*/
     {
         string formula = "C(S(I()), F(I()))";
         auto adf = GP_Function_Create_ByFormula(producer, formula.c_str());
-        ofstream output("output/GPAPI_Formula.txt");
-        GP_Function_Save(adf, output);
+        GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Formula.txt");
+        GP_Function_Save(adf, output.get());
         GP_Function_Destroy(adf);
     }
     /*Run*/
@@ -42,7 +48,7 @@ static int test_main()
         auto gp_output = GP_Function_Run(adf, &gp_inputs);
         assert(1==gp_output->size());
         auto unit = gp_output->contents[0];
-        unit.type->vSave(unit.content, cout);
+        unit.type->vSave(unit.content, screen.get());
         GPContents::destroy(gp_output);
         GP_Function_Destroy(adf);
     }
@@ -65,16 +71,16 @@ static int test_main()
             auto adf  = GP_Function_Create_ByFormula(producer, formula.c_str());
             GP_Function_Optimize(adf, fitfunction, 1, "time=10");
             cout << fitfunction(adf) << endl;
-            ofstream orzzz("output/GPAPI_Formula_SOpt.txt");
-            GP_Function_Save(adf, orzzz);
+            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Formula_SOpt.txt");
+            GP_Function_Save(adf, output.get());
             GP_Function_Destroy(adf);
         }
         /*Find Best, evolution group*/
         {
             auto bestf = GP_Function_CreateBest_ByType(producer, "TrBmp", "", true, fitfunction, 10);
             cout << fitfunction(bestf) << endl;
-            ofstream orzzz("output/GPAPI_Evolution.txt");
-            GP_Function_Save(bestf, orzzz);
+            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Evolution.txt");
+            GP_Function_Save(bestf, output.get());
             GP_Function_Destroy(bestf);
         }
         GP_Function_Destroy(fitf);

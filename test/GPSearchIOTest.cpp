@@ -1,6 +1,7 @@
 #include "test/GPTest.h"
 #include "core/GPProducer.h"
 #include "core/GPFunctionDataBase.h"
+#include "core/GPStreamFactory.h"
 #include "core/GPFactory.h"
 #include "head.h"
 #include <iostream>
@@ -13,6 +14,7 @@ class GPSearchIOTest:public GPTest
     public:
         virtual void run()
         {
+            GPPtr<GPWStreamWrap> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
             /*Single*/
             GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
             AUTOCLEAN(base);
@@ -28,7 +30,7 @@ class GPSearchIOTest:public GPTest
                 GPContents GPinp;
                 auto _output = f->vRun(&GPinp);
                 GPASSERT(_output->size()==1);
-                ist->vSave(_output->get(0), cout);
+                ist->vSave(_output->get(0), screen.get());
                 cout <<endl;
                 _output->clear();
                 delete _output;
@@ -41,17 +43,17 @@ class GPSearchIOTest:public GPTest
                 {
                     ostringstream fileName;
                     fileName << "output/GPSearchIOTest"<<i<<".xml";
-                    ofstream output(fileName.str().c_str());
                     f = f_mul[i];
                     auto _output2 = f->vRun(&GPinp);
                     GPASSERT(_output2->size()==1);
-                    ist->vSave(_output2->get(0), cout);
+                    ist->vSave(_output2->get(0), screen.get());
                     cout << endl;
                     _output2->clear();
                     delete _output2;
-                    f->vSave(output);
+                    GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream(fileName.str().c_str());
+                    GPPtr<GPTreeNode> n = f->vSave();
+                    xmlReader::dumpNodes(n.get(), output.get());
                     f->decRef();
-                    output.close();
                 }
             }
         }

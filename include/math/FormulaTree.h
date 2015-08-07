@@ -16,7 +16,7 @@
 #ifndef MATH_FORMULATREE_H
 #define MATH_FORMULATREE_H
 #include "utils/RefCount.h"
-#include "AbstractPoint.h"
+#include "utils/AbstractPoint.h"
 #include <string>
 class FormulaTreePoint:public AbstractPoint
 {

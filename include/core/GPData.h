@@ -26,7 +26,7 @@ class GPData:public RefCount
         ~GPData();
         GPContents* expand() const;
         void addData(void* content, const IStatusType& type);
-        void print(std::ostream& out) const;
+        void print(GPWStream* out) const;
         double compare(const GPContents& output);
     private:
         struct data

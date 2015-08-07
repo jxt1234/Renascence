@@ -16,7 +16,7 @@
 #ifndef CORE_ABSTRACTGP_H
 #define CORE_ABSTRACTGP_H
 #include <stdlib.h>
-#include "math/AbstractPoint.h"
+#include "utils/AbstractPoint.h"
 #include "user/GPContents.h"
 #include "core/GPFunctionDataBase.h"
 #include "core/IGPAutoDefFunction.h"
@@ -43,7 +43,7 @@ private:
     const GPFunctionDataBase::function* mFunc;
     std::vector<GPStatusContent*> mStatus;
     /*Function needed*/
-    void xmlPrint(std::ostream& res) const;
+    GPTreeNode* xmlPrint() const;
     //The cur means from which element to use, it's assumed that the numbers is valid and the status has been alloc
     GPContents* compute(GPContents* input, int& cur);
     //For recursive
@@ -72,8 +72,7 @@ public:
     inline GPTreeADFPoint* root() const {return mRoot;}
     GPTreeADFPoint* find(float rate);/*rate must be [0,1), return n*rate's element*/
     virtual GPContents* vRun(GPContents* inputs);
-    //Output a xml string, which can be write into file directly
-    virtual void vSave(std::ostream& os) const;
+    virtual GPTreeNode* vSave() const;
     virtual int vMap(GPPtr<GPParameter> para);
     virtual void vMutate();
     //FIXME: dangerous api

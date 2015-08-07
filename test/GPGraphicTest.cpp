@@ -3,6 +3,7 @@
 #include "test/GPTest.h"
 #include "core/GPFunctionDataBase.h"
 #include "core/GPFactory.h"
+#include "core/GPStreamFactory.h"
 #include "core/GPProducer.h"
 #include "producer/GPGraphicADF.h"
 using namespace std;
@@ -14,12 +15,12 @@ class GPGraphicTest:public GPTest
             GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
             {
                 GPPtr<GPProducer> gen = GPFactory::createProducer(base.get(), GPFactory::GRAPHIC);
-                ifstream f("graphic_test.xml");
-                GPPtr<IGPAutoDefFunction> gp = gen->vCreateFunctionFromIS(f);
-                f.close();
-                ofstream out("output/GPGraphicTest.xml");
-                gp->vSave(out);
-                out.close();
+                xmlReader r;
+                auto n = r.loadFile("graphic_test.xml");
+                GPPtr<IGPAutoDefFunction> gp = gen->vCreateFunctionFromNode(n);
+                GPPtr<GPTreeNode> node = gp->vSave();
+                GPPtr<GPWStreamWrap> outp = GPStreamFactory::NewWStream("output/GPGraphicTest.xml");
+                xmlReader::dumpNodes(node.get(), outp.get());
                 {
                     GPContents contents;
                     contents.push(NULL, NULL);

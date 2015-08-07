@@ -79,16 +79,14 @@ int GPCombineADF::vMap(GPPtr<GPParameter> para)
 {
     return 0;
 }
-void GPCombineADF::vSave(std::ostream& os) const
+GPTreeNode* GPCombineADF::vSave() const
 {
-    os << "<Combine>\n";
+    GPTreeNode* root = new GPTreeNode("Combine","");
     for (int i=0; i<mFunctions.size(); ++i)
     {
-        os << "<Function_"<<i<<">\n";
-        (mFunctions[i])->vSave(os);
-        os << "</Function_"<<i<<">\n";
+        root->addChild((mFunctions[i])->vSave());
     }
-    os << "</Combine>\n";
+    return root;
 }
 
 IGPAutoDefFunction* GPCombineADF::vCopy() const
@@ -182,19 +180,19 @@ GPContents* GPSwitchADF::vRun(GPContents* inputs)
     }
     return tar->vRun(&inp);
 }
-void GPSwitchADF::vSave(std::ostream& os) const
+GPTreeNode* GPSwitchADF::vSave() const
 {
-    os << "<Switch>\n";
-    os << "<Just>\n";
-    s->get()->vSave(os);
-    os << "</Just>\n";
-    os << "<Option_1>\n";
-    a->vSave(os);
-    os << "</Option_1>\n";
-    os << "<Option_2>\n";
-    b->vSave(os);
-    os << "</Option_2>\n";
-    os << "</Switch>\n";
+    GPTreeNode* root = new GPTreeNode("Switch", "");
+    GPPtr<GPTreeNode> just = new GPTreeNode("Just","");
+    GPPtr<GPTreeNode> op1 = new GPTreeNode("Option_1","");
+    GPPtr<GPTreeNode> op2 = new GPTreeNode("Option_2","");
+    root->addChild(just);
+    root->addChild(op1);
+    root->addChild(op2);
+    just->addChild(s->get()->vSave());
+    op1->addChild(a->vSave());
+    op2->addChild(b->vSave());
+    return root;
 }
 
 int GPSwitchADF::vMap(GPPtr<GPParameter> para)

@@ -1,5 +1,5 @@
 /******************************************************************
-   Copyright 2014, Jiang Xiao-tang
+   Copyright 2015, Jiang Xiao-tang
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,22 +13,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef XML_XMLGPDATALOADER_H
-#define XML_XMLGPDATALOADER_H
-#include "user/IStatusType.h"
-#include "xml/xmlReader.h"
-#include "GPData.h"
-#include "GPFunctionDataBase.h"
-class xmlGPDataLoader:public xmlReader
+#ifndef UTILS_GPSTRINGHELPER_H
+#define UTILS_GPSTRINGHELPER_H
+#include <vector>
+#include <string>
+class GPStringHelper
 {
-    public:
-        xmlGPDataLoader(const GPFunctionDataBase& sys);
-        virtual ~xmlGPDataLoader();
-        inline GPData* get() const{return mData;}
-    protected:
-        virtual void attributeUnflatten();
-    private:
-        const GPFunctionDataBase& mSys;
-        GPData* mData;
+public:
+    static std::vector<std::string> divideString(const std::string& input);
 };
 #endif

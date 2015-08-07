@@ -65,7 +65,7 @@ GPContents* TrPackageInput(GPContents* inputs)
 {
     /*FIXME*/
     GPContents* result = new GPContents;
-    const char* file = "input.jpg";
+    const char* file = "/Users/jiangxiaotang/Documents/Genetic-Program-Frame/input.jpg";
     static TrBmp* gDst = NULL;
     if (!gDst)
     {
@@ -78,7 +78,7 @@ GPContents* TrPackageInputTarget(GPContents* inputs)
 {
     /*FIXME*/
     GPContents* result = new GPContents;
-    const char* file = "output.jpg";
+    const char* file = "/Users/jiangxiaotang/Documents/Genetic-Program-Frame/output.jpg";
     static TrBmp* gDst = NULL;
     if (!gDst)
     {

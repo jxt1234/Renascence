@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include "core/GPStreamFactory.h"
 #include "head.h"
 using namespace std;
 /*TODO*/
@@ -49,25 +50,18 @@ class GPcombineTest:public GPTest
                 }
                 FUNC_PRINT(bmpoutput->size());
                 {
-                    ofstream os("output/GPcombineTest.xml");
-                    compf->vSave(os);
-                    os.close();
+                    GPPtr<GPTreeNode> n = compf->vSave();
+                    GPPtr<GPWStreamWrap> os = GPStreamFactory::NewWStream("output/GPcombineTest.xml", GPStreamFactory::FILE);
+                    xmlReader::dumpNodes(n.get(), os.get());
                 }
                 GPContents* alloutput = compf->vRun(bmpoutput);
                 FUNC_PRINT(alloutput->size());
 
-
-                //The first is TrFilterMatrix
-                auto unit = (*alloutput)[0];
-                unit.type->vSave(unit.content, cout);
-                cout << endl;
                 //Mids are all bmps
                 for (int i=1; i<alloutput->size()-1; ++i)
                 {
-                    FUNC_PRINT(i);
                     GPContents inp;
                     inp.push((*alloutput)[i]);
-                    FUNC_PRINT_ALL((*alloutput)[i].type->name().c_str(),s);
                     GPContents* fit_bmp = fit->vRun(&inp);
                     double* __fit = (double*)fit_bmp->get(0);
                     FUNC_PRINT_ALL(*__fit, f);

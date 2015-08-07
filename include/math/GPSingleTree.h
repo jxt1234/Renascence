@@ -18,7 +18,7 @@
 
 #include <string>
 #include "utils/RefCount.h"
-#include "math/AbstractPoint.h"
+#include "utils/AbstractPoint.h"
 
 /*GPSingleTree is used to Generate single formula such as y=x*2+sin(cos(x))*/
 

@@ -18,8 +18,7 @@
 
 #include <string>
 #include <stdlib.h>
-#include <istream>
-#include <ostream>
+#include "GPStream.h"
 
 
 /*Basic API*/
@@ -29,8 +28,8 @@ public:
     IStatusType(const std::string name):mName(name){}
     virtual ~IStatusType(){}
     inline std::string name() const {return mName;}
-    virtual void* vLoad(std::istream& input) const = 0;
-    virtual void vSave(void* contents, std::ostream& output) const = 0;
+    virtual void* vLoad(GPStream* input) const = 0;
+    virtual void vSave(void* contents, GPWStream* output) const = 0;
     virtual void vFree(void* contents) const = 0;
     /* map
      * Modify contents by values.

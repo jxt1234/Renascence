@@ -33,14 +33,14 @@ IGPAutoDefFunction* GPGraphicProducer::vCreateFunctionFromFormula(const std::str
 {
     return NULL;
 }
-IGPAutoDefFunction* GPGraphicProducer::vCreateFunctionFromIS(std::istream& is) const
+IGPAutoDefFunction* GPGraphicProducer::vCreateFunctionFromNode(const GPTreeNode* p) const
 {
-    return new GPGraphicADF(is, mDataBase);
+    return new GPGraphicADF(p, mDataBase);
 }
 void GPGraphicProducer::vMutate(IGPAutoDefFunction* tree) const
 {
 }
-GPGraphicProducer::GPGraphicProducer(const GPFunctionDataBase* base):mDataBase(base)
+GPGraphicProducer::GPGraphicProducer(const GPFunctionDataBase* base):GPProducer("GPGraphicProducer"), mDataBase(base)
 {
 }
 GPGraphicProducer::~GPGraphicProducer()

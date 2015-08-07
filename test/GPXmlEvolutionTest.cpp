@@ -5,6 +5,7 @@
 #include "utils/AutoClean.h"
 #include <fstream>
 #include <iostream>
+#include "core/GPStreamFactory.h"
 
 using namespace std;
 
@@ -47,9 +48,9 @@ class GPXmlEvolutionTest:public GPTest
                 GPPRINT_FL("Best Fit is %f", group->getBestFit());
 
                 delete group;
-                ofstream outputF("output/result.xml");
-                result->vSave(outputF);
-                outputF.close();
+                GPPtr<GPWStreamWrap> outputF = GPStreamFactory::NewWStream("output/result.xml");
+                GPPtr<GPTreeNode> n = result->vSave();
+                xmlReader::dumpNodes(n.get(), outputF.get());
                 result->decRef();
             }
         }

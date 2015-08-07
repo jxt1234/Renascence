@@ -19,8 +19,9 @@
 #include <stdlib.h>
 #include "math/FormulaTree.h"
 #include "utils/debug.h"
-#include "xml/xmlTree.h"
+#include "core/GP_XmlString.h"
 #include "utils/GPRandom.h"
+#include "xml/xmlTree.h"
 #include "producer/GPTreeProducer.h"
 #include "recurse_tree.h"
 #include "producer/GPTreeADF.h"
@@ -107,8 +108,12 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromName(const std::string& n
           {
                return mFunc.basic(input);
           }
-          virtual void vSave(std::ostream& os) const{}
-          
+          virtual GPTreeNode* vSave() const
+          {
+               GPTreeNode* root = new GPTreeNode("simpleADF", "");
+               root->addChild(GP_XmlString::func, mFunc.name);
+               return root;
+          }
           virtual IGPAutoDefFunction* vCopy() const
           {
                IGPAutoDefFunction* r = new simpleADF(mFunc);
@@ -131,9 +136,10 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromName(const std::string& n
 }
 
 
-void GPTreeProducer::setFunctionDataBase(const GPFunctionDataBase* comsys)
+GPTreeProducer::GPTreeProducer(const GPFunctionDataBase* comsys):GPProducer("GPTreeProducer")
 {
      mDataBase = comsys;
+     _init();
 }
 
 
@@ -257,7 +263,7 @@ std::vector<IGPAutoDefFunction*> GPTreeProducer::vCreateAllFunction(const std::v
                bool ok = makeOrder(inputType, realinputtype, order);
                if (ok)
                {
-                    if (inOrder(order))
+                    if (!inOrder(order))
                     {
                          auto agp = IGPAutoDefFunction::makeAdaptorFunction(gp, order, inputType);
                          res.push_back(agp);
@@ -316,11 +322,10 @@ void GPTreeProducer::_init()
      mLargeVary = 0.1;
      mStatusVary = 0.4;
 }
-IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromIS(std::istream& is) const
+IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromNode(const GPTreeNode* node) const
 {
-     xmlTree tree;
-     tree.loadStream(is);
      xmlCopy c(mDataBase);
+     xmlTree tree(node);
      GPTreeADFPoint* p = (GPTreeADFPoint*)AbstractPoint::deepCopy(&tree, &c);
      return new GPTreeADF(p, this);
 }

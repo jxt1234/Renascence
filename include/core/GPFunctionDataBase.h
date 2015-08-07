@@ -57,7 +57,7 @@ public:
     GPFunctionDataBase();
     virtual ~GPFunctionDataBase();
 private:
-    void _addFunction(GPFunctionDataBase::function* warpf, const xmlReader::package* func, IFunctionTable* table);
+    void _addFunction(GPFunctionDataBase::function* warpf, const GPTreeNode* func, IFunctionTable* table);
     int _findFunction(const std::string& name);
     const IStatusType* _findAndLoadStatus(const std::string& name, IFunctionTable* handle);
     void _clear();

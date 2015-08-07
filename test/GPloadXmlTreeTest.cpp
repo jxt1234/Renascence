@@ -7,43 +7,43 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <core/GPStreamFactory.h>
 #include "head.h"
 
 using namespace std;
 
 class GPloadXmlTreeTest2:public GPTest
 {
-    public:
-        virtual void run()
+public:
+    virtual void run()
+    {
+        GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
+        AUTOCLEAN(base);
         {
-            GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
-            AUTOCLEAN(base);
+            GPProducer* gen = GPFactory::createProducer(base);
+            AUTOCLEAN(gen);
             {
-                GPProducer* gen = GPFactory::createProducer(base);
-                AUTOCLEAN(gen);
-                {
-                    ifstream f("result.xml");
-                    IGPAutoDefFunction* gp = gen->vCreateFunctionFromIS(f);
-                    AUTOCLEAN(gp);
-                    f.close();
-                    ofstream file;
-                    file.open("output/GPloadXmlTreeTest.xml");
-                    gp->vSave(file);
-                    file.close();
-                    IGPAutoDefFunction* gp2 = gp->vCopy();
-                    AUTOCLEAN(gp2);
-                    file.open("output/GPloadXmlTreeTest_copy.xml");
-                    gp2->vSave(file);
-                    file.close();
-                    file.open("output/GPloadXmlTreeTest_mutate.xml");
-                    gp2->vMutate();
-                    gp2->vSave(file);
-                    file.close();
-                }
+                xmlReader r;
+                auto f = r.loadFile("result.xml");
+                IGPAutoDefFunction* gp = gen->vCreateFunctionFromNode(f);
+                AUTOCLEAN(gp);
+                GPPtr<GPWStreamWrap> file = GPStreamFactory::NewWStream("output/GPloadXmlTreeTest.xml", GPStreamFactory::FILE);
+                GPPtr<GPTreeNode> dump = gp->vSave();
+                xmlReader::dumpNodes(dump.get(), file.get());
+                IGPAutoDefFunction* gp2 = gp->vCopy();
+                AUTOCLEAN(gp2);
+                file = GPStreamFactory::NewWStream("output/GPloadXmlTreeTest_copy.xml", GPStreamFactory::FILE);
+                dump = gp2->vSave();
+                xmlReader::dumpNodes(dump.get(), file.get());
+                file = GPStreamFactory::NewWStream("output/GPloadXmlTreeTest_mutate.xml", GPStreamFactory::FILE);
+                gp2->vMutate();
+                dump = gp2->vSave();
+                xmlReader::dumpNodes(dump.get(), file.get());
             }
         }
-        GPloadXmlTreeTest2(){}
-        virtual ~GPloadXmlTreeTest2(){}
+    }
+    GPloadXmlTreeTest2(){}
+    virtual ~GPloadXmlTreeTest2(){}
 };
 
 static GPTestRegister<GPloadXmlTreeTest2> a("GPloadXmlTreeTest");

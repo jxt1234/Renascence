@@ -25,14 +25,6 @@ LINKS: ./libGP.so -lpthread -ldl
 
 ##########
 
-TARGET:gpsuit.out
-DEPENDS:libGP.so
-DIRS:GPSuit
-SRCS:
-LINKS: ./libGP.so
-
-##########
-
 TARGET:example.out
 DEPENDS:libGP.so
 DIRS:
