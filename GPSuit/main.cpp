@@ -14,54 +14,44 @@ See the License for the specific language governing permissions and
 limitations under the License.
  ******************************************************************/
 #include "FilePath.h"
-#include "core/GPFactory.h"
-#include "core/GPProducer.h"
-#include "core/GPFunctionDataBase.h"
+#include "user/GPAPI.h"
 #include <fstream>
-#include "utils/AutoClean.h"
-#include <utils/debug.h>
-#include "core/xmlGPDataLoader.h"
+#include <assert.h>
 using namespace std;
 
 int main(int argc, char** argv)
 {
     /*Prepare Runtime*/
-    GPASSERT(argc>=2);
-    FilePath::setEnvPath(argv[1]);
-    GPFunctionDataBase* base = GPFactory::createDataBase(NULL, NULL);
-    ifstream is;
-    bool res = FilePath::open(FilePath::RUNTIME, is);
-    GPASSERT(true == res);
-    base->loadXml(is);
-    AUTOCLEAN(base);
+    assert(argc>=2);
+    GP_Set_Stream_Path(argv[1]);
+    GPStream* database = FilePath::open(FilePath::RUNTIME);
+    AGPProducer* producer = GP_Producer_Create(database, NULL, GP_PRODUCER_TREE);
+    FilePath::close(database);
     {
-        GPProducer* sys = GPFactory::createProducer(base);
-        /*Load Standard function*/
-        res = FilePath::open(FilePath::STANDARD, is);
-        GPASSERT(true == res);
-        IGPAutoDefFunction* function = sys->vCreateFunctionFromIS(is);
-        AutoClean __clean_funtion(function);
-        is.close();
+        /*TODO*/
+#if 0
+        GPStream* functionstream = FilePath::open(FilePath::STANDARD);
+        IGPAutoDefFunction* function = GP_Function_Create_ByStream(producer, functionstream);
+        FilePath::close(functionstream);
         /*Find all input and output file*/
         vector<string> inputFiles;
         vector<string> outputFiles;
-        res = (FilePath::open(FilePath::INPUT, is));
-        GPASSERT(true == res);
+        auto res = FilePath::open(FilePath::INPUT);
         string temp;
         while (is >> temp)
         {
             inputFiles.push_back(temp);
         }
-        is.close();
+        FilePath::close(res);
         res = (FilePath::open(FilePath::OUTPUT, is));
-        GPASSERT(true == res);
+        assert(true == res);
         while (is >> temp)
         {
             outputFiles.push_back(temp);
         }
         is.close();
         res = (inputFiles.size() == outputFiles.size());
-        GPASSERT(true == res);
+        assert(true == res);
         /*TODO Load Compare function*/
         /*Start to compare*/
         int n = inputFiles.size();
@@ -82,7 +72,9 @@ int main(int argc, char** argv)
             delete gp_out;
         }
         result_os.close();
+#endif
     }
+    GP_Producer_Destroy(producer);
 
     return 1;
 }

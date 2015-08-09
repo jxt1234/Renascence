@@ -15,18 +15,10 @@
 ******************************************************************/
 
 #include "FilePath.h"
-#include "utils/debug.h"
+#include "user/GPAPI.h"
 #include <sstream>
 
 using namespace std;
-void FilePath::setEnvPath(const char* str)
-{
-    gEnvPath = string(str);
-}
-
-
-string FilePath::gEnvPath("");
-
 struct typeString
 {
     int type;
@@ -48,7 +40,6 @@ string FilePath::file(FilePath::TYPE t)
 {
     const int l = sizeof(gMap)/sizeof(typeString);
     ostringstream os;
-    os << gEnvPath;
     for (int i=0; i<l; ++i)
     {
         if (gMap[i].type == t)
@@ -60,14 +51,13 @@ string FilePath::file(FilePath::TYPE t)
     return os.str();
 }
 
-bool FilePath::open(FilePath::TYPE t, ifstream& is)
+GPStream* FilePath::open(FilePath::TYPE t)
 {
     string name = file(t);
-    FUNC_PRINT_ALL(name.c_str(), s);
-    is.open(name.c_str());
-    if (is.fail())
-    {
-        return false;
-    }
-    return true;
+    return GP_Stream_Create(name.c_str());
+}
+
+void FilePath::close(GPStream* s)
+{
+    GP_Stream_Destroy(s);
 }

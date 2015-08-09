@@ -38,3 +38,12 @@ DEPENDS:libGP.so
 DIRS:gptool
 SRCS:
 LINKS: ./libGP.so -ldl -lpthread
+
+##########
+
+TARGET:gpsuit.out
+DEPENDS:libGP.so
+DIRS:GPSuit
+SRCS:
+LINKS: ./libGP.so
+
