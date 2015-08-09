@@ -28,15 +28,26 @@ enum
     GP_PRODUCER_GRAPHIC=1
 };
 
-/*Set basic path of lib*/
+/*Set basic path of lib
+ * The lib will be loaded  from basic_path/
+ * For Example, set basic_path as /a/b/c/
+ * Then will load liba,so from /a/b/c/liba.so
+ * */
 void GP_Set_Lib_Path(const char* basic_path);
 
+/*Set Basic path for File Stream, Affect the API GP_Stream_Create and GP_WStream_Create
+ * Same as GP_Set_Lib_Path
+ * */
 void GP_Set_Stream_Path(const char* basic_path);
 
-GPStream* GP_Stream_Create(const char* file);
+/*Create Read Stream for file, using rb mode. The Real file is basic_path + filename*/
+GPStream* GP_Stream_Create(const char* filename);
+/*Destroy the stream created by GP_Stream_Create, must not be used to destroy other Stream*/
 void GP_Stream_Destroy(GPStream* s);
 
-GPWStream* GP_WStream_Create(const char* file);
+/*Create Write Stream for file, using wb mode. The Real file is basic_path + filename*/
+GPWStream* GP_WStream_Create(const char* filename);
+/*Destroy the stream created by GP_WStream_Create, must not be used to destroy other Stream*/
 void GP_WStream_Destroy(GPWStream* s);
 
 /*Create AGPProducer by function table, meta file and type
