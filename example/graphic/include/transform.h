@@ -8,13 +8,18 @@
 #define Tr_BLEND(x1, x2, a) Tr_MULTI(x1, 255-a) + Tr_MULTI(x2, a)
 #define Tr_LIMIT(x, w) (x)=(x)<0?0:(x);(x)=(x)%(w);
 
+struct GPStream;
+struct GPWStream;
+
 void TrMultyPixels(TrBmp* src, double factor);
 
 TrBmp* TrMixturePixels(TrBmp* src1, TrBmp* src2, double alpha);
 
 TrBmp* TrLoadPixels(const char* file);
+TrBmp* TrLoadPixelsFromStream(struct GPStream* stream);
 
 void TrWritePixels(TrBmp* src, const char* file);
+void TrWritePixelsToStream(TrBmp* src, struct GPWStream* wstream);
 TrBmp* TrScaleBmp(TrBmp* src, int targetWidth, int targetHeight);
 
 typedef void(*PixelsSwapFunc)(TrPixels* p);

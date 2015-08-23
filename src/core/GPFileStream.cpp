@@ -13,6 +13,20 @@
 static size_t _Read(void* meta, void* buffer, size_t size)
 {
     FILE* f = (FILE*)meta;
+    if (NULL == buffer)
+    {
+        long curr = ftell(f);
+        if (-1 == curr)
+        {
+            return 0;
+        }
+        int err = fseek((FILE*)f, (long)size, SEEK_CUR);
+        if (err != 0)
+        {
+            return 0;
+        }
+        return size;
+    }
     auto s = fread(buffer, 1, size, f);
     return s;
 }

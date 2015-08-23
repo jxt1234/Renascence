@@ -111,7 +111,6 @@ void write_JPEG_file (const char * filename, JSAMPLE* image_buffer, int image_wi
 }
 void TrWritePixels(TrBmp* src, const char* file)
 {
-    int i;
     if (!TrValidBmp(src)) return;
     write_JPEG_file(file, (JSAMPLE*)(src->pixels), src->width, src->height);
     return;

@@ -17,6 +17,12 @@ static int test_main()
 {
     GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
     {
+        GPPtr<GPStreamWrap> inputjpeg = GPStreamFactory::NewStream("input.jpg", GPStreamFactory::FILE);
+        auto bmptype = base->vQueryType("TrBmp");
+        auto pic = bmptype->vLoad(inputjpeg.get());
+        GPPtr<GPWStreamWrap> outputjpeg = GPStreamFactory::NewWStream("input_test_simple.jpg", GPStreamFactory::FILE);
+        bmptype->vSave(pic, outputjpeg.get());
+        bmptype->vFree(pic);
         GPPtr<GPProducer> gen = GPFactory::createProducer(base.get(), GPFactory::GRAPHIC);
         xmlReader r;
         auto n = r.loadFile("graphic_test.xml");

@@ -174,12 +174,12 @@ class TrBmpType:public IStatusType
         TrBmpType():IStatusType("TrBmp"){}
         virtual void* vLoad(GPStream* input) const
         {
-            /*TODO*/
-            return NULL;
+            TrBmp* bmp = TrLoadPixelsFromStream(input);
+            return (void*)bmp;
         }
         virtual void vSave(void* contents, GPWStream* output) const
         {
-            /*TODO*/
+            TrWritePixelsToStream((TrBmp*)contents, output);
             return;
         }
         virtual void vFree(void* contents) const
