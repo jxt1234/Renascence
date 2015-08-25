@@ -250,7 +250,9 @@ void GPTreeADF::loadUnitFunction(vector<int>& result, int functionId, int status
 GPTreeNode* GPTreeADF::vSave() const
 {
     GPASSERT(NULL!=mRoot);
-    return mRoot->xmlPrint();
+    GPTreeNode* root = new GPTreeNode("GPTreeADF", "");
+    root->addChild(mRoot->xmlPrint());
+    return root;
 }
 
 GPContents* GPTreeADF::vRun(GPContents* inputs)

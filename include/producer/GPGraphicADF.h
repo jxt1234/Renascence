@@ -36,11 +36,6 @@ public:
     
     
     virtual int vMap(GPPtr<GPParameter> p);
-    /*Return all inputTypes in order*/
-    virtual std::vector<const IStatusType*> vGetInputs() const;
-    /*Return all outputTypes in order*/
-    virtual std::vector<const IStatusType*> vGetOutputs() const;
-    GPGraphicADF();
     GPGraphicADF(const GPTreeNode* node, const GPFunctionDataBase* base);
     virtual ~GPGraphicADF();
     class Unit:public RefCount
@@ -123,8 +118,5 @@ private:
     std::vector<GPPtr<Point> > mInputs;
     /*Every Point collect one or more output*/
     std::vector<GPPtr<Point> > mOutputs;
-    /*To Caculate inputs and outputs is cost, Cache them firstly*/
-    std::vector<const IStatusType*> mCacheInputs;
-    std::vector<const IStatusType*> mCacheOutputs;
 };
 #endif

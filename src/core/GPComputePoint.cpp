@@ -31,7 +31,31 @@ GPComputePoint::~GPComputePoint()
 {
     mCache.clear();
 }
-bool GPComputePoint::vReceive(GPContents* inputs)
+bool GPComputePoint::receiveSingle(GPContents* inputs, int n)
+{
+    GPASSERT(NULL!=inputs);
+    GPASSERT(1 == inputs->size());
+    GPASSERT(0<=n && n<mCache.size());
+    if (NULL == mCache.get(n))
+    {
+        mCache.contents[n] = inputs->contents[0];
+    }
+    else
+    {
+        auto dst = mCache[n];
+        auto src = (*inputs)[0];
+        GPASSERT(src.type == dst.type);
+        GPASSERT(NULL!=src.type);
+        GPASSERT(NULL!=src.content);
+        GPASSERT(NULL!=dst.content);
+        dst.type->vMerge(dst.content, src.content);
+    }
+    mComplte = _computeCompleteStatus();
+    inputs->releaseForFree();
+    return mComplte;
+}
+
+bool GPComputePoint::receive(GPContents* inputs)
 {
     GPASSERT(NULL!=inputs);
     GPASSERT(inputs->size() == mCache.size());
@@ -53,6 +77,7 @@ bool GPComputePoint::vReceive(GPContents* inputs)
         }
     }
     mComplte = _computeCompleteStatus();
+    inputs->releaseForFree();
     return mComplte;
 }
 bool GPComputePoint::_computeCompleteStatus() const
@@ -72,9 +97,10 @@ bool GPComputePoint::_computeCompleteStatus() const
     }
     return res;
 }
-GPContents* GPComputePoint::vCompute()
+GPContents* GPComputePoint::compute()
 {
     GPASSERT(NULL!=mF);
+    GPASSERT(mComplte);
     GPContents* dst = NULL;
     if (mComplte)
     {

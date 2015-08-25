@@ -24,9 +24,10 @@ public:
     GPComputePoint(const GPFunctionDataBase::function* f, int n);
     GPComputePoint(const GPFunctionDataBase::function* f, const std::vector<bool>& completeFlags);
     virtual ~GPComputePoint();
-    bool vReceive(GPContents* inputs);
+    bool receive(GPContents* inputs);
+    bool receiveSingle(GPContents* inputs, int n);
     inline bool completed() const {return mComplte;}
-    GPContents* vCompute();
+    GPContents* compute();
 private:
     bool _computeCompleteStatus() const;
     const GPFunctionDataBase::function* mF;

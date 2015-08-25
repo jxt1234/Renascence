@@ -35,6 +35,11 @@ IGPAutoDefFunction* GPGraphicProducer::vCreateFunctionFromFormula(const std::str
 }
 IGPAutoDefFunction* GPGraphicProducer::vCreateFunctionFromNode(const GPTreeNode* p) const
 {
+    GPASSERT(NULL!=p);
+    if (p->name() != "GPGraphicADF")
+    {
+        return NULL;
+    }
     return new GPGraphicADF(p, mDataBase);
 }
 void GPGraphicProducer::vMutate(IGPAutoDefFunction* tree) const

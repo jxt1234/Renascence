@@ -1,4 +1,4 @@
-<Main>
+<GPGraphicADF>
 
 <Node1>
 <function>TrPackageFitCompute</function>
@@ -28,4 +28,4 @@ Node4
 <OutputNodes>Node2</OutputNodes>
 </Node5>
 
-</Main>
+</GPGraphicADF>

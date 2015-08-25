@@ -40,6 +40,10 @@ struct GPContents
     {
         contents.push_back(unit);
     }
+    void releaseForFree()
+    {
+        contents.clear();
+    }
     void clearContents()
     {
         for (auto unit : contents)

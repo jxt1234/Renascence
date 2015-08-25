@@ -324,8 +324,12 @@ void GPTreeProducer::_init()
 }
 IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromNode(const GPTreeNode* node) const
 {
+     if (node->name() != "GPTreeADF")
+     {
+          return NULL;
+     }
      xmlCopy c(mDataBase);
-     xmlTree tree(node);
+     xmlTree tree(node->getChildren()[0].get());
      GPTreeADFPoint* p = (GPTreeADFPoint*)AbstractPoint::deepCopy(&tree, &c);
      return new GPTreeADF(p, this);
 }

@@ -42,7 +42,6 @@ static int test_main()
         }
     }
     return 1;
-
 }
 int main()
 {

@@ -53,7 +53,7 @@ void GP_WStream_Destroy(GPWStream* s);
 /*Create AGPProducer by function table, meta file and type
  * metaStream:
  * table: obtain the method to get function, can be NULL, then GP will create table by the path decribed by meta file
- * type: TREE:0, GRAPIC:1
+ * type: ALL:-1, TREE:0, GRAPIC:1
  */
 AGPProducer* GP_Producer_Create(GPStream* metaStream, IFunctionTable* table, int type);
 

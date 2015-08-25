@@ -295,18 +295,6 @@ GPTreeNode* GPGraphicADF::vSave() const
     }
     return root;
 }
-std::vector<const IStatusType*> GPGraphicADF::vGetInputs() const
-{
-    return mCacheInputs;
-}
-std::vector<const IStatusType*> GPGraphicADF::vGetOutputs() const
-{
-    return mCacheOutputs;
-}
-
-GPGraphicADF::GPGraphicADF()
-{
-}
 
 void GPGraphicADF::vMutate()
 {
@@ -434,6 +422,7 @@ GPGraphicADF::GPGraphicADF(const GPTreeNode* root, const GPFunctionDataBase* bas
     }
     GPASSERT(!mInputs.empty());
     GPASSERT(!mOutputs.empty());
+    /*TODO Compute the input and output*/
 }
 GPGraphicADF::~GPGraphicADF()
 {

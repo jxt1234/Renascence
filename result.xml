@@ -1,3 +1,21 @@
+<GPTreeADF>
+
+<function>
+TrPackageFilterTransformFromRegress
+<status>
+
+</status>
+<childern>
+
+<function>
+TrPackageInput
+<status>
+
+</status>
+<childern>
+
+</childern>
+</function>
 <function>
 TrPackageFilterMatrixRegress
 <status>
@@ -19,16 +37,6 @@ TrPackageCompse
 <childern>
 
 <function>
-TrPackageFilterMatrix
-<status>
-
-<TrFilterMatrix>
-0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 
-</TrFilterMatrix>
-</status>
-<childern>
-
-<function>
 TrPackageInput
 <status>
 
@@ -37,15 +45,13 @@ TrPackageInput
 
 </childern>
 </function>
-</childern>
-</function>
 <function>
-TrPackageFilterMatrix
+TrPackageSaturation
 <status>
 
-<TrFilterMatrix>
-0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 
-</TrFilterMatrix>
+<float>
+0.5 
+</float>
 </status>
 <childern>
 
@@ -73,3 +79,6 @@ TrPackageInputTarget
 </function>
 </childern>
 </function>
+</childern>
+</function>
+</GPTreeADF>
