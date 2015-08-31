@@ -166,7 +166,7 @@ void xmlReader::analysisLine(const string& line)
     if (xmlReader_endPackage(line, cur))
     {
         //Save current string to current package
-        if (""!=mString)
+        if ("" == mCurPackage->attr())
         {
             mCurPackage->setAttributes(mString);
         }

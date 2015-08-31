@@ -21,5 +21,6 @@ class GPStringHelper
 {
 public:
     static std::vector<std::string> divideString(const std::string& input);
+    static std::string cleanString(const std::string& input);
 };
 #endif

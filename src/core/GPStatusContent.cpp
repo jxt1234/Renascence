@@ -25,14 +25,14 @@
 #include "core/GPStatusContent.h"
 using namespace std;
 
-GPStatusContent::GPStatusContent(const IStatusType* t)
+GPStatusContent::GPStatusContent(const IStatusType* t, double defaultratio)
 {
     mType = t;
     mNumber = mType->vMap(NULL, NULL);
     mValues = new double[mNumber];
     for (int i=0; i<mNumber; ++i)
     {
-        mValues[i] = 0.5;
+        mValues[i] = defaultratio;
     }
     mContent = NULL;//Important, Let mType alloc content when vMap
     mType->vMap(&mContent, mValues);

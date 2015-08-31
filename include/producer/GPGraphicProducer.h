@@ -25,7 +25,6 @@ class GPGraphicProducer:public GPProducer
         virtual IGPAutoDefFunction* vCreateFunctionFromName(const std::string& name) const;
         virtual IGPAutoDefFunction* vCreateFunctionFromFormula(const std::string& formula) const;
         virtual IGPAutoDefFunction* vCreateFunctionFromNode(const GPTreeNode* node) const;
-        virtual void vMutate(IGPAutoDefFunction* tree) const;
         GPGraphicProducer(const GPFunctionDataBase* base);
         virtual ~GPGraphicProducer();
     private:

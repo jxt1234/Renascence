@@ -22,3 +22,34 @@ std::vector<std::string>  GPStringHelper::divideString(const std::string& line)
 #undef LENGTH_OUT
     return result;
 }
+
+std::string GPStringHelper::cleanString(const std::string& input)
+{
+    if (input.size()==0)
+    {
+        return "";
+    }
+    int sta = -1;
+    int fin = -1;
+    for (int i=0; i<input.size(); ++i)
+    {
+        if (!isDivider(input[i]))
+        {
+            sta = i;
+            break;
+        }
+    }
+    for (int i=input.size()-1; i>=0; --i)
+    {
+        if (!isDivider(input[i]))
+        {
+            fin = i;
+            break;
+        }
+    }
+    if (sta == -1 || fin == -1)
+    {
+        return "";
+    }
+    return input.substr(sta, fin-sta+1);
+}

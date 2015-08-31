@@ -1,4 +1,4 @@
-#include "user/GPAPI.h"
+#include "test/GPTest.h"
 #include <assert.h>
 #include <fstream>
 #include <iostream>
@@ -12,7 +12,14 @@
 #include "producer/GPGraphicADF.h"
 #include "core/GPStreamFactory.h"
 using namespace std;
-static int test_main()
+class GPStreamADFTest:public GPTest
+{
+    public:
+        virtual void run();
+        GPStreamADFTest(){}
+        virtual ~GPStreamADFTest(){}
+};
+void GPStreamADFTest::run()
 {
     GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
     {
@@ -50,12 +57,6 @@ static int test_main()
             contents.clear();
         }
     }
-    return 1;
-}
-int main()
-{
-    GP_Set_Lib_Path("/Users/jiangxiaotang/Documents/Genetic-Program-Frame/");
-    GP_Set_Stream_Path("/Users/jiangxiaotang/Documents/Genetic-Program-Frame/");
-    return test_main();
 }
 
+static GPTestRegister<GPStreamADFTest> a("GPStreamADFTest");

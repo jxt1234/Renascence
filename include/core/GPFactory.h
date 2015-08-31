@@ -26,6 +26,7 @@ public:
     {
         TREE,
         GRAPHIC,
+        STREAM,
         UNKNOWN
     }TYPE;
     static GPProducer* createProducer(const GPFunctionDataBase* base, TYPE t = TREE);

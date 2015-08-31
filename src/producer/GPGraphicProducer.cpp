@@ -42,9 +42,6 @@ IGPAutoDefFunction* GPGraphicProducer::vCreateFunctionFromNode(const GPTreeNode*
     }
     return new GPGraphicADF(p, mDataBase);
 }
-void GPGraphicProducer::vMutate(IGPAutoDefFunction* tree) const
-{
-}
 GPGraphicProducer::GPGraphicProducer(const GPFunctionDataBase* base):GPProducer("GPGraphicProducer"), mDataBase(base)
 {
 }

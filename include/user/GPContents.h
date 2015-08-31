@@ -42,7 +42,10 @@ struct GPContents
     }
     void releaseForFree()
     {
-        contents.clear();
+        for (int i=0; i<contents.size(); ++i)
+        {
+            contents[i].content = NULL;
+        }
     }
     void clearContents()
     {
@@ -51,18 +54,14 @@ struct GPContents
             if (unit.content && unit.type)
             {
                 unit.type->vFree(unit.content);
+                unit.content = NULL;
             }
         }
+        releaseForFree();
     }
     void clear()
     {
-        for (auto unit : contents)
-        {
-            if (unit.content && unit.type)
-            {
-                unit.type->vFree(unit.content);
-            }
-        }
+        clearContents();
         contents.clear();
     }
     inline void* get(size_t i) const {return contents[i].content;}

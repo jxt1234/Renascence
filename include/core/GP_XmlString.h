@@ -35,8 +35,6 @@ class GP_XmlString
 
         static const std::string status_creator;
 
-        static void warpStart(const std::string& head, std::ostream& os);
-        static void warpEnd(const std::string& head, std::ostream& os);
 };
 
 #endif

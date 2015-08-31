@@ -1,20 +1,33 @@
-//
-//  GPStreamADF.h
-//  GP
-//
-//  Created by jiangxiaotang on 15/8/25.
-//  Copyright (c) 2015年 jiangxiaotang. All rights reserved.
-//
+/******************************************************************
+ Copyright 2015, Jiang Xiao-tang
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ******************************************************************/
 
 #ifndef __GP__GPStreamADF__
 #define __GP__GPStreamADF__
 
 #include "core/IGPAutoDefFunction.h"
 #include "core/GPComputePoint.h"
+
+/*Spectial ADF
+ * This kind of ADF will change input and status itself
+ */
 class GPStreamADF:public IGPAutoDefFunction
 {
 public:
-    GPStreamADF(const GPTreeNode* n);
+    friend class GPStreamADFProducer;
+    GPStreamADF(const GPTreeNode* n, const GPFunctionDataBase* base);
     virtual ~GPStreamADF();
     
     virtual GPContents* vRun(GPContents* inputs);
@@ -31,7 +44,7 @@ private:
     {
     public:
         Point(){}
-        virtual ~Point();
+        virtual ~Point(){}
         virtual bool vReceive(GPContents* c, const Point* source) = 0;
         
         void connectInput(const Point* input){mInputs.push_back(input);}
@@ -45,24 +58,11 @@ private:
     class SP:public Point
     {
     public:
-        SP(GPStream* input, const IStatusType* type):mInput(input), mType(type){}
+        SP(const IStatusType* type):mType(type){}
         virtual ~SP(){}
-        virtual bool vReceive(GPContents* con, const Point* source)
-        {
-            void* contents = mType->vLoad(mInput);
-            if (NULL == contents)
-            {
-                return false;
-            }
-            auto c = new GPContents;
-            c->push(contents, mType);
-            GPASSERT(1 == mOutputs.size());
-            mOutputs[0]->vReceive(c, this);
-            delete c;
-            return true;
-        }
+        inline const IStatusType* type() const { return mType;}
+        virtual bool vReceive(GPContents* con, const Point* source);
     private:
-        GPStream* mInput;
         const IStatusType* mType;
     };
     /*Compute Point*/
@@ -71,31 +71,9 @@ private:
     public:
         CP(GPPtr<GPComputePoint> point):mPoint(point){}
         virtual ~CP(){}
-        virtual bool vReceive(GPContents* c, const Point* source)
-        {
-            for (int i=0; i<mInputs.size(); ++i)
-            {
-                if (mInputs[i] == source)
-                {
-                    if (mPoint->receiveSingle(c, i))
-                    {
-                        GPContents* c = mPoint->compute();
-                        GPASSERT(c->size() == mOutputs.size());
-                        GPContents unit;
-                        for (int i=0; i<c->size(); ++i)
-                        {
-                            unit.push((*c)[i]);
-                            mOutputs[i]->vReceive(&unit, this);
-                        }
-                        /*Shouldn't clear c*/
-                        delete c;
-                    }
-                    return true;
-                }
-            }
-            GPASSERT(0);
-            return false;
-        }
+        inline GPComputePoint* get() const {return mPoint.get();}
+        virtual bool vReceive(GPContents* c, const Point* source);
+        GPPtr<GPTreeNode> dump() const;
     private:
         GPPtr<GPComputePoint> mPoint;
     };
@@ -103,43 +81,23 @@ private:
     class DP:public Point
     {
     public:
-        DP(){}
+        DP(const IStatusType* type);
         virtual ~DP() {mContents.clear();}
         inline GPContents& get() {return mContents;}
-        void reset()
-        {
-            mContents.clear();
-            for (int i=0; i<mInputs.size(); ++i)
-            {
-                mContents.push(NULL, NULL);
-            }
-        }
-        virtual bool vReceive(GPContents* c, const Point* source)
-        {
-            GPASSERT(NULL!=c);
-            GPASSERT(1 == c->size());
-            GPASSERT(mContents.size() == mInputs.size());
-            for (int i=0; i<mInputs.size(); ++i)
-            {
-                if (mInputs[i] == source)
-                {
-                    auto unit = (*c)[0];
-                    if (NULL != mContents.get(i))
-                    {
-                        GPASSERT(mContents.contents[i].type == unit.type);
-                        unit.type->vMerge(mContents.get(i), unit.content);
-                    }
-                    else
-                    {
-                        mContents.contents[i] = (*c)[0];
-                    }
-                    break;
-                }
-            }
-            return false;
-        }
+        inline const IStatusType* getType() const {return mContents.contents[0].type;}
+        void reset();
+        virtual bool vReceive(GPContents* c, const Point* source);
     private:
         GPContents mContents;
     };
+    
+    std::vector<GPPtr<SP>> mSources;
+    std::vector<GPPtr<DP>> mDest;
+    
+    /*Only has soft reference, for vMap to use*/
+    std::vector<CP*> mFunctions;
+    
+    GPStreamADF(const std::vector<GPPtr<SP> >& Source, const std::vector<GPPtr<DP>>& dest, const std::vector<CP*>& functions);
+    void _invalidateInputOutput();
 };
 #endif /* defined(__GP__GPStreamADF__) */

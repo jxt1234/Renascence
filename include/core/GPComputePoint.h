@@ -18,14 +18,18 @@
 #include "head.h"
 #include "GPFunctionDataBase.h"
 #include "user/GPContents.h"
+#include <vector>
+#include "core/GPStatusContent.h"
 class GPComputePoint:public RefCount
 {
 public:
-    GPComputePoint(const GPFunctionDataBase::function* f, int n);
     GPComputePoint(const GPFunctionDataBase::function* f, const std::vector<bool>& completeFlags);
     virtual ~GPComputePoint();
-    bool receive(GPContents* inputs);
-    bool receiveSingle(GPContents* inputs, int n);
+    /*inputs can only has one content*/
+    bool receive(GPContents* inputs, int n);
+    inline const GPFunctionDataBase::function* get() const {return mF;}
+    const std::vector<bool>& flags() const {return mFlags;}
+    int map(double* value, int n);
     inline bool completed() const {return mComplte;}
     GPContents* compute();
 private:
@@ -34,5 +38,6 @@ private:
     std::vector<bool> mFlags;
     GPContents mCache;
     bool mComplte;
+    std::vector<GPPtr<GPStatusContent> > mStatus;
 };
 #endif

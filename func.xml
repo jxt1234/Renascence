@@ -1,6 +1,7 @@
 <libpics>
 
 <TrPackageCompse>
+	<output>TrBmp</output>
     <shortName>C</shortName>
 
 	<inputs>TrPackageFilterMatrix, TrPackageFilterMatrix</inputs>
@@ -11,6 +12,7 @@
 </TrPackageCompse>
 
 <TrPackageSaturation>
+	<output>TrBmp</output>
     <shortName>S</shortName>
 
 	<inputs>TrPackageInput</inputs>
@@ -21,6 +23,7 @@
 </TrPackageSaturation>
 
 <TrPackageFilterMatrix>
+	<output>TrBmp</output>
     <shortName>F</shortName>
 	<inputs>TrPackageInput</inputs>
 	<status>TrFilterMatrix</status>

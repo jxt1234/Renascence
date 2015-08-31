@@ -21,7 +21,7 @@
 class GPStatusContent:public RefCount
 {
     public:
-        GPStatusContent(const IStatusType* t);
+        GPStatusContent(const IStatusType* t, double defaultratio=0.5);
         GPStatusContent(const GPStatusContent& c);
         void operator=(const GPStatusContent& c);
         ~GPStatusContent();
