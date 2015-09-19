@@ -31,9 +31,6 @@ class FormulaTreePoint:public AbstractPoint
         friend class FormulaTree;
         inline const std::string& name() const {return mName;}
         inline TYPE type() const {return mT;}
-    protected:
-        virtual void printBefore(std::ostream& out);
-        virtual void printAfter(std::ostream& out);
     private:
         TYPE mT;
         std::string mName;
@@ -45,7 +42,6 @@ class FormulaTree:public RefCount
         virtual ~FormulaTree();
         void setFormula(const std::string& formula);
         inline FormulaTreePoint* root() {return mRoot;}
-        void print(std::ostream& s);
     private:
         FormulaTreePoint* mRoot;
 };

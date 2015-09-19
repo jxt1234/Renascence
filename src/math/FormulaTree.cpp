@@ -73,15 +73,6 @@ FormulaTreePoint::FormulaTreePoint()
 FormulaTreePoint::~FormulaTreePoint()
 {
 }
-void FormulaTreePoint::printBefore(std::ostream& out)
-{
-    out << "<"<<mName<<">\n";
-    out << "<Type>"<<mT<<"</Type>\n";
-}
-void FormulaTreePoint::printAfter(std::ostream& out)
-{
-    out << "</"<<mName<<">\n";
-}
 
 FormulaTree::FormulaTree()
 {
@@ -136,8 +127,3 @@ void FormulaTree::setFormula(const std::string& formula)
     }
 }
 
-void FormulaTree::print(std::ostream& s)
-{
-    GPASSERT(NULL!=mRoot);
-    mRoot->print(s);
-}

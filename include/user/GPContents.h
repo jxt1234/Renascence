@@ -27,6 +27,16 @@ struct GPContents
         const IStatusType* type;
     };
     std::vector<GP_Unit> contents;
+    
+    void set(void* content, const IStatusType* type, int pos)
+    {
+        if (pos <= 0 || pos >= contents.size())
+        {
+            return;
+        }
+        contents[pos].content = content;
+        contents[pos].type = type;
+    }
 
     //Function for convinent
     void push(void* content, const IStatusType* type)

@@ -33,12 +33,9 @@ class AbstractPoint:public RefCount
         /*Use for different types of tree to transform*/
         static AbstractPoint* deepCopy(AbstractPoint* src, IPointCopy* copy);
         std::vector<AbstractPoint*> display();
-        void print(std::ostream& out);
         virtual ~AbstractPoint();
         void addPoint(AbstractPoint* p);
     protected:
-        virtual void printBefore(std::ostream& out){}
-        virtual void printAfter(std::ostream& out){}
         std::vector<AbstractPoint*> mChildren;
 };
 

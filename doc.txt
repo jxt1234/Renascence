@@ -257,3 +257,7 @@ gptool.out run func.xml outputfunc.xml input=1.txt,2.jpg output=3.jpg
 
 2015.7.27
 1、ADF导入导出机制重构
+
+2015.9.19
+1、修改随机数算法
+2、实现根据输入输出类型完成函数匹配的机制

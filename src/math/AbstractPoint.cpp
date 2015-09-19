@@ -54,16 +54,6 @@ AbstractPoint* AbstractPoint::deepCopy(AbstractPoint* src, AbstractPoint::IPoint
     return result;
 }
 
-void AbstractPoint::print(ostream& out)
-{
-    this->printBefore(out);
-    for (int i=0; i<mChildren.size(); ++i)
-    {
-        mChildren[i]->print(out);
-    }
-    this->printAfter(out);
-}
-
 std::vector<AbstractPoint*> AbstractPoint::display()
 {
     vector<AbstractPoint*> result;
