@@ -21,7 +21,7 @@ class carryTree
 {
 public:
     carryTree(carryPoint* root=NULL):mRoot(root){}
-    ~carryTree(){if(NULL!=mRoot) delete mRoot;}
+    ~carryTree(){}
     virtual outputType output()=0;
     virtual bool readyToOutput()=0;
     std::vector<outputType> searchAll()
@@ -42,10 +42,10 @@ public:
         return *(result.begin());
     }
 protected:
-    carryPoint* mRoot;
+    GPPtr<carryPoint> mRoot;
     void searchUnit(std::vector<outputType>& result, int offset, int n)
     {
-        if (NULL == mRoot) return;
+        if (NULL == mRoot.get()) return;
         int num = 0;
         while(mRoot->next())
         {

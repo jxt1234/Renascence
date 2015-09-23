@@ -59,10 +59,5 @@ bool carryPoint::next()
 
 void carryPoint::clear()
 {
-    if (mChild.empty()) return;
-    for (int i=0; i<mChild.size(); ++i)
-    {
-        delete mChild[i];
-    }
     mChild.clear();
 }

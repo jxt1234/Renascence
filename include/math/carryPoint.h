@@ -17,7 +17,8 @@
 #define CARRY_POINT_H
 #include <vector>
 #include <stdlib.h>
-class carryPoint
+#include "utils/RefCount.h"
+class carryPoint:public RefCount
 {
 public:
     carryPoint():mDepend(NULL), mGrow(false){}
@@ -28,7 +29,7 @@ public:
     bool next();
     void clear();
     carryPoint* mDepend;
-    std::vector<carryPoint*> mChild;
+    std::vector<GPPtr<carryPoint>> mChild;
     bool mGrow;
 };
 

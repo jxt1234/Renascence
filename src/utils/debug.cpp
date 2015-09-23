@@ -18,7 +18,6 @@
 #ifndef BUILD_FOR_ANDROID
 void dump_stack()
 {
-    char** strings;
     void* callstack[128];
     int i, frames = backtrace(callstack, 128);
     char** strs = backtrace_symbols(callstack, frames);
@@ -26,6 +25,5 @@ void dump_stack()
         printf("%s\n", strs[i]);
     }
     free(strs);
-    free(strings);
 }
 #endif
