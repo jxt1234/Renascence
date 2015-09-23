@@ -17,17 +17,20 @@
 #define VECTOR_POINT_TREE_H
 #include "math/carryTree.h"
 #include "utils/debug.h"
+#include "producer/GPTreeADF.h"
 class GPFunctionDataBase;
 class computePoint:public carryPoint
 {
 friend class computeSearchTree;
 public:
-    computePoint(const std::vector<std::vector<int> >& data, const std::vector<int>& avail, const std::vector<const IStatusType*>& input, const GPFunctionDataBase* sys):mData(data), mAvail(avail), mCur(0), mInput(input), mSys(sys){}
-    const std::vector<int>& getData() const{return mData[mAvail[mCur]];}
-    std::vector<int> filter(const std::vector<std::vector<int> >& combo, const std::vector<int>& output);
+    computePoint(const std::vector<std::vector<const GPFunctionDataBase::function*> >& data, const std::vector<int>& avail, const std::vector<const IStatusType*>& input):mData(data), mAvail(avail), mCur(0), mInput(input){}
+    const std::vector<const GPFunctionDataBase::function*>& getData() const{return mData[mAvail[mCur]];}
+    std::vector<int> filter(const std::vector<std::vector<const GPFunctionDataBase::function*> >& combo, const std::vector<const GPFunctionDataBase::function*>& output);
+    
+    std::vector<GPTreeADFPoint*> outputs();
 protected:
     virtual bool vGrow();
-    std::vector<int> getDependOutput();
+    std::vector<const GPFunctionDataBase::function*> getDependOutput();
     virtual bool vNext()
     {
         mCur++;
@@ -41,19 +44,18 @@ protected:
     }
 private:
     const std::vector<const IStatusType*>& mInput;
-    const std::vector<std::vector<int> >& mData;
+    const std::vector<std::vector<const GPFunctionDataBase::function*> >& mData;
     std::vector<int> mAvail;
     int mCur;
     int mParent;
-    const GPFunctionDataBase* mSys;
 };
 
 
-class computeSearchTree:public carryTree<std::vector<int> >
+class computeSearchTree:public carryTree<std::vector<GPTreeADFPoint*> >
 {
 public:
     computeSearchTree(computePoint* point){mRoot = point;}
-    virtual std::vector<int> output();
+    virtual std::vector<GPTreeADFPoint*> output() override;
     virtual bool readyToOutput();
 };
 

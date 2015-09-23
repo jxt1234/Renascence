@@ -20,12 +20,12 @@
 #include "recurse_tree.h"
 using namespace std;
 
-vector<int> computePoint::filter(const vector<vector<int> >& combo, const vector<int>& output)
+vector<int> computePoint::filter(const vector<vector<const GPFunctionDataBase::function*> >& combo, const vector<const GPFunctionDataBase::function*>& output)
 {
     vector<int> result;
     for (int i=0; i<combo.size(); ++i)
     {
-        const vector<int>& comboUnit = combo[i];
+        const vector<const GPFunctionDataBase::function*>& comboUnit = combo[i];
         bool fit = true;
         const vector<const IStatusType*>& input_obtained = mInput;
         for (int j=0; j<comboUnit.size(); ++j)
@@ -37,7 +37,7 @@ vector<int> computePoint::filter(const vector<vector<int> >& combo, const vector
                 break;
             }
             /*Check if it contained unobtained input*/
-            const GPFunctionDataBase::function* f = mSys->vQueryFunctionById(comboUnit[j]);
+            const GPFunctionDataBase::function* f = comboUnit[j];
             for (int k=0; k<f->inputType.size(); ++k)
             {
                 const IStatusType* inpId = f->inputType[k];
@@ -60,15 +60,36 @@ vector<int> computePoint::filter(const vector<vector<int> >& combo, const vector
     return result;
 }
 
-
-vector<int> computePoint::getDependOutput()
+vector<GPTreeADFPoint*> computePoint::outputs()
 {
-    vector<int> result;
+    vector<GPTreeADFPoint*> result;
+    const vector<const GPFunctionDataBase::function*>& data = getData();
+    for (int i=0; i<data.size(); ++i)
+    {
+        GPTreeADFPoint* p = new GPTreeADFPoint(data[i]);
+        result.push_back(p);
+        
+    }
+    for (auto child : mChild)
+    {
+        computePoint* p = (computePoint*)(child);
+        GPTreeADFPoint* parent = result[p->mParent];
+        auto childrens = p->outputs();
+        for (int i=0; i<childrens.size(); ++i)
+        {
+            parent->addPoint(childrens[i]);
+        }
+    }
+    return result;
+}
+vector<const GPFunctionDataBase::function*> computePoint::getDependOutput()
+{
+    vector<const GPFunctionDataBase::function*> result;
     computePoint* cur = (computePoint*)(mDepend);
     computePoint* self = this;
     while(NULL!=cur)
     {
-        const vector<int>& data = cur->getData();
+        const vector<const GPFunctionDataBase::function*>& data = cur->getData();
         result.push_back(data[self->mParent]);
         self = cur;
         cur = (computePoint*)(cur->mDepend);
@@ -78,20 +99,19 @@ vector<int> computePoint::getDependOutput()
 bool computePoint::vGrow()
 {
     bool success = true;
-    GPASSERT(NULL!=mSys);
-    const vector<int>& data = getData();
-    vector<int> currentOutputId = getDependOutput();
+    const vector<const GPFunctionDataBase::function*>& data = getData();
+    vector<const GPFunctionDataBase::function*> currentOutputId = getDependOutput();
     
     for (int i=0; i<data.size(); ++i)
     {
-        const GPFunctionDataBase::function* f = mSys->vQueryFunctionById(data[i]);
-        const vector<vector<int> >& inputData = f->fixTable;
+        const GPFunctionDataBase::function* f = data[i];
+        const vector<vector<const GPFunctionDataBase::function*> >& inputData = f->fixTable;
         currentOutputId.push_back(data[i]);
         vector<int> avail = filter(inputData, currentOutputId);
         currentOutputId.erase(currentOutputId.end()-1);
         if (!avail.empty())
         {
-            carryPoint* res = new computePoint(inputData, avail, mInput, mSys);
+            carryPoint* res = new computePoint(inputData, avail, mInput);
             computePoint* midres = (computePoint*)(res);
             midres->mDepend = this;
             midres->mParent = i;
@@ -106,36 +126,9 @@ bool computePoint::vGrow()
     }
     return success;
 }
-vector<int> computeSearchTree::output()
+vector<GPTreeADFPoint*> computeSearchTree::output()
 {
-    computePoint* cur;
-    vector<int> result;
-    list<carryPoint*> queue;
-    queue.push_back(mRoot);
-    while(!queue.empty())
-    {
-        cur = (computePoint*)(*(queue.begin()));
-        //Construct search queue
-        for (int i=0; i<cur->mChild.size(); ++i)
-        {
-            queue.push_back(cur->mChild[i]);
-        }
-        const vector<int>& data = cur->getData();
-        //Construct the inputsNumbers
-        vector<int> inputNumber(data.size(),0);
-        for (int i=0; i<cur->mChild.size(); ++i)
-        {
-            computePoint* child = (computePoint*)(cur->mChild[i]);
-            inputNumber[child->mParent] = child->getData().size();
-        }
-        //Construct queue, without status
-        for (int i=0; i<data.size(); ++i)
-        {
-            GPTreeADF::loadUnitFunction(result, data[i], -1, inputNumber[i]);
-        }
-        queue.erase(queue.begin());
-    }
-    return result;
+    return ((computePoint*)mRoot)->outputs();
 }
 bool computeSearchTree::readyToOutput()
 {

@@ -50,6 +50,7 @@ GPTreeADFPoint::~GPTreeADFPoint()
     }
 }
 
+
 void GPTreeADFPoint::initStatus(const std::vector<std::istream*>& statusInput)
 {
     GPASSERT(statusInput.size() == mStatus.size());
@@ -107,55 +108,6 @@ AbstractPoint* GPTreeADFPoint::GPTreeADFCopy::copy(AbstractPoint* src)
 }
 
 
-
-void GPTreeADFPoint::replacePoint(const std::vector<int> &numbers, const GPFunctionDataBase* base)
-{
-    GPASSERT(numbers.size()>0);
-    int cur=0;
-    _replacePoint(numbers, cur, base);
-}
-void GPTreeADFPoint::_replacePoint(const std::vector<int> &numbers, int& cur, const GPFunctionDataBase* base)
-{
-    GPASSERT(numbers.size()>0);
-    GPASSERT(numbers.size()%3==0);
-    //Clear all children, status and result
-    for (int i=0; i<mChildren.size(); ++i)
-    {
-        delete mChildren[i];
-    }
-    for (int i=0; i<mStatus.size(); ++i)
-    {
-        SAFE_UNREF(mStatus[i]);
-    }
-    mChildren.clear();
-    mStatus.clear();
-    //Wide-search
-    list<GPTreeADFPoint*> cacheQueue;
-    cacheQueue.push_back(this);
-    while(!cacheQueue.empty())
-    {
-        GPTreeADFPoint* current = cacheQueue.front();
-        current->mFunc = base->vQueryFunctionById((numbers[cur++]));
-        /*Init status*/
-        cur++;//Status be none
-        const vector<const IStatusType*>& t = current->mFunc->statusType;
-        for (int i=0; i<t.size(); ++i)
-        {
-            (current->mStatus).push_back(new GPStatusContent(t[i]));
-        }
-
-        /*Init all childern*/
-        int pointNumber = numbers[cur++];
-        for (int i=0; i < pointNumber; ++i)
-        {
-            GPTreeADFPoint* input = new GPTreeADFPoint;
-            current->mChildren.push_back(input);
-            cacheQueue.push_back(input);
-        }
-        cacheQueue.pop_front();
-    }
-}
-
 void GPTreeADFPoint::getinput(std::vector<const IStatusType*>& tlist) const
 {
     tlist.insert(tlist.end(), (mFunc->inputType).begin(), (mFunc->inputType).end());
@@ -165,8 +117,6 @@ void GPTreeADFPoint::getinput(std::vector<const IStatusType*>& tlist) const
         p->getinput(tlist);
     }
 }
-
-
 
 GPContents* GPTreeADFPoint::compute(GPContents* input, int& cur)
 {
@@ -318,11 +268,29 @@ void GPTreeADF::vMutate()
         {
             vector<const IStatusType*> inputs;
             p->pGetInputs(inputs);
-            vector<vector<int> > queue;
+            vector<vector<GPTreeADFPoint*> > queue;
             mProducer->searchAllSequences(queue, outputs, inputs);
             GPASSERT(!queue.empty());
             int n = GPRandom::mid(0, queue.size());
-            p->replacePoint(queue[n], mProducer->getDataBase());
+            auto q = queue[n];
+            GPASSERT(1 == q.size());
+            if (p != mRoot)
+            {
+                mRoot->replace(p, q[0]);
+            }
+            else
+            {
+                mRoot->decRef();
+                mRoot = q[0];
+                q[0]->addRef();
+            }
+            for (auto que : queue)
+            {
+                for (auto _q : que)
+                {
+                    _q->decRef();
+                }
+            }
             _refreshInputsAndOutputs();
         }
     }

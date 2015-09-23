@@ -170,7 +170,7 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunction(const std::vector<const ISta
      }
      /*TODO if inputType and outputType is the same as last one, return the cached one*/
      /*Find all available output function*/
-     vector<vector<int> > warpOutput;
+     vector<vector<const GPFunctionDataBase::function*> > warpOutput;
      _findMatchedFuncton(warpOutput, outputType, inputType);
      if (warpOutput.empty())
      {
@@ -178,24 +178,28 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunction(const std::vector<const ISta
      }
      vector<int> avail(1,warpOutput.size()-1);
      /*Get All sequence*/
-     computePoint* start = new computePoint(warpOutput, avail, inputType, mDataBase);
+     computePoint* start = new computePoint(warpOutput, avail, inputType);
      computeSearchTree tree(start);
-     vector<int> queue = tree.searchOne();
+     vector<GPTreeADFPoint*> queue = tree.searchOne();
+     GPASSERT(1 == queue.size());
      if (queue.empty())
      {
           return NULL;
      }
-     GPTreeADFPoint* root = new GPTreeADFPoint;
-     root->replacePoint(queue, mDataBase);
-     auto gp = new GPTreeADF(root, this);
+     auto gp = new GPTreeADF(queue[0], this);
      return gp;
 }
+GPTreeADF* GPTreeProducer::searchOne(std::vector<std::vector<GPTreeADFPoint*> >& res, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, int offset) const
+{
+     return NULL;
+}
 
-void GPTreeProducer::searchAllSequences(std::vector<std::vector<int> >& res, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat) const
+
+void GPTreeProducer::searchAllSequences(std::vector<std::vector<GPTreeADFPoint*> >& res, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat) const
 {
      /*TODO if the inputType and outputType is the same as the last one, return the cached one*/
      /*Find all available output function*/
-     vector<vector<int> > warpOutput;
+     vector<vector<const GPFunctionDataBase::function*> > warpOutput;
      _findMatchedFuncton(warpOutput, outputType, inputType);
      if (warpOutput.empty())
      {
@@ -207,7 +211,7 @@ void GPTreeProducer::searchAllSequences(std::vector<std::vector<int> >& res, con
           avail.push_back(i);
      }
      /*Get All sequence*/
-     computePoint* start = new computePoint(warpOutput, avail, inputType, mDataBase);
+     computePoint* start = new computePoint(warpOutput, avail, inputType);
      computeSearchTree tree(start);
      res = tree.searchAll();
 }
@@ -249,13 +253,13 @@ std::vector<IGPAutoDefFunction*> GPTreeProducer::vCreateAllFunction(const std::v
 {
      GPASSERT(NULL!=mDataBase);
      vector<IGPAutoDefFunction*> res;
-     vector<vector<int> >queue;
+     vector<vector<GPTreeADFPoint*> >queue;
      searchAllSequences(queue, outputType, inputType, inputRepeat);
      for (int i=0; i<queue.size(); ++i)
      {
-          GPTreeADFPoint* root = new GPTreeADFPoint;
-          root->replacePoint(queue[i], mDataBase);
-          auto gp = new GPTreeADF(root, this);
+          auto q = queue[i];
+          GPASSERT(q.size() == 1);
+          auto gp = new GPTreeADF(q[0], this);
           if (!inputRepeat)
           {
                auto realinputtype = gp->getInputTypes();
@@ -285,11 +289,12 @@ std::vector<IGPAutoDefFunction*> GPTreeProducer::vCreateAllFunction(const std::v
 }
 
 
-void GPTreeProducer::_findMatchedFuncton(std::vector<std::vector<int> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
+void GPTreeProducer::_findMatchedFuncton(std::vector<std::vector<const GPFunctionDataBase::function*> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
 {
-     for (int i=0; i < mDataBase->size(); ++i)
+     auto functions_all = mDataBase->getAllFunctions();
+     for (int i=0; i < functions_all.size(); ++i)
      {
-          const GPFunctionDataBase::function* f = mDataBase->vQueryFunctionById(i);
+          const GPFunctionDataBase::function* f = functions_all[i];
           const vector<const IStatusType*>& out = f->outputType;
           bool match = true;
           for (int j=0; j<outputType.size(); ++j)
@@ -310,8 +315,8 @@ void GPTreeProducer::_findMatchedFuncton(std::vector<std::vector<int> >& warpOut
           }
           if (match)
           {
-               vector<int> output;
-               output.push_back(i);
+               vector<const GPFunctionDataBase::function*> output;
+               output.push_back(f);
                warpOutput.push_back(output);
           }
      }

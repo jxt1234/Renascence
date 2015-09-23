@@ -36,20 +36,18 @@ public:
         std::vector<const IStatusType*> inputType;
         std::vector<const IStatusType*> outputType;
         std::vector<const IStatusType*> statusType;
-        std::vector<std::vector<int> > fixTable;//TODO Delete this
+        std::vector<std::vector<const function*> > fixTable;//TODO Delete this
     };
-    std::vector<const IStatusType*> queryType(const std::string typelist);
+    std::vector<const IStatusType*> queryType(const std::string& typelist);
     //Basic Api
+    std::vector<const function*> getAllFunctions() const;
     virtual const function* vQueryFunction(const std::string& name) const;
     virtual const function* vQueryFunctionByShortName(const std::string& name) const;
     virtual const IStatusType* vQueryType(const std::string& name) const;
     //TODO Find better way to organnize it
     void loadXml(GPStream* is, IFunctionTable* table=NULL, std::ostream* print = NULL);
     
-    //In Future may delete these two API
-    virtual const function* vQueryFunctionById (int ids) const;
-    virtual int size() const;
-//Find Function that has outputType of t
+    //Find Function that has outputType of t
     virtual std::vector<const function*> vSearchFunction(const IStatusType* t) const;
     
     /*For debug*/

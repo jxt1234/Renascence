@@ -27,6 +27,44 @@ AbstractPoint::~AbstractPoint()
     }
 }
 
+int AbstractPoint::_posOfChild(AbstractPoint* p)
+{
+    int pos = -1;
+    for (int i=0; i<mChildren.size(); ++i)
+    {
+        if (p == mChildren[i])
+        {
+            pos = i;
+            break;
+        }
+    }
+    return pos;
+}
+
+
+bool AbstractPoint::replace(AbstractPoint* oldPoint, AbstractPoint* newPoint)
+{
+    GPASSERT(NULL!=oldPoint);
+    GPASSERT(NULL!=newPoint);
+    int pos = _posOfChild(oldPoint);
+    if (pos >=0)
+    {
+        mChildren[pos]->decRef();
+        mChildren[pos]=newPoint;
+        newPoint->addRef();
+        return true;
+    }
+    for (auto c : mChildren)
+    {
+        if (c->replace(oldPoint, newPoint))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 void AbstractPoint::addPoint(AbstractPoint* p)
 {
     GPASSERT(NULL!=p);
@@ -74,3 +112,12 @@ std::vector<AbstractPoint*> AbstractPoint::display()
     return result;
 }
 
+
+void AbstractPoint::clearChildren()
+{
+    for (auto c:mChildren)
+    {
+        delete c;
+    }
+    mChildren.clear();
+}

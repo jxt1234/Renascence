@@ -26,7 +26,18 @@
 
 using namespace std;
 
-std::vector<const IStatusType*> GPFunctionDataBase::queryType(const std::string typelist)
+std::vector<const GPFunctionDataBase::function*> GPFunctionDataBase::getAllFunctions() const
+{
+    std::vector<const GPFunctionDataBase::function*> result;
+    for (int i=0; i<mFunctionTable.size(); ++i)
+    {
+        result.push_back(mFunctionTable[i]);
+    }
+    return result;
+}
+
+
+std::vector<const IStatusType*> GPFunctionDataBase::queryType(const std::string& typelist)
 {
     std::vector<const IStatusType*> results;
     std::istringstream is(typelist);
@@ -90,7 +101,7 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
         }
         else if (cur->name() == GPStrings::FunctionDataBase_FIXGROUP)
         {
-            vector<int> input;
+            vector<const function*> input;
             auto inputsfuncname = GPStringHelper::divideString(cur->attr());
             for (auto name : inputsfuncname)
             {
@@ -100,7 +111,7 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
                     input.clear();
                     break;
                 }
-                input.push_back(inp);
+                input.push_back(mFunctionTable[inp]);
             }
             if (!input.empty())
             {
@@ -166,11 +177,6 @@ std::vector<const GPFunctionDataBase::function*> GPFunctionDataBase::vSearchFunc
         }
     }
     return res;
-}
-
-int GPFunctionDataBase::size() const
-{
-    return mFunctionTable.size();
 }
 
 
@@ -249,12 +255,12 @@ void GPFunctionDataBase::print(ostream& os)
             os <<fc->statusType[j]->name()<<" ";
         }
         os << endl;
-        vector<vector<int> >& combo = fc->fixTable;
+        vector<vector<const function*> >& combo = fc->fixTable;
         for (int x=0; x<combo.size(); ++x)
         {
             for (int y=0; y<combo[x].size(); ++y)
             {
-                os << combo[x][y]<<" ";
+                os << combo[x][y]->name<<" ";
             }
             os << endl;
         }
@@ -297,9 +303,4 @@ const GPFunctionDataBase::function* GPFunctionDataBase::vQueryFunction (const st
         }
     }
     return NULL;
-}
-const GPFunctionDataBase::function* GPFunctionDataBase::vQueryFunctionById (int id) const
-{
-    GPASSERT(id>=0&&id<mFunctionTable.size());
-    return mFunctionTable[id];
 }

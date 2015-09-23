@@ -31,7 +31,6 @@ public:
     GPTreeADFPoint(const GPFunctionDataBase::function* func);
     void initStatus(const std::vector<std::istream*>& is);
     virtual ~GPTreeADFPoint();
-    void replacePoint(const std::vector<int> &numbers, const GPFunctionDataBase* base);
     inline const GPFunctionDataBase::function* func() const {return mFunc;}
     inline const std::vector<GPStatusContent*>& status() {return mStatus;}
     inline void pGetInputs(std::vector<const IStatusType*>& tlist) const

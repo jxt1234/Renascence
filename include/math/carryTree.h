@@ -27,13 +27,13 @@ public:
     std::vector<outputType> searchAll()
     {
         std::vector<outputType> result;
-        searchUnit(result, 0);
+        searchUnit(result, 0, 0);
         return result;
     }
-    outputType searchOne()
+    outputType searchOne(int offset=0)
     {
         std::vector<outputType> result;
-        searchUnit(result, 1);
+        searchUnit(result, offset, 1);
         if (result.empty())
         {
             outputType def;
@@ -43,7 +43,7 @@ public:
     }
 protected:
     carryPoint* mRoot;
-    void searchUnit(std::vector<outputType>& result, int maxNumber)
+    void searchUnit(std::vector<outputType>& result, int offset, int n)
     {
         if (NULL == mRoot) return;
         int num = 0;
@@ -51,8 +51,12 @@ protected:
         {
             if (readyToOutput())
             {
-                result.push_back(output());
-                if (num>=maxNumber && maxNumber!=0)
+                if (num>=offset && (num<offset+n || n==0))
+                {
+                    result.push_back(output());
+                    num++;
+                }
+                else
                 {
                     break;
                 }
