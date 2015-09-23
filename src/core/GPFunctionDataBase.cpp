@@ -16,6 +16,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "GPStrings.h"
 #include "core/GPFunctionDataBase.h"
 #include "utils/debug.h"
 #include <algorithm>
@@ -83,11 +84,11 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
 {
     for (auto cur : func->getChildren())
     {
-        if (cur->name() == "shortName")
+        if (cur->name() == GPStrings::FunctionDataBase_SHORTNAME)
         {
             warpf->shortname = cur->attr();
         }
-        else if (cur->name() == "inputs")
+        else if (cur->name() == GPStrings::FunctionDataBase_FIXGROUP)
         {
             vector<int> input;
             auto inputsfuncname = GPStringHelper::divideString(cur->attr());
@@ -106,7 +107,7 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
                 (warpf->fixTable).push_back(input);
             }
         }
-        else if(cur->name() == "status")
+        else if(cur->name() == GPStrings::FunctionDataBase_STATUS)
         {
             auto attrs = GPStringHelper::divideString(cur->attr());
             for (auto attr : attrs)
@@ -116,7 +117,7 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
                 (warpf->statusType).push_back(sta);
             }
         }
-        else if(cur->name() == "output")
+        else if(cur->name() == GPStrings::FunctionDataBase_OUTPUT)
         {
             auto attrs = GPStringHelper::divideString(cur->attr());
             for (auto attr : attrs)
@@ -126,7 +127,7 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
                 (warpf->outputType).push_back(sta);
             }
         }
-        else if (cur->name() == "inputType")
+        else if (cur->name() == GPStrings::FunctionDataBase_INPUT)
         {
             auto attrs = GPStringHelper::divideString(cur->attr());
             for (auto attr : attrs)

@@ -253,7 +253,6 @@ GPStreamADF::GPStreamADF(const GPTreeNode* n, const GPFunctionDataBase* base)
                         auto cp_iter = cp_map.find(name);
                         if (cp_iter!=cp_map.end())
                         {
-                            GPASSERT(cp_iter!=cp_map.end());
                             auto output = cp_iter->second;
                             this_node->connectOutput(output);
                             output->connectInput(this_node.get());

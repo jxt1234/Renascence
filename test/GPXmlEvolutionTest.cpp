@@ -48,7 +48,7 @@ class GPXmlEvolutionTest:public GPTest
                 GPPRINT_FL("Best Fit is %f", group->getBestFit());
 
                 delete group;
-                GPPtr<GPWStreamWrap> outputF = GPStreamFactory::NewWStream("output/result.xml");
+                GPPtr<GPWStreamWrap> outputF = GPStreamFactory::NewWStream("output/tree_result.xml");
                 GPPtr<GPTreeNode> n = result->vSave();
                 xmlReader::dumpNodes(n.get(), outputF.get());
                 result->decRef();

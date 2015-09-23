@@ -1,0 +1,5 @@
+SHORTNAME shortName
+INPUT input
+OUTPUT output
+STATUS status
+FIXGROUP fixGroup

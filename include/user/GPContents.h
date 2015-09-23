@@ -64,7 +64,6 @@ struct GPContents
             if (unit.content && unit.type)
             {
                 unit.type->vFree(unit.content);
-                unit.content = NULL;
             }
         }
         releaseForFree();
