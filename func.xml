@@ -3,11 +3,7 @@
 <TrPackageCompse>
 	<output>TrBmp</output>
     <shortName>C</shortName>
-
-	<fixGroup>TrPackageFilterMatrix, TrPackageFilterMatrix</fixGroup>
-	<fixGroup>TrPackageInput, TrPackageFilterMatrix</fixGroup>
-	<fixGroup>TrPackageInput, TrPackageSaturation</fixGroup>
-
+	<input>TrBmp TrBmp</input>
 	<status>float</status>
 </TrPackageCompse>
 

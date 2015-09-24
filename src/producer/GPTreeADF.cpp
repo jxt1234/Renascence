@@ -108,7 +108,7 @@ AbstractPoint* GPTreeADFPoint::GPTreeADFCopy::copy(AbstractPoint* src)
 
 void GPTreeADFPoint::getinput(std::vector<const IStatusType*>& tlist) const
 {
-    tlist.insert(tlist.end(), (mFunc.basic->inputType).begin(), (mFunc.inputs).end());
+    tlist.insert(tlist.end(), (mFunc.inputs).begin(), (mFunc.inputs).end());
     for (int i=0; i<mChildren.size(); ++i)
     {
         GPTreeADFPoint* p = (GPTreeADFPoint*)mChildren[i];
@@ -119,6 +119,7 @@ void GPTreeADFPoint::getinput(std::vector<const IStatusType*>& tlist) const
 GPContents* GPTreeADFPoint::compute(GPContents* input, int& cur)
 {
     GPContents outsideinputs;
+    GPASSERT(!(mFunc.inputs.size() > 0 && mChildren.size() > 0));
     GPASSERT(input->size()>=(mFunc.inputs).size());
     for (int i=0; i<(mFunc.inputs).size(); ++i)
     {
@@ -202,13 +203,6 @@ GPTreeADFPoint* GPTreeADF::find(float rate)
     int n = rate*nodes.size();
     GPTreeADFPoint* p = (GPTreeADFPoint*)nodes[n];
     return p;
-}
-
-void GPTreeADF::loadUnitFunction(vector<int>& result, int functionId, int statusId, int number)
-{
-    result.push_back(functionId);
-    result.push_back(statusId);
-    result.push_back(number);
 }
 
 GPTreeNode* GPTreeADF::vSave() const

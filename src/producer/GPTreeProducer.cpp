@@ -73,7 +73,7 @@ public:
                return NULL;
           }
           const GPFunctionDataBase::function* f = mBase->vQueryFunctionByShortName(point->name());
-          GPTreeADFPoint* p = new GPTreeADFPoint(GPProducerUtils::func::create(f));
+          GPTreeADFPoint* p = new GPTreeADFPoint(GPProducerUtils::func::create(f, true));
           return p;
      }
 private:
@@ -144,6 +144,28 @@ GPTreeProducer::GPTreeProducer(const GPFunctionDataBase* comsys):GPProducer("GPT
 }
 
 
+static vector<vector<const GPProducerUtils::func*> > _filterOutputType(const vector<vector<const GPProducerUtils::func*> >& origin, const std::vector<const IStatusType*>& inputType)
+{
+     vector<vector<const GPProducerUtils::func*> > result;
+     for (auto p : origin)
+     {
+          vector<const IStatusType*> inputs;
+          for (auto f : p)
+          {
+               inputs.insert(inputs.end(), f->inputs.begin(), f->inputs.end());
+          }
+          if (inputs.size() == inputType.size())
+          {
+               result.push_back(p);
+          }
+     }
+     if (result.empty())
+     {
+          return origin;
+     }
+     return result;
+}
+
 /*FIXME Currently, we assume random be false and inputRepeat be true, just return the first short tree by algorithm*/
 IGPAutoDefFunction* GPTreeProducer::vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, bool random) const
 {
@@ -173,6 +195,7 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunction(const std::vector<const ISta
      /*Find all available output function*/
      vector<vector<const GPProducerUtils::func*> > warpOutput;
      _findMatchedFuncton(warpOutput, outputType, inputType);
+     warpOutput = _filterOutputType(warpOutput, inputType);
      if (warpOutput.empty())
      {
           return NULL;
@@ -202,6 +225,7 @@ void GPTreeProducer::searchAllSequences(std::vector<std::vector<GPTreeADFPoint*>
      /*Find all available output function*/
      vector<vector<const GPProducerUtils::func*> > warpOutput;
      _findMatchedFuncton(warpOutput, outputType, inputType);
+     warpOutput = _filterOutputType(warpOutput, inputType);
      if (warpOutput.empty())
      {
           return;

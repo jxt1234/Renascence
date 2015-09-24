@@ -27,6 +27,7 @@ static void _setUpBasicFunction(GPProducerUtils::func* dst, const GPFunctionData
 {
     GPASSERT(dst->useChildrenInput.size() == src->inputType.size());
     dst->inputs.clear();
+    dst->childrenInputs.clear();
     for (int i=0; i<dst->useChildrenInput.size(); ++i)
     {
         if (0 == dst->useChildrenInput[i])
@@ -94,10 +95,11 @@ static void _setUpFixTable(const vector<const GPFunctionDataBase::function*>& fu
     }
 }
 
-GPProducerUtils::func GPProducerUtils::func::create(FUNC f)
+GPProducerUtils::func GPProducerUtils::func::create(FUNC f, bool clear)
 {
     func res;
-    res.useChildrenInput = vector<int>(f->inputType.size(), 0);
+    int usechild = clear ? 1 : 0;
+    res.useChildrenInput = vector<int>(f->inputType.size(), usechild);
     _setUpBasicFunction(&res, f);
     return res;
 }

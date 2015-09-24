@@ -31,7 +31,7 @@ public:
         std::vector<TYPE> childrenInputs;
         std::vector<int> useChildrenInput;//the size must be the same as basic->inputTypes
         std::vector<std::vector<const func*>> tables;
-        static func create(FUNC f);
+        static func create(FUNC f, bool clean = false);
     };
     GPProducerUtils(const GPFunctionDataBase* base);
     virtual ~GPProducerUtils();

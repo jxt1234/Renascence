@@ -56,7 +56,6 @@ private:
         virtual ~GPTreeADFCopy(){}
         virtual AbstractPoint* copy(AbstractPoint* src);
     };
-    void _replacePoint(const std::vector<int> &numbers, int& cur, const GPFunctionDataBase* base);
     friend class GPTreeADF;
 };
 
@@ -75,11 +74,6 @@ public:
     virtual GPTreeNode* vSave() const;
     virtual int vMap(GPPtr<GPParameter> para);
     virtual void vMutate();
-    //FIXME: dangerous api
-    static void loadUnitFunction(std::vector<int>& result, int functionId, int statusId, int number);
-protected:
-    //FIXME Reconstruct the xmlGPLoader
-    friend class xmlGPLoader;
 private:
     void _refreshInputsAndOutputs();
     GPTreeADFPoint* mRoot;
