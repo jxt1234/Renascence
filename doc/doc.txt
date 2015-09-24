@@ -264,4 +264,11 @@ gptool.out run func.xml outputfunc.xml input=1.txt,2.jpg output=3.jpg
 
 2015.9.24
 1、加入创建函数的filter机制，输入关键字，过滤所得函数
+2、完善createFromFormula机制
 
+几个需要研究的问题
+1、函数匹配关系，是否支持不定输入输出函数
+2、非树形函数生成方案，需要参考GP相关论文
+3、随机数生成与尽可能的参数精度
+4、树形函数优化方案
+5、代码生成与简化

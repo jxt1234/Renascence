@@ -119,7 +119,6 @@ void GPTreeADFPoint::getinput(std::vector<const IStatusType*>& tlist) const
 GPContents* GPTreeADFPoint::compute(GPContents* input, int& cur)
 {
     GPContents outsideinputs;
-    GPASSERT(!(mFunc.inputs.size() > 0 && mChildren.size() > 0));
     GPASSERT(input->size()>=(mFunc.inputs).size());
     for (int i=0; i<(mFunc.inputs).size(); ++i)
     {

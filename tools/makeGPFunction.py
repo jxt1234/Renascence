@@ -1,5 +1,6 @@
 #!/usr/bin/python
 GPSIGN = "/*GP FUNCTION*/"
+GPSTATUSSIGN="/*S*/"
 import os
 def collectFiles(path):
     filelist = []
@@ -20,11 +21,17 @@ def analysisHeadFile(filename, functionresult):
             self.name = ""
             self.output = ""
             self.inputs = []
+            self.status = []
+            self.inputPos = []
+            self.statusPos = []
         def prints(self):
             print "Function Begin"
-            print self.name
-            print self.output
-            print self.inputs
+            print 'name: ', self.name
+            print 'output: ', self.output
+            print 'input: ', self.inputs
+            print 'status: ', self.status
+            print 'inputPos: ', self.inputPos
+            print 'statusPos: ', self.statusPos
             print "Function End"
         def valid(self):
             assert(self.output != 'void')
@@ -34,15 +41,23 @@ def analysisHeadFile(filename, functionresult):
         lines = f.read().split("\n")
         for [i, line] in enumerate(lines):
             if line.find(GPSIGN)!=-1:
+                newline = line.replace(GPSTATUSSIGN, '')
                 findfunc = True
-                line = re.sub('/\*.*\*/', "", line)
-                variables = re.findall('\w+[*| ]', line)
+                newline = re.sub('/\*.*\*/', "", newline)
+                variables = re.findall('\w+[*| ]', newline)
                 func = function();
-                func.name = re.findall('\w+(?= *\()', line)[0]
+                func.name = re.findall('\w+(?= *\()', newline)[0]
                 func.name = func.name.replace(' ', '')
                 func.output = variables[0].replace(' ', '')
+                line = line.split(GPSIGN)[1]
+                words = line.split(',')
                 for i in range(1, len(variables)):
-                    func.inputs.append(variables[i].replace(' ', ''))
+                    if words[i-1].find(GPSTATUSSIGN)!=-1:
+                        func.status.append(variables[i].replace(' ', ''))
+                        func.statusPos.append(i-1)
+                    else:
+                        func.inputs.append(variables[i].replace(' ', ''))
+                        func.inputPos.append(i-1)
                 functionresult.append(func)
     return findfunc
 def producelist():
@@ -59,13 +74,18 @@ def constructFunction(function):
     outputname = function.output.replace("*", '')
     hline = functionline + ";\n"
     cppline = functionline + "\n{\n"
-    inputnumbers = len(function.inputs)
+    inputnumbers = len(function.inputs) + len(function.status)
     cppline+="assert("+ '%d' %inputnumbers + " == inputs->size());\n"
     for [i, inp] in enumerate(function.inputs):
-        cppline+='assert(inputs->contents[%d].type == g' %i + inp.replace('*', '') + ');\n'
+        cppline+='assert(inputs->contents[%d].type == g' %(function.inputPos[i]) + inp.replace('*', '') + ');\n'
+    for [i, inp] in enumerate(function.status):
+        cppline+='assert(inputs->contents[%d].type == g' %(function.statusPos[i]) + inp.replace('*', '') + ');\n'
     cppline+="GPContents* out =  new GPContents;\n"
     for [i, var] in enumerate(function.inputs):
-        num = '%d' %i
+        num = '%d' %(function.inputPos[i])
+        cppline+= var + " X" + num + " = (" + var + ")inputs->get(" + num + ');\n';
+    for [i, var] in enumerate(function.status):
+        num = '%d' %(function.statusPos[i])
         cppline+= var + " X" + num + " = (" + var + ")inputs->get(" + num + ');\n';
     cppline+=outputname + "* result"
     if (function.output.find("*")==-1):
@@ -90,6 +110,8 @@ def findAllType(allfunctions):
     for f in allfunctions:
         outputtable.append(f.output.replace('*', ''))
         for v in f.inputs:
+            inputtable.append(v.replace('*', ''))
+        for v in f.status:
             inputtable.append(v.replace('*', ''))
     return [list(set(outputtable)), list(set(inputtable))]
 
@@ -139,16 +161,20 @@ def generateTypeFiles(filelist, outputt, inputt):
         cppfile+="class "+turnType(t) + ":public IStatusType\n{\n"
         cppfile+='public:\n'
         cppfile+=turnType(t)+'():IStatusType(\"' + t +"\"){}\n"
-        cppfile+='virtual void* vLoad(std::istream& input) const\n{\nreturn NULL;\n}\n'
-        cppfile+='virtual void vSave(void* contents, std::ostream& output) const\n{\n}\n'
+        cppfile+='virtual void* vLoad(GPStream* input) const\n{\nreturn NULL;\n}\n'
+        cppfile+='virtual void vSave(void* contents, GPWStream* output) const\n{\n}\n'
         cppfile+='virtual void vFree(void* contents) const\n{\n'
         cppfile+=t+'* c = ('+t+'*)contents;\nc->decRef();\n'
-        cppfile+='\n}\n'
-        cppfile+='virtual int vMap(void** content, double* value) const\n{\nreturn 0;\n}\n'
-        cppfile+="\n};\n"
+        cppfile+='}\n'
+        cppfile+='virtual int vMap(void** content, double* value) const\n{\nint mapnumber=0;\n'
+        cppfile+='if (NULL == value || NULL == content)\n{\nreturn mapnumber;\n}\nif (NULL == *content)\n{\n}\n'
+        cppfile+='return mapnumber;\n}\n'
+        cppfile+='virtual bool vCheckCompleted(void* content) const {return NULL!=content;}\n'
+        cppfile+='virtual bool vMerge(void* dst, void* src) const {return false;}\n'
+        cppfile+="};\n"
         cppfile+="IStatusType* g" + t + " = new "+turnType(t) + "();\n"
     cppfile+='IStatusType* GP_IStatusType_Create(const std::string& name)\n{\n'
-    for t in inputt:
+    for t in totoaltype:
         cppfile+='if (name == \"'+t + '\")\n{\n'
         cppfile+='return g' + t + ';\n}\n'
     cppfile+='return NULL;\n}\n'
@@ -162,11 +188,14 @@ def generateXML(functions):
     for func in functions:
         xmlcontents += '<'+renameFunction(func.name)+'>\n'
         xmlcontents += '<output>' + func.output.replace('*', '') + '</output>\n'
-        xmlcontents += '<status></status>\n'
-        xmlcontents += '<inputType>'
+        xmlcontents += '<status>'
+        for t in func.status:
+            xmlcontents += t.replace('*', '') + ' '
+        xmlcontents += '</status>\n'
+        xmlcontents += '<input>'
         for t in func.inputs:
             xmlcontents += t.replace('*', '') + ' '
-        xmlcontents += '</inputType>\n'
+        xmlcontents += '</input>\n'
         xmlcontents += '</'+renameFunction(func.name)+'>\n\n'
     xmlcontents += '</NULL>\n'
     return xmlcontents
