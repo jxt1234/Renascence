@@ -51,21 +51,30 @@ std::vector<const IStatusType*> GPFunctionDataBase::queryType(const std::string&
 
 GPFunctionDataBase::GPFunctionDataBase()
 {
+    mHandle = new GPMultiTable;
 }
 
 void GPFunctionDataBase::loadXml(GPStream* is, IFunctionTable* table, std::ostream* print)
 {
-    _clear();
     xmlReader reader;
     const GPTreeNode* root = reader.loadStream(is);
+    _addInfo(root, table, print);
+}
+void GPFunctionDataBase::_addInfo(const GPTreeNode* root, IFunctionTable* table, std::ostream* print)
+{
     if (NULL==table)
     {
         table = new system_lib(root->name());
-        mHandle.push_back(table);
+        mHandle->addTable(table, true);
+    }
+    else
+    {
+        mHandle->addTable(table, false);
     }
     auto functions = root->getChildren();
     /*First time construct all functions*/
-    for (int i=0; i<functions.size(); ++i)
+    auto offset = mFunctionTable.size();
+    for (size_t i=0; i<functions.size(); ++i)
     {
         const GPTreeNode* func = functions.at(i).get();
         GPASSERT(NULL!=func);
@@ -81,9 +90,10 @@ void GPFunctionDataBase::loadXml(GPStream* is, IFunctionTable* table, std::ostre
         warpf->basic = f;
         mFunctionTable.push_back(warpf);
     }
-    for (int i=0; i<functions.size(); ++i)
+    /*Then add info for all functions*/
+    for (size_t i=0; i<functions.size(); ++i)
     {
-        this->_addFunction(mFunctionTable.at(i), functions.at(i).get(), table);
+        this->_addFunction(mFunctionTable.at(i+offset), functions.at(i).get());
     }
     if (print)
     {
@@ -91,7 +101,7 @@ void GPFunctionDataBase::loadXml(GPStream* is, IFunctionTable* table, std::ostre
     }
 }
 
-void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const GPTreeNode* func, IFunctionTable* table)
+void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const GPTreeNode* func)
 {
     for (auto cur : func->getChildren())
     {
@@ -123,7 +133,7 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
             auto attrs = GPStringHelper::divideString(cur->attr());
             for (auto attr : attrs)
             {
-                const IStatusType* sta = _findAndLoadStatus(attr, table);
+                const IStatusType* sta = _findAndLoadStatus(attr);
                 GPASSERT(NULL!=sta);//FIXME
                 (warpf->statusType).push_back(sta);
             }
@@ -133,7 +143,7 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
             auto attrs = GPStringHelper::divideString(cur->attr());
             for (auto attr : attrs)
             {
-                const IStatusType* sta = _findAndLoadStatus(attr, table);
+                const IStatusType* sta = _findAndLoadStatus(attr);
                 GPASSERT(NULL!=sta);//FIXME
                 (warpf->outputType).push_back(sta);
             }
@@ -143,7 +153,7 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
             auto attrs = GPStringHelper::divideString(cur->attr());
             for (auto attr : attrs)
             {
-                const IStatusType* sta = _findAndLoadStatus(attr, table);
+                const IStatusType* sta = _findAndLoadStatus(attr);
                 GPASSERT(NULL!=sta);//FIXME
                 (warpf->inputType).push_back(sta);
             }
@@ -194,14 +204,10 @@ void GPFunctionDataBase::_clear()
     }
     mFunctionTable.clear();
     mTypes.clear();
-    for (int i=0; i<mHandle.size(); ++i)
-    {
-        delete mHandle[i];
-    }
-    mHandle.clear();
+    mHandle = new GPMultiTable;
 }
 
-const IStatusType* GPFunctionDataBase::_findAndLoadStatus(const std::string& name, IFunctionTable* handle)
+const IStatusType* GPFunctionDataBase::_findAndLoadStatus(const std::string& name)
 {
     const IStatusType* t = NULL;
     for (int i=0; i<mTypes.size(); ++i)
@@ -214,7 +220,7 @@ const IStatusType* GPFunctionDataBase::_findAndLoadStatus(const std::string& nam
     }
     if (NULL == t)
     {
-        TYPECREATER create = handle->get<TYPECREATER>(GP_XmlString::status_creator);
+        TYPECREATER create = mHandle->get<TYPECREATER>(GP_XmlString::status_creator);
         if (NULL == create)
         {
             FUNC_PRINT_ALL(GP_XmlString::status_creator.c_str(), s);

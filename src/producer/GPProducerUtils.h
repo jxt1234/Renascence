@@ -14,12 +14,33 @@
  limitations under the License.
  ******************************************************************/
 
-#ifndef __GP__GPProducerUtils__
-#define __GP__GPProducerUtils__
+#ifndef __GP__GPProducerUtils__H
+#define __GP__GPProducerUtils__H
 #include "core/GPFunctionDataBase.h"
-class GPProducerUtils
+#include "utils/RefCount.h"
+class GPProducerUtils:public RefCount
 {
 public:
+    typedef const GPFunctionDataBase::function* FUNC;
+    typedef const IStatusType* TYPE;
+    struct func:public RefCount
+    {
+        FUNC basic;
+        std::vector<TYPE> inputs;
+        std::vector<TYPE> outputs;
+        std::vector<TYPE> childrenInputs;
+        std::vector<int> useChildrenInput;//the size must be the same as basic->inputTypes
+        std::vector<std::vector<func*>> tables;
+    };
+    GPProducerUtils(const GPFunctionDataBase* base);
+    virtual ~GPProducerUtils();
+    inline const std::vector<GPPtr<func>>& get() const {return mFunctions;}
+    
+    /*TODO: support multi-output*/
+    std::vector<func*> getFunctionsForOutput(TYPE t) const;
+private:
+    std::vector<func*> _getFunctionsForOutput(TYPE t, const std::vector<GPPtr<func>>& lists) const;
+    std::vector<GPPtr<func>> mFunctions;
 };
 
 #endif /* defined(__GP__GPProducerUtils__) */

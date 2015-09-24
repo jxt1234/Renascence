@@ -82,8 +82,8 @@ static int test_main()
         }
         /*Find Best, evolution group*/
         {
-            auto bestf = GP_Function_CreateBest_ByType(producer, "TrBmp", "", true, fitfunction, 100000);
-            cout << fitfunction(bestf) << endl;
+            auto bestf = GP_Function_CreateBest_ByType(producer, "TrBmp", "", true, fitfunction, 10);
+            cout << "Fit = " << fitfunction(bestf) << endl;
             GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Evolution.txt");
             GP_Function_Save(bestf, output.get());
             GP_Function_Destroy(bestf);

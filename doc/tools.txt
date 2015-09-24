@@ -3,6 +3,7 @@ Hmacro.py: 给头文件加宏。
 changeTab.sh: 将代码中tab改成4个空格。
 generateString：将 res/string/ 下面的文件转成代码。
 newMake.py：构建Makefile，工程信息在config.txt中。
+GenerateTest.py：构建UT测试用例的模板
 
 用于GP库的适配：
 makeGPFunction.py：自动生成gp相关代码

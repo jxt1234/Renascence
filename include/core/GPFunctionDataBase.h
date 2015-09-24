@@ -16,6 +16,7 @@
 #ifndef GP_COMPUTE_SYSTEM_H
 #define GP_COMPUTE_SYSTEM_H
 #include "user/GPContents.h"
+#include "GPMultiTable.h"
 #include <string>
 #include "core/IDataBase.h"
 #include "user/GPStream.h"
@@ -55,12 +56,13 @@ public:
     GPFunctionDataBase();
     virtual ~GPFunctionDataBase();
 private:
-    void _addFunction(GPFunctionDataBase::function* warpf, const GPTreeNode* func, IFunctionTable* table);
+    void _addInfo(const GPTreeNode* node, IFunctionTable* table, std::ostream* print);
+    void _addFunction(GPFunctionDataBase::function* warpf, const GPTreeNode* func);
     int _findFunction(const std::string& name);
-    const IStatusType* _findAndLoadStatus(const std::string& name, IFunctionTable* handle);
+    const IStatusType* _findAndLoadStatus(const std::string& name);
     void _clear();
     std::vector<function*> mFunctionTable;
-    std::vector<IFunctionTable*> mHandle;
+    GPPtr<GPMultiTable> mHandle;
     std::vector<const IStatusType*> mTypes;
 };
 

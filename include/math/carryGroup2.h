@@ -26,6 +26,7 @@ class carryGroup2
         void reset()
         {
             mIter.clear();
+            mSize.clear();
             mIter.assign(mBase.size(), 0);
             mSize.reserve(mBase.size());
             for (int i=0; i<mBase.size(); ++i)
