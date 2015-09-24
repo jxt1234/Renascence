@@ -17,10 +17,12 @@
 #include <algorithm>
 #include <map>
 #include <set>
-#include "GPProducerUtils.h"
+#include "producer/GPProducerUtils.h"
 #include "math/carryArray.h"
 #include "math/carryGroup2.h"
 using namespace std;
+
+
 static void _setUpBasicFunction(GPProducerUtils::func* dst, const GPFunctionDataBase::function* src)
 {
     GPASSERT(dst->useChildrenInput.size() == src->inputType.size());
@@ -63,7 +65,7 @@ static void _setUpFixTable(const vector<const GPFunctionDataBase::function*>& fu
             continue;
         }
         GPASSERT(f->inputType.size() == 0);
-        std::vector<std::vector<GPProducerUtils::func*>> tables;
+        std::vector<std::vector<const GPProducerUtils::func*>> tables;
         for (auto pair : f->fixTable)
         {
             /*Expand, */
@@ -75,7 +77,13 @@ static void _setUpFixTable(const vector<const GPFunctionDataBase::function*>& fu
             group.reset();
             do
             {
-                tables.push_back(group.current());
+                auto func_pair = group.current();
+                vector<const GPProducerUtils::func*> const_pair;
+                for (int i=0; i<func_pair.size(); ++i)
+                {
+                    const_pair.push_back(func_pair[i]);
+                }
+                tables.push_back(const_pair);
             }while (group.next());
         }
         auto pflist = funcmap.find(f)->second;
@@ -84,6 +92,14 @@ static void _setUpFixTable(const vector<const GPFunctionDataBase::function*>& fu
             pf->tables = tables;
         }
     }
+}
+
+GPProducerUtils::func GPProducerUtils::func::create(FUNC f)
+{
+    func res;
+    res.useChildrenInput = vector<int>(f->inputType.size(), 0);
+    _setUpBasicFunction(&res, f);
+    return res;
 }
 
 GPProducerUtils::GPProducerUtils(const GPFunctionDataBase* base)
@@ -132,7 +148,7 @@ GPProducerUtils::GPProducerUtils(const GPFunctionDataBase* base)
                 break;
             }
             GPASSERT(f->tables.empty());
-            carryGroup2<func*> group;
+            carryGroup2<const func*> group;
             for (int i=0; i<f->childrenInputs.size(); ++i)
             {
                 auto pairs = _getFunctionsForOutput(f->childrenInputs[i], allfunctions);
@@ -147,6 +163,7 @@ GPProducerUtils::GPProducerUtils(const GPFunctionDataBase* base)
             {
                 break;
             }
+            group.reset();
             do
             {
                 f->tables.push_back(group.current());
@@ -157,19 +174,20 @@ GPProducerUtils::GPProducerUtils(const GPFunctionDataBase* base)
             mFunctions.push_back(f);
         }
     }
+    GPASSERT(!mFunctions.empty());
 }
 GPProducerUtils::~GPProducerUtils()
 {
 }
 
 
-vector<GPProducerUtils::func*> GPProducerUtils::getFunctionsForOutput(TYPE t) const
+vector<const GPProducerUtils::func*> GPProducerUtils::getFunctionsForOutput(TYPE t) const
 {
     return _getFunctionsForOutput(t, mFunctions);
 }
-vector<GPProducerUtils::func*> GPProducerUtils::_getFunctionsForOutput(TYPE t, const std::vector<GPPtr<func>>& lists) const
+vector<const GPProducerUtils::func*> GPProducerUtils::_getFunctionsForOutput(TYPE t, const std::vector<GPPtr<func>>& lists) const
 {
-    vector<GPProducerUtils::func*> result;
+    vector<const GPProducerUtils::func*> result;
     for (auto f : lists)
     {
         if (f->outputs.size() == 1 && t == f->outputs[0])

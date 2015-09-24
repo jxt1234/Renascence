@@ -19,6 +19,7 @@
 #include "core/GPFunctionDataBase.h"
 #include "core/GPProducer.h"
 #include "GPTreeADF.h"
+#include "GPProducerUtils.h"
 
 class GPTreeProducer:public GPProducer
 {
@@ -40,8 +41,9 @@ public:
     GPTreeADF* searchOne(std::vector<std::vector<GPTreeADFPoint*> >& res, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, int offset) const;//rate: 0.0-1.0, means the offset
 private:
     const GPFunctionDataBase* mDataBase;
+    GPProducerUtils mUtils;
     void _init();
-    void _findMatchedFuncton(std::vector<std::vector<const GPFunctionDataBase::function*> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const;
+    void _findMatchedFuncton(std::vector<std::vector<const GPProducerUtils::func*> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const;
     
     float mLargeVary;
     float mStatusVary;

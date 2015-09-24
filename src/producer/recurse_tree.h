@@ -18,19 +18,19 @@
 #include "math/carryTree.h"
 #include "utils/debug.h"
 #include "producer/GPTreeADF.h"
-class GPFunctionDataBase;
+#include "producer/GPProducerUtils.h"
 class computePoint:public carryPoint
 {
 friend class computeSearchTree;
 public:
-    computePoint(const std::vector<std::vector<const GPFunctionDataBase::function*> >& data, const std::vector<int>& avail, const std::vector<const IStatusType*>& input):mData(data), mAvail(avail), mCur(0), mInput(input){}
-    const std::vector<const GPFunctionDataBase::function*>& getData() const{return mData[mAvail[mCur]];}
-    std::vector<int> filter(const std::vector<std::vector<const GPFunctionDataBase::function*> >& combo, const std::vector<const GPFunctionDataBase::function*>& output);
+    computePoint(const std::vector<std::vector<const GPProducerUtils::func*> >& data, const std::vector<int>& avail, const std::vector<const IStatusType*>& input):mData(data), mAvail(avail), mCur(0), mInput(input){}
+    const std::vector<const GPProducerUtils::func*>& getData() const{return mData[mAvail[mCur]];}
+    std::vector<int> filter(const std::vector<std::vector<const GPProducerUtils::func*> >& combo, const std::vector<const GPProducerUtils::func*>& output);
     
     std::vector<GPTreeADFPoint*> outputs();
 protected:
     virtual bool vGrow();
-    std::vector<const GPFunctionDataBase::function*> getDependOutput();
+    std::vector<const GPProducerUtils::func*> getDependOutput();
     virtual bool vNext()
     {
         mCur++;
@@ -44,7 +44,7 @@ protected:
     }
 private:
     const std::vector<const IStatusType*>& mInput;
-    const std::vector<std::vector<const GPFunctionDataBase::function*> >& mData;
+    const std::vector<std::vector<const GPProducerUtils::func*> >& mData;
     std::vector<int> mAvail;
     int mCur;
     int mParent;

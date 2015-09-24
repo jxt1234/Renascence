@@ -20,12 +20,12 @@
 #include "recurse_tree.h"
 using namespace std;
 
-vector<int> computePoint::filter(const vector<vector<const GPFunctionDataBase::function*> >& combo, const vector<const GPFunctionDataBase::function*>& output)
+vector<int> computePoint::filter(const vector<vector<const GPProducerUtils::func*> >& combo, const vector<const GPProducerUtils::func*>& output)
 {
     vector<int> result;
     for (int i=0; i<combo.size(); ++i)
     {
-        const vector<const GPFunctionDataBase::function*>& comboUnit = combo[i];
+        const vector<const GPProducerUtils::func*>& comboUnit = combo[i];
         bool fit = true;
         const vector<const IStatusType*>& input_obtained = mInput;
         for (int j=0; j<comboUnit.size(); ++j)
@@ -37,10 +37,10 @@ vector<int> computePoint::filter(const vector<vector<const GPFunctionDataBase::f
                 break;
             }
             /*Check if it contained unobtained input*/
-            const GPFunctionDataBase::function* f = comboUnit[j];
-            for (int k=0; k<f->inputType.size(); ++k)
+            const GPProducerUtils::func* f = comboUnit[j];
+            for (int k=0; k<f->inputs.size(); ++k)
             {
-                const IStatusType* inpId = f->inputType[k];
+                const IStatusType* inpId = f->inputs[k];
                 if (find(input_obtained.begin(), input_obtained.end(), inpId) == input_obtained.end())
                 {
                     fit = false;
@@ -63,10 +63,10 @@ vector<int> computePoint::filter(const vector<vector<const GPFunctionDataBase::f
 vector<GPTreeADFPoint*> computePoint::outputs()
 {
     vector<GPTreeADFPoint*> result;
-    const vector<const GPFunctionDataBase::function*>& data = getData();
+    const vector<const GPProducerUtils::func*>& data = getData();
     for (int i=0; i<data.size(); ++i)
     {
-        GPTreeADFPoint* p = new GPTreeADFPoint(data[i]);
+        GPTreeADFPoint* p = new GPTreeADFPoint(*data[i]);
         result.push_back(p);
         
     }
@@ -82,14 +82,14 @@ vector<GPTreeADFPoint*> computePoint::outputs()
     }
     return result;
 }
-vector<const GPFunctionDataBase::function*> computePoint::getDependOutput()
+vector<const GPProducerUtils::func*> computePoint::getDependOutput()
 {
-    vector<const GPFunctionDataBase::function*> result;
+    vector<const GPProducerUtils::func*> result;
     computePoint* cur = (computePoint*)(mDepend);
     computePoint* self = this;
     while(NULL!=cur)
     {
-        const vector<const GPFunctionDataBase::function*>& data = cur->getData();
+        const vector<const GPProducerUtils::func*>& data = cur->getData();
         result.push_back(data[self->mParent]);
         self = cur;
         cur = (computePoint*)(cur->mDepend);
@@ -99,13 +99,13 @@ vector<const GPFunctionDataBase::function*> computePoint::getDependOutput()
 bool computePoint::vGrow()
 {
     bool success = true;
-    const vector<const GPFunctionDataBase::function*>& data = getData();
-    vector<const GPFunctionDataBase::function*> currentOutputId = getDependOutput();
+    const vector<const GPProducerUtils::func*>& data = getData();
+    vector<const GPProducerUtils::func*> currentOutputId = getDependOutput();
     
     for (int i=0; i<data.size(); ++i)
     {
-        const GPFunctionDataBase::function* f = data[i];
-        const vector<vector<const GPFunctionDataBase::function*> >& inputData = f->fixTable;
+        const GPProducerUtils::func* f = data[i];
+        const vector<vector<const GPProducerUtils::func*> >& inputData = f->tables;
         currentOutputId.push_back(data[i]);
         vector<int> avail = filter(inputData, currentOutputId);
         currentOutputId.erase(currentOutputId.end()-1);

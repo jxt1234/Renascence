@@ -23,23 +23,24 @@
 #include "core/GPStatusContent.h"
 #include "utils/GP_Clock.h"
 #include "utils/debug.h"
+#include "GPProducerUtils.h"
 
 class GPTreeADFPoint:public AbstractPoint
 {
 public:
-    GPTreeADFPoint();
-    GPTreeADFPoint(const GPFunctionDataBase::function* func);
+    GPTreeADFPoint(const GPProducerUtils::func& func);
     void initStatus(const std::vector<std::istream*>& is);
     virtual ~GPTreeADFPoint();
-    inline const GPFunctionDataBase::function* func() const {return mFunc;}
+    inline const GPFunctionDataBase::function* func() const {return mFunc.basic;}
     inline const std::vector<GPStatusContent*>& status() {return mStatus;}
     inline void pGetInputs(std::vector<const IStatusType*>& tlist) const
     {
         getinput(tlist);
     }
 private:
+    GPTreeADFPoint();
     /*Attributes*/
-    const GPFunctionDataBase::function* mFunc;
+    GPProducerUtils::func mFunc;
     std::vector<GPStatusContent*> mStatus;
     /*Function needed*/
     GPTreeNode* xmlPrint() const;

@@ -18,6 +18,7 @@
 #include <sstream>
 #include <stdlib.h>
 #include "math/FormulaTree.h"
+#include "math/carryGroup2.h"
 #include "utils/debug.h"
 #include "core/GP_XmlString.h"
 #include "utils/GPRandom.h"
@@ -37,7 +38,7 @@ public:
           xmlTree* t = dynamic_cast<xmlTree*>(src);
           GPASSERT(NULL!=t);
           const GPFunctionDataBase::function* f = mSys->vQueryFunction(t->func());
-          GPTreeADFPoint* p = new GPTreeADFPoint(f);
+          GPTreeADFPoint* p = new GPTreeADFPoint(GPProducerUtils::func::create(f));
           vector<const IStatusType*> types;
           const vector<xmlTree::type>& ttype = t->status();
           vector<istream*> contents;
@@ -72,7 +73,7 @@ public:
                return NULL;
           }
           const GPFunctionDataBase::function* f = mBase->vQueryFunctionByShortName(point->name());
-          GPTreeADFPoint* p = new GPTreeADFPoint(f);
+          GPTreeADFPoint* p = new GPTreeADFPoint(GPProducerUtils::func::create(f));
           return p;
      }
 private:
@@ -136,7 +137,7 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromName(const std::string& n
 }
 
 
-GPTreeProducer::GPTreeProducer(const GPFunctionDataBase* comsys):GPProducer("GPTreeProducer")
+GPTreeProducer::GPTreeProducer(const GPFunctionDataBase* comsys):GPProducer("GPTreeProducer"), mUtils(comsys)
 {
      mDataBase = comsys;
      _init();
@@ -170,7 +171,7 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunction(const std::vector<const ISta
      }
      /*TODO if inputType and outputType is the same as last one, return the cached one*/
      /*Find all available output function*/
-     vector<vector<const GPFunctionDataBase::function*> > warpOutput;
+     vector<vector<const GPProducerUtils::func*> > warpOutput;
      _findMatchedFuncton(warpOutput, outputType, inputType);
      if (warpOutput.empty())
      {
@@ -199,7 +200,7 @@ void GPTreeProducer::searchAllSequences(std::vector<std::vector<GPTreeADFPoint*>
 {
      /*TODO if the inputType and outputType is the same as the last one, return the cached one*/
      /*Find all available output function*/
-     vector<vector<const GPFunctionDataBase::function*> > warpOutput;
+     vector<vector<const GPProducerUtils::func*> > warpOutput;
      _findMatchedFuncton(warpOutput, outputType, inputType);
      if (warpOutput.empty())
      {
@@ -289,37 +290,38 @@ std::vector<IGPAutoDefFunction*> GPTreeProducer::vCreateAllFunction(const std::v
 }
 
 
-void GPTreeProducer::_findMatchedFuncton(std::vector<std::vector<const GPFunctionDataBase::function*> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
+void GPTreeProducer::_findMatchedFuncton(std::vector<std::vector<const GPProducerUtils::func*> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
 {
-     auto functions_all = mDataBase->getAllFunctions();
-     for (int i=0; i < functions_all.size(); ++i)
+     carryGroup2<const GPProducerUtils::func*> group;
+     for(int i=0; i<outputType.size(); ++i)
      {
-          const GPFunctionDataBase::function* f = functions_all[i];
-          const vector<const IStatusType*>& out = f->outputType;
-          bool match = true;
-          for (int j=0; j<outputType.size(); ++j)
-          {
-               if (find(out.begin(), out.end(), outputType[j]) == out.end())
-               {
-                    match = false;
-                    break;
-               }
-          }
-          for (auto t:f->inputType)
-          {
-               if (find(inputType.begin(), inputType.end(), t) == inputType.end())
-               {
-                    match = false;
-                    break;
-               }
-          }
-          if (match)
-          {
-               vector<const GPFunctionDataBase::function*> output;
-               output.push_back(f);
-               warpOutput.push_back(output);
-          }
+          group.mBase.push_back(mUtils.getFunctionsForOutput(outputType[i]));
      }
+     group.reset();
+     do
+     {
+          auto current = group.current();
+          bool valid = true;
+          for (auto f : current)
+          {
+               for (auto t : f->inputs)
+               {
+                    if (find(inputType.begin(), inputType.end(), t) == inputType.end())
+                    {
+                         valid = false;
+                         break;
+                    }
+               }
+               if (!valid)
+               {
+                    break;
+               }
+          }
+          if (valid)
+          {
+               warpOutput.push_back(current);
+          }
+     } while(group.next());
 }
 
 void GPTreeProducer::_init()
