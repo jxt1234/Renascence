@@ -48,17 +48,4 @@ class system_lib:public IFunctionTable
         void* mHandle;
 };
 
-class system_multi_lib:public IFunctionTable
-{
-    public:
-        virtual void* vGetFunction(const std::string& name);
-        void addLib(const char* name);
-        system_multi_lib(){}
-        virtual ~system_multi_lib();
-    private:
-        std::vector<void*> mHandles;
-};
-
-
-
 #endif

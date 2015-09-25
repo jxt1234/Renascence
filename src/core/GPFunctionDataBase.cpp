@@ -20,7 +20,7 @@
 #include "core/GPFunctionDataBase.h"
 #include "utils/debug.h"
 #include <algorithm>
-#include "system/system_lib.h"
+#include "platform/system_lib.h"
 #include "core/GP_XmlString.h"
 #include "utils/GPStringHelper.h"
 
@@ -71,6 +71,9 @@ void GPFunctionDataBase::_addInfo(const GPTreeNode* root, IFunctionTable* table,
     {
         mHandle->addTable(table, false);
     }
+    TYPECREATER create = mHandle->get<TYPECREATER>(GP_XmlString::status_creator);
+    GPASSERT(NULL!=create);
+    mTypeCreateFuncs.push_back(create);
     auto functions = root->getChildren();
     /*First time construct all functions*/
     auto offset = mFunctionTable.size();
@@ -220,20 +223,21 @@ const IStatusType* GPFunctionDataBase::_findAndLoadStatus(const std::string& nam
     }
     if (NULL == t)
     {
-        TYPECREATER create = mHandle->get<TYPECREATER>(GP_XmlString::status_creator);
-        if (NULL == create)
+        for (auto create : mTypeCreateFuncs)
         {
-            FUNC_PRINT_ALL(GP_XmlString::status_creator.c_str(), s);
-            GPASSERT(NULL!=create);//FIXME
+            t = create(name);
+            if (NULL!=t)
+            {
+                mTypes.push_back(t);
+                break;
+            }
         }
-        t = create(name);
-        if (NULL == t)
-        {
-            FUNC_PRINT_ALL(name.c_str(), s);
-            GPASSERT(NULL!=t);//FIXME
-        }
-        mTypes.push_back(t);
     }
+    if (NULL == t)
+    {
+        FUNC_PRINT_ALL(name.c_str(), s);
+    }
+    GPASSERT(NULL!=t);
     return t;
 }
 

@@ -36,7 +36,8 @@ void gp_run(int argc, char** argv)
     assert(argc>=4);
     GPStream* metadata = GP_Stream_Create(argv[2]);
     GPStream* funcfile = GP_Stream_Create(argv[3]);
-    auto base = GP_Producer_Create(metadata, NULL, 0);
+    IFunctionTable* flist[] = {NULL};
+    auto base = GP_Producer_Create(&metadata, flist, 1, 0);
     assert(NULL!=base);
     auto adf = GP_Function_Create_ByStream(base, funcfile);
     assert(NULL!=adf);
@@ -94,7 +95,8 @@ void gp_opt(int argc, char** argv)
     printf("In %s, %d\n", __func__, __LINE__);
     assert(argc>=6);
     GPStream* metadata = GP_Stream_Create(argv[2]);
-    auto base = GP_Producer_Create(metadata, NULL, 0);
+    IFunctionTable* funclists[] = {NULL};
+    auto base = GP_Producer_Create(&metadata, funclists, 1, 0);
     GP_Stream_Destroy(metadata);
     
     GPStream* model_ = GP_Stream_Create(argv[3]);

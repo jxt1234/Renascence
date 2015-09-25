@@ -63,6 +63,7 @@ private:
     void _clear();
     std::vector<function*> mFunctionTable;
     GPPtr<GPMultiTable> mHandle;
+    std::vector<TYPECREATER> mTypeCreateFuncs;
     std::vector<const IStatusType*> mTypes;
 };
 

@@ -20,7 +20,7 @@
 #include <string>
 #include <sstream>
 #include "utils/debug.h"
-#include "system/system_lib.h"
+#include "platform/system_lib.h"
 using namespace std;
 
 static std::string gPath("");

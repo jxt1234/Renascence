@@ -25,7 +25,8 @@ int main(int argc, char** argv)
     assert(argc>=2);
     GP_Set_Stream_Path(argv[1]);
     GPStream* database = FilePath::open(FilePath::RUNTIME);
-    AGPProducer* producer = GP_Producer_Create(database, NULL, GP_PRODUCER_TREE);
+    IFunctionTable* lists[] = {NULL};
+    AGPProducer* producer = GP_Producer_Create(&database, lists, 1, GP_PRODUCER_TREE);
     FilePath::close(database);
     {
         /*TODO*/

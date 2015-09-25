@@ -1,6 +1,6 @@
 #include "test/GPTest.h"
 #include "math/carryGroup2.h"
-#include <iostream>
+#include <fstream>
 using namespace std;
 class GPcarryGroupTest:public GPTest
 {
@@ -12,7 +12,8 @@ class GPcarryGroupTest:public GPTest
 void GPcarryGroupTest::run()
 {
     carryGroup2<int> group;
-    cout << "List\n";
+    ofstream out("output/GPcarryGroupTest.txt");
+    out << "List\n";
     for (int i=0; i<4; ++i)
     {
         vector<int> iters;
@@ -22,21 +23,21 @@ void GPcarryGroupTest::run()
         }
         for (int j=0; j<iters.size(); ++j)
         {
-            cout <<iters[j] << " ";
+            out <<iters[j] << " ";
         }
-        cout << "\n";
+        out << "\n";
         group.mBase.push_back(iters);
     }
     group.reset();
-    cout << "Iter result\n";
+    out << "Iter result\n";
     do
     {
         vector<int> iters = group.current();
         for (int j=0; j<iters.size(); ++j)
         {
-            cout <<iters[j] << " ";
+            out <<iters[j] << " ";
         }
-        cout << "\n";
+        out << "\n";
     } while(group.next());
 }
 

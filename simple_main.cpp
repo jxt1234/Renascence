@@ -15,7 +15,9 @@ using namespace std;
 static int test_main()
 {
     GPPtr<GPStreamWrap> soxml = GPStreamFactory::NewStream("func.xml", GPStreamFactory::FILE);
-    auto producer = GP_Producer_Create(soxml.get(), NULL, 0);
+    IFunctionTable* lists[] = {NULL};
+    GPStream* streamlists[] = {soxml.get()};
+    auto producer = GP_Producer_Create(streamlists, lists,1, 0);
     GPPtr<GPWStreamWrap> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
     /*Input and output*/
     {

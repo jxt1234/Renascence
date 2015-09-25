@@ -1,6 +1,6 @@
 #include <string>
 #include <sstream>
-#include "system/system_lib.h"
+#include "platform/system_lib.h"
 #include "core/IGPAutoDefFunction.h"
 #include "core/GPProducer.h"
 #include "core/GPFactory.h"
@@ -18,16 +18,31 @@ void GP_Set_Lib_Path(const char* basic_path)
     }
     system_set_path(basic_path);
 }
-AGPProducer* GP_Producer_Create(GPStream* metaStream, IFunctionTable* table, int type)
+
+AGPProducer* GP_Producer_Create(GPStream** metaStream, IFunctionTable** table, int n, int type)
 {
     FUNC_PRINT(type);
-    GPFunctionDataBase* f = GPFactory::createDataBase(metaStream, table);
+    if (n <= 0 || NULL == metaStream || NULL == table)
+    {
+        GPPRINT("InValid parameters!!");
+        return NULL;
+    }
+    GPFunctionDataBase* f = new GPFunctionDataBase;
     if (NULL == f)
     {
         FUNC_PRINT_ALL(f, p);
         return NULL;
     }
     AUTOUNREF(f);
+    for (int i=0; i<n; ++i)
+    {
+        if (NULL == metaStream[i])
+        {
+            GPPRINT("InValid stream in GP_Producer_Create");
+            return NULL;
+        }
+        f->loadXml(metaStream[i], table[i]);
+    }
     GPProducer* p = NULL;
     switch(type)
     {
