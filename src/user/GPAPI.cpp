@@ -240,3 +240,39 @@ void GP_Set_Stream_Path(const char* basic_path)
     GPStreamFactory::setParentPath(basic_path);
 }
 
+GPContents* GP_Contents_Load(AGPProducer* p, GPStream** inputs, const char* typeNames, int n)
+{
+    if (NULL == p || NULL == inputs || NULL == typeNames || 0 == n)
+    {
+        FUNC_PRINT(0);
+        return NULL;
+    }
+    auto types = _transform(typeNames, p);
+    if (types.size()!=n)
+    {
+        FUNC_PRINT(0);
+        return NULL;
+    }
+    for (int i=0; i<n; ++i)
+    {
+        if (NULL == inputs[i])
+        {
+            FUNC_PRINT(0);
+            return NULL;
+        }
+    }
+    
+    GPContents* c = new GPContents;
+    for (int i=0; i<n; ++i)
+    {
+        c->push(types[i]->vLoad(inputs[i]), types[i]);
+    }
+    return c;
+}
+
+void GP_Contents_Destroy(GPContents* content)
+{
+    content->clear();
+    delete content;
+}
+

@@ -77,16 +77,18 @@ def constructFunction(function):
     inputnumbers = len(function.inputs) + len(function.status)
     cppline+="assert("+ '%d' %inputnumbers + " == inputs->size());\n"
     for [i, inp] in enumerate(function.inputs):
-        cppline+='assert(inputs->contents[%d].type == g' %(function.inputPos[i]) + inp.replace('*', '') + ');\n'
+        cppline+='assert(inputs->contents[%d].type == g' %i + inp.replace('*', '') + ');\n'
     for [i, inp] in enumerate(function.status):
-        cppline+='assert(inputs->contents[%d].type == g' %(function.statusPos[i]) + inp.replace('*', '') + ');\n'
+        cppline+='assert(inputs->contents[%d].type == g' %(i+len(function.inputs)) + inp.replace('*', '') + ');\n'
     cppline+="GPContents* out =  new GPContents;\n"
     for [i, var] in enumerate(function.inputs):
         num = '%d' %(function.inputPos[i])
-        cppline+= var + " X" + num + " = (" + var + ")inputs->get(" + num + ');\n';
+        select = '%d' %i
+        cppline+= var + " X" + num + " = (" + var + ")inputs->get(" + select + ');\n';
     for [i, var] in enumerate(function.status):
         num = '%d' %(function.statusPos[i])
-        cppline+= var + " X" + num + " = (" + var + ")inputs->get(" + num + ');\n';
+        select = '%d' %(i+len(function.inputs))
+        cppline+= var + " X" + num + " = (" + var + ")inputs->get(" + select + ');\n';
     cppline+=outputname + "* result"
     if (function.output.find("*")==-1):
         cppline+=" = new " + outputname + ";\n*result"

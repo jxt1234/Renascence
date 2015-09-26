@@ -50,6 +50,20 @@ GPWStream* GP_WStream_Create(const char* filename);
 /*Destroy the stream created by GP_WStream_Create, must not be used to destroy other Stream*/
 void GP_WStream_Destroy(GPWStream* s);
 
+/* Load Contents by IStatusType's vLoad method, Construct a GPContents
+ * producer: the FunctionProducer
+ * inputs: the list of Stream, must assume that all input are not NULL
+ * typeNames: the list of types
+ * n: select number, must be equal to types
+ * For Example: GPContents c  GP_Contents_Load(producer, inputs, "TrBmp TrBmp", 2);
+ */
+GPContents* GP_Contents_Load(AGPProducer* producer, GPStream** inputs, const char* typeNames, int n);
+
+/*Destroy the contents in GPContents and itself
+ * content: The memory to be freed
+ */
+void GP_Contents_Destroy(GPContents* content);
+
 /*Create AGPProducer by function table, meta file and type
  * metaStream:
  * table: obtain the method to get function, can be NULL, then GP will create table by the path decribed by meta file
@@ -61,7 +75,7 @@ AGPProducer* GP_Producer_Create(GPStream** metaStream, IFunctionTable** table, i
 /*Destroy the AGPProducer, before using this API, Make sure that all function created by p is destroyed*/
 void GP_Producer_Destroy(AGPProducer* p);
 /*Create a IGPAutoDefFunction by inputTypes and outputTypes, the types must be divided by space*/
-/*For example: IGPAutoDefFunction* f = GP_Create_Function_ByType("SkBitmap SkPaint", "SkStream")*/
+/*For example: IGPAutoDefFunction* f = GP_Create_Function_ByType(p, "SkBitmap SkPaint", "SkStream", false)*/
 /*
  * p: the AGPProducer created by GP_Producer_Create
  * outputTypes: the name of all output types
