@@ -23,8 +23,17 @@ class computePoint:public carryPoint
 {
 friend class computeSearchTree;
 public:
-    computePoint(const std::vector<std::vector<const GPProducerUtils::func*> >& data, const std::vector<int>& avail, const std::vector<const IStatusType*>& input):mData(data), mAvail(avail), mCur(0), mInput(input){}
-    const std::vector<const GPProducerUtils::func*>& getData() const{return mData[mAvail[mCur]];}
+    computePoint(const std::vector<std::vector<const GPProducerUtils::func*> >& data, const std::vector<int>& avail, const std::vector<const IStatusType*>& input):mData(data), mAvail(avail), mCur(0), mInput(input)
+    {
+    }
+    const std::vector<const GPProducerUtils::func*>& getData() const
+    {
+        GPASSERT(mCur < mAvail.size());
+        int pos = mAvail[mCur];
+        size_t datasize = mData.size();
+        GPASSERT(pos < datasize);
+        return mData[pos];
+    }
     std::vector<int> filter(const std::vector<std::vector<const GPProducerUtils::func*> >& combo, const std::vector<const GPProducerUtils::func*>& output);
     
     std::vector<GPTreeADFPoint*> outputs();

@@ -68,11 +68,11 @@ vector<GPTreeADFPoint*> computePoint::outputs()
     {
         GPTreeADFPoint* p = new GPTreeADFPoint(*data[i]);
         result.push_back(p);
-        
     }
     for (auto child : mChild)
     {
         computePoint* p = (computePoint*)(child.get());
+        GPASSERT(p->mParent < result.size());
         GPTreeADFPoint* parent = result[p->mParent];
         auto childrens = p->outputs();
         for (int i=0; i<childrens.size(); ++i)
@@ -128,7 +128,7 @@ bool computePoint::vGrow()
 }
 vector<GPTreeADFPoint*> computeSearchTree::output()
 {
-    return ((computePoint*)mRoot.get())->outputs();
+    return ((computePoint*)(mRoot.get()))->outputs();
 }
 bool computeSearchTree::readyToOutput()
 {

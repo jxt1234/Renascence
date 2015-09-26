@@ -104,6 +104,7 @@ GPProducerUtils::func GPProducerUtils::func::create(FUNC f, bool clear)
     return res;
 }
 
+
 GPProducerUtils::GPProducerUtils(const GPFunctionDataBase* base)
 {
     auto functions = base->getAllFunctions();
@@ -176,10 +177,41 @@ GPProducerUtils::GPProducerUtils(const GPFunctionDataBase* base)
             mFunctions.push_back(f);
         }
     }
+    _invalidateTable();
     GPASSERT(!mFunctions.empty());
 }
 GPProducerUtils::~GPProducerUtils()
 {
+}
+
+void GPProducerUtils::_invalidateTable()
+{
+    set<const func*> validset;
+    for (auto f : mFunctions)
+    {
+        validset.insert(f.get());
+    }
+    for (auto f : mFunctions)
+    {
+        auto cacheTable = f->tables;
+        f->tables.clear();
+        for (auto p : cacheTable)
+        {
+            bool valid = true;
+            for (auto pf : p)
+            {
+                if (validset.find(pf) == validset.end())
+                {
+                    valid  = false;
+                    break;
+                }
+            }
+            if (valid)
+            {
+                f->tables.push_back(p);
+            }
+        }
+    }
 }
 
 

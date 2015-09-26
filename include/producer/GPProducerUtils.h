@@ -32,6 +32,9 @@ public:
         std::vector<int> useChildrenInput;//the size must be the same as basic->inputTypes
         std::vector<std::vector<const func*>> tables;
         static func create(FUNC f, bool clean = false);
+        func() = default;
+        func(const func& f) = default;
+        virtual ~func() = default;
     };
     GPProducerUtils(const GPFunctionDataBase* base);
     virtual ~GPProducerUtils();
@@ -40,6 +43,7 @@ public:
     /*TODO: support multi-output*/
     std::vector<const func*> getFunctionsForOutput(TYPE t) const;
 private:
+    void _invalidateTable();
     std::vector<const func*> _getFunctionsForOutput(TYPE t, const std::vector<GPPtr<func>>& lists) const;
     std::vector<GPPtr<func>> mFunctions;
 };

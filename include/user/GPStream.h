@@ -22,17 +22,16 @@ struct GPStream
     size_t(*mRead)(void* meta, void* buffer, size_t size);
     /*Return true if the stream has moved to end*/
     bool(*mIsEnd)(void* meta);
-    
+    void* mMetaData;
+
     size_t read(void* buffer, size_t size) const
     {
         return mRead(mMetaData, buffer, size);
     }
-    
     bool isEnd() const
     {
         return mIsEnd(mMetaData);
     }
-    
     template <typename T>
     T readUnit()
     {
@@ -40,8 +39,6 @@ struct GPStream
         this->mRead(mMetaData, &buffer, sizeof(T));
         return buffer;
     }
-    void* mMetaData;
-    
     bool isValid() const
     {
         return NULL!=mMetaData && NULL!=mRead && NULL!=mIsEnd;
@@ -51,6 +48,7 @@ struct GPWStream
 {
     size_t(*mWrite)(void* meta, const void* buffer, size_t size);
     bool(*mFlush)(void* meta);
+    void* mMetaData;
     size_t write(const void* buffer, size_t size)
     {
         return mWrite(mMetaData, buffer, size);
@@ -59,14 +57,11 @@ struct GPWStream
     {
         return mFlush(mMetaData);
     }
-    
     template<typename T>
     bool writeUnit(T v)
     {
         return this->mWrite(mMetaData, &v, sizeof(T));
     }
-    void* mMetaData;
-    
     bool isValid() const
     {
         return NULL!=mWrite && NULL!=mFlush && NULL!=mMetaData;

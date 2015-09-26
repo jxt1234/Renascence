@@ -223,10 +223,13 @@ if __name__=='__main__':
     cppcontent = ''
     cppcontent += '#include \"package/DefaultFunctionTable.h\"\n'
     cppcontent += '#include \"GPPackage.h\"\n'
+    cppcontent += '#include \"GPTypes.h\"\n'
     cppcontent += 'void* ' + classname + '::vGetFunction(const std::string& name)\n{\n'
     for f in allfunctions:
         fname = renameFunction(f.name)
         cppcontent += 'if (name == \"' + fname + '\")\n{\n' + 'return (void*)' + fname + ';\n}\n'
+    fname = 'GP_IStatusType_Create' 
+    cppcontent += 'if (name == \"' + fname + '\")\n{\n' + 'return (void*)' + fname + ';\n}\n'
     cppcontent += 'return NULL;\n}\n'
     with open('src/package/'+ classname + '.cpp', 'w') as f:
         f.write(cppcontent)
