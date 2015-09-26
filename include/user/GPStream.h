@@ -18,11 +18,13 @@
 #include <stdlib.h>
 struct GPStream
 {
+    virtual ~GPStream() = default;
     /*If the buffer is NULL, it means skip size bytes, return the fact bytes it read*/
     size_t(*mRead)(void* meta, void* buffer, size_t size);
     /*Return true if the stream has moved to end*/
     bool(*mIsEnd)(void* meta);
     void* mMetaData;
+    void(*mFree)(void*);
 
     size_t read(void* buffer, size_t size) const
     {
@@ -41,14 +43,20 @@ struct GPStream
     }
     bool isValid() const
     {
-        return NULL!=mMetaData && NULL!=mRead && NULL!=mIsEnd;
+        return NULL!=mMetaData && NULL!=mRead && NULL!=mIsEnd && NULL!=mFree;
+    }
+    void release()
+    {
+        mFree(mMetaData);
     }
 };
 struct GPWStream
 {
+    virtual ~GPWStream() = default;
     size_t(*mWrite)(void* meta, const void* buffer, size_t size);
     bool(*mFlush)(void* meta);
     void* mMetaData;
+    void(*mFree)(void*);
     size_t write(const void* buffer, size_t size)
     {
         return mWrite(mMetaData, buffer, size);
@@ -64,7 +72,11 @@ struct GPWStream
     }
     bool isValid() const
     {
-        return NULL!=mWrite && NULL!=mFlush && NULL!=mMetaData;
+        return NULL!=mWrite && NULL!=mFlush && NULL!=mMetaData && NULL!=mFree;
+    }
+    void release()
+    {
+        mFree(mMetaData);
     }
 };
 #endif

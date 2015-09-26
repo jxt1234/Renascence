@@ -21,14 +21,14 @@
 class GPStreamWrap:public GPStream, public RefCount
 {
 public:
-    GPStreamWrap(){}
-    virtual ~GPStreamWrap(){}
+    GPStreamWrap();
+    virtual ~GPStreamWrap();
 };
 class GPWStreamWrap:public GPWStream, public RefCount
 {
 public:
-    GPWStreamWrap(){}
-    virtual ~GPWStreamWrap(){}
+    GPWStreamWrap();
+    virtual ~GPWStreamWrap();
 };
 
 class GPStreamFactory

@@ -221,8 +221,8 @@ GPStream* GP_Stream_Create(const char* file)
 }
 void GP_Stream_Destroy(GPStream* s)
 {
-    GPStreamWrap* p = (GPStreamWrap*)s;
-    p->decRef();
+    s->release();
+    delete s;
 }
 
 GPWStream* GP_WStream_Create(const char* file)
@@ -231,8 +231,8 @@ GPWStream* GP_WStream_Create(const char* file)
 }
 void GP_WStream_Destroy(GPWStream* s)
 {
-    GPWStreamWrap* p = (GPWStreamWrap*)s;
-    p->decRef();
+    s->release();
+    delete s;
 }
 
 void GP_Set_Stream_Path(const char* basic_path)
