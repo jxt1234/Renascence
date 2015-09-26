@@ -3,8 +3,8 @@
 
 import os
 import sys
-#CFLAGS="-O3 -fPIC"
-CFLAGS="-g -fPIC"
+CFLAGS="-O3 -fPIC"
+#CFLAGS="-g -fPIC"
 
 #CPP="g++-4.8 -std=c++11 "
 #C="gcc-4.8 -std=c11 "

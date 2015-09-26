@@ -74,6 +74,7 @@ struct GPContents
         contents.clear();
     }
     inline void* get(size_t i) const {return contents[i].content;}
+    inline const GP_Unit& getContent(size_t i) const {return contents[i];}
     inline const GP_Unit& operator[](size_t i) const {return contents[i];}
     inline size_t size() const {return contents.size();}
     static void destroy(GPContents* c)

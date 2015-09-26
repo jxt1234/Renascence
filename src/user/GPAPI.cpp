@@ -114,23 +114,14 @@ IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const cha
     return p->P->vCreateFunctionFromFormula(std::string(formula));
 }
 
-void GP_Function_Get_Inputs(const IGPAutoDefFunction* f, GPTYPES* output)
-{
-    GPASSERT(NULL!=f);//FIXME
-    GPASSERT(NULL!=output);
-    *output = f->getInputTypes();
-}
-
-void GP_Function_Get_Outputs(const IGPAutoDefFunction* f, GPTYPES* output)
-{
-    GPASSERT(NULL!=f);//FIXME
-    GPASSERT(NULL!=output);
-    *output = f->getOutputTypes();
-}
-
 GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input)
 {
-    GPASSERT(NULL!=f);//FIXME
+    GPASSERT(NULL!=f);
+    if(NULL == input)
+    {
+        GPContents empty;
+        return f->vRun(&empty);
+    }
     return f->vRun(input);
 }
 
@@ -269,6 +260,29 @@ GPContents* GP_Contents_Load(AGPProducer* p, GPStream** inputs, const char* type
     }
     return c;
 }
+
+void GP_Contents_Save(GPContents* content, GPWStream** outputs, int n)
+{
+    if (NULL == content || NULL == outputs || n <= 0 || content->size() != n)
+    {
+        FUNC_PRINT(0);
+        return;
+    }
+    for (int i=0; i<n; ++i)
+    {
+        if (NULL == outputs[i])
+        {
+            FUNC_PRINT(0);
+            return;
+        }
+    }
+    for (int i=0; i<n; ++i)
+    {
+        auto c = content->contents[i];
+        c.type->vSave(c.content, outputs[i]);
+    }
+}
+
 
 void GP_Contents_Destroy(GPContents* content)
 {

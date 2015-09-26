@@ -15,12 +15,11 @@
  ******************************************************************/
 #ifndef USER_GPAPI_H
 #define USER_GPAPI_H
-class IGPAutoDefFunction;
 #include <functional>
-#include "GPContents.h"
-#include "GPStream.h"
 #include "IFunctionTable.h"
-typedef std::vector<const IStatusType*> GPTYPES;
+#include "GPContents.h"
+#include "IFunctionTable.h"
+class IGPAutoDefFunction;
 class AGPProducer;
 enum
 {
@@ -55,14 +54,27 @@ void GP_WStream_Destroy(GPWStream* s);
  * inputs: the list of Stream, must assume that all input are not NULL
  * typeNames: the list of types
  * n: select number, must be equal to types
- * For Example: GPContents c  GP_Contents_Load(producer, inputs, "TrBmp TrBmp", 2);
+ * For Example: 
+ *      GPContents* c = GP_Contents_Load(producer, inputs, "TrBmp TrBmp", 2);
  */
 GPContents* GP_Contents_Load(AGPProducer* producer, GPStream** inputs, const char* typeNames, int n);
+
+/* Write Contents to appointed stream
+ * content: the contents to be write, must not be null
+ * outputs: the array of output stream, must not be null, all stream in this list should not be null, too
+ * n: the number of stream, must be the same as content's size
+ * Example:
+ *      outputStream = GP_WStream_Create("test.txt");
+ *      GP_Contents_Save(contents, &outputStream, 1);
+ *
+ */
+void GP_Contents_Save(GPContents* content, GPWStream** outputs, int n);
 
 /*Destroy the contents in GPContents and itself
  * content: The memory to be freed
  */
 void GP_Contents_Destroy(GPContents* content);
+
 
 /*Create AGPProducer by function table, meta file and type
  * metaStream:
@@ -86,11 +98,6 @@ void GP_Producer_Destroy(AGPProducer* p);
 IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, bool inputRepeat);
 /*Construct GP by formula like this: f(g(a, b), c)*/
 IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula);
-
-/*Get All inputTypes in order*/
-void GP_Function_Get_Inputs(const IGPAutoDefFunction* f, GPTYPES* output);
-/*Get All outputTypes in order*/
-void GP_Function_Get_Outputs(const IGPAutoDefFunction* f, GPTYPES* output);
 
 /*The Inputs should be generate from stream by IStatusType inorder by the inputTypes return from GP_Function_Get_Inputs*/
 /*The Outputs can be write to stream by IStatusType get from GP_Function_Get_Outputs*/

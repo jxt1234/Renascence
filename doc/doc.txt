@@ -272,3 +272,6 @@ gptool.out run func.xml outputfunc.xml input=1.txt,2.jpg output=3.jpg
 3、随机数生成与尽可能的参数精度
 4、树形函数优化方案
 5、代码生成与简化
+
+2015.9.26
+1、vMutate方案修改，加一个参数供 ADF 去决策如何变异结构，取消ADF中变异的随机权限
