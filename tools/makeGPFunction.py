@@ -160,21 +160,29 @@ def generateTypeFiles(filelist, outputt, inputt):
     def turnType(n):
         return n+"_GPType"
     for t in totoaltype:
-        cppfile+="class "+turnType(t) + ":public IStatusType\n{\n"
-        cppfile+='public:\n'
-        cppfile+=turnType(t)+'():IStatusType(\"' + t +"\"){}\n"
-        cppfile+='virtual void* vLoad(GPStream* input) const\n{\nreturn NULL;\n}\n'
-        cppfile+='virtual void vSave(void* contents, GPWStream* output) const\n{\n}\n'
-        cppfile+='virtual void vFree(void* contents) const\n{\n'
-        cppfile+=t+'* c = ('+t+'*)contents;\nc->decRef();\n'
-        cppfile+='}\n'
-        cppfile+='virtual int vMap(void** content, double* value) const\n{\nint mapnumber=0;\n'
-        cppfile+='if (NULL == value || NULL == content)\n{\nreturn mapnumber;\n}\nif (NULL == *content)\n{\n}\n'
-        cppfile+='return mapnumber;\n}\n'
-        cppfile+='virtual bool vCheckCompleted(void* content) const {return NULL!=content;}\n'
-        cppfile+='virtual bool vMerge(void* dst, void* src) const {return false;}\n'
-        cppfile+="};\n"
-        cppfile+="IStatusType* g" + t + " = new "+turnType(t) + "();\n"
+        typecontents = ''
+        typecontents+="class "+turnType(t) + ":public IStatusType\n{\n"
+        typecontents+='public:\n'
+        typecontents+=turnType(t)+'():IStatusType(\"' + t +"\"){}\n"
+        typecontents+='virtual void* vLoad(GPStream* input) const\n{\nreturn NULL;\n}\n'
+        typecontents+='virtual void vSave(void* contents, GPWStream* output) const\n{\n}\n'
+        typecontents+='virtual void vFree(void* contents) const\n{\n'
+        typecontents+=t+'* c = ('+t+'*)contents;\nc->decRef();\n'
+        typecontents+='}\n'
+        typecontents+='virtual int vMap(void** content, double* value) const\n{\nint mapnumber=0;\n'
+        typecontents+='if (NULL == value || NULL == content)\n{\nreturn mapnumber;\n}\nif (NULL == *content)\n{\n}\n'
+        typecontents+='return mapnumber;\n}\n'
+        typecontents+='virtual bool vCheckCompleted(void* content) const {return NULL!=content;}\n'
+        typecontents+='virtual bool vMerge(void* dst, void* src) const {return false;}\n'
+        typecontents+="};\n"
+        typefile = 'src/package/'+turnType(t)+'.h'
+
+        cppfile += '#include \"' + turnType(t) + '.h\"\n'
+        cppfile +="IStatusType* g" + t + " = new "+turnType(t) + "();\n"
+        import os
+        if False == os.path.exists(typefile):
+            with open(typefile, 'w') as f:
+                f.write(typecontents)
     cppfile+='IStatusType* GP_IStatusType_Create(const std::string& name)\n{\n'
     for t in totoaltype:
         cppfile+='if (name == \"'+t + '\")\n{\n'
