@@ -35,7 +35,6 @@ void GPEvolutionGroup::func_para::init(IGPAutoDefFunction* basic)
     {
         pParamter->attach()[i] = GPRandom::rate();
     }
-    basic->vMap(pParamter.get());
 }
 void GPEvolutionGroup::func_para::mutate()
 {
@@ -60,12 +59,10 @@ void GPEvolutionGroup::func_para::invalidate(IGPAutoDefFunction* basic)
     GPASSERT(NULL!=basic);
     bool changed = false;
     basic->vMapStructure(pStructure.get(), changed);
-    if (changed)
+    if (!changed)
     {
-        init(basic);
-        return;
+        basic->vMap(pParamter.get());
     }
-    basic->vMap(pParamter.get());
 }
 
 
@@ -87,13 +84,13 @@ void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)>& f)
     GPASSERT(mGroup.size()>1);
     double _max = f((*(mGroup.begin())).get());
     auto iter = mGroup.begin();
-    auto bestIter = iter;
+    auto best = mGroup[0];
     for (iter++; iter!=mGroup.end(); iter++)
     {
         double _f = f((*iter).get());
         if (_f > _max)
         {
-            bestIter = iter;
+            best = *iter;
             _max = _f;
         }
     }
@@ -102,7 +99,7 @@ void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)>& f)
     {
         if (mBestFit <= _max)
         {
-            mBest = (*bestIter)->vCopy();
+            mBest = best->vCopy();
             mBestFit = _max;
         }
         else
@@ -112,7 +109,7 @@ void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)>& f)
     }
     else
     {
-        mBest = (*bestIter)->vCopy();
+        mBest = best->vCopy();
         mBestFit = _max;
     }
     if (changed)
