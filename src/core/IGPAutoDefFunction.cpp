@@ -56,13 +56,13 @@ IGPAutoDefFunction* IGPAutoDefFunction::makeAdaptorFunction(IGPAutoDefFunction* 
             IGPAutoDefFunction* r = new adpatergp(mBase, mInputOrder, mInputTypes);
             return r;
         }
-        virtual int vMap(GPPtr<GPParameter> para)
+        virtual int vMap(GPParameter* para)
         {
             return mBase->vMap(para);
         }
-        virtual void vMutate()
+        virtual int vMapStructure(GPParameter* para, bool& changed)
         {
-            mBase->vMutate();
+            return mBase->vMapStructure(para, changed);
         }
     private:
         IGPAutoDefFunction* mBase;

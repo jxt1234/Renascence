@@ -43,15 +43,13 @@ class GPXmlEvolutionTest:public GPTest
                 group->vEvolutionFunc(fitfunc);
                 fit->decRef();
 
-                IGPAutoDefFunction* result = group->getBest();
-                result->addRef();
+                GPPtr<IGPAutoDefFunction> result = group->getBest();
                 GPPRINT_FL("Best Fit is %f", group->getBestFit());
 
                 delete group;
                 GPPtr<GPWStreamWrap> outputF = GPStreamFactory::NewWStream("output/tree_result.xml");
                 GPPtr<GPTreeNode> n = result->vSave();
                 xmlReader::dumpNodes(n.get(), outputF.get());
-                result->decRef();
             }
         }
         GPXmlEvolutionTest(){}

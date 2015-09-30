@@ -1,18 +1,18 @@
 /******************************************************************
-   Copyright 2013, Jiang Xiao-tang
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-******************************************************************/
+ Copyright 2013, Jiang Xiao-tang
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ******************************************************************/
 #include "core/GP_XmlString.h"
 #include "producer/GPTreeADF.h"
 #include "producer/GPTreeProducer.h"
@@ -20,7 +20,6 @@
 #include <sstream>
 #include <fstream>
 #include "utils/debug.h"
-#include "utils/GPRandom.h"
 //#define DEBUG_TIMES
 //#define DEBUG_XML
 
@@ -226,7 +225,7 @@ IGPAutoDefFunction* GPTreeADF::vCopy() const
     GPTreeADFPoint* p = (GPTreeADFPoint*)AbstractPoint::deepCopy(root, &c);
     return new GPTreeADF(p, mProducer);
 }
-int GPTreeADF::vMap(GPPtr<GPParameter> para)
+int GPTreeADF::vMap(GPParameter* para)
 {
     GPASSERT(NULL!=mRoot);
     vector<AbstractPoint*> allpoints = mRoot->display();
@@ -242,7 +241,7 @@ int GPTreeADF::vMap(GPPtr<GPParameter> para)
             allcontents.push_back(status[j]);
         }
     }
-    if (NULL!=para.get())
+    if (NULL!=para)
     {
         GPASSERT(sum == para->size());
         const PFLOAT* ps = para->get();
@@ -262,50 +261,59 @@ int GPTreeADF::vMap(GPPtr<GPParameter> para)
     return sum;
 }
 
-void GPTreeADF::vMutate()
+int GPTreeADF::vMapStructure(GPParameter* para, bool& changed)
 {
-    float pos = GPRandom::rate();
+    const int number = 3;
+    changed = false;
+    if (NULL == para)
+    {
+        return number;
+    }
+    GPASSERT(para->size() == number);
+    /*Replace*/
+    if (para->get(0) > mProducer->getLargetVary())
+    {
+        return number;
+    }
+    changed = true;
+    float pos = para->get(1);
     GPTreeADFPoint* p = find(pos);
-    /*Replace or mutate status*/
-    if (GPRandom::rate() < mProducer->getLargetVary())
+    const vector<const IStatusType*> outputs = p->func()->outputType;
+    //TODO If outputs is empty, Use function name to vary
+    if (!outputs.empty())
     {
-        const vector<const IStatusType*> outputs = p->func()->outputType;
-        //TODO If outputs is empty, Use function name to vary
-        if (!outputs.empty())
+        vector<const IStatusType*> inputs;
+        p->pGetInputs(inputs);
+        vector<vector<GPTreeADFPoint*> > queue;
+        mProducer->searchAllSequences(queue, outputs, inputs);
+        GPASSERT(!queue.empty());
+        size_t n = para->get(2)*queue.size();
+        if (n >= queue.size())
         {
-            vector<const IStatusType*> inputs;
-            p->pGetInputs(inputs);
-            vector<vector<GPTreeADFPoint*> > queue;
-            mProducer->searchAllSequences(queue, outputs, inputs);
-            GPASSERT(!queue.empty());
-            int n = GPRandom::mid(0, queue.size());
-            auto q = queue[n];
-            GPASSERT(1 == q.size());
-            if (p != mRoot)
-            {
-                mRoot->replace(p, q[0]);
-            }
-            else
-            {
-                mRoot->decRef();
-                mRoot = q[0];
-                q[0]->addRef();
-            }
-            for (auto que : queue)
-            {
-                for (auto _q : que)
-                {
-                    _q->decRef();
-                }
-            }
-            _refreshInputsAndOutputs();
+            n = queue.size()-1;
         }
+        auto q = queue[n];
+        GPASSERT(1 == q.size());
+        if (p != mRoot)
+        {
+            mRoot->replace(p, q[0]);
+        }
+        else
+        {
+            mRoot->decRef();
+            mRoot = q[0];
+            q[0]->addRef();
+        }
+        for (auto que : queue)
+        {
+            for (auto _q : que)
+            {
+                _q->decRef();
+            }
+        }
+        _refreshInputsAndOutputs();
     }
-    const std::vector<GPStatusContent*>& mStatus = p->status();
-    for (int i=0; i<mStatus.size(); ++i)
-    {
-        mStatus[i]->mutate();
-    }
+    return number;
 }
 
 void GPTreeADF::_refreshInputsAndOutputs()

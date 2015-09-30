@@ -46,11 +46,6 @@ static int test_main()
     /*Run*/
     {
         auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "", true);
-        GPTYPES inputs, outputs;
-        GP_Function_Get_Inputs(adf, &inputs);
-        assert(0 == inputs.size());
-        GP_Function_Get_Outputs(adf, &outputs);
-        assert(1==outputs.size());
         GPContents gp_inputs;
         auto gp_output = GP_Function_Run(adf, &gp_inputs);
         assert(1==gp_output->size());

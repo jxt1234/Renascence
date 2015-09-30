@@ -120,13 +120,13 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromName(const std::string& n
                IGPAutoDefFunction* r = new simpleADF(mFunc);
                return r;
           }
-          virtual int vMap(GPPtr<GPParameter> para)
+          virtual int vMap(GPParameter* para)
           {
                return 0;
           }
-          virtual void vMutate()
+          virtual int vMapStructure(GPParameter* para, bool& changed)
           {
-               
+               return 0;
           }
           
      private:

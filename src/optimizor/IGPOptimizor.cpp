@@ -25,3 +25,28 @@ GPParameter::~GPParameter()
 {
     delete [] mContent;
 }
+
+void GPParameter::clear(PFLOAT f)
+{
+    for (int i=0; i<mNum; ++i)
+    {
+        mContent[i] = f;
+    }
+}
+
+void GPParameter::makeValid()
+{
+    for (int i=0; i<mNum; ++i)
+    {
+        auto f = mContent[i];
+        if (f < 0.0)
+        {
+            f = 0.0;
+        }
+        if (f>1.0)
+        {
+            f = 1.0;
+        }
+        mContent[i] = f;
+    }
+}

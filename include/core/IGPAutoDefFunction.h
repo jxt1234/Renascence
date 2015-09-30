@@ -30,10 +30,12 @@ public:
     virtual GPTreeNode* vSave() const = 0;
     /*Return a new copy of this Function*/
     virtual IGPAutoDefFunction* vCopy() const= 0;
-    /*Mutate function, for evolution*/
-    virtual void vMutate() = 0;
-    /*Return the number of parameter needed, do nothing if para.get()==null*/
-    virtual int vMap(GPPtr<GPParameter> para) = 0;
+    
+    /*Parameters to determine neighbour structure, return the number of parameter needed, do nothing if para == null, after this API, the number of vMap returned may changed*/
+    virtual int vMapStructure(GPParameter* para, bool& changed) = 0;
+    
+    /*Set self Parameters without change the structure, Return the number of parameter needed, do nothing if para==null, the number of vMap will not change*/
+    virtual int vMap(GPParameter* para) = 0;
     
     /*Return all inputTypes in order*/
     inline const std::vector<const IStatusType*>& getInputTypes() const {return mInputTypes;}

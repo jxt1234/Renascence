@@ -21,6 +21,54 @@
 #include "evolution/GPEvolutionGroup.h"
 #include "optimizor/GPOptimizorFactory.h"
 using namespace std;
+
+void GPEvolutionGroup::func_para::init(IGPAutoDefFunction* basic)
+{
+    GPASSERT(NULL!=basic);
+    bool changed;
+    auto sn = basic->vMapStructure(NULL, changed);
+    pStructure = new GPParameter(sn);
+    pStructure->clear(0.0f);
+    auto pn = basic->vMap(NULL);
+    pParamter = new GPParameter(pn);
+    for (int i=0; i<pParamter->size(); ++i)
+    {
+        pParamter->attach()[i] = GPRandom::rate();
+    }
+    basic->vMap(pParamter.get());
+}
+void GPEvolutionGroup::func_para::mutate()
+{
+    const double varyRate = 0.1f;
+    auto n = pStructure->size();
+    auto f = pStructure->attach();
+    for (int i=0; i<n; ++i)
+    {
+        f[i] += varyRate * (GPRandom::rate()-0.5);
+    }
+    n = pParamter->size();
+    f = pParamter->attach();
+    for (int i=0; i<n; ++i)
+    {
+        f[i] += varyRate * (GPRandom::rate()-0.5);
+    }
+    pStructure->makeValid();
+    pParamter->makeValid();
+}
+void GPEvolutionGroup::func_para::invalidate(IGPAutoDefFunction* basic)
+{
+    GPASSERT(NULL!=basic);
+    bool changed = false;
+    basic->vMapStructure(pStructure.get(), changed);
+    if (changed)
+    {
+        init(basic);
+        return;
+    }
+    basic->vMap(pParamter.get());
+}
+
+
 GPEvolutionGroup::GPEvolutionGroup(GPProducer* sys, int time, int size):mSys(sys)
 {
     GPASSERT(NULL!=sys);
@@ -32,92 +80,51 @@ GPEvolutionGroup::GPEvolutionGroup(GPProducer* sys, int time, int size):mSys(sys
 
 GPEvolutionGroup::~GPEvolutionGroup()
 {
-    if (NULL!=mBest)
-    {
-        mBest->decRef();
-    }
-    _clearGroup();
-    _clearBackup();
 }
 
-void GPEvolutionGroup::_clearBackup()
+void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)>& f)
 {
-    vector<IGPAutoDefFunction*>::iterator iter = mBackup.begin();
-    for (; iter!=mBackup.end(); iter++)
-    {
-        if (NULL != *iter)
-        {
-            (*iter)->decRef();
-        }
-    }
-    mBackup.clear();
-}
-
-void GPEvolutionGroup::_restoreBackup()
-{
-    _clearBackup();
-    list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
-    for (; iter!=mGroup.end(); iter++)
-    {
-        mBackup.push_back((*iter)->vCopy());
-    }
-}
-
-void GPEvolutionGroup::_clearGroup()
-{
-    list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
-    for (; iter!=mGroup.end(); iter++)
-    {
-        if (NULL != *iter)
-        {
-            (*iter)->decRef();
-        }
-    }
-    mGroup.clear();
-}
-
-
-void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)> f)
-{
-    double _max = f(*(mGroup.begin()));
-    list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
-    list<IGPAutoDefFunction*>::iterator bestIter = mGroup.begin();
+    GPASSERT(mGroup.size()>1);
+    double _max = f((*(mGroup.begin())).get());
+    auto iter = mGroup.begin();
+    auto bestIter = iter;
     for (iter++; iter!=mGroup.end(); iter++)
     {
-        double _f = f(*iter);
-        //static int count=0;
-        //std::ostringstream os;
-        //os << "output/"<<count++<<".txt";
-        //std::ofstream of(os.str().c_str());
-        //(*iter)->save(of);
-        //of <<"fit="<< _f<<std::endl;
+        double _f = f((*iter).get());
         if (_f > _max)
         {
             bestIter = iter;
             _max = _f;
         }
     }
-    if (mBest!=NULL)
+    bool changed = true;
+    if (mBest.get()!=NULL)
     {
         if (mBestFit <= _max)
         {
-            mBest->decRef();
-            mBest = *bestIter;
-            (*bestIter)->addRef();
+            mBest = (*bestIter)->vCopy();
             mBestFit = _max;
+        }
+        else
+        {
+            changed = false;
         }
     }
     else
     {
-        mBest = *bestIter;
+        mBest = (*bestIter)->vCopy();
         mBestFit = _max;
-        (*bestIter)->addRef();
+    }
+    if (changed)
+    {
+        mPara = new func_para;
+        mPara->init(mBest.get());
     }
 }
 
 void GPEvolutionGroup::_expand()
 {
-    _clearGroup();
+    mGroup.clear();
     for (int i=0; i<mSize; ++i)
     {
         mGroup.push_back(mBest->vCopy());
@@ -126,50 +133,41 @@ void GPEvolutionGroup::_expand()
 
 void GPEvolutionGroup::_mutate()
 {
-    list<IGPAutoDefFunction*>::iterator iter = mGroup.begin();
-    for (;iter!=mGroup.end();iter++)
+    GPASSERT(NULL!=mPara.get());
+    for (auto f:mGroup)
     {
-        if (GPRandom::rate() < 0.1)
-        {
-            (*iter)->decRef();
-            int n = GPRandom::mid(0,mBackup.size());
-            *iter = (mBackup[n])->vCopy();
-        }
-        (*iter)->vMutate();
+        mPara->mutate();
+        mPara->invalidate(f.get());
     }
 }
 
 void GPEvolutionGroup::loadBest(const GPTreeNode* node)
 {
     GPASSERT(NULL!=mSys);
-    if (NULL!=mBest)
-    {
-        mBest->decRef();
-    }
     mBest = mSys->vCreateFunctionFromNode(node);
 }
 
 void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func)
 {
-    if (NULL!=mBest)
+    if (NULL!=mBest.get())
     {
-        mBestFit = fit_func(mBest);
+        mBestFit = fit_func(mBest.get());
     }
     /*Create the initial group*/
-    _clearGroup();
+    mGroup.clear();
     vector<IGPAutoDefFunction*> group = mSys->vCreateAllFunction(mOutput, mInput);
     GPASSERT(!group.empty());
     for (int i=0; i<group.size(); ++i)
     {
         mGroup.push_back(group[i]);
     }
-    _restoreBackup();
-
+    _best(fit_func);
+    _expand();
     /*Evolution*/
     for (int i=0; i<mTime; ++i)
     {
+        _mutate();
         _best(fit_func);
         _expand();
-        _mutate();
     }
 }

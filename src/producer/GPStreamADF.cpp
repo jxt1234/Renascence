@@ -282,7 +282,7 @@ GPStreamADF::GPStreamADF(const GPTreeNode* n, const GPFunctionDataBase* base)
                 std::istringstream number(status_values[i]);
                 number >> para->attach()[i];
             }
-            this->vMap(para);
+            this->vMap(para.get());
         }
         
     }
@@ -368,18 +368,19 @@ IGPAutoDefFunction* GPStreamADF::vCopy() const
     /*TODO*/
     return NULL;
 }
-void GPStreamADF::vMutate()
+int GPStreamADF::vMapStructure(GPParameter* para, bool& changed)
 {
-    /*TODO*/
+    changed = false;
+    return 0;
 }
-int GPStreamADF::vMap(GPPtr<GPParameter> para)
+int GPStreamADF::vMap(GPParameter* para)
 {
     int sum = 0;
     for (auto p : mFunctions)
     {
         sum += p->get()->map(NULL, 0);
     }
-    if (NULL == para.get())
+    if (NULL == para)
     {
         return sum;
     }

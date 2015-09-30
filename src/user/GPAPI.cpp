@@ -172,13 +172,13 @@ void GP_Function_Optimize(IGPAutoDefFunction* f, std::function< double(IGPAutoDe
         return;
     }
     auto optfun = [&](GPPtr<GPParameter> para){
-        f->vMap(para);
+        f->vMap(para.get());
         return fit_fun(f);
     };
     GPPtr<GPParameter> result;
-    int n = f->vMap(result);//Get the count
+    int n = f->vMap(result.get());//Get the count
     result = opt->vFindBest(n, optfun);
-    f->vMap(result);
+    f->vMap(result.get());
 }
 
 IGPAutoDefFunction* GP_Function_CreateBest_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, bool inputRepeat, std::function< double(IGPAutoDefFunction*)> fit_func, int maxTimes)
@@ -202,7 +202,7 @@ IGPAutoDefFunction* GP_Function_CreateBest_ByType(const AGPProducer* p, const ch
     group->vEvolutionFunc(fit_func);
     auto best = group->getBest();
     best->addRef();
-    return best;
+    return best.get();
 }
 
 

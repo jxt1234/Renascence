@@ -3,7 +3,6 @@
 #include "core/GPFunctionDataBase.h"
 #include "core/GPProducer.h"
 #include "core/GPFactory.h"
-#include "core/BasicComposeFunction.h"
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -36,7 +35,13 @@ public:
                 dump = gp2->vSave();
                 xmlReader::dumpNodes(dump.get(), file.get());
                 file = GPStreamFactory::NewWStream("output/GPloadXmlTreeTest_mutate.xml", GPStreamFactory::FILE);
-                gp2->vMutate();
+                {
+                    bool change;
+                    int n = gp2->vMapStructure(NULL, change);
+                    GPPtr<GPParameter> p = new GPParameter(n);
+                    p->clear(0.6f);
+                    gp2->vMapStructure(p.get(), change);
+                }
                 dump = gp2->vSave();
                 xmlReader::dumpNodes(dump.get(), file.get());
             }

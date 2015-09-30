@@ -14,6 +14,7 @@
    limitations under the License.
 ******************************************************************/
 #include "user/GPAPI.h"
+#include "core/IGPAutoDefFunction.h"
 #include <assert.h>
 #include <string.h>
 #include <fstream>
@@ -43,10 +44,8 @@ void gp_run(int argc, char** argv)
     assert(NULL!=adf);
     GP_Stream_Destroy(metadata);
     GP_Stream_Destroy(funcfile);
-    GPTYPES outputtype;
-    GPTYPES inputtype;
-    GP_Function_Get_Inputs(adf, &inputtype);
-    GP_Function_Get_Outputs(adf, &outputtype);
+    auto outputtype = adf->getOutputTypes();
+    auto inputtype = adf->getInputTypes();
     printf("Outputs:\n");
     int cur = 4;
     auto outputcur = 4;

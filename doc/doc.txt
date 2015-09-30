@@ -264,7 +264,7 @@ gptool.out run func.xml outputfunc.xml input=1.txt,2.jpg output=3.jpg
 
 2015.9.24
 1、加入创建函数的filter机制，输入关键字，过滤所得函数
-2、完善createFromFormula机制
+2、完善createFromFormula机制，支持输入变量
 
 几个需要研究的问题
 1、函数匹配关系，是否支持不定输入输出函数
@@ -275,3 +275,12 @@ gptool.out run func.xml outputfunc.xml input=1.txt,2.jpg output=3.jpg
 
 2015.9.26
 1、vMutate方案修改，加一个参数供 ADF 去决策如何变异结构，取消ADF中变异的随机权限
+
+2015.9.28
+1、加入 GPTreeADF 转化为 流式ADF 的接口，以便支持流式运算逻辑自生成
+2、完善输入适配机制
+3、GPContent加入引用计数机制/metaData（可选）
+
+2015.9.29
+1、在函数生成逻辑中支持多输出函数
+2、开放遍历函数的API

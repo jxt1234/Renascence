@@ -30,12 +30,10 @@ public:
     typedef GPContents::GP_Unit UNIT;
     virtual GPContents* vRun(GPContents*  inputs);
     virtual GPTreeNode* vSave() const;
-    /*Return a new copy of this Function*/
     virtual IGPAutoDefFunction* vCopy() const;
-    virtual void vMutate();
     
-    
-    virtual int vMap(GPPtr<GPParameter> p);
+    virtual int vMapStructure(GPParameter* para, bool& changed);
+    virtual int vMap(GPParameter* p);
     GPGraphicADF(const GPTreeNode* node, const GPFunctionDataBase* base);
     virtual ~GPGraphicADF();
     class Unit:public RefCount

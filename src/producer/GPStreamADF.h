@@ -35,9 +35,9 @@ public:
     /*Return a new copy of this Function*/
     virtual IGPAutoDefFunction* vCopy() const;
     /*Mutate function, for evolution*/
-    virtual void vMutate();
+    virtual int vMapStructure(GPParameter* para, bool& changed);
     /*Return the number of parameter needed, do nothing if para.get()==null*/
-    virtual int vMap(GPPtr<GPParameter> para);
+    virtual int vMap(GPParameter* para);
     
 private:
     class Point:public RefCount
