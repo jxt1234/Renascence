@@ -92,10 +92,8 @@ void GP_Producer_Destroy(AGPProducer* p);
  * p: the AGPProducer created by GP_Producer_Create
  * outputTypes: the name of all output types
  * inputTypes: all the input types obtained for the IGPAutoDefFunction, not orderred, if set "", GP will not care about the input
- * inputRepeat: whethether the type of inputTypes can be use repeatly
  */
-/*Must remind that, user must get the real orderred inputTypes of the IGPAutoDefFunction after call this function*/
-IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, bool inputRepeat);
+IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes);
 /*Construct GP by formula like this: f(g(a, b), c)*/
 IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula);
 
@@ -105,15 +103,10 @@ GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input);
 /*Free the memory of function*/
 void GP_Function_Destroy(IGPAutoDefFunction* f);
 
-/*Load f fromt input and Save f to output*/
-/* The code below create a same function f2 from f1, in which the f1 come from the same producer
- GPStream is;
- GPWStream out;
- GP_Function_Save(f1, out);
- is(out.str());
- IGPAutoDefFunction* f2 = GP_Function_Create_ByStream(producer, is);
- */
+/*Load f from input stream, which make a xmlfile*/
 IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, GPStream* xmlFile);
+
+/*Save f to output, use xml format*/
 void GP_Function_Save(IGPAutoDefFunction* f, GPWStream* output);
 
 /*Optimize IGPAutoDefFunction by adjust parameters*/
@@ -128,6 +121,6 @@ void GP_Function_Save(IGPAutoDefFunction* f, GPWStream* output);
 void GP_Function_Optimize(IGPAutoDefFunction* f, std::function< double(IGPAutoDefFunction*)> fit_fun, int type, const char* describe);
 /*Evolution Method to find best function, it will take a long time*/
 /*fit_func: the function to compute the fitness of IGPAutoDefFunction*/
-/*TODO Let User control the speed of training*/
-IGPAutoDefFunction* GP_Function_CreateBest_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, bool inputRepeat, std::function< double(IGPAutoDefFunction*)> fit_func, int maxTimes);
+/*maxTimes: the max time to run fit_func, control the training time*/
+IGPAutoDefFunction* GP_Function_CreateBest_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, std::function< double(IGPAutoDefFunction*)> fit_func, int maxTimes);
 #endif

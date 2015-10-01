@@ -21,7 +21,7 @@ static int test_main()
     GPPtr<GPWStreamWrap> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
     /*Input and output*/
     {
-        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "", true);
+        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "");
         {
             GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_base.txt");
             GP_Function_Save(adf, output.get());
@@ -45,7 +45,7 @@ static int test_main()
     }
     /*Run*/
     {
-        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "", true);
+        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "");
         GPContents gp_inputs;
         auto gp_output = GP_Function_Run(adf, &gp_inputs);
         assert(1==gp_output->size());
@@ -56,7 +56,7 @@ static int test_main()
     }
     /*Optimize*/
     {
-        auto fitf = GP_Function_Create_ByType(producer, "double", "TrBmp", true);
+        auto fitf = GP_Function_Create_ByType(producer, "double", "TrBmp");
         auto fitfunction = [=](IGPAutoDefFunction* target){
             GPContents nullinput;
             auto output = GP_Function_Run(target, &nullinput);
@@ -79,7 +79,7 @@ static int test_main()
         }
         /*Find Best, evolution group*/
         {
-            auto bestf = GP_Function_CreateBest_ByType(producer, "TrBmp", "", true, fitfunction, 10);
+            auto bestf = GP_Function_CreateBest_ByType(producer, "TrBmp", "", fitfunction, 100000);
             cout << "Fit = " << fitfunction(bestf) << endl;
             GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Evolution.txt");
             GP_Function_Save(bestf, output.get());

@@ -93,7 +93,7 @@ static std::vector<const IStatusType*> _transform(const char* types, const AGPPr
     return res;
 }
 
-IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, bool inputRepeat)
+IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes)
 {
     if (NULL == outputTypes || NULL == inputTypes || NULL == p)
     {
@@ -102,7 +102,7 @@ IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* 
     }
     std::vector<const IStatusType*> inputs = _transform(inputTypes, p);
     std::vector<const IStatusType*> outputs = _transform(outputTypes, p);
-    return p->P->vCreateFunction(outputs, inputs, inputRepeat);
+    return p->P->vCreateFunction(outputs, inputs, false);
 }
 IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula)
 {
@@ -151,10 +151,12 @@ void GP_Function_Destroy(IGPAutoDefFunction* f)
     }
 }
 
-void GP_Function_Optimize(IGPAutoDefFunction* f, std::function< double(IGPAutoDefFunction*)> fit_fun, int type, const char* describe)
+void GP_Function_Optimize(IGPAutoDefFunction* origin, std::function< double(IGPAutoDefFunction*)> fit_fun, int type, const char* describe)
 {
     /*TODO*/
     GPPtr<IGPOptimizor> opt;
+    GPPtr<IGPAutoDefFunction> f = origin->vCopy();
+    double originfit = fit_fun(origin);
     switch(type)
     {
         case 0:
@@ -173,15 +175,20 @@ void GP_Function_Optimize(IGPAutoDefFunction* f, std::function< double(IGPAutoDe
     }
     auto optfun = [&](GPPtr<GPParameter> para){
         f->vMap(para.get());
-        return fit_fun(f);
+        return fit_fun(f.get());
     };
     GPPtr<GPParameter> result;
     int n = f->vMap(result.get());//Get the count
     result = opt->vFindBest(n, optfun);
     f->vMap(result.get());
+    auto newfit = fit_fun(f.get());
+    if (newfit > originfit)
+    {
+        origin->vMap(result.get());
+    }
 }
 
-IGPAutoDefFunction* GP_Function_CreateBest_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, bool inputRepeat, std::function< double(IGPAutoDefFunction*)> fit_func, int maxTimes)
+IGPAutoDefFunction* GP_Function_CreateBest_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, std::function< double(IGPAutoDefFunction*)> fit_func, int maxTimes)
 {
     if (NULL == p || NULL ==outputTypes || NULL == inputTypes)
     {
