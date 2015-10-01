@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  ******************************************************************/
-#include "core/GP_XmlString.h"
+#include "GPStrings.h"
 #include "producer/GPTreeADF.h"
 #include "producer/GPTreeProducer.h"
 #include <algorithm>
@@ -71,8 +71,8 @@ void GPTreeADFPoint::initStatus(const std::vector<std::istream*>& statusInput)
 
 GPTreeNode* GPTreeADFPoint::xmlPrint() const
 {
-    GPTreeNode* root = new GPTreeNode(GP_XmlString::func, mFunc.basic->name);
-    GPPtr<GPTreeNode> status = new GPTreeNode(GP_XmlString::status, "");
+    GPTreeNode* root = new GPTreeNode(GPStrings::GPTreeADF_FUNCTION, mFunc.basic->name);
+    GPPtr<GPTreeNode> status = new GPTreeNode(GPStrings::GPTreeADF_STATUS, "");
     root->addChild(status);
     for (int j=0; j<mStatus.size(); ++j)
     {
@@ -81,12 +81,29 @@ GPTreeNode* GPTreeADFPoint::xmlPrint() const
         mStatus[j]->print(values);
         status->addChild(s->name(), values.str());
     }
-    GPPtr<GPTreeNode> children = new GPTreeNode(GP_XmlString::children, "");
+    GPPtr<GPTreeNode> children = new GPTreeNode(GPStrings::GPTreeADF_CHILDREN, "");
     root->addChild(children);
     for (int i=0; i<mChildren.size(); ++i)
     {
         GPTreeADFPoint* p = (GPTreeADFPoint*)(mChildren[i]);
         children->addChild(p->xmlPrint());
+    }
+    if (mFunc.inputs.size() > 0)
+    {
+        std::ostringstream inputTypes;
+        for (int i=0; i<mFunc.inputs.size(); ++i)
+        {
+            inputTypes << mFunc.inputs[i]->name() << " ";
+        }
+        GPPtr<GPTreeNode> inputs = new GPTreeNode(GPStrings::GPTreeADF_INPUTS, inputTypes.str());
+        root->addChild(inputs);
+        std::ostringstream childflags;
+        for (int i=0; i<mFunc.useChildrenInput.size(); ++i)
+        {
+            childflags << mFunc.useChildrenInput[i] << " ";
+        }
+        GPPtr<GPTreeNode> childflagsn = new GPTreeNode(GPStrings::GPTreeADF_INPUTFLAGS, childflags.str());
+        root->addChild(childflagsn);
     }
     return root;
 }

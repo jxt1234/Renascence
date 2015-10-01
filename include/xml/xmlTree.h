@@ -33,13 +33,17 @@ public:
     xmlTree(const GPTreeNode* node);
     virtual ~xmlTree(){}
     inline const std::string& func(){return mFunc;}
+    inline const std::string& inputTypes(){return mInputTypes;}
+    inline const std::string& childFlags(){return mChildFlags;}
+
     inline const std::vector<type>& status(){return mStatus;}
 protected:
     void loadNode(const GPTreeNode* p);
     /*Variables*/
     std::string mFunc;
+    std::string mInputTypes;
+    std::string mChildFlags;
     std::vector<type> mStatus;
-    std::vector<type> mResult;
 private:
     void loadValues(std::vector<type>& result, const GPTreeNode* p);
     void printValues(std::vector<type>& result, std::ostream& out);

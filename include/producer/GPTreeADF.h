@@ -57,6 +57,7 @@ private:
         virtual AbstractPoint* copy(AbstractPoint* src);
     };
     friend class GPTreeADF;
+    friend class xmlCopy;
 };
 
 class GPTreeProducer;

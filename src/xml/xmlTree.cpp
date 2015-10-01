@@ -1,6 +1,6 @@
 #include "xml/xmlTree.h"
 #include "utils/debug.h"
-#include "core/GP_XmlString.h"
+#include "GPStrings.h"
 #include <sstream>
 using namespace std;
 
@@ -17,21 +17,26 @@ void xmlTree::printValues(std::vector<type>& result, std::ostream& out)
 
 xmlTree::xmlTree(const GPTreeNode* p)
 {
-    GPASSERT(p->name() == GP_XmlString::func);
+    GPASSERT(p->name() == GPStrings::GPTreeADF_FUNCTION);
     GPASSERT(""!=p->attr());
     mFunc = p->attr();
     auto childrens = p->getChildren();
-    GPASSERT(2 == childrens.size());
+    GPASSERT(2 == childrens.size() || 4 == childrens.size());
     auto statusnode = childrens[0];
-    GPASSERT(statusnode->name()== GP_XmlString::status);
+    GPASSERT(statusnode->name()== GPStrings::GPTreeADF_STATUS);
     /*Load status*/
     loadValues(mStatus, statusnode.get());
     /*Load Childern*/
     auto childnodes = childrens[1];
-    GPASSERT(childnodes->name()==GP_XmlString::children);
+    GPASSERT(childnodes->name()==GPStrings::GPTreeADF_CHILDREN);
     for (auto c : childnodes->getChildren())
     {
         addPoint(new xmlTree(c.get()));
+    }
+    if (4 == childrens.size())
+    {
+        mInputTypes = childrens[2]->attr();
+        mChildFlags = childrens[3]->attr();
     }
 }
 

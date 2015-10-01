@@ -287,3 +287,4 @@ gptool.out run func.xml outputfunc.xml input=1.txt,2.jpg output=3.jpg
 
 2015.10.1
 1、在createFromFormula接口中支持模糊逻辑，允许其中一部分逻辑由GP生成
+2、添加函数注册的API，允许上层将自用函数信息注册进函数库中，参与逻辑自生成

@@ -79,7 +79,7 @@ static int test_main()
         }
         /*Find Best, evolution group*/
         {
-            auto bestf = GP_Function_CreateBest_ByType(producer, "TrBmp", "", fitfunction, 100000);
+            auto bestf = GP_Function_CreateBest_ByType(producer, "TrBmp", "", fitfunction, 100);
             cout << "Fit = " << fitfunction(bestf) << endl;
             GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Evolution.txt");
             GP_Function_Save(bestf, output.get());

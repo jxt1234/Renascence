@@ -35,7 +35,6 @@ public:
     void setFunctionDataBase(const GPFunctionDataBase* comsys);
     
     float getLargetVary() const {return mLargeVary;}
-    float getStatusVary() const {return mStatusVary;}
     const GPFunctionDataBase* getDataBase() const {return mDataBase;}
     void searchAllSequences(std::vector<std::vector<GPTreeADFPoint*> >& res, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true) const;
     GPTreeADF* searchOne(std::vector<std::vector<GPTreeADFPoint*> >& res, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, int offset) const;//rate: 0.0-1.0, means the offset
@@ -46,6 +45,5 @@ private:
     void _findMatchedFuncton(std::vector<std::vector<const GPProducerUtils::func*> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const;
     
     float mLargeVary;
-    float mStatusVary;
 };
 #endif
