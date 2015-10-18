@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include "utils/GPBlock.h"
 #define ALIGN(x) (((x)+7)/8*8)
 GPBlock::GPBlock(size_t size)

@@ -14,7 +14,7 @@
    limitations under the License.
 ******************************************************************/
 #include "math/GPSingleTree.h"
-#include <utils/debug.h>
+#include <utils/GPDebug.h>
 #include <stdlib.h>
 using namespace std;
 GPSinglePoint::GPSinglePoint(GPIFloatFunction* f)

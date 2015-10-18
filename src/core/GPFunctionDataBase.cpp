@@ -18,7 +18,7 @@
 #include <sstream>
 #include "GPStrings.h"
 #include "core/GPFunctionDataBase.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include <algorithm>
 #include "platform/system_lib.h"
 #include "core/GP_XmlString.h"

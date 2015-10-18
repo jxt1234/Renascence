@@ -7,7 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <utils/debug.h>
+#include <utils/GPDebug.h>
 using namespace std;
 class GPSearchIOTest:public GPTest
 {

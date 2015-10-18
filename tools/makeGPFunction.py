@@ -41,6 +41,7 @@ def analysisHeadFile(filename, functionresult):
         lines = f.read().split("\n")
         for [i, line] in enumerate(lines):
             if line.find(GPSIGN)!=-1:
+                line = line.replace('const ', '')
                 newline = line.replace(GPSTATUSSIGN, '')
                 findfunc = True
                 newline = re.sub('/\*.*\*/', "", newline)

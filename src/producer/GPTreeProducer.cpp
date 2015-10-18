@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include "math/FormulaTree.h"
 #include "math/carryGroup2.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include "core/GP_XmlString.h"
 #include "utils/GPRandom.h"
 #include "xml/xmlTree.h"
@@ -35,7 +35,7 @@ public:
      virtual ~xmlCopy(){}
      virtual AbstractPoint* copy(AbstractPoint* src)
      {
-          xmlTree* t = dynamic_cast<xmlTree*>(src);
+          xmlTree* t = (xmlTree*)(src);
           GPASSERT(NULL!=t);
           const GPFunctionDataBase::function* f = mSys->vQueryFunction(t->func());
           GPTreeADFPoint* p = new GPTreeADFPoint(GPProducerUtils::func::create(f));

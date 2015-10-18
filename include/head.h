@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef HEAD_H
 #define HEAD_H
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include "utils/RefCount.h"
 #include "utils/AutoClean.h"
 #include "utils/AutoStorage.h"

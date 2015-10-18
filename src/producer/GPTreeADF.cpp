@@ -19,7 +19,7 @@
 #include <algorithm>
 #include <sstream>
 #include <fstream>
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 //#define DEBUG_TIMES
 //#define DEBUG_XML
 

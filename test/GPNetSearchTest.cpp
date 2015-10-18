@@ -1,6 +1,6 @@
 #include "test/GPTest.h"
 #include "optimizor/GPOptimizorFactory.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include <iostream>
 #include <math.h>
 using namespace std;

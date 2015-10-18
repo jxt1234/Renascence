@@ -1,5 +1,5 @@
 #include "xml/xmlTree.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include "GPStrings.h"
 #include <sstream>
 using namespace std;

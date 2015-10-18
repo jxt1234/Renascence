@@ -1,7 +1,7 @@
 #include <string.h>
 #include "optimizor/GPNetSearchOpt.h"
 #include "math/carryArray.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 GPNetSearchOpt::GPNetSearchOpt(PFLOAT inter)
 {
     GPASSERT(inter <= 0.5);

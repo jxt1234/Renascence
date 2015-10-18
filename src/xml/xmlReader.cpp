@@ -21,7 +21,7 @@
 #include <string>
 #include "core/GPStreamUtils.h"
 #include "core/GPStreamFactory.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include "utils/AutoStorage.h"
 
 using namespace std;

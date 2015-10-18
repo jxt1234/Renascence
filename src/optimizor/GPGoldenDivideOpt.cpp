@@ -1,5 +1,5 @@
 #include "optimizor/GPGoldenDivideOpt.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include <iostream>
 
 static inline PFLOAT getNextPoint(PFLOAT sta, PFLOAT fin)

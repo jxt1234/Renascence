@@ -16,7 +16,7 @@
 #ifndef VECTOR_POINT_TREE_H
 #define VECTOR_POINT_TREE_H
 #include "math/carryTree.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include "producer/GPTreeADF.h"
 #include "producer/GPProducerUtils.h"
 class computePoint:public carryPoint

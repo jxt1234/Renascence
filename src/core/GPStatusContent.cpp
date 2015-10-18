@@ -19,7 +19,7 @@
 #include <sstream>
 #include <iostream>
 #include <algorithm>
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include "utils/AutoStorage.h"
 #include "utils/GPRandom.h"
 #include "core/GPStatusContent.h"

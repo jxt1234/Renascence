@@ -16,7 +16,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include "utils/GPRandom.h"
 #include "evolution/GPEvolutionGroup.h"
 #include "optimizor/GPOptimizorFactory.h"
@@ -25,7 +25,7 @@ using namespace std;
 void GPEvolutionGroup::func_para::init(IGPAutoDefFunction* basic)
 {
     GPASSERT(NULL!=basic);
-    bool changed;
+    bool changed;//Not used, just for api
     auto sn = basic->vMapStructure(NULL, changed);
     pStructure = new GPParameter(sn);
     pStructure->clear(0.0f);

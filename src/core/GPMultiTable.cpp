@@ -1,5 +1,5 @@
 #include "core/GPMultiTable.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 void* GPMultiTable::vGetFunction(const std::string& name)
 {
     for (auto t:mTables)

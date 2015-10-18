@@ -1,5 +1,5 @@
 #include "core/GPStreamUtils.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 GPPtr<GPBlock> GPStreamUtils::read(GPStream* input, bool merge)
 {
     GPASSERT(NULL!=input);

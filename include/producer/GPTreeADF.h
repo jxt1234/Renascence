@@ -22,7 +22,7 @@
 #include "core/IGPAutoDefFunction.h"
 #include "core/GPStatusContent.h"
 #include "utils/GP_Clock.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include "GPProducerUtils.h"
 
 class GPTreeADFPoint:public AbstractPoint

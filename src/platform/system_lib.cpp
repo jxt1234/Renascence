@@ -19,7 +19,7 @@
 
 #include <string>
 #include <sstream>
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include "platform/system_lib.h"
 using namespace std;
 

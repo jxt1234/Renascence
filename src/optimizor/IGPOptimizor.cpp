@@ -1,5 +1,5 @@
 #include "optimizor/IGPOptimizor.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include <string.h>
 GPParameter::GPParameter(int n, const PFLOAT* c)
 {

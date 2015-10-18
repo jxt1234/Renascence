@@ -1,5 +1,5 @@
 #include "test/GPTest.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include <stdlib.h>
 
 GPTestSuit* GPTestSuit::global = NULL;

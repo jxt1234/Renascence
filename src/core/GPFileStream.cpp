@@ -8,7 +8,7 @@
 
 #include "GPFileStream.h"
 #include <stdio.h>
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 
 static size_t _Read(void* meta, void* buffer, size_t size)
 {

@@ -28,6 +28,7 @@ class GP_Clock
         char* mName;
 };
 
+#define GPCLOCK GP_Clock __clock(__LINE__, __func__)
 
 
 #endif

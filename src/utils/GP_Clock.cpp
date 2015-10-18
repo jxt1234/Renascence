@@ -14,7 +14,7 @@
    limitations under the License.
 ******************************************************************/
 #include <time.h>
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include "utils/GP_Clock.h"
 #include "string.h"
 

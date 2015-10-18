@@ -22,7 +22,7 @@
 #include "core/GPFunctionDataBase.h"
 #include "core/IGPAutoDefFunction.h"
 #include "utils/GP_Clock.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 /*Single Graphic ADF, Input to the source node and then collect outputs from outputNodes*/
 class GPGraphicADF:public IGPAutoDefFunction
 {

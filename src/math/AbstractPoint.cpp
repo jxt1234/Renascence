@@ -15,8 +15,8 @@
 ******************************************************************/
 #include "utils/AbstractPoint.h"
 #include <stdlib.h>
-#include <utils/debug.h>
-#include "utils/debug.h"
+#include <utils/GPDebug.h>
+#include "utils/GPDebug.h"
 using namespace std;
 
 AbstractPoint::~AbstractPoint()

@@ -7,7 +7,7 @@
 //
 
 #include "GPUserStream.h"
-#include "utils/debug.h"
+#include "utils/GPDebug.h"
 #include <iostream>
 using namespace std;
 static size_t gMagic = 0;
