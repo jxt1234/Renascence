@@ -1,5 +1,6 @@
 #include "test/GPTest.h"
 #include "utils/GPDebug.h"
+#include "utils/GP_Clock.h"
 #include <stdlib.h>
 
 GPTestSuit* GPTestSuit::global = NULL;
@@ -32,9 +33,7 @@ void GPTestSuit::run()
     {
         GPTest* t = (global->mTests[i]);
         FUNC_PRINT_ALL((t->name).c_str(), s);
-        int start = clock();
+        GPCLOCK;
         t->run();
-        int end = clock();
-        FUNC_PRINT((end-start));
     }
 }

@@ -13,8 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef GENETIC_PROGRGAM_DEBUG_H
-#define GENETIC_PROGRGAM_DEBUG_H
+#ifndef GENETIC_PROGRGAM_GPDEBUG_H
+#define GENETIC_PROGRGAM_GPDEBUG_H
 
 #include <stdlib.h>
 #include <stdio.h>

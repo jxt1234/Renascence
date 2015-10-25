@@ -22,15 +22,12 @@ GP_Clock::GP_Clock(int func, const char* name)
 {
     mStart = clock();
     mId = func;
-    auto l = strlen(name);
-    mName = new char[l+1];
-    memcpy(mName, name, l);
-    mName[l] = '\0';
+    mName = ::strdup(name);
 }
 
 GP_Clock::~GP_Clock()
 {
     auto inter = clock()-mStart;
     GPPRINT("%s __ %d, times = %ldms+%ldus\n", mName, mId, inter/1000, inter%1000);
-    delete [] mName;
+    ::free(mName);
 }

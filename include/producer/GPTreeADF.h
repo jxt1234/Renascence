@@ -79,7 +79,6 @@ private:
     void _refreshInputsAndOutputs();
     GPTreeADFPoint* mRoot;
     const GPTreeProducer* mProducer;
-    bool mNeedRefresh;
 };
 
 
