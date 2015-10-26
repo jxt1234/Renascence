@@ -26,7 +26,7 @@ void GPTreeProducerTest::run()
         vector<IGPAutoDefFunction*> fs = sys->vCreateAllFunction(output, input);
         GPASSERT(fs.size()>0);
         GPContents inp;
-        IGPAutoDefFunction* fit = sys->vCreateFunctionFromName(string("TrPackageFitCompute"));
+        IGPAutoDefFunction* fit = sys->vCreateFunctionFromFormula(string("TrPackageFitCompute(x0)"));
         for (auto f : fs)
         {
             auto bmpoutput = f->vRun(&inp);

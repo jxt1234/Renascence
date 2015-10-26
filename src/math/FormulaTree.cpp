@@ -127,3 +127,9 @@ void FormulaTree::setFormula(const std::string& formula)
     }
 }
 
+FormulaTreePoint::TYPE FormulaTreePoint::getChildType(size_t i) const
+{
+    GPASSERT(i>=0 && i<mChildren.size());
+    auto p = (FormulaTreePoint*)mChildren[i];
+    return p->type();
+}

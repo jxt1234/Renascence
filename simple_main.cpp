@@ -14,80 +14,26 @@
 using namespace std;
 static int test_main()
 {
-    GPPtr<GPStreamWrap> soxml = GPStreamFactory::NewStream("func.xml", GPStreamFactory::FILE);
-    IFunctionTable* lists[] = {NULL};
-    GPStream* streamlists[] = {soxml.get()};
-    auto producer = GP_Producer_Create(streamlists, lists,1, 0);
-    GPPtr<GPWStreamWrap> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
-    /*Input and output*/
+    string formula = "C(S(I()), F(I()))";
+    GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
+    AUTOCLEAN(base);
     {
-        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "");
+        GPProducer* sys = GPFactory::createProducer(base);
         {
-            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_base.txt");
-            GP_Function_Save(adf, output.get());
+            IGPAutoDefFunction* f = sys->vCreateFunctionFromFormula(formula);
+            AUTOCLEAN(f);
+            GPContents inp;
+            GPContents* out = f->vRun(&inp);
+            IGPAutoDefFunction* comp = sys->vCreateFunctionFromFormula("TrPackageFitCompute(x0)");
+            auto _fits = comp->vRun(out);
+            double* __fit = (double*)_fits->get(0);
+            FUNC_PRINT_ALL(*__fit, f);
+            _fits->clear();
+            out->clear();
+            delete _fits;
+            delete out;
         }
-        GP_Function_Destroy(adf);
-        GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream("output/GPAPI_base.txt");
-        auto adf2 = GP_Function_Create_ByStream(producer, input.get());
-        {
-            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_base2.txt");
-            GP_Function_Save(adf2, output.get());
-        }
-        GP_Function_Destroy(adf2);
     }
-    /*Formula*/
-    {
-        string formula = "C(S(I()), F(I()))";
-        auto adf = GP_Function_Create_ByFormula(producer, formula.c_str());
-        GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Formula.txt");
-        GP_Function_Save(adf, output.get());
-        GP_Function_Destroy(adf);
-    }
-    /*Run*/
-    {
-        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "");
-        GPContents gp_inputs;
-        auto gp_output = GP_Function_Run(adf, &gp_inputs);
-        assert(1==gp_output->size());
-        auto unit = gp_output->contents[0];
-        unit.type->vSave(unit.content, screen.get());
-        GPContents::destroy(gp_output);
-        GP_Function_Destroy(adf);
-    }
-    /*Optimize*/
-    {
-        auto fitf = GP_Function_Create_ByType(producer, "double", "TrBmp");
-        auto fitfunction = [=](IGPAutoDefFunction* target){
-            GPContents nullinput;
-            auto output = GP_Function_Run(target, &nullinput);
-            auto foutput = GP_Function_Run(fitf, output);
-            double res = *(double*)(foutput->get(0));
-            output->clear();
-            GPContents::destroy(output);
-            GPContents::destroy(foutput);
-            return res;
-        };
-        /*Single Opt*/
-        {
-            string formula = "C(S(I()), F(I()))";
-            auto adf  = GP_Function_Create_ByFormula(producer, formula.c_str());
-            GP_Function_Optimize(adf, fitfunction, 1, "time=10");
-            cout << fitfunction(adf) << endl;
-            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Formula_SOpt.txt");
-            GP_Function_Save(adf, output.get());
-            GP_Function_Destroy(adf);
-        }
-        /*Find Best, evolution group*/
-        {
-            auto bestf = GP_Function_CreateBest_ByType(producer, "TrBmp", "", fitfunction, 100);
-            cout << "Fit = " << fitfunction(bestf) << endl;
-            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Evolution.txt");
-            GP_Function_Save(bestf, output.get());
-            GP_Function_Destroy(bestf);
-        }
-        GP_Function_Destroy(fitf);
-    }
-    GP_Producer_Destroy(producer);
     return 1;
 }
 int main()

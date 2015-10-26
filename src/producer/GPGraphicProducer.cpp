@@ -25,10 +25,6 @@ std::vector<IGPAutoDefFunction*> GPGraphicProducer::vCreateAllFunction(const std
     std::vector<IGPAutoDefFunction*> res;
     return res;
 }
-IGPAutoDefFunction* GPGraphicProducer::vCreateFunctionFromName(const std::string& name) const
-{
-    return NULL;
-}
 IGPAutoDefFunction* GPGraphicProducer::vCreateFunctionFromFormula(const std::string& formula) const
 {
     return NULL;

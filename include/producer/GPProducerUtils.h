@@ -32,6 +32,7 @@ public:
         std::vector<int> useChildrenInput;//the size must be the same as basic->inputTypes
         std::vector<std::vector<const func*>> tables;
         static func create(FUNC f, bool clean = false);
+        static void invalidate(func& f);
         func() = default;
         func(const func& f) = default;
         virtual ~func() = default;

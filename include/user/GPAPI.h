@@ -94,7 +94,12 @@ void GP_Producer_Destroy(AGPProducer* p);
  * inputTypes: all the input types obtained for the IGPAutoDefFunction, not orderred, if set "", GP will not care about the input
  */
 IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes);
-/*Construct GP by formula like this: f(g(a, b), c)*/
+
+/*Construct GP by formula like this: f(g(a, b), c)
+ * p: the AGPProducer created by GP_Producer_Create
+ * formula: the string of formula
+ * Example: auto adf = GP_Function_Create_ByFormula(p, "f(x0, g(x1))");
+ */
 IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula);
 
 /*The Inputs should be generate from stream by IStatusType inorder by the inputTypes return from GP_Function_Get_Inputs*/

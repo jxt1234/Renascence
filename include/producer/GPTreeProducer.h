@@ -26,7 +26,6 @@ class GPTreeProducer:public GPProducer
 public:
     virtual IGPAutoDefFunction* vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true, bool random = false) const;
     virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true) const;
-    virtual IGPAutoDefFunction* vCreateFunctionFromName(const std::string& name) const;
     virtual IGPAutoDefFunction* vCreateFunctionFromFormula(const std::string& formula) const;
     virtual IGPAutoDefFunction* vCreateFunctionFromNode(const GPTreeNode* node) const;
     

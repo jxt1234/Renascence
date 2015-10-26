@@ -35,10 +35,6 @@ std::vector<IGPAutoDefFunction*> GPStreamADFProducer::vCreateAllFunction(const s
     std::vector<IGPAutoDefFunction*> res;
     return res;
 }
-IGPAutoDefFunction* GPStreamADFProducer::vCreateFunctionFromName(const std::string& name) const
-{
-    return NULL;
-}
 IGPAutoDefFunction* GPStreamADFProducer::vCreateFunctionFromFormula(const std::string& formula) const
 {
     return NULL;

@@ -94,7 +94,25 @@ public:
                return NULL;
           }
           const GPFunctionDataBase::function* f = mBase->vQueryFunctionByShortName(point->name());
-          GPTreeADFPoint* p = new GPTreeADFPoint(GPProducerUtils::func::create(f, true));
+          if (NULL == f)
+          {
+               f = mBase->vQueryFunction(point->name());
+          }
+          GPASSERT(NULL!=f);
+          auto f_decorate = GPProducerUtils::func::create(f, true);
+          if (f_decorate.useChildrenInput.size() > 0)
+          {
+               GPASSERT(f_decorate.useChildrenInput.size() == point->getChildrenNumber());
+               for (int i=0; i<f_decorate.useChildrenInput.size(); ++i)
+               {
+                    if (FormulaTreePoint::NUM == point->getChildType(i))
+                    {
+                         f_decorate.useChildrenInput[i] = 0;
+                    }
+               }
+               GPProducerUtils::func::invalidate(f_decorate);
+          }
+          GPTreeADFPoint* p = new GPTreeADFPoint(f_decorate);
           return p;
      }
 private:
@@ -109,52 +127,6 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromFormula(const std::string
      formulaCopy c(mDataBase);
      GPTreeADFPoint* p = (GPTreeADFPoint*)(AbstractPoint::deepCopy(tree.root(), &c));
      return new GPTreeADF(p, this);
-}
-
-
-IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromName(const std::string& name) const
-{
-     GPASSERT(NULL!=mDataBase);
-     const GPFunctionDataBase::function* f = mDataBase->vQueryFunction(name);
-     class simpleADF:public IGPAutoDefFunction
-     {
-     public:
-          simpleADF(const GPFunctionDataBase::function& f):mFunc(f)
-          {
-               mInputTypes = f.inputType;
-               mOutputTypes = f.outputType;
-          }
-          ~simpleADF(){}
-          
-          virtual GPContents* vRun(GPContents* input)
-          {
-               return mFunc.basic(input);
-          }
-          virtual GPTreeNode* vSave() const
-          {
-               GPTreeNode* root = new GPTreeNode("simpleADF", "");
-               root->addChild(GP_XmlString::func, mFunc.name);
-               return root;
-          }
-          virtual IGPAutoDefFunction* vCopy() const
-          {
-               IGPAutoDefFunction* r = new simpleADF(mFunc);
-               return r;
-          }
-          virtual int vMap(GPParameter* para)
-          {
-               return 0;
-          }
-          virtual int vMapStructure(GPParameter* para, bool& changed)
-          {
-               return 0;
-          }
-          
-     private:
-          const GPFunctionDataBase::function& mFunc;
-     };
-     IGPAutoDefFunction* result = new simpleADF(*f);
-     return result;
 }
 
 

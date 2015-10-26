@@ -104,6 +104,11 @@ GPProducerUtils::func GPProducerUtils::func::create(FUNC f, bool clear)
     return res;
 }
 
+void GPProducerUtils::func::invalidate(func& f)
+{
+    _setUpBasicFunction(&f, f.basic);
+}
+
 
 GPProducerUtils::GPProducerUtils(const GPFunctionDataBase* base)
 {

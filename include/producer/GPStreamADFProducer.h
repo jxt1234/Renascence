@@ -27,8 +27,6 @@ public:
     /*The function can't be recursive, which can be modified by mutate*/
     virtual IGPAutoDefFunction* vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true, bool random = false) const;
     virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true) const;
-    /*Construct ADF by a function name, just package the function to be an ADF, the inputFuncs of this function will be ignored*/
-    virtual IGPAutoDefFunction* vCreateFunctionFromName(const std::string& name) const;
     /*Construct ADF by formula such as [ f3(f1(x0), f2(x1), f4(f5(x2))) ], +,-,* will be supported later*/
     virtual IGPAutoDefFunction* vCreateFunctionFromFormula(const std::string& formula) const;
 private:
