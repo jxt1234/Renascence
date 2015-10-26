@@ -37,7 +37,6 @@ public:
         std::vector<const IStatusType*> inputType;
         std::vector<const IStatusType*> outputType;
         std::vector<const IStatusType*> statusType;
-        std::vector<std::vector<const function*> > fixTable;//TODO Delete this
     };
     std::vector<const IStatusType*> queryType(const std::string& typelist);
     //Basic Api

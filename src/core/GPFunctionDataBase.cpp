@@ -112,25 +112,6 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
         {
             warpf->shortname = cur->attr();
         }
-        else if (cur->name() == GPStrings::FunctionDataBase_FIXGROUP)
-        {
-            vector<const function*> input;
-            auto inputsfuncname = GPStringHelper::divideString(cur->attr());
-            for (auto name : inputsfuncname)
-            {
-                int inp = _findFunction(name);
-                if (-1==inp)
-                {
-                    input.clear();
-                    break;
-                }
-                input.push_back(mFunctionTable[inp]);
-            }
-            if (!input.empty())
-            {
-                (warpf->fixTable).push_back(input);
-            }
-        }
         else if(cur->name() == GPStrings::FunctionDataBase_STATUS)
         {
             auto attrs = GPStringHelper::divideString(cur->attr());
@@ -263,16 +244,6 @@ void GPFunctionDataBase::print(ostream& os)
         for (int j=0; j<fc->statusType.size(); ++j)
         {
             os <<fc->statusType[j]->name()<<" ";
-        }
-        os << endl;
-        vector<vector<const function*> >& combo = fc->fixTable;
-        for (int x=0; x<combo.size(); ++x)
-        {
-            for (int y=0; y<combo[x].size(); ++y)
-            {
-                os << combo[x][y]->name<<" ";
-            }
-            os << endl;
         }
         os << endl;
     }

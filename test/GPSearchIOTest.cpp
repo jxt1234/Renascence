@@ -39,10 +39,10 @@ class GPSearchIOTest:public GPTest
                 vector<IGPAutoDefFunction*> f_mul = gen.vCreateAllFunction(out, inp);
                 GPASSERT(!f_mul.empty());
                 cout <<"Multi function's size = "<< f_mul.size() << endl;
-                for (int i=0; i<f_mul.size(); ++i)
+                for (int i=0; i<f_mul.size()&&i<100; ++i)
                 {
                     ostringstream fileName;
-                    fileName << "output/GPSearchIOTest"<<i<<".xml";
+                    fileName << "output/GPSearchIOTest/"<<i<<".xml";
                     f = f_mul[i];
                     auto _output2 = f->vRun(&GPinp);
                     GPASSERT(_output2->size()==1);
@@ -53,6 +53,9 @@ class GPSearchIOTest:public GPTest
                     GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream(fileName.str().c_str());
                     GPPtr<GPTreeNode> n = f->vSave();
                     xmlReader::dumpNodes(n.get(), output.get());
+                }
+                for (auto f : f_mul)
+                {
                     f->decRef();
                 }
             }

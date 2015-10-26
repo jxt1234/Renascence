@@ -154,9 +154,13 @@ void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)>
     mGroup.clear();
     vector<IGPAutoDefFunction*> group = mSys->vCreateAllFunction(mOutput, mInput);
     GPASSERT(!group.empty());
-    for (int i=0; i<group.size(); ++i)
+    for (int i=0; i<group.size() && i<mSize; ++i)
     {
         mGroup.push_back(group[i]);
+    }
+    for (int i=mSize; i<group.size(); ++i)
+    {
+        group[i]->decRef();
     }
     _best(fit_func);
     _expand();

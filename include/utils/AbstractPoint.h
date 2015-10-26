@@ -35,6 +35,7 @@ public:
     std::vector<AbstractPoint*> display();
     virtual ~AbstractPoint();
     void addPoint(AbstractPoint* p);
+    inline size_t getChildrenNumber() const {return mChildren.size();}
     void clearChildren();
     bool replace(AbstractPoint* oldPoint, AbstractPoint* newPoint);
 protected:

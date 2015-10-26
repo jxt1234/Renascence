@@ -79,6 +79,12 @@ vector<GPTreeADFPoint*> computePoint::outputs()
         {
             parent->addPoint(childrens[i]);
         }
+        GPASSERT(parent->getChildrenNumber() == data[p->mParent]->childrenInputs.size());
+    }
+    for (int i=0; i<result.size(); ++i)
+    {
+        auto f = data[i];
+        GPASSERT(f->childrenInputs.size() == result[i]->getChildrenNumber());
     }
     return result;
 }
@@ -101,7 +107,7 @@ bool computePoint::vGrow()
     bool success = true;
     const vector<const GPProducerUtils::func*>& data = getData();
     vector<const GPProducerUtils::func*> currentOutputId = getDependOutput();
-    
+    mChild.clear();
     for (int i=0; i<data.size(); ++i)
     {
         const GPProducerUtils::func* f = data[i];
@@ -111,11 +117,10 @@ bool computePoint::vGrow()
         currentOutputId.erase(currentOutputId.end()-1);
         if (!avail.empty())
         {
-            carryPoint* res = new computePoint(inputData, avail, mInput);
-            computePoint* midres = (computePoint*)(res);
+            computePoint* midres = new computePoint(inputData, avail, mInput);
             midres->mDepend = this;
             midres->mParent = i;
-            mChild.push_back(res);
+            mChild.push_back(midres);
         }
         else if (!inputData.empty())
         {

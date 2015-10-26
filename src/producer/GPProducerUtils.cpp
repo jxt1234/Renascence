@@ -46,54 +46,9 @@ static void _setUpBasicFunction(GPProducerUtils::func* dst, const GPFunctionData
 static bool _validFunctions(const vector<const GPFunctionDataBase::function*>& functionList)
 {
     bool res = true;
-    for (auto f : functionList)
-    {
-        if (f->inputType.size()>0 && f->fixTable.size()>0)
-        {
-            GPPRINT("Error for function %s, fixTable and inputType should exist only one\n", f->name.c_str());
-            res = false;
-        }
-    }
     return res;
 }
 
-static void _setUpFixTable(const vector<const GPFunctionDataBase::function*>& functions, const map<const GPFunctionDataBase::function*, vector<GPProducerUtils::func*>>& funcmap)
-{
-    for (auto f : functions)
-    {
-        if (f->fixTable.size()<=0)
-        {
-            continue;
-        }
-        GPASSERT(f->inputType.size() == 0);
-        std::vector<std::vector<const GPProducerUtils::func*>> tables;
-        for (auto pair : f->fixTable)
-        {
-            /*Expand, */
-            carryGroup2<GPProducerUtils::func*> group;
-            for (int i=0; i<pair.size(); ++i)
-            {
-                group.mBase.push_back(funcmap.find(pair[i])->second);
-            }
-            group.reset();
-            do
-            {
-                auto func_pair = group.current();
-                vector<const GPProducerUtils::func*> const_pair;
-                for (int i=0; i<func_pair.size(); ++i)
-                {
-                    const_pair.push_back(func_pair[i]);
-                }
-                tables.push_back(const_pair);
-            }while (group.next());
-        }
-        auto pflist = funcmap.find(f)->second;
-        for (auto pf : pflist)
-        {
-            pf->tables = tables;
-        }
-    }
-}
 
 GPProducerUtils::func GPProducerUtils::func::create(FUNC f, bool clear)
 {
@@ -142,8 +97,6 @@ GPProducerUtils::GPProducerUtils(const GPFunctionDataBase* base)
         }
         funcmap.insert(make_pair(f, list));
     }
-    /*Set up fix table*/
-    _setUpFixTable(functions, funcmap);
     /*Assign Input, and filter invalid functions*/
     mFunctions.clear();
     for (auto f : allfunctions)
@@ -215,6 +168,13 @@ void GPProducerUtils::_invalidateTable()
             {
                 f->tables.push_back(p);
             }
+        }
+    }
+    for (auto f : mFunctions)
+    {
+        for (auto t : f->tables)
+        {
+            GPASSERT(t.size() == f->childrenInputs.size());
         }
     }
 }

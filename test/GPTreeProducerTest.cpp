@@ -27,6 +27,7 @@ void GPTreeProducerTest::run()
         GPASSERT(fs.size()>0);
         GPContents inp;
         IGPAutoDefFunction* fit = sys->vCreateFunctionFromFormula(string("TrPackageFitCompute(x0)"));
+        int sum = 0;
         for (auto f : fs)
         {
             auto bmpoutput = f->vRun(&inp);
@@ -35,6 +36,11 @@ void GPTreeProducerTest::run()
             FUNC_PRINT_ALL(*__fit, f);
             GPContents::destroy(bmpoutput);
             GPContents::destroy(fitoutput);
+            sum++;
+            if (sum >=100)
+            {
+                break;
+            }
         }
         for (auto f : fs)
         {

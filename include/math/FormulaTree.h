@@ -31,7 +31,6 @@ public:
     friend class FormulaTree;
     inline const std::string& name() const {return mName;}
     inline TYPE type() const {return mT;}
-    inline size_t getChildrenNumber() const {return mChildren.size();}
     TYPE getChildType(size_t i) const;
 private:
     TYPE mT;

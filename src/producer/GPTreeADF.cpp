@@ -156,32 +156,22 @@ GPContents* GPTreeADFPoint::compute(GPContents* input, int& cur)
     }
     /*For function that don't know inputType, just copy all contents to totalInputs*/
     GPContents totalInputs;
-    if (mFunc.basic->inputType.size() <= 0)
+    /*Merge outsideinputs and childreninputs*/
+    int children_cur = 0;
+    int outside_cur = 0;
+    for (int i=0; i<mFunc.useChildrenInput.size(); ++i)
     {
-        for (int i=0; i<childreninputs.size(); ++i)
+        if (mFunc.useChildrenInput[i]>0)
         {
-            totalInputs.push(childreninputs.contents[i]);
+            totalInputs.push(childreninputs.contents[children_cur++]);
+        }
+        else
+        {
+            totalInputs.push(outsideinputs.contents[outside_cur++]);
         }
     }
-    else
-    {
-        /*Merge outsideinputs and childreninputs*/
-        int children_cur = 0;
-        int outside_cur = 0;
-        for (int i=0; i<mFunc.useChildrenInput.size(); ++i)
-        {
-            if (mFunc.useChildrenInput[i]>0)
-            {
-                totalInputs.push(childreninputs.contents[children_cur++]);
-            }
-            else
-            {
-                totalInputs.push(outsideinputs.contents[outside_cur++]);
-            }
-        }
-        GPASSERT(outside_cur == outsideinputs.size());
-        GPASSERT(children_cur == childreninputs.size());
-    }
+    GPASSERT(outside_cur == outsideinputs.size());
+    GPASSERT(children_cur == childreninputs.size());
     //Get status
     for (int i=0; i<mStatus.size(); ++i)
     {
