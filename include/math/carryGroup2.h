@@ -44,7 +44,7 @@ class carryGroup2
         {
             for (int i=0; i<mIter.size(); ++i)
             {
-                int cur = mIter.at(i)+1;
+                auto cur = mIter.at(i)+1;
                 if (cur < mSize.at(i))
                 {
                     mIter.at(i) = cur;
@@ -58,8 +58,8 @@ class carryGroup2
             return false;
         }
     private:
-        std::vector<int> mSize;
-        std::vector<int> mIter;
+        std::vector<size_t> mSize;
+        std::vector<size_t> mIter;
         TEAM mCurrent;
 };
 #endif

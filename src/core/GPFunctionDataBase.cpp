@@ -71,7 +71,7 @@ void GPFunctionDataBase::_addInfo(const GPTreeNode* root, IFunctionTable* table,
     {
         mHandle->addTable(table, false);
     }
-    TYPECREATER create = mHandle->get<TYPECREATER>(GP_XmlString::status_creator);
+    TYPECREATER create = mHandle->get<TYPECREATER>(GPStrings::FunctionDataBase_STATUS_CREATOR);
     GPASSERT(NULL!=create);
     mTypeCreateFuncs.push_back(create);
     auto functions = root->getChildren();

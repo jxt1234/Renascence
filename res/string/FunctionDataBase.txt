@@ -2,3 +2,4 @@ SHORTNAME shortName
 INPUT input
 OUTPUT output
 STATUS status
+STATUS_CREATOR GP_IStatusType_Create

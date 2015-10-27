@@ -18,7 +18,6 @@
 #include "user/GPContents.h"
 #include "GPMultiTable.h"
 #include <string>
-#include "core/IDataBase.h"
 #include "user/GPStream.h"
 #include "user/IFunctionTable.h"
 #include "xml/xmlReader.h"
