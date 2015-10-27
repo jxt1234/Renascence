@@ -37,7 +37,7 @@ void GPTreeProducerTest::run()
             GPContents::destroy(bmpoutput);
             GPContents::destroy(fitoutput);
             sum++;
-            if (sum >=100)
+            if (sum >=10)
             {
                 break;
             }

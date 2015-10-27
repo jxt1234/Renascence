@@ -3,17 +3,17 @@
 
 using namespace std;
 
-int AbstractPointTest::gNum = 0;
+int GPAbstractPointTest::gNum = 0;
 
-void AbstractPointTest::loadChain(const vector<int>& chain)
+void GPAbstractPointTest::loadChain(const vector<int>& chain)
 {
     for (int i=0; i<chain.size(); ++i)
     {
-        AbstractPointTest* child = new AbstractPointTest;
+        GPAbstractPointTest* child = new GPAbstractPointTest;
         addPoint(child);
         for (int j=0; j<chain[i]; ++j)
         {
-            child->addPoint(new AbstractPointTest);
+            child->addPoint(new GPAbstractPointTest);
         }
         cout << gNum<<endl;
     }

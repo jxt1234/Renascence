@@ -1,5 +1,5 @@
 #include "test/GPTest.h"
-#include "math/FormulaTree.h"
+#include "math/GPFormulaTree.h"
 #include <iostream>
 #include "core/GPProducer.h"
 #include "core/GPFactory.h"

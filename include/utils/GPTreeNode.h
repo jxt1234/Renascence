@@ -17,7 +17,8 @@
 #define UTILS_GPTREENODE_H
 #include <string>
 #include <map>
-#include "AbstractPoint.h"
+#include <vector>
+#include "RefCount.h"
 class GPTreeNode:public RefCount
 {
 public:

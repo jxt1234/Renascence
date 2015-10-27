@@ -15,7 +15,7 @@
 ******************************************************************/
 #include <utils/GPDebug.h>
 #include <sstream>
-#include "math/FormulaTree.h"
+#include "math/GPFormulaTree.h"
 #include <iostream>
 #include <list>
 
@@ -67,22 +67,22 @@ static void divideFormula(std::vector<std::string>& results, const std::string& 
     }
 #undef FINISHWORDS
 }
-FormulaTreePoint::FormulaTreePoint()
+GPFormulaTreePoint::GPFormulaTreePoint()
 {
 }
-FormulaTreePoint::~FormulaTreePoint()
+GPFormulaTreePoint::~GPFormulaTreePoint()
 {
 }
 
-FormulaTree::FormulaTree()
+GPFormulaTree::GPFormulaTree()
 {
     mRoot = NULL;
 }
-FormulaTree::~FormulaTree()
+GPFormulaTree::~GPFormulaTree()
 {
     SAFE_UNREF(mRoot);
 }
-void FormulaTree::setFormula(const std::string& formula)
+void GPFormulaTree::setFormula(const std::string& formula)
 {
     SAFE_UNREF(mRoot);
     std::vector<std::string> words;
@@ -90,18 +90,18 @@ void FormulaTree::setFormula(const std::string& formula)
     GPASSERT(!words.empty());
 
     /*Frist word is root*/
-    mRoot = new FormulaTreePoint;
-    mRoot->mT = FormulaTreePoint::NUM;
+    mRoot = new GPFormulaTreePoint;
+    mRoot->mT = GPFormulaTreePoint::NUM;
     mRoot->mName = words[0];
 
-    FormulaTreePoint* current = mRoot;
-    FormulaTreePoint* parent = NULL;
-    std::list<FormulaTreePoint*> parentstack;
+    GPFormulaTreePoint* current = mRoot;
+    GPFormulaTreePoint* parent = NULL;
+    std::list<GPFormulaTreePoint*> parentstack;
     for (int i=1; i<words.size(); ++i)
     {
         if ("(" == words[i])
         {
-            current->mT = FormulaTreePoint::OPERATOR;
+            current->mT = GPFormulaTreePoint::OPERATOR;
             parentstack.push_front(current);
             parent = parentstack.front();
         }
@@ -116,9 +116,9 @@ void FormulaTree::setFormula(const std::string& formula)
         }
         else
         {
-            current = new FormulaTreePoint;
+            current = new GPFormulaTreePoint;
             current->mName = words[i];
-            current->mT = FormulaTreePoint::NUM;
+            current->mT = GPFormulaTreePoint::NUM;
             if (parent)
             {
                 parent->addPoint(current);
@@ -127,9 +127,9 @@ void FormulaTree::setFormula(const std::string& formula)
     }
 }
 
-FormulaTreePoint::TYPE FormulaTreePoint::getChildType(size_t i) const
+GPFormulaTreePoint::TYPE GPFormulaTreePoint::getChildType(size_t i) const
 {
     GPASSERT(i>=0 && i<mChildren.size());
-    auto p = (FormulaTreePoint*)mChildren[i];
+    auto p = (GPFormulaTreePoint*)mChildren[i];
     return p->type();
 }

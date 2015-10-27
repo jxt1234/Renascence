@@ -107,7 +107,7 @@ GPTreeNode* GPTreeADFPoint::xmlPrint() const
     }
     return root;
 }
-AbstractPoint* GPTreeADFPoint::GPTreeADFCopy::copy(AbstractPoint* src)
+GPAbstractPoint* GPTreeADFPoint::GPTreeADFCopy::copy(GPAbstractPoint* src)
 {
     GPTreeADFPoint* s = (GPTreeADFPoint*)(src);
     GPTreeADFPoint* result = new GPTreeADFPoint;
@@ -204,7 +204,7 @@ GPTreeADF::~GPTreeADF()
 GPTreeADFPoint* GPTreeADF::find(float rate)
 {
     GPASSERT(0.0<=rate && rate<1.0);
-    vector<AbstractPoint*> nodes = mRoot->display();
+    vector<GPAbstractPoint*> nodes = mRoot->display();
     int n = rate*nodes.size();
     GPTreeADFPoint* p = (GPTreeADFPoint*)nodes[n];
     return p;
@@ -229,13 +229,13 @@ IGPAutoDefFunction* GPTreeADF::vCopy() const
 {
     GPTreeADFPoint::GPTreeADFCopy c;
     GPTreeADFPoint* root = mRoot;
-    GPTreeADFPoint* p = (GPTreeADFPoint*)AbstractPoint::deepCopy(root, &c);
+    GPTreeADFPoint* p = (GPTreeADFPoint*)GPAbstractPoint::deepCopy(root, &c);
     return new GPTreeADF(p, mProducer);
 }
 int GPTreeADF::vMap(GPParameter* para)
 {
     GPASSERT(NULL!=mRoot);
-    vector<AbstractPoint*> allpoints = mRoot->display();
+    vector<GPAbstractPoint*> allpoints = mRoot->display();
     vector<GPStatusContent*> allcontents;
     int sum = 0;
     for (int i=0; i<allpoints.size(); ++i)

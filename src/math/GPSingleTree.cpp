@@ -47,11 +47,11 @@ GPFLOAT GPSinglePoint::compute()
     return mF->compute(mCache);
 }
 
-AbstractPoint* GPSinglePoint::GPSinglePointCopy::copy(AbstractPoint* src)
+GPAbstractPoint* GPSinglePoint::GPSinglePointCopy::copy(GPAbstractPoint* src)
 {
     GPSinglePoint* s = (GPSinglePoint*)src;
     GPSinglePoint* res = new GPSinglePoint(s->mF);
-    return (AbstractPoint*)res;
+    return (GPAbstractPoint*)res;
 }
 
 
@@ -86,7 +86,7 @@ GPSingleTree::GPSingleTree(const GPSingleTree& tree):mSet(tree.mSet)
     if (NULL !=tree.mRoot)
     {
         GPSinglePoint::GPSinglePointCopy c;
-        mRoot = (GPSinglePoint*)AbstractPoint::deepCopy(tree.mRoot, &c);
+        mRoot = (GPSinglePoint*)GPAbstractPoint::deepCopy(tree.mRoot, &c);
     }
 }
 
@@ -101,7 +101,7 @@ void GPSingleTree::operator=(const GPSingleTree& tree)
     if (NULL !=tree.mRoot)
     {
         GPSinglePoint::GPSinglePointCopy c;
-        mRoot = (GPSinglePoint*)AbstractPoint::deepCopy(tree.mRoot, &c);
+        mRoot = (GPSinglePoint*)GPAbstractPoint::deepCopy(tree.mRoot, &c);
     }
 }
 
@@ -112,6 +112,6 @@ GPSingleTree::~GPSingleTree()
 int GPSingleTree::len()
 {
     if (NULL == mRoot) return 0;
-    vector<AbstractPoint*> list = mRoot->display();
+    vector<GPAbstractPoint*> list = mRoot->display();
     return list.size();
 }

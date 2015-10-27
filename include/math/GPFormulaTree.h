@@ -13,12 +13,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  ******************************************************************/
-#ifndef MATH_FORMULATREE_H
-#define MATH_FORMULATREE_H
+#ifndef MATH_GPFORMULATREE_H
+#define MATH_GPFORMULATREE_H
 #include "utils/RefCount.h"
-#include "utils/AbstractPoint.h"
+#include "GPAbstractPoint.h"
 #include <string>
-class FormulaTreePoint:public AbstractPoint
+class GPFormulaTreePoint:public GPAbstractPoint
 {
 public:
     typedef enum
@@ -26,9 +26,9 @@ public:
         NUM,
         OPERATOR
     }TYPE;
-    FormulaTreePoint();
-    virtual ~FormulaTreePoint();
-    friend class FormulaTree;
+    GPFormulaTreePoint();
+    virtual ~GPFormulaTreePoint();
+    friend class GPFormulaTree;
     inline const std::string& name() const {return mName;}
     inline TYPE type() const {return mT;}
     TYPE getChildType(size_t i) const;
@@ -36,14 +36,14 @@ private:
     TYPE mT;
     std::string mName;
 };
-class FormulaTree:public RefCount
+class GPFormulaTree:public RefCount
 {
 public:
-    FormulaTree();
-    virtual ~FormulaTree();
+    GPFormulaTree();
+    virtual ~GPFormulaTree();
     void setFormula(const std::string& formula);
-    inline FormulaTreePoint* root() {return mRoot;}
+    inline GPFormulaTreePoint* root() {return mRoot;}
 private:
-    FormulaTreePoint* mRoot;
+    GPFormulaTreePoint* mRoot;
 };
 #endif

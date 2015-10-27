@@ -20,28 +20,28 @@
 #include <list>
 #include <ostream>
 #include "utils/RefCount.h"
-class AbstractPoint:public RefCount
+class GPAbstractPoint:public RefCount
 {
 public:
-    /*This class will alloc a new AbstractPoint and copy the contents from src*/
+    /*This class will alloc a new GPAbstractPoint and copy the contents from src*/
     class IPointCopy
     {
     public:
-        virtual AbstractPoint* copy(AbstractPoint* src) = 0;
+        virtual GPAbstractPoint* copy(GPAbstractPoint* src) = 0;
     };
-    AbstractPoint(){}
+    GPAbstractPoint(){}
     /*Use for different types of tree to transform*/
-    static AbstractPoint* deepCopy(AbstractPoint* src, IPointCopy* copy);
-    std::vector<AbstractPoint*> display();
-    virtual ~AbstractPoint();
-    void addPoint(AbstractPoint* p);
+    static GPAbstractPoint* deepCopy(GPAbstractPoint* src, IPointCopy* copy);
+    std::vector<GPAbstractPoint*> display();
+    virtual ~GPAbstractPoint();
+    void addPoint(GPAbstractPoint* p);
     inline size_t getChildrenNumber() const {return mChildren.size();}
     void clearChildren();
-    bool replace(AbstractPoint* oldPoint, AbstractPoint* newPoint);
+    bool replace(GPAbstractPoint* oldPoint, GPAbstractPoint* newPoint);
 protected:
-    std::vector<AbstractPoint*> mChildren;
+    std::vector<GPAbstractPoint*> mChildren;
 private:
-    int _posOfChild(AbstractPoint* p);
+    int _posOfChild(GPAbstractPoint* p);
 };
 
 

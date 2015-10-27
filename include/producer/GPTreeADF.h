@@ -16,7 +16,7 @@
 #ifndef CORE_ABSTRACTGP_H
 #define CORE_ABSTRACTGP_H
 #include <stdlib.h>
-#include "utils/AbstractPoint.h"
+#include "math/GPAbstractPoint.h"
 #include "user/GPContents.h"
 #include "core/GPFunctionDataBase.h"
 #include "core/IGPAutoDefFunction.h"
@@ -25,7 +25,7 @@
 #include "utils/GPDebug.h"
 #include "GPProducerUtils.h"
 
-class GPTreeADFPoint:public AbstractPoint
+class GPTreeADFPoint:public GPAbstractPoint
 {
 public:
     GPTreeADFPoint(const GPProducerUtils::func& func);
@@ -49,12 +49,12 @@ private:
     //For recursive
     void getinput(std::vector<const IStatusType*>& tlist) const;
     
-    class GPTreeADFCopy:public AbstractPoint::IPointCopy
+    class GPTreeADFCopy:public GPAbstractPoint::IPointCopy
     {
     public:
         GPTreeADFCopy(){}
         virtual ~GPTreeADFCopy(){}
-        virtual AbstractPoint* copy(AbstractPoint* src);
+        virtual GPAbstractPoint* copy(GPAbstractPoint* src);
     };
     friend class GPTreeADF;
     friend class xmlCopy;

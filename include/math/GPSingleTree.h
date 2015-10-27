@@ -18,7 +18,7 @@
 
 #include <string>
 #include "utils/RefCount.h"
-#include "utils/AbstractPoint.h"
+#include "GPAbstractPoint.h"
 
 /*GPSingleTree is used to Generate single formula such as y=x*2+sin(cos(x))*/
 
@@ -48,16 +48,16 @@ class GPIFloatFunctionSet:public RefCount
         std::vector<GPIFloatFunction*> mSet;
 };
 
-class GPSinglePoint:public AbstractPoint
+class GPSinglePoint:public GPAbstractPoint
 {
     public:
         GPSinglePoint(GPIFloatFunction* f);
         virtual ~GPSinglePoint();
         GPFLOAT compute();
-        class GPSinglePointCopy:public AbstractPoint::IPointCopy
+        class GPSinglePointCopy:public GPAbstractPoint::IPointCopy
         {
             public:
-                virtual AbstractPoint* copy(AbstractPoint* src);
+                virtual GPAbstractPoint* copy(GPAbstractPoint* src);
         };
     protected:
         virtual void printBefore(std::ostream& out){}

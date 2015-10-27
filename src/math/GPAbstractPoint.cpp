@@ -13,13 +13,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "utils/AbstractPoint.h"
+#include "math/GPAbstractPoint.h"
 #include <stdlib.h>
 #include <utils/GPDebug.h>
 #include "utils/GPDebug.h"
 using namespace std;
 
-AbstractPoint::~AbstractPoint()
+GPAbstractPoint::~GPAbstractPoint()
 {
     for (int i=0; i<mChildren.size(); ++i)
     {
@@ -27,7 +27,7 @@ AbstractPoint::~AbstractPoint()
     }
 }
 
-int AbstractPoint::_posOfChild(AbstractPoint* p)
+int GPAbstractPoint::_posOfChild(GPAbstractPoint* p)
 {
     int pos = -1;
     for (int i=0; i<mChildren.size(); ++i)
@@ -42,7 +42,7 @@ int AbstractPoint::_posOfChild(AbstractPoint* p)
 }
 
 
-bool AbstractPoint::replace(AbstractPoint* oldPoint, AbstractPoint* newPoint)
+bool GPAbstractPoint::replace(GPAbstractPoint* oldPoint, GPAbstractPoint* newPoint)
 {
     GPASSERT(NULL!=oldPoint);
     GPASSERT(NULL!=newPoint);
@@ -65,17 +65,17 @@ bool AbstractPoint::replace(AbstractPoint* oldPoint, AbstractPoint* newPoint)
 }
 
 
-void AbstractPoint::addPoint(AbstractPoint* p)
+void GPAbstractPoint::addPoint(GPAbstractPoint* p)
 {
     GPASSERT(NULL!=p);
     mChildren.push_back(p);
 }
 
-AbstractPoint* AbstractPoint::deepCopy(AbstractPoint* src, AbstractPoint::IPointCopy* copy)
+GPAbstractPoint* GPAbstractPoint::deepCopy(GPAbstractPoint* src, GPAbstractPoint::IPointCopy* copy)
 {
     GPASSERT(NULL!=src);
     GPASSERT(NULL!=copy);
-    AbstractPoint* result;
+    GPAbstractPoint* result;
     result = copy->copy(src);
     if (NULL == result)
     {
@@ -83,7 +83,7 @@ AbstractPoint* AbstractPoint::deepCopy(AbstractPoint* src, AbstractPoint::IPoint
     }
     for (int i=0; i<(src->mChildren).size(); ++i)
     {
-        AbstractPoint* child = deepCopy(src->mChildren[i], copy);
+        GPAbstractPoint* child = deepCopy(src->mChildren[i], copy);
         if (NULL != child)
         {
             result->addPoint(child);
@@ -92,18 +92,18 @@ AbstractPoint* AbstractPoint::deepCopy(AbstractPoint* src, AbstractPoint::IPoint
     return result;
 }
 
-std::vector<AbstractPoint*> AbstractPoint::display()
+std::vector<GPAbstractPoint*> GPAbstractPoint::display()
 {
-    vector<AbstractPoint*> result;
-    list<AbstractPoint*> cache;
+    vector<GPAbstractPoint*> result;
+    list<GPAbstractPoint*> cache;
     result.push_back(this);
     cache.push_back(this);
     while(!cache.empty())
     {
-        AbstractPoint* p = cache.front();
+        GPAbstractPoint* p = cache.front();
         for (int i=0; i<(p->mChildren).size(); ++i)
         {
-            AbstractPoint* c = p->mChildren[i];
+            GPAbstractPoint* c = p->mChildren[i];
             result.push_back(c);
             cache.push_back(c);
         }
@@ -113,7 +113,7 @@ std::vector<AbstractPoint*> AbstractPoint::display()
 }
 
 
-void AbstractPoint::clearChildren()
+void GPAbstractPoint::clearChildren()
 {
     for (auto c:mChildren)
     {

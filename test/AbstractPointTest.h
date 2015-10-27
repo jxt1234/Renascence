@@ -1,10 +1,10 @@
-#include "utils/AbstractPoint.h"
+#include "math/GPAbstractPoint.h"
 
-class AbstractPointTest:public AbstractPoint
+class GPAbstractPointTest:public GPAbstractPoint
 {
     public:
-        AbstractPointTest(){gNum++;}
-        virtual ~AbstractPointTest(){gNum--;}
+        GPAbstractPointTest(){gNum++;}
+        virtual ~GPAbstractPointTest(){gNum--;}
         void loadChain(const std::vector<int>& chain);
         static int number(){return gNum;}
     protected:

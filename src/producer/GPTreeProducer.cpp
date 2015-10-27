@@ -17,7 +17,7 @@
 #include <algorithm>
 #include <sstream>
 #include <stdlib.h>
-#include "math/FormulaTree.h"
+#include "math/GPFormulaTree.h"
 #include "math/carryGroup2.h"
 #include "utils/GPDebug.h"
 #include "core/GP_XmlString.h"
@@ -28,12 +28,12 @@
 #include "producer/GPTreeADF.h"
 using namespace std;
 
-class xmlCopy:public AbstractPoint::IPointCopy
+class xmlCopy:public GPAbstractPoint::IPointCopy
 {
 public:
      xmlCopy(const GPFunctionDataBase* sys):mSys(sys){}
      virtual ~xmlCopy(){}
-     virtual AbstractPoint* copy(AbstractPoint* src)
+     virtual GPAbstractPoint* copy(GPAbstractPoint* src)
      {
           xmlTree* t = (xmlTree*)(src);
           GPASSERT(NULL!=t);
@@ -80,16 +80,16 @@ private:
      const GPFunctionDataBase* mSys;
 };
 
-class formulaCopy:public AbstractPoint::IPointCopy
+class formulaCopy:public GPAbstractPoint::IPointCopy
 {
 public:
      formulaCopy(const GPFunctionDataBase* base):mBase(base){}
      virtual ~formulaCopy(){}
-     virtual AbstractPoint* copy(AbstractPoint* src)
+     virtual GPAbstractPoint* copy(GPAbstractPoint* src)
      {
-          FormulaTreePoint* point = (FormulaTreePoint*)(src);
+          GPFormulaTreePoint* point = (GPFormulaTreePoint*)(src);
           GPASSERT(NULL!=point);
-          if (FormulaTreePoint::NUM == point->type())
+          if (GPFormulaTreePoint::NUM == point->type())
           {
                return NULL;
           }
@@ -105,7 +105,7 @@ public:
                GPASSERT(f_decorate.useChildrenInput.size() == point->getChildrenNumber());
                for (int i=0; i<f_decorate.useChildrenInput.size(); ++i)
                {
-                    if (FormulaTreePoint::NUM == point->getChildType(i))
+                    if (GPFormulaTreePoint::NUM == point->getChildType(i))
                     {
                          f_decorate.useChildrenInput[i] = 0;
                     }
@@ -122,10 +122,10 @@ private:
 
 IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromFormula(const std::string& formula) const
 {
-     FormulaTree tree;
+     GPFormulaTree tree;
      tree.setFormula(formula);
      formulaCopy c(mDataBase);
-     GPTreeADFPoint* p = (GPTreeADFPoint*)(AbstractPoint::deepCopy(tree.root(), &c));
+     GPTreeADFPoint* p = (GPTreeADFPoint*)(GPAbstractPoint::deepCopy(tree.root(), &c));
      return new GPTreeADF(p, this);
 }
 
@@ -345,7 +345,7 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFunctionFromNode(const GPTreeNode* no
      }
      xmlCopy c(mDataBase);
      xmlTree tree(node->getChildren()[0].get());
-     GPTreeADFPoint* p = (GPTreeADFPoint*)AbstractPoint::deepCopy(&tree, &c);
+     GPTreeADFPoint* p = (GPTreeADFPoint*)GPAbstractPoint::deepCopy(&tree, &c);
      return new GPTreeADF(p, this);
 }
 

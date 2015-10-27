@@ -39,7 +39,7 @@ class GPSearchIOTest:public GPTest
                 vector<IGPAutoDefFunction*> f_mul = gen.vCreateAllFunction(out, inp);
                 GPASSERT(!f_mul.empty());
                 cout <<"Multi function's size = "<< f_mul.size() << endl;
-                for (int i=0; i<f_mul.size()&&i<100; ++i)
+                for (int i=0; i<f_mul.size()&&i<10; ++i)
                 {
                     ostringstream fileName;
                     fileName << "output/GPSearchIOTest/"<<i<<".xml";

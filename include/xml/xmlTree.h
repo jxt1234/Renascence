@@ -16,13 +16,13 @@
 #ifndef XML_XMLTREE_H
 #define XML_XMLTREE_H
 
-#include "utils/AbstractPoint.h"
 #include "utils/GPTreeNode.h"
+#include "math/GPAbstractPoint.h"
 #include <string>
 #include <vector>
 
 
-class xmlTree:public AbstractPoint
+class xmlTree:public GPAbstractPoint
 {
 public:
     struct type
