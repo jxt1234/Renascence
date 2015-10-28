@@ -8,7 +8,7 @@
 #include "core/GPFactory.h"
 #include "core/GPStreamFactory.h"
 #include "core/GPProducer.h"
-#include "producer/GPGraphicADF.h"
+#include "backend/GPGraphicADF.h"
 #include "core/GPStreamFactory.h"
 using namespace std;
 static int test_main()

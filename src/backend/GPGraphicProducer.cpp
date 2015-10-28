@@ -13,8 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "producer/GPGraphicProducer.h"
-#include "producer/GPGraphicADF.h"
+#include "backend/GPGraphicProducer.h"
+#include "backend/GPGraphicADF.h"
 
 IGPAutoDefFunction* GPGraphicProducer::vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, bool random) const
 {

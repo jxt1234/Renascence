@@ -14,7 +14,7 @@
  limitations under the License.
  ******************************************************************/
 
-#include "producer/GPStreamADFProducer.h"
+#include "backend/GPStreamADFProducer.h"
 #include "GPStreamADF.h"
 
 GPStreamADFProducer::GPStreamADFProducer(const GPFunctionDataBase* sys):GPProducer("GPStreamADFProducer")

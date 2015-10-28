@@ -14,8 +14,8 @@
  limitations under the License.
  ******************************************************************/
 #include "GPStrings.h"
-#include "producer/GPTreeADF.h"
-#include "producer/GPTreeProducer.h"
+#include "backend/GPTreeADF.h"
+#include "backend/GPTreeProducer.h"
 #include <algorithm>
 #include <sstream>
 #include <fstream>

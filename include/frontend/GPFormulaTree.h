@@ -16,7 +16,7 @@
 #ifndef MATH_GPFORMULATREE_H
 #define MATH_GPFORMULATREE_H
 #include "utils/RefCount.h"
-#include "GPAbstractPoint.h"
+#include "math/GPAbstractPoint.h"
 #include <string>
 class GPFormulaTreePoint:public GPAbstractPoint
 {

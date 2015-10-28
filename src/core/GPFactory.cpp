@@ -14,9 +14,9 @@
    limitations under the License.
 ******************************************************************/
 #include "core/GPFactory.h"
-#include "producer/GPTreeProducer.h"
-#include "producer/GPGraphicProducer.h"
-#include "producer/GPStreamADFProducer.h"
+#include "backend/GPTreeProducer.h"
+#include "backend/GPGraphicProducer.h"
+#include "backend/GPStreamADFProducer.h"
 #include "core/GPStreamFactory.h"
 #include <fstream>
 

@@ -17,15 +17,15 @@
 #include <algorithm>
 #include <sstream>
 #include <stdlib.h>
-#include "math/GPFormulaTree.h"
+#include "frontend/GPFormulaTree.h"
 #include "math/carryGroup2.h"
 #include "utils/GPDebug.h"
 #include "core/GP_XmlString.h"
 #include "utils/GPRandom.h"
 #include "xml/xmlTree.h"
-#include "producer/GPTreeProducer.h"
+#include "backend/GPTreeProducer.h"
 #include "recurse_tree.h"
-#include "producer/GPTreeADF.h"
+#include "backend/GPTreeADF.h"
 using namespace std;
 
 class xmlCopy:public GPAbstractPoint::IPointCopy

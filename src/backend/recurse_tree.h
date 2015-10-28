@@ -17,8 +17,8 @@
 #define VECTOR_POINT_TREE_H
 #include "math/carryTree.h"
 #include "utils/GPDebug.h"
-#include "producer/GPTreeADF.h"
-#include "producer/GPProducerUtils.h"
+#include "backend/GPTreeADF.h"
+#include "backend/GPProducerUtils.h"
 class computePoint:public carryPoint
 {
 friend class computeSearchTree;

@@ -15,7 +15,7 @@
 ******************************************************************/
 #include <utils/GPDebug.h>
 #include <sstream>
-#include "math/GPFormulaTree.h"
+#include "frontend/GPFormulaTree.h"
 #include <iostream>
 #include <list>
 
