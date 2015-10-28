@@ -40,6 +40,7 @@ public:
     GPProducerUtils(const GPFunctionDataBase* base);
     virtual ~GPProducerUtils();
     inline const std::vector<GPPtr<func>>& get() const {return mFunctions;}
+    inline const GPFunctionDataBase* getOriginBase() const {return mBase;}
     
     /*TODO: support multi-output*/
     std::vector<const func*> getFunctionsForOutput(TYPE t) const;
@@ -47,6 +48,7 @@ private:
     void _invalidateTable();
     std::vector<const func*> _getFunctionsForOutput(TYPE t, const std::vector<GPPtr<func>>& lists) const;
     std::vector<GPPtr<func>> mFunctions;
+    const GPFunctionDataBase* mBase;
 };
 
 #endif /* defined(__GP__GPProducerUtils__) */

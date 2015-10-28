@@ -1,7 +1,6 @@
 #include "test/GPTest.h"
 #include "frontend/GPFormulaTree.h"
 #include <iostream>
-#include "core/GPProducer.h"
 #include "core/GPFactory.h"
 #include "core/GPFunctionDataBase.h"
 #include "head.h"

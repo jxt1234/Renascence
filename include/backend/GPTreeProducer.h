@@ -17,32 +17,16 @@
 #define GENERATE_SYSTEM_H
 
 #include "core/GPFunctionDataBase.h"
-#include "core/GPProducer.h"
+#include "GPBackEndProducer.h"
 #include "GPTreeADF.h"
-#include "GPProducerUtils.h"
 
-class GPTreeProducer:public GPProducer
+class GPTreeProducer:public GPBackEndProducer
 {
 public:
-    virtual IGPAutoDefFunction* vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true, bool random = false) const;
-    virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true) const;
-    virtual IGPAutoDefFunction* vCreateFunctionFromFormula(const std::string& formula) const;
-    virtual IGPAutoDefFunction* vCreateFunctionFromNode(const GPTreeNode* node) const;
+    virtual IGPAutoDefFunction* vCreateFromFuncTree(const GPFunctionTree* tree) const;
+    virtual IGPAutoDefFunction* vCreateFromNode(const GPTreeNode* node, const GPFunctionDataBase* base) const;
     
-    GPTreeProducer(const GPFunctionDataBase* sys);
+    GPTreeProducer();
     virtual ~GPTreeProducer(){}
-    void setFunctionDataBase(const GPFunctionDataBase* comsys);
-    
-    float getLargetVary() const {return mLargeVary;}
-    const GPFunctionDataBase* getDataBase() const {return mDataBase;}
-    void searchAllSequences(std::vector<std::vector<GPTreeADFPoint*> >& res, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true) const;
-    GPTreeADF* searchOne(std::vector<std::vector<GPTreeADFPoint*> >& res, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, int offset) const;//rate: 0.0-1.0, means the offset
-private:
-    const GPFunctionDataBase* mDataBase;
-    GPProducerUtils mUtils;
-    void _init();
-    void _findMatchedFuncton(std::vector<std::vector<const GPProducerUtils::func*> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const;
-    
-    float mLargeVary;
 };
 #endif

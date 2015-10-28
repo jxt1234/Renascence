@@ -23,31 +23,24 @@
 #include "core/GPStatusContent.h"
 #include "utils/GP_Clock.h"
 #include "utils/GPDebug.h"
-#include "GPProducerUtils.h"
 
 class GPTreeADFPoint:public GPAbstractPoint
 {
 public:
-    GPTreeADFPoint(const GPProducerUtils::func& func);
+    GPTreeADFPoint(const GPFunctionDataBase::function* func, size_t inputpos);
     void initStatus(const std::vector<std::istream*>& is);
     virtual ~GPTreeADFPoint();
-    inline const GPFunctionDataBase::function* func() const {return mFunc.basic;}
+    inline const GPFunctionDataBase::function* func() const {return mFunc;}
     inline const std::vector<GPStatusContent*>& status() {return mStatus;}
-    inline void pGetInputs(std::vector<const IStatusType*>& tlist) const
-    {
-        getinput(tlist);
-    }
 private:
     GPTreeADFPoint();
     /*Attributes*/
-    GPProducerUtils::func mFunc;
+    const GPFunctionDataBase::function* mFunc;
+    size_t mInputPos;
     std::vector<GPStatusContent*> mStatus;
     /*Function needed*/
     GPTreeNode* xmlPrint() const;
-    //The cur means from which element to use, it's assumed that the numbers is valid and the status has been alloc
-    GPContents* compute(GPContents* input, int& cur);
-    //For recursive
-    void getinput(std::vector<const IStatusType*>& tlist) const;
+    GPContents* compute(GPContents* input);
     
     class GPTreeADFCopy:public GPAbstractPoint::IPointCopy
     {

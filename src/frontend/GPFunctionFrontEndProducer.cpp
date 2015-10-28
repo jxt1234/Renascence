@@ -1,4 +1,5 @@
 #include "frontend/GPFunctionFrontEndProducer.h"
+#include "frontend/GPFormulaTree.h"
 #include "math/carryGroup2.h"
 #include "recurse_tree.h"
 
@@ -27,7 +28,7 @@ static vector<vector<const GPProducerUtils::func*> > _filterOutputType(const vec
 }
 
 
-void _findMatchedFuncton(std::vector<std::vector<const GPProducerUtils::func*> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, const GPProducerUtils& mUtils)
+static void _findMatchedFuncton(std::vector<std::vector<const GPProducerUtils::func*> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, const GPProducerUtils& mUtils)
 {
     carryGroup2<const GPProducerUtils::func*> group;
     for(int i=0; i<outputType.size(); ++i)
@@ -106,16 +107,58 @@ std::vector<GPFunctionTree*> GPFunctionFrontEndProducer::vCreateAllFunction(cons
     }
     return result;
 }
+class formulaCopy:public GPAbstractPoint::IPointCopy
+{
+public:
+    formulaCopy(const GPFunctionDataBase* base):mBase(base){}
+    virtual ~formulaCopy(){}
+    virtual GPAbstractPoint* copy(GPAbstractPoint* src)
+    {
+        GPFormulaTreePoint* point = (GPFormulaTreePoint*)(src);
+        GPASSERT(NULL!=point);
+        if (GPFormulaTreePoint::NUM == point->type())
+        {
+            std::string s = point->name();
+            int n = (int)(s.size());
+            int sum = 0;
+            for(int i=n-1; i>=0; --i)
+            {
+                sum*=10;
+                if (s[i]>='0' && s[i]<='9')
+                {
+                    sum += s[i]-'0';
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return new GPFunctionTree(NULL, sum);
+        }
+        const GPFunctionDataBase::function* f = mBase->vQueryFunctionByShortName(point->name());
+        if (NULL == f)
+        {
+            f = mBase->vQueryFunction(point->name());
+        }
+        GPASSERT(NULL!=f);
+        return new GPFunctionTree(f, -1);
+    }
+private:
+    const GPFunctionDataBase* mBase;
+};
 
 GPFunctionTree* GPFunctionFrontEndProducer::vCreateFromFormula(const std::string& formula) const
 {
-    return NULL;
+    GPFormulaTree tree;
+    tree.setFormula(formula);
+    formulaCopy copy(mUtils.getOriginBase());
+    auto a = GPAbstractPoint::deepCopy(tree.root(), &copy);
+    return (GPFunctionTree*)a;
 }
 
 
 GPFunctionFrontEndProducer::GPFunctionFrontEndProducer(const GPFunctionDataBase* base):mUtils(base)
 {
-    
 }
 GPFunctionFrontEndProducer::~GPFunctionFrontEndProducer()
 {

@@ -36,7 +36,7 @@ public:
     }
     std::vector<int> filter(const std::vector<std::vector<const GPProducerUtils::func*> >& combo, const std::vector<const GPProducerUtils::func*>& output);
     
-    std::vector<GPFunctionTree*> outputs();
+    std::vector<GPFunctionTree*> outputs(int& cur);
 protected:
     virtual bool vGrow();
     std::vector<const GPProducerUtils::func*> getDependOutput();

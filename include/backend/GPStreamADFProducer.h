@@ -16,20 +16,13 @@
 #ifndef PRODUCER_GPSTREAMADFPRODUCER_H
 #define PRODUCER_GPSTREAMADFPRODUCER_H
 #include <stdio.h>
-#include "core/GPProducer.h"
-class GPStreamADFProducer:public GPProducer
+#include "backend/GPBackEndProducer.h"
+class GPStreamADFProducer:public GPBackEndProducer
 {
 public:
-    GPStreamADFProducer(const GPFunctionDataBase* sys);
+    GPStreamADFProducer();
     virtual ~GPStreamADFProducer();
-    virtual IGPAutoDefFunction* vCreateFunctionFromNode(const GPTreeNode* node) const;
-    /*Create a IGPAutoDefFunction which use the inputType to output the same content in outputType, inputRepeat means the content of inputType can be used repeated*/
-    /*The function can't be recursive, which can be modified by mutate*/
-    virtual IGPAutoDefFunction* vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true, bool random = false) const;
-    virtual std::vector<IGPAutoDefFunction*> vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat = true) const;
-    /*Construct ADF by formula such as [ f3(f1(x0), f2(x1), f4(f5(x2))) ], +,-,* will be supported later*/
-    virtual IGPAutoDefFunction* vCreateFunctionFromFormula(const std::string& formula) const;
-private:
-    const GPFunctionDataBase* mDataBase;
+    virtual IGPAutoDefFunction* vCreateFromFuncTree(const GPFunctionTree* tree) const;
+    virtual IGPAutoDefFunction* vCreateFromNode(const GPTreeNode* node, const GPFunctionDataBase* base) const;
 };
 #endif

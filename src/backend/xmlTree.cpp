@@ -1,4 +1,4 @@
-#include "xml/xmlTree.h"
+#include "xmlTree.h"
 #include "utils/GPDebug.h"
 #include "GPStrings.h"
 #include <sstream>

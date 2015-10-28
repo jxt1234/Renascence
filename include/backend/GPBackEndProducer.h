@@ -24,7 +24,7 @@ class GPBackEndProducer:public RefCount
 public:
     GPBackEndProducer(){}
     virtual ~GPBackEndProducer(){}
-    virtual IGPAutoDefFunction* vCreateFromFormula(const GPFunctionTree* tree) const = 0;
+    virtual IGPAutoDefFunction* vCreateFromFuncTree(const GPFunctionTree* tree) const = 0;
     virtual IGPAutoDefFunction* vCreateFromNode(const GPTreeNode* node, const GPFunctionDataBase* base) const = 0;
 };
 #endif

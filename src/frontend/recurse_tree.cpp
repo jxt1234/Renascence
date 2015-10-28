@@ -58,13 +58,13 @@ vector<int> computePoint::filter(const vector<vector<const GPProducerUtils::func
     return result;
 }
 
-vector<GPFunctionTree*> computePoint::outputs()
+vector<GPFunctionTree*> computePoint::outputs(int& cur)
 {
     vector<GPFunctionTree*> result;
     const vector<const GPProducerUtils::func*>& data = getData();
     for (int i=0; i<data.size(); ++i)
     {
-        GPFunctionTree* p = new GPFunctionTree(data[i]->basic);
+        GPFunctionTree* p = new GPFunctionTree(data[i]->basic, -1);
         result.push_back(p);
     }
     for (auto child : mChild)
@@ -74,7 +74,7 @@ vector<GPFunctionTree*> computePoint::outputs()
         GPFunctionTree* parent = result[p->mParent];
         const GPProducerUtils::func* pf = data[p->mParent];
         int cur = 0;
-        auto childrens = p->outputs();
+        auto childrens = p->outputs(cur);
         for (int i=0; i<pf->inputs.size(); ++i)
         {
             if (pf->useChildrenInput[i] > 0)
@@ -84,7 +84,7 @@ vector<GPFunctionTree*> computePoint::outputs()
             }
             else
             {
-                parent->addPoint(new GPFunctionTree((size_t)0));
+                parent->addPoint(new GPFunctionTree(NULL, cur++));
             }
         }
     }
@@ -135,7 +135,8 @@ bool computePoint::vGrow()
 }
 vector<GPFunctionTree*> computeSearchTree::output()
 {
-    return ((computePoint*)(mRoot.get()))->outputs();
+    int cur = 0;
+    return ((computePoint*)(mRoot.get()))->outputs(cur);
 }
 bool computeSearchTree::readyToOutput()
 {

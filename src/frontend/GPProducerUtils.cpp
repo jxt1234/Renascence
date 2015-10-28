@@ -67,6 +67,7 @@ void GPProducerUtils::func::invalidate(func& f)
 
 GPProducerUtils::GPProducerUtils(const GPFunctionDataBase* base)
 {
+    mBase = base;
     auto functions = base->getAllFunctions();
     GPASSERT(_validFunctions(functions));
     map<FUNC, vector<func*>> funcmap;

@@ -125,20 +125,6 @@ void GPStreamADF::DP::reset()
 {
     mContents.clearContents();
 }
-void GPStreamADF::_invalidateInputOutput()
-{
-    mInputTypes.clear();
-    mOutputTypes.clear();
-    for (auto s : mSources)
-    {
-        mInputTypes.push_back(s->type());
-    }
-    for (auto d : mDest)
-    {
-        mOutputTypes.push_back(d->getType());
-    }
-}
-
 GPStreamADF::GPStreamADF(const std::vector<GPPtr<SP> >& Source, const std::vector<GPPtr<DP>>& dest, const std::vector<CP*>& functions)
 {
     mSources = Source;
@@ -151,8 +137,6 @@ GPStreamADF::GPStreamADF(const std::vector<GPPtr<SP> >& Source, const std::vecto
 
 GPStreamADF::GPStreamADF(const GPTreeNode* n, const GPFunctionDataBase* base)
 {
-    mInputTypes.clear();
-    mOutputTypes.clear();
     auto children = n->getChildren();
     GPASSERT(3 == children.size());
     mSources.clear();
@@ -297,7 +281,6 @@ GPContents* GPStreamADF::vRun(GPContents* inputs)
 {
     GPASSERT(NULL!=inputs);
     GPASSERT(inputs->size() == mSources.size());
-    GPASSERT(inputs->size() == mInputTypes.size());
     for (int i=0; i<inputs->size(); ++i)
     {
         GPContents c;

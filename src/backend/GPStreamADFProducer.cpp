@@ -17,36 +17,25 @@
 #include "backend/GPStreamADFProducer.h"
 #include "GPStreamADF.h"
 
-GPStreamADFProducer::GPStreamADFProducer(const GPFunctionDataBase* sys):GPProducer("GPStreamADFProducer")
+GPStreamADFProducer::GPStreamADFProducer()
 {
-    mDataBase = sys;
 }
 GPStreamADFProducer::~GPStreamADFProducer()
 {
 }
-
-
-IGPAutoDefFunction* GPStreamADFProducer::vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, bool random) const
+IGPAutoDefFunction* GPStreamADFProducer::vCreateFromFuncTree(const GPFunctionTree* tree) const
 {
+    /*TODO*/
     return NULL;
 }
-std::vector<IGPAutoDefFunction*> GPStreamADFProducer::vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat) const
-{
-    std::vector<IGPAutoDefFunction*> res;
-    return res;
-}
-IGPAutoDefFunction* GPStreamADFProducer::vCreateFunctionFromFormula(const std::string& formula) const
-{
-    return NULL;
-}
-IGPAutoDefFunction* GPStreamADFProducer::vCreateFunctionFromNode(const GPTreeNode* p) const
+IGPAutoDefFunction* GPStreamADFProducer::vCreateFromNode(const GPTreeNode* p, const GPFunctionDataBase* base) const
 {
     GPASSERT(NULL!=p);
     if (p->name() != "GPStreamADF")
     {
         return NULL;
     }
-    return new GPStreamADF(p, mDataBase);
+    return new GPStreamADF(p, base);
 }
 
 

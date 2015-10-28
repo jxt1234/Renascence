@@ -36,19 +36,10 @@ public:
     
     /*Set self Parameters without change the structure, Return the number of parameter needed, do nothing if para==null, the number of vMap will not change*/
     virtual int vMap(GPParameter* para) = 0;
-    
-    /*Return all inputTypes in order*/
-    inline const std::vector<const IStatusType*>& getInputTypes() const {return mInputTypes;}
-    /*Return all outputTypes in order*/
-    inline const std::vector<const IStatusType*>& getOutputTypes() const {return mOutputTypes;}
 
     //Basic Function
     IGPAutoDefFunction(){}
     virtual ~IGPAutoDefFunction(){}
-    static IGPAutoDefFunction* makeAdaptorFunction(IGPAutoDefFunction* base, const std::vector<size_t>& order, const std::vector<const IStatusType*>& inputs);
-protected:
-    std::vector<const IStatusType*> mInputTypes;
-    std::vector<const IStatusType*> mOutputTypes;
 };
 
 #endif

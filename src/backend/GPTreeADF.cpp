@@ -25,19 +25,16 @@
 
 using namespace std;
 typedef const IStatusType* TYPEP;
-GPTreeADFPoint::GPTreeADFPoint()
+GPTreeADFPoint::GPTreeADFPoint(const GPFunctionDataBase::function* func, size_t inputpos)
 {
-}
-
-GPTreeADFPoint::GPTreeADFPoint(const GPProducerUtils::func& func)
-{
+    GPASSERT(NULL == func && inputpos < 0);
     mFunc = func;
-    mFunc.tables.clear();
-    vector<TYPEP> s = func.basic->statusType;
+    vector<TYPEP> s = func->statusType;
     for (int i=0; i<s.size(); ++i)
     {
         mStatus.push_back(new GPStatusContent(s[i]));
     }
+    mInputPos = inputpos;
 }
 GPTreeADFPoint::~GPTreeADFPoint()
 {
@@ -51,7 +48,7 @@ GPTreeADFPoint::~GPTreeADFPoint()
 void GPTreeADFPoint::initStatus(const std::vector<std::istream*>& statusInput)
 {
     GPASSERT(statusInput.size() == mStatus.size());
-    const std::vector<const IStatusType*>& statustype = mFunc.basic->statusType;
+    const std::vector<const IStatusType*>& statustype = mFunc->statusType;
     GPASSERT(statusInput.size() == statustype.size());
     for (int i=0; i<mStatus.size(); ++i)
     {
@@ -71,7 +68,13 @@ void GPTreeADFPoint::initStatus(const std::vector<std::istream*>& statusInput)
 
 GPTreeNode* GPTreeADFPoint::xmlPrint() const
 {
-    GPTreeNode* root = new GPTreeNode(GPStrings::GPTreeADF_FUNCTION, mFunc.basic->name);
+    if (NULL == mFunc)
+    {
+        std::ostringstream out;
+        out << "x" << mInputPos;
+        return new GPTreeNode(GPStrings::GPTreeADF_INPUTFLAGS, out.str());
+    }
+    GPTreeNode* root = new GPTreeNode(GPStrings::GPTreeADF_FUNCTION, mFunc->name);
     GPPtr<GPTreeNode> status = new GPTreeNode(GPStrings::GPTreeADF_STATUS, "");
     root->addChild(status);
     for (int j=0; j<mStatus.size(); ++j)
@@ -88,22 +91,15 @@ GPTreeNode* GPTreeADFPoint::xmlPrint() const
         GPTreeADFPoint* p = (GPTreeADFPoint*)(mChildren[i]);
         children->addChild(p->xmlPrint());
     }
-    if (mFunc.inputs.size() > 0)
+    if (mFunc->inputType.size() > 0)
     {
         std::ostringstream inputTypes;
-        for (int i=0; i<mFunc.inputs.size(); ++i)
+        for (int i=0; i<mFunc->inputType.size(); ++i)
         {
-            inputTypes << mFunc.inputs[i]->name() << " ";
+            inputTypes << mFunc->inputType[i]->name() << " ";
         }
         GPPtr<GPTreeNode> inputs = new GPTreeNode(GPStrings::GPTreeADF_INPUTS, inputTypes.str());
         root->addChild(inputs);
-        std::ostringstream childflags;
-        for (int i=0; i<mFunc.useChildrenInput.size(); ++i)
-        {
-            childflags << mFunc.useChildrenInput[i] << " ";
-        }
-        GPPtr<GPTreeNode> childflagsn = new GPTreeNode(GPStrings::GPTreeADF_INPUTFLAGS, childflags.str());
-        root->addChild(childflagsn);
     }
     return root;
 }
@@ -122,56 +118,31 @@ GPAbstractPoint* GPTreeADFPoint::GPTreeADFCopy::copy(GPAbstractPoint* src)
 }
 
 
-void GPTreeADFPoint::getinput(std::vector<const IStatusType*>& tlist) const
-{
-    tlist.insert(tlist.end(), (mFunc.inputs).begin(), (mFunc.inputs).end());
-    for (int i=0; i<mChildren.size(); ++i)
-    {
-        GPTreeADFPoint* p = (GPTreeADFPoint*)mChildren[i];
-        p->getinput(tlist);
-    }
-}
-
-GPContents* GPTreeADFPoint::compute(GPContents* input, int& cur)
+GPContents* GPTreeADFPoint::compute(GPContents* input)
 {
     GPContents outsideinputs;
-    GPASSERT(input->size()>=(mFunc.inputs).size());
-    for (int i=0; i<(mFunc.inputs).size(); ++i)
-    {
-        outsideinputs.push(input->contents[cur++]);
-    }
+    GPASSERT(NULL!=mFunc);
     GPContents childreninputs;
+    GPContents totalInputs;
     //Get Inputs from childern point
     for (int i=0; i<mChildren.size(); ++i)
     {
         GPTreeADFPoint* p = (GPTreeADFPoint*)(mChildren[i]);
         GPASSERT(NULL!=p);
-        GPContents* out = p->compute(input, cur);
+        if (p->mFunc == NULL)
+        {
+            totalInputs.push(input->contents[p->mInputPos]);
+            continue;
+        }
+        GPContents* out = p->compute(input);
         const auto& output_unit = out->contents;
         for (int j=0; j<output_unit.size(); ++j)
         {
             childreninputs.push(output_unit[j]);
+            totalInputs.push(output_unit[j]);
         }
         delete out;
     }
-    /*For function that don't know inputType, just copy all contents to totalInputs*/
-    GPContents totalInputs;
-    /*Merge outsideinputs and childreninputs*/
-    int children_cur = 0;
-    int outside_cur = 0;
-    for (int i=0; i<mFunc.useChildrenInput.size(); ++i)
-    {
-        if (mFunc.useChildrenInput[i]>0)
-        {
-            totalInputs.push(childreninputs.contents[children_cur++]);
-        }
-        else
-        {
-            totalInputs.push(outsideinputs.contents[outside_cur++]);
-        }
-    }
-    GPASSERT(outside_cur == outsideinputs.size());
-    GPASSERT(children_cur == childreninputs.size());
     //Get status
     for (int i=0; i<mStatus.size(); ++i)
     {
@@ -182,7 +153,7 @@ GPContents* GPTreeADFPoint::compute(GPContents* input, int& cur)
 #ifdef DEBUG_TIMES
         GP_Clock c(__LINE__, (mFunc->name).c_str());
 #endif
-        result = mFunc.basic->basic(&totalInputs);
+        result = mFunc->basic(&totalInputs);
     }
     //Free All children' memory
     childreninputs.clear();
@@ -221,8 +192,7 @@ GPTreeNode* GPTreeADF::vSave() const
 GPContents* GPTreeADF::vRun(GPContents* inputs)
 {
     GPASSERT(NULL!=mRoot);
-    int cur = 0;
-    return mRoot->compute(inputs, cur);
+    return mRoot->compute(inputs);
 }
 
 IGPAutoDefFunction* GPTreeADF::vCopy() const
@@ -267,68 +237,3 @@ int GPTreeADF::vMap(GPParameter* para)
     }
     return sum;
 }
-
-int GPTreeADF::vMapStructure(GPParameter* para, bool& changed)
-{
-    const int number = 3;
-    changed = false;
-    if (NULL == para)
-    {
-        return number;
-    }
-    GPASSERT(para->size() == number);
-    /*Replace*/
-    if (para->get(0) > mProducer->getLargetVary())
-    {
-        return number;
-    }
-    changed = true;
-    float pos = para->get(1);
-    GPTreeADFPoint* p = find(pos);
-    const vector<const IStatusType*> outputs = p->func()->outputType;
-    //TODO If outputs is empty, Use function name to vary
-    if (!outputs.empty())
-    {
-        vector<const IStatusType*> inputs;
-        p->pGetInputs(inputs);
-        vector<vector<GPTreeADFPoint*> > queue;
-        mProducer->searchAllSequences(queue, outputs, inputs);
-        GPASSERT(!queue.empty());
-        size_t n = para->get(2)*queue.size();
-        if (n >= queue.size())
-        {
-            n = queue.size()-1;
-        }
-        auto q = queue[n];
-        GPASSERT(1 == q.size());
-        if (p != mRoot)
-        {
-            mRoot->replace(p, q[0]);
-        }
-        else
-        {
-            mRoot->decRef();
-            mRoot = q[0];
-            q[0]->addRef();
-        }
-        for (auto que : queue)
-        {
-            for (auto _q : que)
-            {
-                _q->decRef();
-            }
-        }
-        _refreshInputsAndOutputs();
-    }
-    return number;
-}
-
-void GPTreeADF::_refreshInputsAndOutputs()
-{
-    GPASSERT(NULL!=mRoot);
-    vector<const IStatusType*> res;
-    mOutputTypes = mRoot->mFunc.outputs;
-    mRoot->getinput(res);
-    mInputTypes = res;
-}
-

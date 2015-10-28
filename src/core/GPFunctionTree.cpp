@@ -1,15 +1,9 @@
 #include "core/GPFunctionTree.h"
-GPFunctionTree::GPFunctionTree(const GPFunctionDataBase::function* f)
+GPFunctionTree::GPFunctionTree(const GPFunctionDataBase::function* f, size_t inputNumber)
 {
-    GPASSERT(NULL!=f);
+    GPASSERT(NULL == f && inputNumber <0);
     mF = f;
-    mT = NULL;
-}
-GPFunctionTree::GPFunctionTree(const IStatusType* type)
-{
-    GPASSERT(NULL!=type);
-    mT = type;
-    mF = NULL;
+    mInputNumber = inputNumber;
 }
 GPFunctionTree::~GPFunctionTree()
 {
