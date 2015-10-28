@@ -19,7 +19,7 @@
 class GPGraphicProducer:public GPBackEndProducer
 {
 public:
-    virtual IGPAutoDefFunction* vCreateFromTree(const GPFunctionTree* tree) const;
+    virtual IGPAutoDefFunction* vCreateFromFuncTree(const GPFunctionTree* tree) const;
     virtual IGPAutoDefFunction* vCreateFromNode(const GPTreeNode* node, const GPFunctionDataBase* base) const;
     GPGraphicProducer();
     virtual ~GPGraphicProducer();

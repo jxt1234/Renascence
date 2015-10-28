@@ -141,7 +141,7 @@ void GPEvolutionGroup::_mutate()
 void GPEvolutionGroup::loadBest(const GPTreeNode* node)
 {
     GPASSERT(NULL!=mSys);
-    mBest = mSys->vCreateFunctionFromNode(node);
+    mBest = mSys->createFunction(node);
 }
 
 void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func)
@@ -152,15 +152,11 @@ void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)>
     }
     /*Create the initial group*/
     mGroup.clear();
-    vector<IGPAutoDefFunction*> group = mSys->vCreateAllFunction(mOutput, mInput);
+    auto group = mSys->listAllFunction(mOutput, mInput);
     GPASSERT(!group.empty());
     for (int i=0; i<group.size() && i<mSize; ++i)
     {
         mGroup.push_back(group[i]);
-    }
-    for (int i=mSize; i<group.size(); ++i)
-    {
-        group[i]->decRef();
     }
     _best(fit_func);
     _expand();

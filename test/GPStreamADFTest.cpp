@@ -26,7 +26,7 @@ void GPStreamADFTest::run()
         GPPtr<GPProducer> gen = GPFactory::createProducer(base.get(), GPFactory::STREAM);
         xmlReader r;
         auto n = r.loadFile("stream_test.xml");
-        GPPtr<IGPAutoDefFunction> gp = gen->vCreateFunctionFromNode(n);
+        GPPtr<IGPAutoDefFunction> gp = gen->createFunction(n);
         GPPtr<GPTreeNode> node = gp->vSave();
         GPPtr<GPWStreamWrap> outp = GPStreamFactory::NewWStream("output/GPStreamTest.xml");
         xmlReader::dumpNodes(node.get(), outp.get());

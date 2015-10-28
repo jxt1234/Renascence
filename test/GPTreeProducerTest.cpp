@@ -23,10 +23,10 @@ void GPTreeProducerTest::run()
         vector<const IStatusType*> input;
         vector<const IStatusType*> output;
         output.push_back(bmp);
-        vector<IGPAutoDefFunction*> fs = sys->vCreateAllFunction(output, input);
+        auto fs = sys->listAllFunction(output, input);
         GPASSERT(fs.size()>0);
         GPContents inp;
-        IGPAutoDefFunction* fit = sys->vCreateFunctionFromFormula(string("TrPackageFitCompute(x0)"));
+        IGPAutoDefFunction* fit = sys->createFunction(string("TrPackageFitCompute(x0)"));
         int sum = 0;
         for (auto f : fs)
         {
@@ -41,10 +41,6 @@ void GPTreeProducerTest::run()
             {
                 break;
             }
-        }
-        for (auto f : fs)
-        {
-            f->decRef();
         }
     }
 }

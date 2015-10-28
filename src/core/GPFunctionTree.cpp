@@ -1,7 +1,7 @@
 #include "core/GPFunctionTree.h"
-GPFunctionTree::GPFunctionTree(const GPFunctionDataBase::function* f, size_t inputNumber)
+GPFunctionTree::GPFunctionTree(const GPFunctionDataBase::function* f, int inputNumber)
 {
-    GPASSERT(NULL == f && inputNumber <0);
+    GPASSERT(NULL != f || inputNumber >=0);
     mF = f;
     mInputNumber = inputNumber;
 }

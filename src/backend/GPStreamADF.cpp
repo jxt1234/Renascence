@@ -130,7 +130,6 @@ GPStreamADF::GPStreamADF(const std::vector<GPPtr<SP> >& Source, const std::vecto
     mSources = Source;
     mDest = dest;
     mFunctions = functions;
-    _invalidateInputOutput();
 }
 
 
@@ -270,7 +269,6 @@ GPStreamADF::GPStreamADF(const GPTreeNode* n, const GPFunctionDataBase* base)
         }
         
     }
-    _invalidateInputOutput();
 }
 GPStreamADF::~GPStreamADF()
 {

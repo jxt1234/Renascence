@@ -102,7 +102,7 @@ IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* 
     }
     std::vector<const IStatusType*> inputs = _transform(inputTypes, p);
     std::vector<const IStatusType*> outputs = _transform(outputTypes, p);
-    return p->P->vCreateFunction(outputs, inputs, false);
+    return p->P->createFunction(outputs, inputs);
 }
 IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula)
 {
@@ -111,7 +111,7 @@ IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const cha
         FUNC_PRINT(1);
         return NULL;;
     }
-    return p->P->vCreateFunctionFromFormula(std::string(formula));
+    return p->P->createFunction(std::string(formula));
 }
 
 GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input)
@@ -134,7 +134,7 @@ IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, GPStream* 
     }
     xmlReader r;
     const GPTreeNode* root = r.loadStream(xmlFile);
-    return p->P->vCreateFunctionFromNode(root);
+    return p->P->createFunction(root);
 }
 void GP_Function_Save(IGPAutoDefFunction* f, GPWStream* output)
 {

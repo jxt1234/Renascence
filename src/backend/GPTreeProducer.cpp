@@ -50,42 +50,11 @@ GPTreeProducer::GPTreeProducer()
 {
 }
 
-static bool inOrder(const std::vector<size_t>& order)
-{
-    for (int i=0; i<order.size(); ++i)
-    {
-        if (i!=order[i])
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
-static bool makeOrder(std::vector<const IStatusType*> inputType, const std::vector<const IStatusType*>& realinputType, std::vector<size_t>& order/*output*/)
-{
-    bool result = true;
-    order.clear();
-    for (int i=0; i<realinputType.size(); ++i)
-    {
-        auto t = realinputType[i];
-        auto pos = std::find(inputType.begin(), inputType.end(), t);
-        if (pos == inputType.end())
-        {
-            result = false;
-            break;
-        }
-        *pos = NULL;
-        auto id = pos - inputType.begin();
-        order.push_back(id);
-    }
-    return result;
-}
-
-
 IGPAutoDefFunction* GPTreeProducer::vCreateFromNode(const GPTreeNode* node, const GPFunctionDataBase* base) const
 {
-    return NULL;
+    GPASSERT(node->name() == "GPTreeADF");
+    GPTreeADFPoint* point = GPTreeADFPoint::xmlLoad(node->getChildren()[0].get(), base);
+    return new GPTreeADF(point, this);
 }
 
 

@@ -98,6 +98,5 @@ private:
     std::vector<CP*> mFunctions;
     
     GPStreamADF(const std::vector<GPPtr<SP> >& Source, const std::vector<GPPtr<DP>>& dest, const std::vector<CP*>& functions);
-    void _invalidateInputOutput();
 };
 #endif /* defined(__GP__GPStreamADF__) */

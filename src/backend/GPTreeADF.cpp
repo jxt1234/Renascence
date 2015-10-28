@@ -25,23 +25,23 @@
 
 using namespace std;
 typedef const IStatusType* TYPEP;
-GPTreeADFPoint::GPTreeADFPoint(const GPFunctionDataBase::function* func, size_t inputpos)
+GPTreeADFPoint::GPTreeADFPoint(const GPFunctionDataBase::function* func, int inputpos)
 {
-    GPASSERT(NULL == func && inputpos < 0);
+    GPASSERT(NULL != func || inputpos >= 0);
+    mInputPos = inputpos;
     mFunc = func;
+    if (NULL == func)
+    {
+        return;
+    }
     vector<TYPEP> s = func->statusType;
     for (int i=0; i<s.size(); ++i)
     {
         mStatus.push_back(new GPStatusContent(s[i]));
     }
-    mInputPos = inputpos;
 }
 GPTreeADFPoint::~GPTreeADFPoint()
 {
-    for (int i=0; i<mStatus.size(); ++i)
-    {
-        SAFE_UNREF(mStatus[i]);
-    }
 }
 
 
@@ -54,7 +54,7 @@ void GPTreeADFPoint::initStatus(const std::vector<std::istream*>& statusInput)
     {
         if (NULL==statusInput[i]) continue;
         istream& is = *(statusInput[i]);
-        GPStatusContent* s= mStatus[i];
+        GPStatusContent* s= mStatus[i].get();
         AutoStorage<double> _v(s->size());
         double* v = _v.get();
         for (int j=0; j<s->size(); ++j)
@@ -71,8 +71,8 @@ GPTreeNode* GPTreeADFPoint::xmlPrint() const
     if (NULL == mFunc)
     {
         std::ostringstream out;
-        out << "x" << mInputPos;
-        return new GPTreeNode(GPStrings::GPTreeADF_INPUTFLAGS, out.str());
+        out << mInputPos;
+        return new GPTreeNode(GPStrings::GPTreeADF_INPUTS, out.str());
     }
     GPTreeNode* root = new GPTreeNode(GPStrings::GPTreeADF_FUNCTION, mFunc->name);
     GPPtr<GPTreeNode> status = new GPTreeNode(GPStrings::GPTreeADF_STATUS, "");
@@ -86,29 +86,63 @@ GPTreeNode* GPTreeADFPoint::xmlPrint() const
     }
     GPPtr<GPTreeNode> children = new GPTreeNode(GPStrings::GPTreeADF_CHILDREN, "");
     root->addChild(children);
+    GPASSERT(mChildren.size() == mFunc->inputType.size());
     for (int i=0; i<mChildren.size(); ++i)
     {
         GPTreeADFPoint* p = (GPTreeADFPoint*)(mChildren[i]);
         children->addChild(p->xmlPrint());
     }
-    if (mFunc->inputType.size() > 0)
-    {
-        std::ostringstream inputTypes;
-        for (int i=0; i<mFunc->inputType.size(); ++i)
-        {
-            inputTypes << mFunc->inputType[i]->name() << " ";
-        }
-        GPPtr<GPTreeNode> inputs = new GPTreeNode(GPStrings::GPTreeADF_INPUTS, inputTypes.str());
-        root->addChild(inputs);
-    }
     return root;
 }
+GPTreeADFPoint* GPTreeADFPoint::xmlLoad(const GPTreeNode* node, const GPFunctionDataBase* base)
+{
+    GPASSERT(NULL!=node);
+    GPTreeADFPoint* res = NULL;
+    if (node->name() == GPStrings::GPTreeADF_FUNCTION)
+    {
+        res = new GPTreeADFPoint(base->vQueryFunction(node->attr()), -1);
+        for (auto c : node->getChildren())
+        {
+            if (c->name() == GPStrings::GPTreeADF_STATUS)
+            {
+                std::vector<istream*> streams;
+                for (auto cc : c->getChildren())
+                {
+                    std::istringstream* is = new std::istringstream(cc->attr());
+                    streams.push_back(is);
+                }
+                res->initStatus(streams);
+                for (auto is : streams)
+                {
+                    delete is;
+                }
+            }
+            else if (c->name() == GPStrings::GPTreeADF_CHILDREN)
+            {
+                for (auto cc : c->getChildren())
+                {
+                    res->addPoint(xmlLoad(cc.get(), base));
+                }
+            }
+        }
+    }
+    else if (node->name() == GPStrings::GPTreeADF_INPUTS)
+    {
+        int inputpos = -1;
+        std::istringstream is(node->attr());
+        is >> inputpos;
+        res = new GPTreeADFPoint(NULL, inputpos);
+    }
+    GPASSERT(NULL!=res);
+    return res;
+}
+
 GPAbstractPoint* GPTreeADFPoint::GPTreeADFCopy::copy(GPAbstractPoint* src)
 {
     GPTreeADFPoint* s = (GPTreeADFPoint*)(src);
-    GPTreeADFPoint* result = new GPTreeADFPoint;
-    result->mFunc = s->mFunc;
-    vector<GPStatusContent*>& ss = s->mStatus;
+    GPTreeADFPoint* result = new GPTreeADFPoint(s->mFunc, s->mInputPos);
+    vector<GPPtr<GPStatusContent>>& ss = s->mStatus;
+    result->mStatus.clear();
     for (int i=0; i<ss.size(); ++i)
     {
         GPStatusContent* c = new GPStatusContent(*(ss[i]));
@@ -166,7 +200,6 @@ GPTreeADF::GPTreeADF(GPTreeADFPoint* root, const GPTreeProducer* p)
     GPASSERT(NULL!=root);
     mRoot = root;
     mProducer = p;
-    _refreshInputsAndOutputs();
 }
 GPTreeADF::~GPTreeADF()
 {
@@ -211,11 +244,11 @@ int GPTreeADF::vMap(GPParameter* para)
     for (int i=0; i<allpoints.size(); ++i)
     {
         GPTreeADFPoint* p = (GPTreeADFPoint*)allpoints[i];
-        vector<GPStatusContent*>& status = p->mStatus;
+        vector<GPPtr<GPStatusContent>>& status = p->mStatus;
         for (int j=0; j<status.size(); ++j)
         {
             sum+=status[j]->size();
-            allcontents.push_back(status[j]);
+            allcontents.push_back(status[j].get());
         }
     }
     if (NULL!=para)
@@ -236,4 +269,9 @@ int GPTreeADF::vMap(GPParameter* para)
         }
     }
     return sum;
+}
+
+int GPTreeADF::vMapStructure(GPParameter* para, bool& changed)
+{
+    return 1;
 }

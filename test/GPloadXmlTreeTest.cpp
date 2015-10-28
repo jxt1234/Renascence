@@ -24,7 +24,7 @@ public:
             {
                 xmlReader r;
                 auto f = r.loadFile("tree_result.xml");
-                IGPAutoDefFunction* gp = gen->vCreateFunctionFromNode(f);
+                IGPAutoDefFunction* gp = gen->createFunction(f);
                 AUTOCLEAN(gp);
                 GPPtr<GPWStreamWrap> file = GPStreamFactory::NewWStream("output/GPloadXmlTreeTest.xml", GPStreamFactory::FILE);
                 GPPtr<GPTreeNode> dump = gp->vSave();

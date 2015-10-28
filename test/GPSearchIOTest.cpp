@@ -26,7 +26,7 @@ class GPSearchIOTest:public GPTest
                 vector<const IStatusType*> out;
                 out.push_back(ist);
                 vector<const IStatusType*> inp;
-                IGPAutoDefFunction* f = gen.vCreateFunction(out, inp);
+                IGPAutoDefFunction* f = gen.createFunction(out, inp);
                 GPContents GPinp;
                 auto _output = f->vRun(&GPinp);
                 GPASSERT(_output->size()==1);
@@ -36,27 +36,22 @@ class GPSearchIOTest:public GPTest
                 delete _output;
                 f->decRef();
                 /*Multi*/
-                vector<IGPAutoDefFunction*> f_mul = gen.vCreateAllFunction(out, inp);
+                auto f_mul = gen.listAllFunction(out, inp);
                 GPASSERT(!f_mul.empty());
                 cout <<"Multi function's size = "<< f_mul.size() << endl;
                 for (int i=0; i<f_mul.size()&&i<10; ++i)
                 {
                     ostringstream fileName;
                     fileName << "output/GPSearchIOTest/"<<i<<".xml";
-                    f = f_mul[i];
-                    auto _output2 = f->vRun(&GPinp);
+                    auto _output2 = f_mul[i]->vRun(&GPinp);
                     GPASSERT(_output2->size()==1);
                     ist->vSave(_output2->get(0), screen.get());
                     cout << endl;
                     _output2->clear();
                     delete _output2;
                     GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream(fileName.str().c_str());
-                    GPPtr<GPTreeNode> n = f->vSave();
+                    GPPtr<GPTreeNode> n = f_mul[i]->vSave();
                     xmlReader::dumpNodes(n.get(), output.get());
-                }
-                for (auto f : f_mul)
-                {
-                    f->decRef();
                 }
             }
         }

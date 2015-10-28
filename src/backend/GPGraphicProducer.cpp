@@ -16,7 +16,7 @@
 #include "backend/GPGraphicProducer.h"
 #include "backend/GPGraphicADF.h"
 
-IGPAutoDefFunction* GPGraphicProducer::vCreateFromTree(const GPFunctionTree* tree) const
+IGPAutoDefFunction* GPGraphicProducer::vCreateFromFuncTree(const GPFunctionTree* tree) const
 {
     return NULL;
 }

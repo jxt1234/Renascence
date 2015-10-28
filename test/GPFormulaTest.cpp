@@ -1,4 +1,5 @@
 #include "test/GPTest.h"
+#include "core/GPProducer.h"
 #include "frontend/GPFormulaTree.h"
 #include <iostream>
 #include "core/GPFactory.h"
@@ -21,11 +22,11 @@ void GPFormulaTest::run()
     {
         GPProducer* sys = GPFactory::createProducer(base);
         {
-            IGPAutoDefFunction* f = sys->vCreateFunctionFromFormula(formula);
+            IGPAutoDefFunction* f = sys->createFunction(formula);
             AUTOCLEAN(f);
             GPContents inp;
             GPContents* out = f->vRun(&inp);
-            IGPAutoDefFunction* comp = sys->vCreateFunctionFromFormula("TrPackageFitCompute(x0)");
+            IGPAutoDefFunction* comp = sys->createFunction("TrPackageFitCompute(x0)");
             auto _fits = comp->vRun(out);
             double* __fit = (double*)_fits->get(0);
             FUNC_PRINT_ALL(*__fit, f);

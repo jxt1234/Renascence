@@ -14,6 +14,8 @@
    limitations under the License.
 ******************************************************************/
 #include "core/GPFactory.h"
+#include "core/GPProducer.h"
+#include "frontend/GPFunctionFrontEndProducer.h"
 #include "backend/GPTreeProducer.h"
 #include "backend/GPGraphicProducer.h"
 #include "backend/GPStreamADFProducer.h"
@@ -22,21 +24,24 @@
 
 GPProducer* GPFactory::createProducer(const GPFunctionDataBase* base, GPFactory::TYPE t)
 {
-    GPProducer* res = NULL;
+    GPPtr<GPFrontEndProducer> front = new GPFunctionFrontEndProducer(base);
+    GPPtr<GPBackEndProducer> back;
     switch(t)
     {
         case TREE:
-            res = new GPTreeProducer(base);
+            back = new GPTreeProducer();
             break;
         case GRAPHIC:
-            res = new GPGraphicProducer(base);
+            back = new GPGraphicProducer();
             break;
         case STREAM:
-            res = new GPStreamADFProducer(base);
+            back = new GPStreamADFProducer();
+            break;
         default:
+            GPASSERT(0);
             break;
     }
-    return res;
+    return new GPProducer(front.get(), back.get(), base);
 }
 GPFunctionDataBase* GPFactory::createDataBase(const char* metafile, IFunctionTable* t)
 {

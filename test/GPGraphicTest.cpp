@@ -17,7 +17,7 @@ class GPGraphicTest:public GPTest
                 GPPtr<GPProducer> gen = GPFactory::createProducer(base.get(), GPFactory::GRAPHIC);
                 xmlReader r;
                 auto n = r.loadFile("graphic_test.xml");
-                GPPtr<IGPAutoDefFunction> gp = gen->vCreateFunctionFromNode(n);
+                GPPtr<IGPAutoDefFunction> gp = gen->createFunction(n);
                 GPPtr<GPTreeNode> node = gp->vSave();
                 GPPtr<GPWStreamWrap> outp = GPStreamFactory::NewWStream("output/GPGraphicTest.xml");
                 xmlReader::dumpNodes(node.get(), outp.get());

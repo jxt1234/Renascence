@@ -28,7 +28,7 @@ class GPXmlEvolutionTest:public GPTest
                 GPEvolutionGroup* group = new GPEvolutionGroup(&gen, 2, 2);
                 group->vSetInput(eInp);
                 group->vSetOutput(eOut);
-                IGPAutoDefFunction* fit = gen.createFunction(doubleId, bmp);
+                IGPAutoDefFunction* fit = gen.createFunction(vector<const IStatusType*>(1,doubleId), vector<const IStatusType*>(1,bmp));
                 auto fitfunc = [&](IGPAutoDefFunction* f){
                     GPContents nullinput;
                     GPContents* result = f->vRun(&nullinput);

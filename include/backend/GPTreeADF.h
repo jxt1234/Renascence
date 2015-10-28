@@ -27,19 +27,19 @@
 class GPTreeADFPoint:public GPAbstractPoint
 {
 public:
-    GPTreeADFPoint(const GPFunctionDataBase::function* func, size_t inputpos);
+    GPTreeADFPoint(const GPFunctionDataBase::function* func, int inputpos);
     void initStatus(const std::vector<std::istream*>& is);
     virtual ~GPTreeADFPoint();
     inline const GPFunctionDataBase::function* func() const {return mFunc;}
-    inline const std::vector<GPStatusContent*>& status() {return mStatus;}
+    inline const std::vector<GPPtr<GPStatusContent>>& status() {return mStatus;}
+    GPTreeNode* xmlPrint() const;
+    static GPTreeADFPoint* xmlLoad(const GPTreeNode* node, const GPFunctionDataBase* base);
 private:
-    GPTreeADFPoint();
     /*Attributes*/
     const GPFunctionDataBase::function* mFunc;
-    size_t mInputPos;
-    std::vector<GPStatusContent*> mStatus;
+    int mInputPos;
+    std::vector<GPPtr<GPStatusContent>> mStatus;
     /*Function needed*/
-    GPTreeNode* xmlPrint() const;
     GPContents* compute(GPContents* input);
     
     class GPTreeADFCopy:public GPAbstractPoint::IPointCopy
@@ -69,7 +69,6 @@ public:
     virtual int vMapStructure(GPParameter* para, bool& changed);
     virtual int vMap(GPParameter* para);
 private:
-    void _refreshInputsAndOutputs();
     GPTreeADFPoint* mRoot;
     const GPTreeProducer* mProducer;
 };
