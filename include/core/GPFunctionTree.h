@@ -21,13 +21,21 @@ class GPFunctionTree:public GPAbstractPoint
 {
 public:
     GPFunctionTree(const GPFunctionDataBase::function* f);
-    GPFunctionTree(size_t n);
+    GPFunctionTree(const IStatusType* type);
     virtual ~GPFunctionTree();
     inline const GPFunctionDataBase::function* function() const {return mF;}
-    inline size_t inputNumber() const {return mInputNum;}
+    inline const IStatusType* type() const {return mT;}
+    class Iter :public RefCount
+    {
+    public:
+        Iter(){}
+        virtual ~Iter(){}
+        virtual GPFunctionTree* vCurrent() const= 0;
+        virtual bool vNext() = 0;
+    };
 private:
     /*mF=NULL for input node, mInputNum = -1 for function node*/
     const GPFunctionDataBase::function* mF;
-    size_t mInputNum;
+    const IStatusType* mT;
 };
 #endif

@@ -15,8 +15,6 @@
 ******************************************************************/
 #include <list>
 #include <algorithm>
-#include "backend/GPTreeADF.h"
-#include "backend/GPTreeProducer.h"
 #include "recurse_tree.h"
 using namespace std;
 
@@ -60,31 +58,35 @@ vector<int> computePoint::filter(const vector<vector<const GPProducerUtils::func
     return result;
 }
 
-vector<GPTreeADFPoint*> computePoint::outputs()
+vector<GPFunctionTree*> computePoint::outputs()
 {
-    vector<GPTreeADFPoint*> result;
+    vector<GPFunctionTree*> result;
     const vector<const GPProducerUtils::func*>& data = getData();
     for (int i=0; i<data.size(); ++i)
     {
-        GPTreeADFPoint* p = new GPTreeADFPoint(*data[i]);
+        GPFunctionTree* p = new GPFunctionTree(data[i]->basic);
         result.push_back(p);
     }
     for (auto child : mChild)
     {
         computePoint* p = (computePoint*)(child.get());
         GPASSERT(p->mParent < result.size());
-        GPTreeADFPoint* parent = result[p->mParent];
+        GPFunctionTree* parent = result[p->mParent];
+        const GPProducerUtils::func* pf = data[p->mParent];
+        int cur = 0;
         auto childrens = p->outputs();
-        for (int i=0; i<childrens.size(); ++i)
+        for (int i=0; i<pf->inputs.size(); ++i)
         {
-            parent->addPoint(childrens[i]);
+            if (pf->useChildrenInput[i] > 0)
+            {
+                GPASSERT(cur<childrens.size());
+                parent->addPoint(childrens[cur++]);
+            }
+            else
+            {
+                parent->addPoint(new GPFunctionTree((size_t)0));
+            }
         }
-        GPASSERT(parent->getChildrenNumber() == data[p->mParent]->childrenInputs.size());
-    }
-    for (int i=0; i<result.size(); ++i)
-    {
-        auto f = data[i];
-        GPASSERT(f->childrenInputs.size() == result[i]->getChildrenNumber());
     }
     return result;
 }
@@ -131,7 +133,7 @@ bool computePoint::vGrow()
     }
     return success;
 }
-vector<GPTreeADFPoint*> computeSearchTree::output()
+vector<GPFunctionTree*> computeSearchTree::output()
 {
     return ((computePoint*)(mRoot.get()))->outputs();
 }

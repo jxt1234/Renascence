@@ -17,8 +17,8 @@
 #define VECTOR_POINT_TREE_H
 #include "math/carryTree.h"
 #include "utils/GPDebug.h"
-#include "backend/GPTreeADF.h"
-#include "backend/GPProducerUtils.h"
+#include "core/GPFunctionTree.h"
+#include "frontend/GPProducerUtils.h"
 class computePoint:public carryPoint
 {
 friend class computeSearchTree;
@@ -36,7 +36,7 @@ public:
     }
     std::vector<int> filter(const std::vector<std::vector<const GPProducerUtils::func*> >& combo, const std::vector<const GPProducerUtils::func*>& output);
     
-    std::vector<GPTreeADFPoint*> outputs();
+    std::vector<GPFunctionTree*> outputs();
 protected:
     virtual bool vGrow();
     std::vector<const GPProducerUtils::func*> getDependOutput();
@@ -44,7 +44,7 @@ protected:
     {
         mCur++;
         bool res = true;
-        if (mCur >=mAvail.size())
+        if (mCur >= mAvail.size())
         {
             res = false;
             mCur = mAvail.size() - 1;
@@ -60,11 +60,11 @@ private:
 };
 
 
-class computeSearchTree:public carryTree<std::vector<GPTreeADFPoint*> >
+class computeSearchTree:public carryTree<std::vector<GPFunctionTree*> >
 {
 public:
     computeSearchTree(computePoint* point){mRoot = point;}
-    virtual std::vector<GPTreeADFPoint*> output() override;
+    virtual std::vector<GPFunctionTree*> output() override;
     virtual bool readyToOutput();
 };
 

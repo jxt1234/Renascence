@@ -1,5 +1,5 @@
 /******************************************************************
-   Copyright 2014, Jiang Xiao-tang
+   Copyright 2015, Jiang Xiao-tang
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,25 +13,18 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "backend/GPGraphicProducer.h"
-#include "backend/GPGraphicADF.h"
-
-IGPAutoDefFunction* GPGraphicProducer::vCreateFromTree(const GPFunctionTree* tree) const
+#ifndef BACKEND_GPBACKENDPRODUCER_H
+#define BACKEND_GPBACKENDPRODUCER_H
+#include "utils/RefCount.h"
+#include "core/GPFunctionDataBase.h"
+#include "core/GPFunctionTree.h"
+#include "core/IGPAutoDefFunction.h"
+class GPBackEndProducer:public RefCount
 {
-    return NULL;
-}
-IGPAutoDefFunction* GPGraphicProducer::vCreateFromNode(const GPTreeNode* p, const GPFunctionDataBase* base) const
-{
-    GPASSERT(NULL!=p);
-    if (p->name() != "GPGraphicADF")
-    {
-        return NULL;
-    }
-    return new GPGraphicADF(p, base);
-}
-GPGraphicProducer::GPGraphicProducer()
-{
-}
-GPGraphicProducer::~GPGraphicProducer()
-{
-}
+public:
+    GPBackEndProducer(){}
+    virtual ~GPBackEndProducer(){}
+    virtual IGPAutoDefFunction* vCreateFromFormula(const GPFunctionTree* tree) const = 0;
+    virtual IGPAutoDefFunction* vCreateFromNode(const GPTreeNode* node, const GPFunctionDataBase* base) const = 0;
+};
+#endif

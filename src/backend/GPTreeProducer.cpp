@@ -137,27 +137,6 @@ GPTreeProducer::GPTreeProducer(const GPFunctionDataBase* comsys):GPProducer("GPT
 }
 
 
-static vector<vector<const GPProducerUtils::func*> > _filterOutputType(const vector<vector<const GPProducerUtils::func*> >& origin, const std::vector<const IStatusType*>& inputType)
-{
-     vector<vector<const GPProducerUtils::func*> > result;
-     for (auto p : origin)
-     {
-          vector<const IStatusType*> inputs;
-          for (auto f : p)
-          {
-               inputs.insert(inputs.end(), f->inputs.begin(), f->inputs.end());
-          }
-          if (inputs.size() == inputType.size())
-          {
-               result.push_back(p);
-          }
-     }
-     if (result.empty())
-     {
-          return origin;
-     }
-     return result;
-}
 
 IGPAutoDefFunction* GPTreeProducer::vCreateFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, bool inputRepeat, bool random) const
 {
@@ -299,39 +278,6 @@ std::vector<IGPAutoDefFunction*> GPTreeProducer::vCreateAllFunction(const std::v
 }
 
 
-void GPTreeProducer::_findMatchedFuncton(std::vector<std::vector<const GPProducerUtils::func*> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
-{
-     carryGroup2<const GPProducerUtils::func*> group;
-     for(int i=0; i<outputType.size(); ++i)
-     {
-          group.mBase.push_back(mUtils.getFunctionsForOutput(outputType[i]));
-     }
-     group.reset();
-     do
-     {
-          auto current = group.current();
-          bool valid = true;
-          for (auto f : current)
-          {
-               for (auto t : f->inputs)
-               {
-                    if (find(inputType.begin(), inputType.end(), t) == inputType.end())
-                    {
-                         valid = false;
-                         break;
-                    }
-               }
-               if (!valid)
-               {
-                    break;
-               }
-          }
-          if (valid)
-          {
-               warpOutput.push_back(current);
-          }
-     } while(group.next());
-}
 
 void GPTreeProducer::_init()
 {

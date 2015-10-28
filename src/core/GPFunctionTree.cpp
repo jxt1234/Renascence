@@ -3,12 +3,12 @@ GPFunctionTree::GPFunctionTree(const GPFunctionDataBase::function* f)
 {
     GPASSERT(NULL!=f);
     mF = f;
-    mInputNum = -1;
+    mT = NULL;
 }
-GPFunctionTree::GPFunctionTree(size_t n)
+GPFunctionTree::GPFunctionTree(const IStatusType* type)
 {
-    GPASSERT(n>=0);
-    mInputNum = n;
+    GPASSERT(NULL!=type);
+    mT = type;
     mF = NULL;
 }
 GPFunctionTree::~GPFunctionTree()
