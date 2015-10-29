@@ -208,7 +208,7 @@ GPTreeADF::~GPTreeADF()
 GPTreeADFPoint* GPTreeADF::find(float rate)
 {
     GPASSERT(0.0<=rate && rate<1.0);
-    vector<GPAbstractPoint*> nodes = mRoot->display();
+    vector<const GPAbstractPoint*> nodes = mRoot->display();
     int n = rate*nodes.size();
     GPTreeADFPoint* p = (GPTreeADFPoint*)nodes[n];
     return p;
@@ -238,7 +238,7 @@ IGPAutoDefFunction* GPTreeADF::vCopy() const
 int GPTreeADF::vMap(GPParameter* para)
 {
     GPASSERT(NULL!=mRoot);
-    vector<GPAbstractPoint*> allpoints = mRoot->display();
+    vector<const GPAbstractPoint*> allpoints = mRoot->display();
     vector<GPStatusContent*> allcontents;
     int sum = 0;
     for (int i=0; i<allpoints.size(); ++i)

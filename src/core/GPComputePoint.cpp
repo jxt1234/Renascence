@@ -7,11 +7,19 @@
 //
 
 #include "core/GPComputePoint.h"
-GPComputePoint::GPComputePoint(const GPFunctionDataBase::function* f, const std::vector<bool>& completeFlags)
+GPComputePoint::GPComputePoint(const GPFunctionDataBase::function* f)
 {
     mF = f;
-    mFlags = completeFlags;
-    for (int i=0; i<completeFlags.size(); ++i)
+    mFlags = f->inputNeedComplete;
+    if (mFlags.empty())
+    {
+        for (int i=0; i<f->inputType.size(); ++i)
+        {
+            mFlags.push_back(false);
+        }
+    }
+    GPASSERT(mFlags.size() == f->inputType.size());
+    for (int i=0; i<mFlags.size(); ++i)
     {
         mCache.push_back(NULL);
     }

@@ -3,3 +3,4 @@ INPUT input
 OUTPUT output
 STATUS status
 STATUS_CREATOR GP_IStatusType_Create
+COMPLETE_FLAG inputNeedComplete

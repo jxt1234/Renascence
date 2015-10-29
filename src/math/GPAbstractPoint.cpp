@@ -92,18 +92,18 @@ GPAbstractPoint* GPAbstractPoint::deepCopy(GPAbstractPoint* src, GPAbstractPoint
     return result;
 }
 
-std::vector<GPAbstractPoint*> GPAbstractPoint::display()
+std::vector<const GPAbstractPoint*> GPAbstractPoint::display() const
 {
-    vector<GPAbstractPoint*> result;
-    list<GPAbstractPoint*> cache;
+    vector<const GPAbstractPoint*> result;
+    list<const GPAbstractPoint*> cache;
     result.push_back(this);
     cache.push_back(this);
     while(!cache.empty())
     {
-        GPAbstractPoint* p = cache.front();
+        const GPAbstractPoint* p = cache.front();
         for (int i=0; i<(p->mChildren).size(); ++i)
         {
-            GPAbstractPoint* c = p->mChildren[i];
+            const GPAbstractPoint* c = p->mChildren[i];
             result.push_back(c);
             cache.push_back(c);
         }

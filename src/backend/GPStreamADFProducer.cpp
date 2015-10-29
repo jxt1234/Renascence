@@ -25,8 +25,7 @@ GPStreamADFProducer::~GPStreamADFProducer()
 }
 IGPAutoDefFunction* GPStreamADFProducer::vCreateFromFuncTree(const GPFunctionTree* tree) const
 {
-    /*TODO*/
-    return NULL;
+    return new GPStreamADF(tree);
 }
 IGPAutoDefFunction* GPStreamADFProducer::vCreateFromNode(const GPTreeNode* p, const GPFunctionDataBase* base) const
 {

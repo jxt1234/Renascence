@@ -19,6 +19,7 @@
 
 #include "core/IGPAutoDefFunction.h"
 #include "core/GPComputePoint.h"
+#include "core/GPFunctionTree.h"
 
 /*Spectial ADF
  * This kind of ADF will change input and status itself
@@ -28,6 +29,8 @@ class GPStreamADF:public IGPAutoDefFunction
 public:
     typedef GPPtr<GPComputePoint::ContentWrap> CONTENT;
     friend class GPStreamADFProducer;
+
+    GPStreamADF(const GPFunctionTree* root);
     GPStreamADF(const GPTreeNode* n, const GPFunctionDataBase* base);
     virtual ~GPStreamADF();
     
@@ -62,6 +65,7 @@ private:
         SP(const IStatusType* type):mType(type){}
         virtual ~SP(){}
         inline const IStatusType* type() const { return mType;}
+        inline void setType(const IStatusType* type) {mType = type;}
         virtual bool vReceive(CONTENT con, const Point* source);
     private:
         const IStatusType* mType;
@@ -93,8 +97,9 @@ private:
         const IStatusType* mType;
     };
     
-    std::vector<GPPtr<SP>> mSources;
-    std::vector<GPPtr<DP>> mDest;
+    std::vector<GPPtr<Point>> mSources;
+    std::vector<int> mInputPos;
+    std::vector<GPPtr<Point>> mDest;
     
     /*Only has soft reference, for vMap to use*/
     std::vector<CP*> mFunctions;

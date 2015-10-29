@@ -142,6 +142,22 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
                 (warpf->inputType).push_back(sta);
             }
         }
+        else if (cur->name() == GPStrings::FunctionDataBase_COMPLETE_FLAG)
+        {
+            auto attrs = GPStringHelper::divideString(cur->attr());
+            for (auto attr : attrs)
+            {
+                if (attr == "True")
+                {
+                    warpf->inputNeedComplete.push_back(true);
+                }
+                else if (attr == "False")
+                {
+                    warpf->inputNeedComplete.push_back(false);
+                }
+                GPASSERT(0);
+            }
+        }
     }
 }
 

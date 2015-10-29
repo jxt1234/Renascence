@@ -34,6 +34,7 @@ public:
         //For compute
         computeFunction basic;
         std::vector<const IStatusType*> inputType;
+        std::vector<bool> inputNeedComplete;
         std::vector<const IStatusType*> outputType;
         std::vector<const IStatusType*> statusType;
     };

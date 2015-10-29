@@ -52,7 +52,7 @@ public:
         bool mOwn;
     };
 
-    GPComputePoint(const GPFunctionDataBase::function* f, const std::vector<bool>& completeFlags);
+    GPComputePoint(const GPFunctionDataBase::function* f);
     virtual ~GPComputePoint();
     /*inputs can only has one content*/
     bool receive(GPPtr<ContentWrap> inputs, int n);

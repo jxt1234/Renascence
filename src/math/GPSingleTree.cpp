@@ -112,6 +112,6 @@ GPSingleTree::~GPSingleTree()
 int GPSingleTree::len()
 {
     if (NULL == mRoot) return 0;
-    vector<GPAbstractPoint*> list = mRoot->display();
+    vector<const GPAbstractPoint*> list = mRoot->display();
     return list.size();
 }

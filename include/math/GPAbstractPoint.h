@@ -20,6 +20,7 @@
 #include <list>
 #include <ostream>
 #include "utils/RefCount.h"
+#include "utils/GPDebug.h"
 class GPAbstractPoint:public RefCount
 {
 public:
@@ -32,10 +33,15 @@ public:
     GPAbstractPoint(){}
     /*Use for different types of tree to transform*/
     static GPAbstractPoint* deepCopy(GPAbstractPoint* src, IPointCopy* copy);
-    std::vector<GPAbstractPoint*> display();
+    std::vector<const GPAbstractPoint*> display() const;
     virtual ~GPAbstractPoint();
     void addPoint(GPAbstractPoint* p);
     inline size_t getChildrenNumber() const {return mChildren.size();}
+    inline const GPAbstractPoint* getChild(int n) const
+    {
+        GPASSERT(n>=0 && n<mChildren.size());
+        return mChildren[n];
+    }
     void clearChildren();
     bool replace(GPAbstractPoint* oldPoint, GPAbstractPoint* newPoint);
 protected:

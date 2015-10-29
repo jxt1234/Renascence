@@ -123,9 +123,9 @@ public:
             int sum = 0;
             for(int i=n-1; i>=0; --i)
             {
-                sum*=10;
                 if (s[i]>='0' && s[i]<='9')
                 {
+                    sum*=10;
                     sum += s[i]-'0';
                 }
                 else

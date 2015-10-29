@@ -71,21 +71,6 @@ GPPtr<GPTreeNode> GPStreamADF::CP::dump() const
     }
     GPPtr<GPTreeNode> outputs = new GPTreeNode("Output", outputs_str.str());
     root->addChild(outputs);
-    std::ostringstream flags_str;
-    for (auto b : mPoint->flags())
-    {
-        if (b)
-        {
-            flags_str << "True";
-        }
-        else
-        {
-            flags_str << "False";
-        }
-        flags_str << " ";
-    }
-    GPPtr<GPTreeNode> flagsnode = new GPTreeNode("InputFlag", flags_str.str());
-    root->addChild(flagsnode);
     return root;
 }
 
@@ -109,6 +94,63 @@ void GPStreamADF::DP::reset()
     mContents = NULL;
 }
 
+
+GPStreamADF::GPStreamADF(const GPFunctionTree* root)
+{
+    auto rootfunc = root->function();
+    GPASSERT(NULL!=rootfunc);
+    auto lists = root->display();
+    std::map<const GPAbstractPoint*, GPPtr<Point>> maplists;
+    /*Create All Function*/
+    for (auto p : lists)
+    {
+        auto pp = (GPFunctionTree*)p;
+        if (NULL == pp->function())
+        {
+            GPPtr<Point> cp = new SP(NULL);
+            mSources.push_back(cp);
+            mInputPos.push_back(pp->inputNumber());
+            maplists.insert(std::make_pair(p, cp));
+        }
+        else
+        {
+            GPPtr<Point> cp = new CP(new GPComputePoint(pp->function()));
+            mFunctions.push_back((CP*)(cp.get()));
+            maplists.insert(std::make_pair(p, cp));
+        }
+    }
+    /*Dest*/
+    auto rootcp = maplists.find(root)->second;
+    for (int i=0; i<rootfunc->outputType.size(); ++i)
+    {
+        GPPtr<Point> dst = (new DP(rootfunc->outputType[i]));
+        dst->connectInput(rootcp.get());
+        rootcp->connectOutput(dst);
+        mDest.push_back(dst);
+    }
+    /*Connect*/
+    for (auto p : lists)
+    {
+        auto PP = maplists.find(p)->second;
+        auto func = ((GPFunctionTree*)p)->function();
+        size_t n = p->getChildrenNumber();
+        GPASSERT(!(NULL!=func && n==0));
+        for (int i=0; i<n; ++i)
+        {
+            auto pc = p->getChild(i);
+            auto PC = maplists.find(pc)->second;
+            PP->connectInput(PC.get());
+            PC->connectOutput(PP);
+            if (pc->getChildrenNumber() == 0)
+            {
+                SP* s = (SP*)PC.get();
+                s->setType(func->inputType[i]);
+            }
+        }
+    }
+}
+
+
 GPStreamADF::GPStreamADF(const GPTreeNode* n, const GPFunctionDataBase* base)
 {
     auto children = n->getChildren();
@@ -127,6 +169,10 @@ GPStreamADF::GPStreamADF(const GPTreeNode* n, const GPFunctionDataBase* base)
             mSources.push_back(spoint);
             sp_map.insert(std::make_pair(source_name, spoint));
         }
+        for (int i=0; i<mSources.size(); ++i)
+        {
+            mInputPos.push_back(i);
+        }
     }
     std::map<std::string, GPPtr<Point>> cp_map;
     /*ComputePoints*/
@@ -142,39 +188,7 @@ GPStreamADF::GPStreamADF(const GPTreeNode* n, const GPFunctionDataBase* base)
                 FUNC_PRINT_ALL(compute_info->attr().c_str(), s);
             }
             GPASSERT(NULL!=function);
-            std::vector<bool> flags;
-            for (auto info : compute_info->getChildren())
-            {
-                if (info->name() == "InputFlag")
-                {
-                    auto attrs = GPStringHelper::divideString(info->attr());
-                    for (auto attr : attrs)
-                    {
-                        if (attr == "False")
-                        {
-                            flags.push_back(false);
-                        }
-                        else if (attr == "True")
-                        {
-                            flags.push_back(true);
-                        }
-                        else
-                        {
-                            FUNC_PRINT_ALL(attr.c_str(), s);
-                            GPASSERT(0);
-                        }
-                    }
-                }
-            }
-            if (flags.size() == 0)
-            {
-                for (auto inp : function->inputType)
-                {
-                    GPASSERT(NULL!=inp);//Make Xcode check happy
-                    flags.push_back(false);
-                }
-            }
-            auto node = new CP(new GPComputePoint(function, flags));
+            auto node = new CP(new GPComputePoint(function));
             mFunctions.push_back(node);
             cp_map.insert(std::make_pair(compute_info->name(), node));
         }
@@ -253,12 +267,13 @@ GPStreamADF::~GPStreamADF()
 GPContents* GPStreamADF::vRun(GPContents* inputs)
 {
     GPASSERT(NULL!=inputs);
-    /*TODO*/
     GPASSERT(inputs->size() == mSources.size());
     std::vector<CONTENT> inputsWrap;
     for (int i=0; i<inputs->size(); ++i)
     {
-        inputsWrap.push_back(new GPComputePoint::ContentWrap(inputs->getContent(i).content, inputs->getContent(i).type));
+        auto pos = mInputPos[i];
+        GPASSERT(pos < inputs->size());
+        inputsWrap.push_back(new GPComputePoint::ContentWrap(inputs->getContent(pos).content, inputs->getContent(pos).type));
     }
     for (int i=0; i<inputsWrap.size(); ++i)
     {
@@ -266,8 +281,9 @@ GPContents* GPStreamADF::vRun(GPContents* inputs)
         inputsWrap[i]->releaseForFree();
     }
     bool res_valid = true;
-    for (auto d : mDest)
+    for (auto dv : mDest)
     {
+        DP* d = (DP*)dv.get();
         auto c_unit = d->get();
         if (NULL == c_unit.get())
         {
@@ -280,8 +296,9 @@ GPContents* GPStreamADF::vRun(GPContents* inputs)
         return NULL;
     }
     auto res = new GPContents;
-    for (auto d : mDest)
+    for (auto dv : mDest)
     {
+        DP* d = (DP*)dv.get();
         auto unit = d->get();
         res->push(unit->getContent(), unit->getType());
         unit->releaseForFree();
@@ -299,9 +316,10 @@ GPTreeNode* GPStreamADF::vSave() const
     root->addChild(cp_node);
     root->addChild(status_node);
     
-    for (auto s : mSources)
+    for (auto sv : mSources)
     {
-        source_node->addChild(_constructNodeName(s.get()), s->type()->name());
+        auto s = (SP*)sv.get();
+        source_node->addChild(_constructNodeName(s), s->type()->name());
     }
     for (auto c : mFunctions)
     {
@@ -311,12 +329,6 @@ GPTreeNode* GPStreamADF::vSave() const
 }
 IGPAutoDefFunction* GPStreamADF::vCopy() const
 {
-    std::vector<GPPtr<SP> > sources;
-    for (auto s:mSources)
-    {
-        sources.push_back(new SP(s->type()));
-    }
-    /*TODO*/
     return NULL;
 }
 int GPStreamADF::vMapStructure(GPParameter* para, bool& changed)
