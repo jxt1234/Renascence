@@ -26,6 +26,7 @@
 class GPStreamADF:public IGPAutoDefFunction
 {
 public:
+    typedef GPPtr<GPComputePoint::ContentWrap> CONTENT;
     friend class GPStreamADFProducer;
     GPStreamADF(const GPTreeNode* n, const GPFunctionDataBase* base);
     virtual ~GPStreamADF();
@@ -45,7 +46,7 @@ private:
     public:
         Point(){}
         virtual ~Point(){}
-        virtual bool vReceive(GPContents* c, const Point* source) = 0;
+        virtual bool vReceive(CONTENT c, const Point* source) = 0;
         
         void connectInput(const Point* input){mInputs.push_back(input);}
         void connectOutput(GPPtr<Point> p){mOutputs.push_back(p);}
@@ -61,7 +62,7 @@ private:
         SP(const IStatusType* type):mType(type){}
         virtual ~SP(){}
         inline const IStatusType* type() const { return mType;}
-        virtual bool vReceive(GPContents* con, const Point* source);
+        virtual bool vReceive(CONTENT con, const Point* source);
     private:
         const IStatusType* mType;
     };
@@ -72,7 +73,7 @@ private:
         CP(GPPtr<GPComputePoint> point):mPoint(point){}
         virtual ~CP(){}
         inline GPComputePoint* get() const {return mPoint.get();}
-        virtual bool vReceive(GPContents* c, const Point* source);
+        virtual bool vReceive(CONTENT c, const Point* source);
         GPPtr<GPTreeNode> dump() const;
     private:
         GPPtr<GPComputePoint> mPoint;
@@ -82,13 +83,14 @@ private:
     {
     public:
         DP(const IStatusType* type);
-        virtual ~DP() {mContents.clear();}
-        inline GPContents& get() {return mContents;}
-        inline const IStatusType* getType() const {return mContents.contents[0].type;}
+        virtual ~DP() {}
+        inline CONTENT get() {return mContents;}
+        inline const IStatusType* getType() const {return mType;}
         void reset();
-        virtual bool vReceive(GPContents* c, const Point* source);
+        virtual bool vReceive(CONTENT c, const Point* source);
     private:
-        GPContents mContents;
+        CONTENT mContents;
+        const IStatusType* mType;
     };
     
     std::vector<GPPtr<SP>> mSources;
@@ -97,6 +99,5 @@ private:
     /*Only has soft reference, for vMap to use*/
     std::vector<CP*> mFunctions;
     
-    GPStreamADF(const std::vector<GPPtr<SP> >& Source, const std::vector<GPPtr<DP>>& dest, const std::vector<CP*>& functions);
 };
 #endif /* defined(__GP__GPStreamADF__) */

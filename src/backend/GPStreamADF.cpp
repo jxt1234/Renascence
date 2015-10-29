@@ -24,16 +24,15 @@ static std::string _constructNodeName(void* p)
     os << "Point_"<<p;
     return os.str();
 }
-bool GPStreamADF::SP::vReceive(GPContents* con, const Point* source)
+bool GPStreamADF::SP::vReceive(CONTENT con, const Point* source)
 {
     GPASSERT(NULL==source);
-    GPASSERT(NULL!=con);
-    GPASSERT(1 == con->size());
+    GPASSERT(NULL!=con.get());
     mOutputs[0]->vReceive(con, this);
     return true;
 }
 
-bool GPStreamADF::CP::vReceive(GPContents* c, const Point* source)
+bool GPStreamADF::CP::vReceive(CONTENT c, const Point* source)
 {
     for (int i=0; i<mInputs.size(); ++i)
     {
@@ -41,16 +40,12 @@ bool GPStreamADF::CP::vReceive(GPContents* c, const Point* source)
         {
             if (mPoint->receive(c, i))
             {
-                GPContents* c = mPoint->compute();
-                GPASSERT(c->size() == mOutputs.size());
-                for (int i=0; i<c->size(); ++i)
+                auto c = mPoint->compute();
+                GPASSERT(c.size() == mOutputs.size());
+                for (int i=0; i<c.size(); ++i)
                 {
-                    GPContents unit;
-                    unit.push((*c)[i]);
-                    mOutputs[i]->vReceive(&unit, this);
+                    mOutputs[i]->vReceive(c[i], this);
                 }
-                /*Should not clear c!*/
-                delete c;
             }
             return true;
         }
@@ -97,42 +92,22 @@ GPPtr<GPTreeNode> GPStreamADF::CP::dump() const
 
 GPStreamADF::DP::DP(const IStatusType* t)
 {
-    mContents.push(NULL, t);
+    mType = t;
+    mContents = NULL;
 }
 
 
-bool GPStreamADF::DP::vReceive(GPContents* c, const Point* source)
+bool GPStreamADF::DP::vReceive(CONTENT c, const Point* source)
 {
-    GPASSERT(NULL!=c);
-    GPASSERT(1 == c->size());
     GPASSERT(1 == mInputs.size());
-    GPASSERT(mContents.size() == mInputs.size());
-    GPASSERT(mInputs[0] == source);
-    auto unit = (*c)[0];
-    GPASSERT(mContents.contents[0].type == unit.type);
-    if (NULL != mContents.get(0))
-    {
-        unit.type->vMerge(mContents.get(0), unit.content);
-    }
-    else
-    {
-        mContents.contents[0] = (*c)[0];
-    }
+    mContents = c;
     return false;
 }
 
 void GPStreamADF::DP::reset()
 {
-    mContents.clearContents();
+    mContents = NULL;
 }
-GPStreamADF::GPStreamADF(const std::vector<GPPtr<SP> >& Source, const std::vector<GPPtr<DP>>& dest, const std::vector<CP*>& functions)
-{
-    mSources = Source;
-    mDest = dest;
-    mFunctions = functions;
-}
-
-
 
 GPStreamADF::GPStreamADF(const GPTreeNode* n, const GPFunctionDataBase* base)
 {
@@ -278,26 +253,23 @@ GPStreamADF::~GPStreamADF()
 GPContents* GPStreamADF::vRun(GPContents* inputs)
 {
     GPASSERT(NULL!=inputs);
+    /*TODO*/
     GPASSERT(inputs->size() == mSources.size());
+    std::vector<CONTENT> inputsWrap;
     for (int i=0; i<inputs->size(); ++i)
     {
-        GPContents c;
-        c.push((*inputs)[i]);
-        mSources[i]->vReceive(&c, NULL);
+        inputsWrap.push_back(new GPComputePoint::ContentWrap(inputs->getContent(i).content, inputs->getContent(i).type));
     }
-    /*The contents of inputs is cached in ADF, so release it*/
-    inputs->releaseForFree();
-    GPContents c;
+    for (int i=0; i<inputsWrap.size(); ++i)
+    {
+        mSources[i]->vReceive(inputsWrap[i], NULL);
+        inputsWrap[i]->releaseForFree();
+    }
+    bool res_valid = true;
     for (auto d : mDest)
     {
         auto c_unit = d->get();
-        GPASSERT(1 == c_unit.size());
-        c.push(c_unit.get(0), c_unit.contents[0].type);
-    }
-    bool res_valid = true;
-    for (auto u : c.contents)
-    {
-        if (NULL == u.content)
+        if (NULL == c_unit.get())
         {
             res_valid = false;
             break;
@@ -308,13 +280,11 @@ GPContents* GPStreamADF::vRun(GPContents* inputs)
         return NULL;
     }
     auto res = new GPContents;
-    for (auto u : c.contents)
-    {
-        res->push(u);
-    }
     for (auto d : mDest)
     {
-        d->get().releaseForFree();
+        auto unit = d->get();
+        res->push(unit->getContent(), unit->getType());
+        unit->releaseForFree();
     }
     return res;
 }

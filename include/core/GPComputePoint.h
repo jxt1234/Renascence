@@ -23,20 +23,49 @@
 class GPComputePoint:public RefCount
 {
 public:
+    class ContentWrap:public RefCount
+    {
+    public:
+        ContentWrap(void* content, const IStatusType* t)
+        {
+            GPASSERT(NULL!=content && NULL!=t);
+            mT = t;
+            mContent = content;
+            mOwn = true;
+        }
+        virtual ~ContentWrap()
+        {
+            if (mOwn)
+            {
+                mT->vFree(mContent);
+            }
+        }
+        void releaseForFree()
+        {
+            mOwn = false;
+        }
+        void* getContent() const {return mContent;}
+        const IStatusType* getType() const {return mT;}
+    private:
+        void* mContent;
+        const IStatusType* mT;
+        bool mOwn;
+    };
+
     GPComputePoint(const GPFunctionDataBase::function* f, const std::vector<bool>& completeFlags);
     virtual ~GPComputePoint();
     /*inputs can only has one content*/
-    bool receive(GPContents* inputs, int n);
+    bool receive(GPPtr<ContentWrap> inputs, int n);
     inline const GPFunctionDataBase::function* get() const {return mF;}
     const std::vector<bool>& flags() const {return mFlags;}
     int map(double* value, int n);
     inline bool completed() const {return mComplte;}
-    GPContents* compute();
+    std::vector<GPPtr<ContentWrap>> compute();
 private:
     bool _computeCompleteStatus() const;
     const GPFunctionDataBase::function* mF;
     std::vector<bool> mFlags;
-    GPContents mCache;
+    std::vector<GPPtr<ContentWrap>> mCache;
     bool mComplte;
     std::vector<GPPtr<GPStatusContent> > mStatus;
 };
