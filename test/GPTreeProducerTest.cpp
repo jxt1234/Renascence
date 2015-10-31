@@ -19,7 +19,6 @@ void GPTreeProducerTest::run()
         const IStatusType* bmp = base->vQueryType(string("TrBmp"));
         /*Construct compose function*/
         vector<IGPAutoDefFunction*> funcs;
-        GPContents* bmpoutput;//For input
         vector<const IStatusType*> input;
         vector<const IStatusType*> output;
         output.push_back(bmp);

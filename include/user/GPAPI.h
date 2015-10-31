@@ -24,7 +24,8 @@ class AGPProducer;
 enum
 {
     GP_PRODUCER_TREE=0,
-    GP_PRODUCER_GRAPHIC=1
+    GP_PRODUCER_GRAPHIC=1,
+    GP_PRODUCER_STREAM=2
 };
 
 /*Set basic path of lib

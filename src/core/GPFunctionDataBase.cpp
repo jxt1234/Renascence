@@ -155,7 +155,10 @@ void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const
                 {
                     warpf->inputNeedComplete.push_back(false);
                 }
-                GPASSERT(0);
+                else
+                {
+                    GPASSERT(0);
+                }
             }
         }
     }

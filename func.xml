@@ -4,6 +4,7 @@
 	<output>TrBmp</output>
     <shortName>C</shortName>
 	<input>TrBmp TrBmp</input>
+    <inputNeedComplete>True False</inputNeedComplete>
 	<status>float</status>
 </TrPackageCompse>
 
