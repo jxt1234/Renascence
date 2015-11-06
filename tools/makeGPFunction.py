@@ -194,10 +194,40 @@ def generateTypeFiles(filelist, outputt, inputt):
     with open(TYPECPPFILE, 'w') as f:
         f.write(cppfile)
     return
+
+def validFunctionName(functions, l):
+    if l<=0:
+        return True
+    for f in functions:
+        if len(f)<=l:
+            return False
+    fs = []
+    for f in functions:
+        f1 = f[0:l]
+        fs.append(f1)
+    fs = set(fs)
+    if len(fs)==1:
+        return True
+    return False
+def getShortFuncs(functions):
+    functionsName = []
+    for f in functions:
+        functionsName.append(f.name);
+    l = 0
+    while (validFunctionName(functionsName, l)):
+        l+=1
+    l = l-1
+    shortFunctions = []
+    for f in functionsName:
+        shortFunctions.append(f[l:len(f)])
+    return shortFunctions
+
 def generateXML(functions):
     xmlcontents = '<NULL>\n'
-    for func in functions:
+    shortFunctions = getShortFuncs(functions);
+    for [i,func] in enumerate(functions):
         xmlcontents += '<'+renameFunction(func.name)+'>\n'
+        xmlcontents += '<shortName>' +shortFunctions[i] + '</shortName>\n'
         xmlcontents += '<output>' + func.output.replace('*', '') + '</output>\n'
         xmlcontents += '<status>'
         for t in func.status:

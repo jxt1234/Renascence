@@ -259,7 +259,7 @@ gptool.out run func.xml outputfunc.xml input=1.txt,2.jpg output=3.jpg
 1、ADF导入导出机制重构（完成）
 
 2015.9.19
-1、修改随机数算法
+1、修改随机数算法（更新）
 2、实现根据输入输出类型完成函数匹配的机制（9.24完成）
 
 2015.9.24
@@ -277,9 +277,9 @@ gptool.out run func.xml outputfunc.xml input=1.txt,2.jpg output=3.jpg
 1、vMutate方案修改，加一个参数供 ADF 去决策如何变异结构，取消ADF中变异的随机权限（9.30完成）
 
 2015.9.28
-1、加入 GPTreeADF 转化为 流式ADF 的接口，以便支持流式运算逻辑自生成
-2、完善输入适配机制
-3、GPContent加入引用计数机制/metaData（可选）
+1、加入 GPTreeADF 转化为 流式ADF 的接口，以便支持流式运算逻辑自生成（取消，由重构方案替代）
+2、完善输入适配机制（10.31完成）
+3、GPContent加入引用计数机制/metaData（可选）（10.31取消）
 
 2015.9.29
 1、在函数生成逻辑中支持多输出函数
@@ -302,3 +302,7 @@ GP 逻辑生成的重构方案
 2015.10.28
 1、恢复重构后结构变异特性
 2、恢复重构后GPSuit和GPTool工程
+
+2015.10.31
+1、随机数算法移植
+2、自动适配的脚本支持shortName

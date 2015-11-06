@@ -111,6 +111,10 @@ std::vector<GPPtr<GPComputePoint::ContentWrap>> GPComputePoint::compute()
             inputs.push(s->content(), s->type());
         }
         dst = mF->basic(&inputs);
+        for (int i=0; i<mCache.size(); ++i)
+        {
+            mCache[i] = NULL;
+        }
         mComplte = _computeCompleteStatus();
     }
     /*FIXME*/
