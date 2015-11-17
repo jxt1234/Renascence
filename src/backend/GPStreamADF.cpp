@@ -40,11 +40,11 @@ bool GPStreamADF::CP::vReceive(CONTENT c, const Point* source)
         {
             if (mPoint->receive(c, i))
             {
-                auto c = mPoint->compute();
-                GPASSERT(c.size() == mOutputs.size());
-                for (int i=0; i<c.size(); ++i)
+                auto comp = mPoint->compute();
+                GPASSERT(comp.size() == mOutputs.size());
+                for (int i=0; i<comp.size(); ++i)
                 {
-                    mOutputs[i]->vReceive(c[i], this);
+                    mOutputs[i]->vReceive(comp[i], this);
                 }
             }
             return true;
@@ -268,17 +268,21 @@ GPContents* GPStreamADF::vRun(GPContents* inputs)
 {
     GPASSERT(NULL!=inputs);
     GPASSERT(inputs->size() == mSources.size());
-    std::vector<CONTENT> inputsWrap;
+    for (int i=0; i<inputs->size(); ++i)
+    {
+        //FUNC_PRINT_ALL(inputs->getContent(mInputPos[i]).content, p);
+    }
     for (int i=0; i<inputs->size(); ++i)
     {
         auto pos = mInputPos[i];
         GPASSERT(pos < inputs->size());
-        inputsWrap.push_back(new GPComputePoint::ContentWrap(inputs->getContent(pos).content, inputs->getContent(pos).type));
-    }
-    for (int i=0; i<inputsWrap.size(); ++i)
-    {
-        mSources[i]->vReceive(inputsWrap[i], NULL);
-        inputsWrap[i]->releaseForFree();
+        //FUNC_PRINT_ALL(inputs->getContent(mInputPos[i]).content, p);
+        if (NULL!=inputs->getContent(pos).content)
+        {
+            CONTENT c = new GPComputePoint::ContentWrap(inputs->getContent(pos).content, inputs->getContent(pos).type);
+            mSources[i]->vReceive(c, NULL);
+            c->releaseForFree();
+        }
     }
     bool res_valid = true;
     for (auto dv : mDest)

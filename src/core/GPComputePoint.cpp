@@ -37,11 +37,19 @@ bool GPComputePoint::receive(GPPtr<ContentWrap> inputs, int n)
 {
     GPASSERT(NULL!=inputs.get());
     GPASSERT(0<=n && n<mCache.size());
-    if (mCache[n].get()!=NULL && mFlags[n])
+    if (mCache[n].get()!=NULL)
     {
         auto dst = mCache[n];
         GPASSERT(inputs->getType() == dst->getType());
-        dst->getType()->vMerge(dst->getContent(), inputs->getContent());
+        if (dst->getContent() == inputs->getContent())
+        {
+            return false;
+        }
+        bool merge = dst->getType()->vMerge(dst->getContent(), inputs->getContent());
+        if (!merge)
+        {
+            mCache[n] = inputs;
+        }
     }
     else
     {
@@ -113,7 +121,10 @@ std::vector<GPPtr<GPComputePoint::ContentWrap>> GPComputePoint::compute()
         dst = mF->basic(&inputs);
         for (int i=0; i<mCache.size(); ++i)
         {
-            mCache[i] = NULL;
+            if (!mFlags[i])
+            {
+                mCache[i] = NULL;
+            }
         }
         mComplte = _computeCompleteStatus();
     }
