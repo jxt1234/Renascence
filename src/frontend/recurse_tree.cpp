@@ -29,9 +29,16 @@ vector<int> computePoint::filter(const vector<vector<const GPProducerUtils::func
         for (int j=0; j<comboUnit.size(); ++j)
         {
             /*Check if it contained old output*/
-            if (find(output.begin(), output.end(), comboUnit[j]) != output.end())
+            for (auto forbids : output)
             {
-                fit = false;
+                if (comboUnit[j]->basic == forbids->basic)
+                {
+                    fit = false;
+                    break;
+                }
+            }
+            if (!fit)
+            {
                 break;
             }
             /*Check if it contained unobtained input*/

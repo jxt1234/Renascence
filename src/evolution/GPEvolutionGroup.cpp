@@ -64,15 +64,19 @@ GPPtr<IGPAutoDefFunction> GPEvolutionGroup::func_para::invalidate(GPPtr<IGPAutoD
     if (changed)
     {
         /*Randomly initialize*/
-        auto pn = function->vMap(NULL);
-        pParamter = new GPParameter(pn);
-        for (int i=0; i<pParamter->size(); ++i)
-        {
-            pParamter->attach()[i] = GPRandom::rate();
-        }
         function = sys->getBack()->vCreateFromFuncTree(basic);
+        auto pn = function->vMap(NULL);
+        GPPtr<GPParameter> new_p = new GPParameter(pn);
+        for (int i=0; i<new_p->size(); ++i)
+        {
+            new_p->attach()[i] = GPRandom::rate();
+        }
+        function->vMap(new_p.get());
     }
-    function->vMap(pParamter.get());
+    else
+    {
+        function->vMap(pParamter.get());
+    }
     return function;
 }
 
@@ -170,6 +174,7 @@ void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)>
     {
         mGroup.push_back(group[i]);
     }
+    group.clear();
     _best(fit_func);
     _expand();
     /*Evolution*/

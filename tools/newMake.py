@@ -4,7 +4,8 @@
 import os
 import sys
 CFLAGS="-O3 -g -fPIC"
-CFLAGS="-g -fPIC"
+if len(sys.argv)>1:
+    CFLAGS="-g -fPIC"
 
 #CPP="g++-4.8 -std=c++11 "
 #C="gcc-4.8 -std=c11 "

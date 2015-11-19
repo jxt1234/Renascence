@@ -104,7 +104,29 @@ static std::vector<GPFunctionTreePoint*> _searchAllFunction(const std::vector<co
     for (auto c : contents)
     {
         GPASSERT(1 == c.size());
-        result.push_back(c[0]);
+        auto real_inputTypes = c[0]->getInputTypes();
+        bool valid = true;
+        if (real_inputTypes.size() != inputType.size())
+        {
+            valid = false;
+        }
+        else
+        {
+            for (int i=0; i<inputType.size(); ++i)
+            {
+                if (real_inputTypes[i]!=inputType[i])
+                {
+                    valid = false;
+                    break;
+                }
+            }
+        }
+        if (valid)
+        {
+            result.push_back(c[0]);
+            c[0]->addRef();
+        }
+        c[0]->decRef();
     }
     return result;
 }
@@ -223,9 +245,14 @@ int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter*
     }
     changed = true;
     GPFunctionTreePoint* origin_point = allpoints[n];
-    auto inputs = origin_point->function()->inputType;
+    auto inputs = origin_point->getInputTypes();
     auto outputs = origin_point->function()->outputType;
     auto treepoints = _searchAllFunction(outputs, inputs, mUtils);
+    if (treepoints.empty())
+    {
+        changed = false;
+        return magic_number;
+    }
     n = p2*treepoints.size();
     if (n >= treepoints.size())
     {

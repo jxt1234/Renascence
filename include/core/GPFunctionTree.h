@@ -18,6 +18,7 @@
 #include "math/GPAbstractPoint.h"
 #include "GPFunctionDataBase.h"
 #include "GPParameter.h"
+#include <map>
 class GPFunctionTreePoint:public GPAbstractPoint
 {
 public:
@@ -25,6 +26,9 @@ public:
     virtual ~GPFunctionTreePoint();
     inline const GPFunctionDataBase::function* function() const {return mF;}
     inline int inputNumber() const {return mInputNumber;}
+    
+    std::vector<const IStatusType*> getInputTypes() const;
+    
     class Iter :public RefCount
     {
     public:
@@ -34,6 +38,7 @@ public:
         virtual bool vNext() = 0;
     };
 private:
+    void _getInputTypes(std::vector<const IStatusType*>& types) const;
     /*mF=NULL for input node, mInputNumber = -1 for function node*/
     const GPFunctionDataBase::function* mF;
     int mInputNumber;

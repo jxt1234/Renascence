@@ -25,7 +25,7 @@ static int test_main()
         vector<const IStatusType*> eOut;
         eOut.push_back(bmp);
         vector<const IStatusType*> eInp;
-        GPEvolutionGroup* group = new GPEvolutionGroup(&gen, 2, 2);
+        GPEvolutionGroup* group = new GPEvolutionGroup(&gen, 200, 200);
         group->vSetInput(eInp);
         group->vSetOutput(eOut);
         IGPAutoDefFunction* fit = gen.createFunction(vector<const IStatusType*>(1,doubleId), vector<const IStatusType*>(1,bmp));

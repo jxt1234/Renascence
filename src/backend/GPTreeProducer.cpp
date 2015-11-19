@@ -42,7 +42,7 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFromFuncTree(const GPFunctionTree* tr
 {
     GPFunctionTreeCopy c;
     GPTreeADFPoint* p = (GPTreeADFPoint*)(GPAbstractPoint::deepCopy(tree->root(), &c));
-    return new GPTreeADF(p, this);
+    return new GPTreeADF(p);
 }
 
 
@@ -54,7 +54,7 @@ IGPAutoDefFunction* GPTreeProducer::vCreateFromNode(const GPTreeNode* node, cons
 {
     GPASSERT(node->name() == "GPTreeADF");
     GPTreeADFPoint* point = GPTreeADFPoint::xmlLoad(node->getChildren()[0].get(), base);
-    return new GPTreeADF(point, this);
+    return new GPTreeADF(point);
 }
 
 

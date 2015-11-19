@@ -161,7 +161,7 @@ GPContents* GPTreeADFPoint::compute(GPContents* input)
     //Get Inputs from childern point
     for (int i=0; i<mChildren.size(); ++i)
     {
-        GPTreeADFPoint* p = (GPTreeADFPoint*)(mChildren[i]);
+        GPTreeADFPoint* p = GPCONVERT(GPTreeADFPoint, mChildren[i]);
         GPASSERT(NULL!=p);
         if (p->mFunc == NULL)
         {
@@ -194,16 +194,14 @@ GPContents* GPTreeADFPoint::compute(GPContents* input)
     return result;
 }
 
-GPTreeADF::GPTreeADF(GPTreeADFPoint* root, const GPTreeProducer* p)
+GPTreeADF::GPTreeADF(GPTreeADFPoint* root)
 {
-    GPASSERT(NULL!=p);
     GPASSERT(NULL!=root);
     mRoot = root;
-    mProducer = p;
 }
 GPTreeADF::~GPTreeADF()
 {
-    if (NULL!=mRoot) delete mRoot;
+    if (NULL!=mRoot) mRoot->decRef();
 }
 GPTreeADFPoint* GPTreeADF::find(float rate)
 {
@@ -233,7 +231,7 @@ IGPAutoDefFunction* GPTreeADF::vCopy() const
     GPTreeADFPoint::GPTreeADFCopy c;
     GPTreeADFPoint* root = mRoot;
     GPTreeADFPoint* p = (GPTreeADFPoint*)GPAbstractPoint::deepCopy(root, &c);
-    return new GPTreeADF(p, mProducer);
+    return new GPTreeADF(p);
 }
 int GPTreeADF::vMap(GPParameter* para)
 {

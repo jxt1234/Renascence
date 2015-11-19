@@ -58,7 +58,7 @@ class GPTreeADF:public IGPAutoDefFunction
 {
 public:
     //Basic Functions
-    GPTreeADF(GPTreeADFPoint* root, const GPTreeProducer* p);
+    GPTreeADF(GPTreeADFPoint* root);
     virtual ~GPTreeADF();
     virtual IGPAutoDefFunction* vCopy() const;
     //Basic API
@@ -69,7 +69,6 @@ public:
     virtual int vMap(GPParameter* para);
 private:
     GPTreeADFPoint* mRoot;
-    const GPTreeProducer* mProducer;
 };
 
 
