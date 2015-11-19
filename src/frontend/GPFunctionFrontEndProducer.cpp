@@ -2,7 +2,7 @@
 #include "frontend/GPFormulaTree.h"
 #include "math/carryGroup2.h"
 #include "recurse_tree.h"
-
+#include <algorithm>
 using namespace std;
 
 static vector<vector<const GPProducerUtils::func*> > _filterOutputType(const vector<vector<const GPProducerUtils::func*> >& origin, const std::vector<const IStatusType*>& inputType)

@@ -38,9 +38,9 @@
 #define GPASSERT(x) assert(x)
 #else
 #define GPASSERT(x) \
-    {bool result = (x);\
-        if (!(result))\
-        FUNC_PRINT((result));}
+    {bool ___result = (x);\
+        if (!(___result))\
+        FUNC_PRINT((___result));}
 #endif
 
 #ifdef BUILD_FOR_ANDROID

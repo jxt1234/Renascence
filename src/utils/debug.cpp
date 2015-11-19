@@ -14,8 +14,8 @@
    limitations under the License.
 ******************************************************************/
 #include "utils/GPDebug.h"
-#include <execinfo.h>
 #ifndef BUILD_FOR_ANDROID
+#include <execinfo.h>
 void dump_stack()
 {
     void* callstack[128];
