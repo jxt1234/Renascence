@@ -20,16 +20,18 @@
 #include "utils/GPRandom.h"
 #include "evolution/GPEvolutionGroup.h"
 #include "optimizor/GPOptimizorFactory.h"
+#include "frontend/GPFrontEndProducer.h"
+#include "backend/GPBackEndProducer.h"
 using namespace std;
 
-void GPEvolutionGroup::func_para::init(IGPAutoDefFunction* basic)
+void GPEvolutionGroup::func_para::init(IGPAutoDefFunction* function, GPFunctionTree* basic, const GPProducer* sys)
 {
     GPASSERT(NULL!=basic);
     bool changed;//Not used, just for api
-    auto sn = basic->vMapStructure(NULL, changed);
+    auto sn = sys->getFront()->vMapStructure(basic, NULL, changed);
     pStructure = new GPParameter(sn);
     pStructure->clear(0.0f);
-    auto pn = basic->vMap(NULL);
+    auto pn = function->vMap(NULL);
     pParamter = new GPParameter(pn);
     for (int i=0; i<pParamter->size(); ++i)
     {
@@ -54,22 +56,30 @@ void GPEvolutionGroup::func_para::mutate()
     pStructure->makeValid();
     pParamter->makeValid();
 }
-void GPEvolutionGroup::func_para::invalidate(IGPAutoDefFunction* basic)
+GPPtr<IGPAutoDefFunction> GPEvolutionGroup::func_para::invalidate(GPPtr<IGPAutoDefFunction> function, GPFunctionTree* basic, const GPProducer* sys)
 {
     GPASSERT(NULL!=basic);
-    bool changed = false;
-    basic->vMapStructure(pStructure.get(), changed);
-    if (!changed)
+    bool changed;
+    sys->getFront()->vMapStructure(basic, pStructure.get(), changed);
+    if (changed)
     {
-        basic->vMap(pParamter.get());
+        /*Randomly initialize*/
+        auto pn = function->vMap(NULL);
+        pParamter = new GPParameter(pn);
+        for (int i=0; i<pParamter->size(); ++i)
+        {
+            pParamter->attach()[i] = GPRandom::rate();
+        }
+        function = sys->getBack()->vCreateFromFuncTree(basic);
     }
+    function->vMap(pParamter.get());
+    return function;
 }
 
 
-GPEvolutionGroup::GPEvolutionGroup(GPProducer* sys, int time, int size):mSys(sys)
+GPEvolutionGroup::GPEvolutionGroup(GPProducer* sys, int time, int size):mSys(sys), mBestWrap(NULL,NULL)
 {
     GPASSERT(NULL!=sys);
-    mBest = NULL;
     mTime = time;
     mSize = size;
     GPRandom::init();
@@ -82,12 +92,12 @@ GPEvolutionGroup::~GPEvolutionGroup()
 void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)>& f)
 {
     GPASSERT(mGroup.size()>1);
-    double _max = f((*(mGroup.begin())).get());
+    double _max = f((*mGroup.begin())->mFunction.get());
     auto iter = mGroup.begin();
     auto best = mGroup[0];
     for (iter++; iter!=mGroup.end(); iter++)
     {
-        double _f = f((*iter).get());
+        double _f = f((*iter)->mFunction.get());
         if (_f > _max)
         {
             best = *iter;
@@ -95,11 +105,12 @@ void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)>& f)
         }
     }
     bool changed = true;
-    if (mBest.get()!=NULL)
+    if (mBestWrap.mFunction.get()!=NULL)
     {
         if (mBestFit <= _max)
         {
-            mBest = best->vCopy();
+            mBestWrap.mFunction = best->mFunction->vCopy();
+            mBestWrap.mTree = GPFunctionTree::copy(best->mTree.get());
             mBestFit = _max;
         }
         else
@@ -109,13 +120,14 @@ void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)>& f)
     }
     else
     {
-        mBest = best->vCopy();
+        mBestWrap.mFunction = best->mFunction->vCopy();
+        mBestWrap.mTree = GPFunctionTree::copy(best->mTree.get());
         mBestFit = _max;
     }
     if (changed)
     {
         mPara = new func_para;
-        mPara->init(mBest.get());
+        mPara->init(mBestWrap.mFunction.get(), mBestWrap.mTree.get(), mSys);
     }
 }
 
@@ -124,7 +136,7 @@ void GPEvolutionGroup::_expand()
     mGroup.clear();
     for (int i=0; i<mSize; ++i)
     {
-        mGroup.push_back(mBest->vCopy());
+        mGroup.push_back(new GPProducer::FunctionWrap(mBestWrap.mFunction->vCopy(), GPFunctionTree::copy(mBestWrap.mTree.get())));
     }
 }
 
@@ -134,25 +146,25 @@ void GPEvolutionGroup::_mutate()
     for (auto f:mGroup)
     {
         mPara->mutate();
-        mPara->invalidate(f.get());
+        f->mFunction = mPara->invalidate(f->mFunction, f->mTree.get(), mSys);
     }
 }
 
 void GPEvolutionGroup::loadBest(const GPTreeNode* node)
 {
     GPASSERT(NULL!=mSys);
-    mBest = mSys->createFunction(node);
+    mBestWrap.mFunction = mSys->createFunction(node);
 }
 
 void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func)
 {
-    if (NULL!=mBest.get())
+    if (NULL!=mBestWrap.mFunction.get())
     {
-        mBestFit = fit_func(mBest.get());
+        mBestFit = fit_func(mBestWrap.mFunction.get());
     }
     /*Create the initial group*/
     mGroup.clear();
-    auto group = mSys->listAllFunction(mOutput, mInput);
+    auto group = mSys->listAllFunctionWithBackUp(mOutput, mInput);
     GPASSERT(!group.empty());
     for (int i=0; i<group.size() && i<mSize; ++i)
     {

@@ -270,8 +270,3 @@ int GPTreeADF::vMap(GPParameter* para)
     }
     return sum;
 }
-
-int GPTreeADF::vMapStructure(GPParameter* para, bool& changed)
-{
-    return 1;
-}

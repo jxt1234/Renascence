@@ -336,11 +336,6 @@ IGPAutoDefFunction* GPStreamADF::vCopy() const
 {
     return NULL;
 }
-int GPStreamADF::vMapStructure(GPParameter* para, bool& changed)
-{
-    changed = false;
-    return 0;
-}
 int GPStreamADF::vMap(GPParameter* para)
 {
     int sum = 0;

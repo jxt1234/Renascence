@@ -38,8 +38,6 @@ public:
     virtual GPTreeNode* vSave() const;
     /*Return a new copy of this Function*/
     virtual IGPAutoDefFunction* vCopy() const;
-    /*Mutate function, for evolution*/
-    virtual int vMapStructure(GPParameter* para, bool& changed);
     /*Return the number of parameter needed, do nothing if para.get()==null*/
     virtual int vMap(GPParameter* para);
     

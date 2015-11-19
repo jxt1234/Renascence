@@ -44,3 +44,15 @@ IGPAutoDefFunction* GPProducer::createFunction(const GPTreeNode* node)
 {
     return mBack->vCreateFromNode(node, mBase);
 }
+
+std::vector<GPPtr<GPProducer::FunctionWrap>> GPProducer::listAllFunctionWithBackUp(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs)
+{
+    std::vector<GPPtr<GPProducer::FunctionWrap>> result;
+    auto fts = mFront->vCreateAllFunction(outputs, inputs);
+    for (auto f : fts)
+    {
+        result.push_back(new FunctionWrap(mBack->vCreateFromFuncTree(f), f));
+    }
+    return result;
+}
+

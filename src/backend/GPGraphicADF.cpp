@@ -296,11 +296,6 @@ GPTreeNode* GPGraphicADF::vSave() const
     return root;
 }
 
-int GPGraphicADF::vMapStructure(GPParameter* para, bool& changed)
-{
-    /*TODO*/
-    return 0;
-}
 void GPGraphicADF::_loadMain(const GPTreeNode* root, std::map<std::string, Point*>& allPoints, const GPFunctionDataBase* base) const
 {
     auto children = root->getChildren();

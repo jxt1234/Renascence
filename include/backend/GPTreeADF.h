@@ -66,7 +66,6 @@ public:
     GPTreeADFPoint* find(float rate);/*rate must be [0,1), return n*rate's element*/
     virtual GPContents* vRun(GPContents* inputs);
     virtual GPTreeNode* vSave() const;
-    virtual int vMapStructure(GPParameter* para, bool& changed);
     virtual int vMap(GPParameter* para);
 private:
     GPTreeADFPoint* mRoot;

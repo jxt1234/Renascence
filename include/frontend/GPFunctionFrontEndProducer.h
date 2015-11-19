@@ -23,7 +23,8 @@ public:
     virtual GPFunctionTree* vCreateOneFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const override;
     virtual std::vector<GPFunctionTree*> vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const override;
     virtual GPFunctionTree* vCreateFromFormula(const std::string& formula) const override;
-    
+    virtual int vMapStructure(GPFunctionTree* tree, GPParameter* para, bool& changed) const override;
+
     GPFunctionFrontEndProducer(const GPFunctionDataBase* base);
     virtual ~GPFunctionFrontEndProducer();
 private:

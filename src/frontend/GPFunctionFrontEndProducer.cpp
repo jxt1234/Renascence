@@ -80,14 +80,15 @@ GPFunctionTree* GPFunctionFrontEndProducer::vCreateOneFunction(const std::vector
     GPASSERT(1 == queue.size());
     return new GPFunctionTree(queue[0]);
 }
-std::vector<GPFunctionTree*> GPFunctionFrontEndProducer::vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
+
+static std::vector<GPFunctionTreePoint*> _searchAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, const GPProducerUtils& utils)
 {
     vector<vector<const GPProducerUtils::func*> > warpOutput;
-    _findMatchedFuncton(warpOutput, outputType, inputType, mUtils);
+    _findMatchedFuncton(warpOutput, outputType, inputType, utils);
     warpOutput = _filterOutputType(warpOutput, inputType);
     if (warpOutput.empty())
     {
-        std::vector<GPFunctionTree*> t;
+        std::vector<GPFunctionTreePoint*> t;
         return t;
     }
     vector<int> avail;
@@ -99,11 +100,22 @@ std::vector<GPFunctionTree*> GPFunctionFrontEndProducer::vCreateAllFunction(cons
     computePoint* start = new computePoint(warpOutput, avail, inputType);
     computeSearchTree tree(start);
     auto contents = tree.searchAll();
-    std::vector<GPFunctionTree*> result;
+    std::vector<GPFunctionTreePoint*> result;
     for (auto c : contents)
     {
         GPASSERT(1 == c.size());
-        result.push_back(new GPFunctionTree(c[0]));
+        result.push_back(c[0]);
+    }
+    return result;
+}
+
+std::vector<GPFunctionTree*> GPFunctionFrontEndProducer::vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
+{
+    auto treepoints = _searchAllFunction(outputType, inputType, mUtils);
+    std::vector<GPFunctionTree*> result;
+    for (auto c : treepoints)
+    {
+        result.push_back(new GPFunctionTree(c));
     }
     return result;
 }
@@ -163,3 +175,70 @@ GPFunctionFrontEndProducer::GPFunctionFrontEndProducer(const GPFunctionDataBase*
 GPFunctionFrontEndProducer::~GPFunctionFrontEndProducer()
 {
 }
+
+int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter* para, bool& changed) const
+{
+    GPASSERT(NULL!=tree);
+    
+    const int magic_number = 3;
+    if (NULL == para)
+    {
+        changed = false;
+        return magic_number;
+    }
+    PFLOAT p0 = para->get(0);
+    PFLOAT p1 = para->get(1);
+    PFLOAT p2 = para->get(2);
+    
+    if (p0 < 0.3)
+    {
+        changed = false;
+        return magic_number;
+    }
+    std::vector<GPFunctionTreePoint*> allpoints;
+    /*Search All Variable Points*/
+    {
+        auto variable_points = tree->getVariable();
+        for (auto p : variable_points)
+        {
+            for (auto pp : p->display())
+            {
+                /*Don't modified root*/
+                if (pp != tree->root())
+                {
+                    allpoints.push_back((GPFunctionTreePoint*)pp);
+                }
+            }
+        }
+    }
+    if (allpoints.empty())
+    {
+        changed = false;
+        return magic_number;
+    }
+    size_t n = p1*allpoints.size();
+    if (n >= allpoints.size())
+    {
+        n = allpoints.size()-1;
+    }
+    changed = true;
+    GPFunctionTreePoint* origin_point = allpoints[n];
+    auto inputs = origin_point->function()->inputType;
+    auto outputs = origin_point->function()->outputType;
+    auto treepoints = _searchAllFunction(outputs, inputs, mUtils);
+    n = p2*treepoints.size();
+    if (n >= treepoints.size())
+    {
+        n = treepoints.size()-1;
+    }
+    auto replace_point = treepoints[n];
+    tree->root()->replace(origin_point, replace_point);
+    
+    for (auto p : treepoints)
+    {
+        p->decRef();
+    }
+    
+    return magic_number;
+}
+

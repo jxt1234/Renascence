@@ -32,7 +32,6 @@ public:
     virtual GPTreeNode* vSave() const;
     virtual IGPAutoDefFunction* vCopy() const;
     
-    virtual int vMapStructure(GPParameter* para, bool& changed);
     virtual int vMap(GPParameter* p);
     GPGraphicADF(const GPTreeNode* node, const GPFunctionDataBase* base);
     virtual ~GPGraphicADF();

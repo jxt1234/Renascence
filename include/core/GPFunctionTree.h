@@ -42,24 +42,22 @@ private:
 class GPFunctionTree:public RefCount
 {
 public:
-    GPFunctionTree(GPPtr<GPFunctionTreePoint> root);
+    GPFunctionTree(GPPtr<GPFunctionTreePoint> root, bool total=true);
     virtual ~GPFunctionTree();
 
     inline GPFunctionTreePoint* root() const {return mRoot.get();}
     
-    /*This kind of tree can be changed by mapStructure*/
+    /*This kind of tree can be changed by mapStructure, the subtree shouldn't be one subtree of points in mVariableSubTree, If mVariableSubTree contains mRoot, all subtree can't be add*/
     void addVariableSubTree(GPFunctionTreePoint* subtree);
-    /*Parameters to determine neighbour structure, return the number of parameter needed, do nothing if para == null, after this API, the number of vMap returned may changed*/
-    int mapStructure(GPParameter* para, bool& changed);
     
-    /*Set self Parameters without change the structure, Return the number of parameter needed, do nothing if para==null, the number of vMap will not change*/
-    int map(GPParameter* para);
-    /*This kind of tree can be changed by map*/
-    void addVariablePoint(GPFunctionTreePoint* point);
+    inline const std::vector<GPFunctionTreePoint*>& getVariable() const {return mVariableSubTree;}
+    
+    static GPFunctionTree* copy(const GPFunctionTree* origin);
 private:
     GPPtr<GPFunctionTreePoint> mRoot;
+    
+    /*Important: the subtree can't has child-parent relation, if mRoot is put into mVariableSubTree, it can only has mRoot*/
     std::vector<GPFunctionTreePoint*> mVariableSubTree;
-    std::vector<GPFunctionTreePoint*> mVariablePoints;
 };
 
 #endif

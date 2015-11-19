@@ -34,16 +34,6 @@ public:
                 file = GPStreamFactory::NewWStream("output/GPloadXmlTreeTest_copy.xml", GPStreamFactory::FILE);
                 dump = gp2->vSave();
                 xmlReader::dumpNodes(dump.get(), file.get());
-                file = GPStreamFactory::NewWStream("output/GPloadXmlTreeTest_mutate.xml", GPStreamFactory::FILE);
-                {
-                    bool change;
-                    int n = gp2->vMapStructure(NULL, change);
-                    GPPtr<GPParameter> p = new GPParameter(n);
-                    p->clear(0.6f);
-                    gp2->vMapStructure(p.get(), change);
-                }
-                dump = gp2->vSave();
-                xmlReader::dumpNodes(dump.get(), file.get());
             }
         }
     }

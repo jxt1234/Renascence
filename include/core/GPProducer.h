@@ -17,6 +17,7 @@
 #define CORE_GPPRODUCER_H
 #include "utils/RefCount.h"
 #include "IGPAutoDefFunction.h"
+#include "GPFunctionTree.h"
 #include <vector>
 class GPFrontEndProducer;
 class GPBackEndProducer;
@@ -30,6 +31,26 @@ public:
     std::vector<GPPtr<IGPAutoDefFunction>> listAllFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs);
     IGPAutoDefFunction* createFunction(const std::string& formula);
     IGPAutoDefFunction* createFunction(const GPTreeNode* node);
+    
+    
+    struct FunctionWrap:public RefCount
+    {
+        FunctionWrap(GPPtr<IGPAutoDefFunction> f, GPPtr<GPFunctionTree> t)
+        {
+            mFunction = f;
+            mTree = t;
+        }
+        virtual ~FunctionWrap()
+        {
+        }
+        
+        GPPtr<IGPAutoDefFunction> mFunction;
+        GPPtr<GPFunctionTree> mTree;
+    };
+    std::vector<GPPtr<FunctionWrap>> listAllFunctionWithBackUp(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs);
+    
+    inline const GPBackEndProducer* getBack() const {return mBack;}
+    inline const GPFrontEndProducer* getFront() const {return mFront;}
 private:
     GPBackEndProducer* mBack;
     GPFrontEndProducer* mFront;
