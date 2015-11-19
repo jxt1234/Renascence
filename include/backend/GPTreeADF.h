@@ -21,7 +21,6 @@
 #include "core/GPFunctionDataBase.h"
 #include "core/IGPAutoDefFunction.h"
 #include "core/GPStatusContent.h"
-#include "utils/GP_Clock.h"
 #include "utils/GPDebug.h"
 
 class GPTreeADFPoint:public GPAbstractPoint

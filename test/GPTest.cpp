@@ -1,6 +1,6 @@
 #include "test/GPTest.h"
 #include "utils/GPDebug.h"
-#include "utils/GP_Clock.h"
+#include "utils/GPClock.h"
 #include <stdlib.h>
 
 GPTestSuit* GPTestSuit::global = NULL;

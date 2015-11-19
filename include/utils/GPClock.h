@@ -13,21 +13,22 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include <time.h>
-#include "utils/GPDebug.h"
-#include "utils/GP_Clock.h"
-#include "string.h"
+#ifndef UTILS_GPCLOCK_H
+#define UTILS_GPCLOCK_H
 
-GP_Clock::GP_Clock(int func, const char* name)
+class GP_Clock
 {
-    mStart = clock();
-    mId = func;
-    mName = ::strdup(name);
-}
+    public:
+        GP_Clock(int func, const char* name);
+        ~GP_Clock();
+        int reset();
+    protected:
+        size_t mStart;
+        int mId;
+        char* mName;
+};
 
-GP_Clock::~GP_Clock()
-{
-    auto inter = clock()-mStart;
-    GPPRINT("%s __ %d, times = %ldms+%ldus\n", mName, mId, inter/1000, inter%1000);
-    ::free(mName);
-}
+#define GPCLOCK GP_Clock __clock(__LINE__, __func__)
+
+
+#endif

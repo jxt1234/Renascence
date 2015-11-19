@@ -16,6 +16,7 @@
 #ifndef HEAD_H
 #define HEAD_H
 #include "utils/GPDebug.h"
+#include "utils/GPClock.h"
 #include "utils/RefCount.h"
 #include "utils/AutoClean.h"
 #include "utils/AutoStorage.h"
