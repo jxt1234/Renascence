@@ -17,11 +17,12 @@
 #define CORE_GPFUNCTIONTREE_H
 #include "math/GPAbstractPoint.h"
 #include "GPFunctionDataBase.h"
-class GPFunctionTree:public GPAbstractPoint
+#include "GPParameter.h"
+class GPFunctionTreePoint:public GPAbstractPoint
 {
 public:
-    GPFunctionTree(const GPFunctionDataBase::function* f, int inputNumber);
-    virtual ~GPFunctionTree();
+    GPFunctionTreePoint(const GPFunctionDataBase::function* f, int inputNumber);
+    virtual ~GPFunctionTreePoint();
     inline const GPFunctionDataBase::function* function() const {return mF;}
     inline int inputNumber() const {return mInputNumber;}
     class Iter :public RefCount
@@ -29,7 +30,7 @@ public:
     public:
         Iter(){}
         virtual ~Iter(){}
-        virtual GPFunctionTree* vCurrent() const= 0;
+        virtual GPFunctionTreePoint* vCurrent() const= 0;
         virtual bool vNext() = 0;
     };
 private:
@@ -37,4 +38,28 @@ private:
     const GPFunctionDataBase::function* mF;
     int mInputNumber;
 };
+
+class GPFunctionTree:public RefCount
+{
+public:
+    GPFunctionTree(GPPtr<GPFunctionTreePoint> root);
+    virtual ~GPFunctionTree();
+
+    inline GPFunctionTreePoint* root() const {return mRoot.get();}
+    
+    /*This kind of tree can be changed by mapStructure*/
+    void addVariableSubTree(GPFunctionTreePoint* subtree);
+    /*Parameters to determine neighbour structure, return the number of parameter needed, do nothing if para == null, after this API, the number of vMap returned may changed*/
+    int mapStructure(GPParameter* para, bool& changed);
+    
+    /*Set self Parameters without change the structure, Return the number of parameter needed, do nothing if para==null, the number of vMap will not change*/
+    int map(GPParameter* para);
+    /*This kind of tree can be changed by map*/
+    void addVariablePoint(GPFunctionTreePoint* point);
+private:
+    GPPtr<GPFunctionTreePoint> mRoot;
+    std::vector<GPFunctionTreePoint*> mVariableSubTree;
+    std::vector<GPFunctionTreePoint*> mVariablePoints;
+};
+
 #endif

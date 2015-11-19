@@ -76,9 +76,9 @@ GPFunctionTree* GPFunctionFrontEndProducer::vCreateOneFunction(const std::vector
     /*Get All sequence*/
     computePoint* start = new computePoint(warpOutput, avail, inputType);
     computeSearchTree tree(start);
-    vector<GPFunctionTree*> queue = tree.searchOne();
+    vector<GPFunctionTreePoint*> queue = tree.searchOne();
     GPASSERT(1 == queue.size());
-    return queue[0];
+    return new GPFunctionTree(queue[0]);
 }
 std::vector<GPFunctionTree*> GPFunctionFrontEndProducer::vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
 {
@@ -103,7 +103,7 @@ std::vector<GPFunctionTree*> GPFunctionFrontEndProducer::vCreateAllFunction(cons
     for (auto c : contents)
     {
         GPASSERT(1 == c.size());
-        result.push_back(c[0]);
+        result.push_back(new GPFunctionTree(c[0]));
     }
     return result;
 }
@@ -133,7 +133,7 @@ public:
                     break;
                 }
             }
-            return new GPFunctionTree(NULL, sum);
+            return new GPFunctionTreePoint(NULL, sum);
         }
         const GPFunctionDataBase::function* f = mBase->vQueryFunctionByShortName(point->name());
         if (NULL == f)
@@ -141,7 +141,7 @@ public:
             f = mBase->vQueryFunction(point->name());
         }
         GPASSERT(NULL!=f);
-        return new GPFunctionTree(f, -1);
+        return new GPFunctionTreePoint(f, -1);
     }
 private:
     const GPFunctionDataBase* mBase;
@@ -152,8 +152,8 @@ GPFunctionTree* GPFunctionFrontEndProducer::vCreateFromFormula(const std::string
     GPFormulaTree tree;
     tree.setFormula(formula);
     formulaCopy copy(mUtils.getOriginBase());
-    auto a = GPAbstractPoint::deepCopy(tree.root(), &copy);
-    return (GPFunctionTree*)a;
+    auto a = (GPFunctionTreePoint*)(GPAbstractPoint::deepCopy(tree.root(), &copy));
+    return new GPFunctionTree(a);
 }
 
 

@@ -36,7 +36,7 @@ public:
     }
     std::vector<int> filter(const std::vector<std::vector<const GPProducerUtils::func*> >& combo, const std::vector<const GPProducerUtils::func*>& output);
     
-    std::vector<GPFunctionTree*> outputs(int& cur);
+    std::vector<GPFunctionTreePoint*> outputs(int& cur);
 protected:
     virtual bool vGrow();
     std::vector<const GPProducerUtils::func*> getDependOutput();
@@ -60,11 +60,11 @@ private:
 };
 
 
-class computeSearchTree:public carryTree<std::vector<GPFunctionTree*> >
+class computeSearchTree:public carryTree<std::vector<GPFunctionTreePoint*> >
 {
 public:
     computeSearchTree(computePoint* point){mRoot = point;}
-    virtual std::vector<GPFunctionTree*> output() override;
+    virtual std::vector<GPFunctionTreePoint*> output() override;
     virtual bool readyToOutput();
 };
 

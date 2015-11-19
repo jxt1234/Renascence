@@ -95,8 +95,9 @@ void GPStreamADF::DP::reset()
 }
 
 
-GPStreamADF::GPStreamADF(const GPFunctionTree* root)
+GPStreamADF::GPStreamADF(const GPFunctionTree* tree)
 {
+    auto root = tree->root();
     auto rootfunc = root->function();
     GPASSERT(NULL!=rootfunc);
     auto lists = root->display();
@@ -104,7 +105,7 @@ GPStreamADF::GPStreamADF(const GPFunctionTree* root)
     /*Create All Function*/
     for (auto p : lists)
     {
-        auto pp = (GPFunctionTree*)p;
+        auto pp = (GPFunctionTreePoint*)p;
         if (NULL == pp->function())
         {
             GPPtr<Point> cp = new SP(NULL);
@@ -132,7 +133,7 @@ GPStreamADF::GPStreamADF(const GPFunctionTree* root)
     for (auto p : lists)
     {
         auto PP = maplists.find(p)->second;
-        auto func = ((GPFunctionTree*)p)->function();
+        auto func = ((GPFunctionTreePoint*)p)->function();
         size_t n = p->getChildrenNumber();
         GPASSERT(!(NULL!=func && n==0));
         for (int i=0; i<n; ++i)

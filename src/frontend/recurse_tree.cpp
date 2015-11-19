@@ -58,14 +58,14 @@ vector<int> computePoint::filter(const vector<vector<const GPProducerUtils::func
     return result;
 }
 
-vector<GPFunctionTree*> computePoint::outputs(int& inputcur)
+vector<GPFunctionTreePoint*> computePoint::outputs(int& inputcur)
 {
-    vector<GPFunctionTree*> result;
+    vector<GPFunctionTreePoint*> result;
     const vector<const GPProducerUtils::func*>& data = getData();
     for (int i=0; i<data.size(); ++i)
     {
         auto f = data[i];
-        GPFunctionTree* p = new GPFunctionTree(f->basic, -1);
+        GPFunctionTreePoint* p = new GPFunctionTreePoint(f->basic, -1);
         result.push_back(p);
     }
     for (auto child : mChild)
@@ -74,7 +74,7 @@ vector<GPFunctionTree*> computePoint::outputs(int& inputcur)
         GPASSERT(p->mParent < result.size());
         auto childrens = p->outputs(inputcur);
         
-        GPFunctionTree* parent = result[p->mParent];
+        GPFunctionTreePoint* parent = result[p->mParent];
         const GPProducerUtils::func* pf = data[p->mParent];
         int cur = 0;
         for (int i=0; i<pf->basic->inputType.size(); ++i)
@@ -86,7 +86,7 @@ vector<GPFunctionTree*> computePoint::outputs(int& inputcur)
             }
             else
             {
-                parent->addPoint(new GPFunctionTree(NULL, inputcur++));
+                parent->addPoint(new GPFunctionTreePoint(NULL, inputcur++));
             }
         }
         GPASSERT(cur == childrens.size());
@@ -99,7 +99,7 @@ vector<GPFunctionTree*> computePoint::outputs(int& inputcur)
             auto pf = data[i];
             for (int j=0; j<pf->basic->inputType.size(); ++j)
             {
-                p->addPoint(new GPFunctionTree(NULL, inputcur++));
+                p->addPoint(new GPFunctionTreePoint(NULL, inputcur++));
             }
         }
     }
@@ -148,7 +148,7 @@ bool computePoint::vGrow()
     }
     return success;
 }
-vector<GPFunctionTree*> computeSearchTree::output()
+vector<GPFunctionTreePoint*> computeSearchTree::output()
 {
     int cur = 0;
     return ((computePoint*)(mRoot.get()))->outputs(cur);

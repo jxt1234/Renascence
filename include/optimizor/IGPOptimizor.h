@@ -17,24 +17,8 @@
 #define OPTIMIZOR_IGPOPTIMIZOR_H
 #include <stdlib.h>
 #include <functional>
-#include "head.h"
-/*A Seriers of numbers that in [0, 1]*/
-class GPParameter:public RefCount
-{
-public:
-    GPParameter(int n, const PFLOAT* c = NULL);
-    virtual ~GPParameter();
-    inline int size() const {return mNum;}
-    inline PFLOAT operator[](int n) const {return mContent[n];}
-    inline PFLOAT get(int n) const {return mContent[n];}
-    const PFLOAT* get() const {return mContent;}
-    inline PFLOAT* attach() {return mContent;}
-    void clear(PFLOAT f);
-    void makeValid();
-private:
-    PFLOAT* mContent;
-    int mNum;
-};
+#include "utils/RefCount.h"
+#include "core/GPParameter.h"
 /*TODO Support time limit set*/
 class IGPOptimizor:public RefCount
 {

@@ -31,7 +31,7 @@ public:
     virtual ~GPFunctionTreeCopy(){}
     virtual GPAbstractPoint* copy(GPAbstractPoint* src)
     {
-        GPFunctionTree* point = (GPFunctionTree*)(src);
+        GPFunctionTreePoint* point = (GPFunctionTreePoint*)(src);
         GPASSERT(NULL!=point);
         return new GPTreeADFPoint( point->function(), point->inputNumber());
     }
@@ -41,7 +41,7 @@ public:
 IGPAutoDefFunction* GPTreeProducer::vCreateFromFuncTree(const GPFunctionTree* tree) const
 {
     GPFunctionTreeCopy c;
-    GPTreeADFPoint* p = (GPTreeADFPoint*)(GPAbstractPoint::deepCopy((GPFunctionTree*)tree, &c));
+    GPTreeADFPoint* p = (GPTreeADFPoint*)(GPAbstractPoint::deepCopy(tree->root(), &c));
     return new GPTreeADF(p, this);
 }
 
