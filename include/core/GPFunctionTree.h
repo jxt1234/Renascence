@@ -19,6 +19,7 @@
 #include "GPFunctionDataBase.h"
 #include "GPParameter.h"
 #include <map>
+#include <ostream>
 class GPFunctionTreePoint:public GPAbstractPoint
 {
 public:
@@ -40,6 +41,7 @@ public:
     
     bool equal(const GPFunctionTreePoint* point) const;
     size_t depth() const;
+    void render(std::ostream& output) const;
 private:
     void _getInputTypes(std::vector<const IStatusType*>& types) const;
     /*mF=NULL for input node, mInputNumber = -1 for function node*/
@@ -52,6 +54,7 @@ class GPFunctionTree:public RefCount
 public:
     GPFunctionTree(GPPtr<GPFunctionTreePoint> root, bool total=true);
     virtual ~GPFunctionTree();
+    std::string dump() const;
 
     inline GPFunctionTreePoint* root() const {return mRoot.get();}
     

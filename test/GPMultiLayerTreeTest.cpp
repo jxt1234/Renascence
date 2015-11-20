@@ -21,7 +21,7 @@ static int test_main()
     {
         GPProducer* sys = GPFactory::createProducer(base);
         AUTOCLEAN(sys);
-        GPPtr<GPFunctionTree> tree = sys->getFront()->vCreateFromFormula("TrPackageSaturation(TrPackageFilterTransformFromRegress(TrPackageCompse(x0,x1), TrPackageFilterMatrixRegress(x2, TrPackageCompse(x0,x1))))");
+        GPPtr<GPFunctionTree> tree = sys->getFront()->vCreateFromFormula("TrPackageSaturation(TrPackageFilterTransformFromRegress(TrPackageCompse(TrPackageCompse(x0,TrPackageSaturation(x1)),TrPackageSaturation(x1)), TrPackageFilterMatrixRegress(x2, TrPackageCompse(TrPackageCompse(x0,TrPackageSaturation(x1)),TrPackageSaturation(x1)))))");
         GPPtr<GPMultiLayerTree> multiTree = new GPMultiLayerTree(tree.get());
         auto layers = multiTree->layers();
         for (size_t i=0; i<layers.size(); ++i)

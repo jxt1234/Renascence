@@ -20,6 +20,7 @@
 #include "core/IGPAutoDefFunction.h"
 #include "core/GPComputePoint.h"
 #include "core/GPFunctionTree.h"
+#include "midend/GPMultiLayerTree.h"
 
 /*Spectial ADF
  * This kind of ADF will change input and status itself
@@ -30,6 +31,7 @@ public:
     typedef GPPtr<GPComputePoint::ContentWrap> CONTENT;
     friend class GPStreamADFProducer;
 
+    GPStreamADF(const GPMultiLayerTree* opttree);
     GPStreamADF(const GPFunctionTree* root);
     GPStreamADF(const GPTreeNode* n, const GPFunctionDataBase* base);
     virtual ~GPStreamADF();
@@ -42,15 +44,16 @@ public:
     virtual int vMap(GPParameter* para);
     
 private:
+    static void _addPoint();
     class Point:public RefCount
     {
     public:
-        Point(){}
+        Point(int inputNumber, int outputNumber):mOutputs(outputNumber, NULL), mInputs(inputNumber, NULL){}
         virtual ~Point(){}
         virtual bool vReceive(CONTENT c, const Point* source) = 0;
         
-        void connectInput(const Point* input){mInputs.push_back(input);}
-        void connectOutput(GPPtr<Point> p){mOutputs.push_back(p);}
+        void connectInput(const Point* input, int pos=-1) {GPASSERT(pos>=0 && pos <mInputs.size()); mInputs[pos] = input;}
+        void connectOutput(GPPtr<Point> p, int pos=-1){GPASSERT(pos>=0 && pos <mOutputs.size());mOutputs[pos] = p;}
         
     protected:
         std::vector<GPPtr<Point> > mOutputs;
@@ -60,10 +63,10 @@ private:
     class SP:public Point
     {
     public:
-        SP(const IStatusType* type):mType(type){}
+        SP(const IStatusType* type):mType(type), Point(0, 1){}
         virtual ~SP(){}
         inline const IStatusType* type() const { return mType;}
-        inline void setType(const IStatusType* type) {mType = type;}
+        inline void setType(const IStatusType* type) {GPASSERT(NULL==mType || mType==type); mType = type;}
         virtual bool vReceive(CONTENT con, const Point* source);
     private:
         const IStatusType* mType;
@@ -72,13 +75,21 @@ private:
     class CP:public Point
     {
     public:
-        CP(GPPtr<GPComputePoint> point):mPoint(point){}
+        CP(GPPtr<GPComputePoint> point):mPoint(point), Point(point->get()->inputType.size(), point->get()->outputType.size()){}
         virtual ~CP(){}
         inline GPComputePoint* get() const {return mPoint.get();}
         virtual bool vReceive(CONTENT c, const Point* source);
         GPPtr<GPTreeNode> dump() const;
     private:
         GPPtr<GPComputePoint> mPoint;
+    };
+    /*Transmit Point, Used to copy contents*/
+    class TP:public Point
+    {
+    public:
+        TP(int outputNumber):Point(1, outputNumber){}
+        virtual ~TP(){}
+        virtual bool vReceive(CONTENT c, const Point* source);
     };
     /*Dest Point*/
     class DP:public Point

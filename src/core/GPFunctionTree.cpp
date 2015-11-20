@@ -1,5 +1,6 @@
 #include "core/GPFunctionTree.h"
 #include <algorithm>
+#include <sstream>
 GPFunctionTreePoint::GPFunctionTreePoint(const GPFunctionDataBase::function* f, int inputNumber)
 {
     GPASSERT(NULL != f || inputNumber >=0);
@@ -23,10 +24,10 @@ bool GPFunctionTreePoint::equal(const GPFunctionTreePoint* point) const
         for (size_t i=0; i<mChildren.size(); ++i)
         {
             auto pp = GPCONVERT(GPFunctionTreePoint, mChildren[i]);
-            auto op = GPCONVERT(GPFunctionTreePoint, mChildren[i]);
-            thesame &= pp->equal(op);
-            if (!thesame)
+            auto op = GPCONVERT(GPFunctionTreePoint, point->mChildren[i]);
+            if (!pp->equal(op))
             {
+                thesame = false;
                 break;
             }
         }
@@ -145,4 +146,36 @@ GPFunctionTreePoint* GPFunctionTree::copy(const GPFunctionTreePoint* origin)
     GPFunctionTreePointCopy copyt;
     GPFunctionTreePoint* p = GPCONVERT(GPFunctionTreePoint, GPAbstractPoint::deepCopy((GPFunctionTreePoint*)origin, &copyt));
     return p;
+}
+
+void GPFunctionTreePoint::render(std::ostream& output) const
+{
+    if (NULL!=mF)
+    {
+        output << mF->name << "(";
+        for (size_t i=0; i<mChildren.size()-1; ++i)
+        {
+            auto pp = (GPFunctionTreePoint*)mChildren[i];
+            pp->render(output);
+            output << ", ";
+        }
+        if (mChildren.size()>0)
+        {
+            auto pp = (GPFunctionTreePoint*)mChildren[mChildren.size()-1];
+            pp->render(output);
+            output << ")";
+        }
+    }
+    else
+    {
+        output << "x"<<mInputNumber;
+    }
+}
+
+
+std::string GPFunctionTree::dump() const
+{
+    std::ostringstream output;
+    mRoot->render(output);
+    return output.str();
 }
