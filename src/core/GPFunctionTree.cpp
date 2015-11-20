@@ -1,4 +1,5 @@
 #include "core/GPFunctionTree.h"
+#include <algorithm>
 GPFunctionTreePoint::GPFunctionTreePoint(const GPFunctionDataBase::function* f, int inputNumber)
 {
     GPASSERT(NULL != f || inputNumber >=0);
@@ -8,6 +9,43 @@ GPFunctionTreePoint::GPFunctionTreePoint(const GPFunctionDataBase::function* f, 
 GPFunctionTreePoint::~GPFunctionTreePoint()
 {
 }
+bool GPFunctionTreePoint::equal(const GPFunctionTreePoint* point) const
+{
+    GPASSERT(NULL!=point);
+    if (depth() != point->depth())
+    {
+        return false;
+    }
+    bool thesame = (mF == point->mF && mInputNumber == point->mInputNumber);
+    if (thesame)
+    {
+        GPASSERT(mChildren.size() == point->mChildren.size());
+        for (size_t i=0; i<mChildren.size(); ++i)
+        {
+            auto pp = GPCONVERT(GPFunctionTreePoint, mChildren[i]);
+            auto op = GPCONVERT(GPFunctionTreePoint, mChildren[i]);
+            thesame &= pp->equal(op);
+            if (!thesame)
+            {
+                break;
+            }
+        }
+    }
+    return thesame;
+}
+
+size_t GPFunctionTreePoint::depth() const
+{
+    size_t depth = 1;
+    size_t maxdepth = 0;
+    for (auto p : mChildren)
+    {
+        auto pp = GPCONVERT(GPFunctionTreePoint, p);
+        maxdepth = std::max(maxdepth, pp->depth());
+    }
+    return depth+maxdepth;
+}
+
 
 std::vector<const IStatusType*> GPFunctionTreePoint::getInputTypes() const
 {
@@ -87,7 +125,7 @@ class GPFunctionTreePointCopy:public GPAbstractPoint::IPointCopy
 public:
     virtual GPAbstractPoint* copy(GPAbstractPoint* src)
     {
-        GPFunctionTreePoint* _src = (GPFunctionTreePoint*)src;
+        GPFunctionTreePoint* _src = GPCONVERT(GPFunctionTreePoint, src);
         GPFunctionTreePoint* res = new GPFunctionTreePoint(_src->function(), _src->inputNumber());
         return res;
     }
@@ -98,6 +136,13 @@ private:
 GPFunctionTree* GPFunctionTree::copy(const GPFunctionTree* origin)
 {
     GPFunctionTreePointCopy copyt;
-    GPFunctionTreePoint* p = (GPFunctionTreePoint*)(GPAbstractPoint::deepCopy(origin->root(), &copyt));
+    GPFunctionTreePoint* p = GPCONVERT(GPFunctionTreePoint, GPAbstractPoint::deepCopy(origin->root(), &copyt));
     return new GPFunctionTree(p);
+}
+
+GPFunctionTreePoint* GPFunctionTree::copy(const GPFunctionTreePoint* origin)
+{
+    GPFunctionTreePointCopy copyt;
+    GPFunctionTreePoint* p = GPCONVERT(GPFunctionTreePoint, GPAbstractPoint::deepCopy((GPFunctionTreePoint*)origin, &copyt));
+    return p;
 }

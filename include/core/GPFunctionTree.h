@@ -37,6 +37,9 @@ public:
         virtual GPFunctionTreePoint* vCurrent() const= 0;
         virtual bool vNext() = 0;
     };
+    
+    bool equal(const GPFunctionTreePoint* point) const;
+    size_t depth() const;
 private:
     void _getInputTypes(std::vector<const IStatusType*>& types) const;
     /*mF=NULL for input node, mInputNumber = -1 for function node*/
@@ -58,6 +61,7 @@ public:
     inline const std::vector<GPFunctionTreePoint*>& getVariable() const {return mVariableSubTree;}
     
     static GPFunctionTree* copy(const GPFunctionTree* origin);
+    static GPFunctionTreePoint* copy(const GPFunctionTreePoint* origin);
 private:
     GPPtr<GPFunctionTreePoint> mRoot;
     

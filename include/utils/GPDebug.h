@@ -44,9 +44,9 @@
 #endif
 
 #ifdef BUILD_FOR_ANDROID
-#define GPCONVERT(t, c) (t*)(c)
+#define GPCONVERT(t, c) ((t*)(c))
 #else
-#define GPCONVERT(t, c) dynamic_cast<t*>(c)
+#define GPCONVERT(t, c) (dynamic_cast<t*>(c))
 #endif
 
 #endif

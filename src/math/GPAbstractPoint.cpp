@@ -23,11 +23,11 @@ GPAbstractPoint::~GPAbstractPoint()
 {
     for (int i=0; i<mChildren.size(); ++i)
     {
-        delete mChildren[i];
+        mChildren[i]->decRef();
     }
 }
 
-int GPAbstractPoint::_posOfChild(GPAbstractPoint* p)
+int GPAbstractPoint::_posOfChild(GPAbstractPoint* p) const
 {
     int pos = -1;
     for (int i=0; i<mChildren.size(); ++i)
@@ -120,4 +120,18 @@ void GPAbstractPoint::clearChildren()
         delete c;
     }
     mChildren.clear();
+}
+
+
+bool GPAbstractPoint::isChildOf(const GPAbstractPoint* parent) const
+{
+    GPASSERT(NULL!=parent);
+    for (auto p : parent->display())
+    {
+        if (this == p)
+        {
+            return true;
+        }
+    }
+    return false;
 }

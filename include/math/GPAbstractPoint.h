@@ -42,12 +42,13 @@ public:
         GPASSERT(n>=0 && n<mChildren.size());
         return mChildren[n];
     }
+    bool isChildOf(const GPAbstractPoint* parent) const;
     void clearChildren();
     bool replace(GPAbstractPoint* oldPoint, GPAbstractPoint* newPoint);
 protected:
     std::vector<GPAbstractPoint*> mChildren;
 private:
-    int _posOfChild(GPAbstractPoint* p);
+    int _posOfChild(GPAbstractPoint* p) const;
 };
 
 
