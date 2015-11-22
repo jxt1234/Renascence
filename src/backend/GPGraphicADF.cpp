@@ -316,8 +316,15 @@ void GPGraphicADF::_loadMain(const GPTreeNode* root, std::map<std::string, Point
         }
         else if (first->name() == GP_XmlString::type)
         {
-            const IStatusType* type = base->vQueryType(first->attr());
-            p = new Point(NULL, type);
+            if ("NULL" == first->attr())
+            {
+                p = new Point(NULL, NULL);
+            }
+            else
+            {
+                const IStatusType* type = base->vQueryType(first->attr());
+                p = new Point(NULL, type);
+            }
         }
         GPASSERT(NULL!=p);//FIXME Print error instead of GPASSERT
         allPoints.insert(std::make_pair(node->name(), p));

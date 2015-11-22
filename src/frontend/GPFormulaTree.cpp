@@ -74,6 +74,42 @@ GPFormulaTreePoint::~GPFormulaTreePoint()
 {
 }
 
+void GPFormulaTreePoint::mergeForStatement(GPFormulaTreePoint* parent, size_t n)
+{
+    if (mT == OPERATOR && mName == "ADF")
+    {
+        GPASSERT(NULL!=parent && n>=0);
+        mT = ADF;
+        std::ostringstream merge;
+        merge << "("<<parent->mName << ":"<<n<<")";
+        merge<<"[";
+        for (size_t i=0; i<mChildren.size()-1; ++i)
+        {
+            auto pp = GPCONVERT(GPFormulaTreePoint, mChildren[i]);
+            GPASSERT(pp->type() == NUM);
+            merge << pp->name() << ",";
+            pp->decRef();
+        }
+        if (!mChildren.empty())
+        {
+            auto pp = GPCONVERT(GPFormulaTreePoint, mChildren[mChildren.size()-1]);
+            GPASSERT(pp->type() == NUM);
+            merge << pp->name();
+            pp->decRef();
+        }
+        merge << "]";
+        mName = merge.str();
+        mChildren.clear();
+        return;
+    }
+    for (size_t i=0; i<mChildren.size(); ++i)
+    {
+        auto pp = GPCONVERT(GPFormulaTreePoint, mChildren[i]);
+        pp->mergeForStatement(this, i);
+    }
+}
+
+
 GPFormulaTree::GPFormulaTree()
 {
     mRoot = NULL;
@@ -82,6 +118,7 @@ GPFormulaTree::~GPFormulaTree()
 {
     SAFE_UNREF(mRoot);
 }
+
 void GPFormulaTree::setFormula(const std::string& formula)
 {
     SAFE_UNREF(mRoot);
@@ -125,6 +162,8 @@ void GPFormulaTree::setFormula(const std::string& formula)
             }
         }
     }
+    /*Merge Spectial Statement*/
+    mRoot->mergeForStatement(NULL, -1);
 }
 
 GPFormulaTreePoint::TYPE GPFormulaTreePoint::getChildType(size_t i) const
@@ -133,3 +172,31 @@ GPFormulaTreePoint::TYPE GPFormulaTreePoint::getChildType(size_t i) const
     auto p = (GPFormulaTreePoint*)mChildren[i];
     return p->type();
 }
+
+void GPFormulaTreePoint::render(std::ostream& output) const
+{
+    std::string type;
+    switch (mT)
+    {
+        case NUM:
+            type = "Num";
+            break;
+        case OPERATOR:
+            type = "Func";
+            break;
+        case ADF:
+            type = "ADF";
+            break;
+    }
+    output << "<"<<type << ": " << mName<<">";
+    if (!mChildren.empty())
+    {
+        output <<"\n";
+    }
+    for (auto p : mChildren)
+    {
+        GPCONVERT(GPFormulaTreePoint, p)->render(output);
+    }
+    output << "</"<<type << ">\n";
+}
+

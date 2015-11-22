@@ -26,6 +26,7 @@ GPStreamADFProducer::~GPStreamADFProducer()
 }
 IGPAutoDefFunction* GPStreamADFProducer::vCreateFromFuncTree(const GPFunctionTree* tree) const
 {
+    /*TODO Add Optional to Disable Optimize*/
     //return new GPStreamADF(tree);
     GPPtr<GPMultiLayerTree> multi_tree = new GPMultiLayerTree(tree);
 #if 0

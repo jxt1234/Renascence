@@ -18,13 +18,15 @@
 #include "utils/RefCount.h"
 #include "math/GPAbstractPoint.h"
 #include <string>
+#include <ostream>
 class GPFormulaTreePoint:public GPAbstractPoint
 {
 public:
     typedef enum
     {
         NUM,
-        OPERATOR
+        OPERATOR,
+        ADF
     }TYPE;
     GPFormulaTreePoint();
     virtual ~GPFormulaTreePoint();
@@ -32,6 +34,8 @@ public:
     inline const std::string& name() const {return mName;}
     inline TYPE type() const {return mT;}
     TYPE getChildType(size_t i) const;
+    void render(std::ostream& output) const;
+    void mergeForStatement(GPFormulaTreePoint* parent, size_t n);
 private:
     TYPE mT;
     std::string mName;

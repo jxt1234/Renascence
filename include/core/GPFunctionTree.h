@@ -38,7 +38,7 @@ public:
         virtual GPFunctionTreePoint* vCurrent() const= 0;
         virtual bool vNext() = 0;
     };
-    
+    void mapInput(const std::map<int, int>& inputMap);
     bool equal(const GPFunctionTreePoint* point) const;
     size_t depth() const;
     void render(std::ostream& output) const;

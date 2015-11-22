@@ -35,6 +35,24 @@ bool GPFunctionTreePoint::equal(const GPFunctionTreePoint* point) const
     return thesame;
 }
 
+void GPFunctionTreePoint::mapInput(const std::map<int, int>& inputMap)
+{
+    if (mInputNumber>=0)
+    {
+        if (inputMap.find(mInputNumber)!=inputMap.end())
+        {
+            mInputNumber = inputMap.find(mInputNumber)->second;
+        }
+        return;
+    }
+    for (auto p : mChildren)
+    {
+        auto pp = GPCONVERT(GPFunctionTreePoint, p);
+        pp->mapInput(inputMap);
+    }
+}
+
+
 size_t GPFunctionTreePoint::depth() const
 {
     size_t depth = 1;
@@ -52,6 +70,11 @@ std::vector<const IStatusType*> GPFunctionTreePoint::getInputTypes() const
 {
     std::vector<const IStatusType*> result;
     _getInputTypes(result);
+    /*Check Valid*/
+    for (auto t : result)
+    {
+        GPASSERT(NULL!=t);
+    }
     return result;
 }
 void GPFunctionTreePoint::_getInputTypes(std::vector<const IStatusType*>& types) const
@@ -82,6 +105,7 @@ void GPFunctionTreePoint::_getInputTypes(std::vector<const IStatusType*>& types)
 
 GPFunctionTree::GPFunctionTree(GPPtr<GPFunctionTreePoint> root, bool totalVariable)
 {
+    GPASSERT(NULL!=root.get());
     mRoot = root;
     if (totalVariable)
     {

@@ -27,23 +27,25 @@ public:
     std::vector<outputType> searchAll()
     {
         std::vector<outputType> result;
-        searchUnit(result, 0, 0);
+        searchUnit(result, 0);
         return result;
     }
-    outputType searchOne(int offset=0)
+    bool searchOne(outputType* dst)
     {
-        std::vector<outputType> result;
-        searchUnit(result, offset, 1);
-        if (result.empty())
+        if (NULL == mRoot.get()) return false;
+        while(mRoot->next())
         {
-            outputType def;
-            return def;
+            if (readyToOutput())
+            {
+                *dst = output();
+                return true;
+            }
         }
-        return *(result.begin());
+        return false;
     }
 protected:
     GPPtr<carryPoint> mRoot;
-    void searchUnit(std::vector<outputType>& result, int offset, int n)
+    void searchUnit(std::vector<outputType>& result, int n)
     {
         if (NULL == mRoot.get()) return;
         int num = 0;
@@ -51,7 +53,7 @@ protected:
         {
             if (readyToOutput())
             {
-                if (num>=offset && (num<offset+n || n==0))
+                if (num<n || n==0)
                 {
                     result.push_back(output());
                     num++;

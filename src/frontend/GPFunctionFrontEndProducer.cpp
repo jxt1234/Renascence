@@ -5,6 +5,53 @@
 #include <algorithm>
 using namespace std;
 
+static int _loadXn(const string& s)
+{
+    int n = (int)(s.size());
+    int sum = 0;
+    for(int i=n-1; i>=0; --i)
+    {
+        if (s[i]>='0' && s[i]<='9')
+        {
+            sum*=10;
+            sum += s[i]-'0';
+        }
+        else
+        {
+            break;
+        }
+    }
+    return sum;
+}
+
+/*Like This Format: (TrPackageCompse:1)[TrBmp:x5,TrBmp:x6]*/
+static pair<string, int> _loadADF(const string& s, vector<pair<string, int>>& variables)
+{
+    size_t cur = 1;
+    while (s[cur]!=':') cur++;
+    string func = s.substr(1, cur-1);
+    size_t sta = cur+1;
+    cur = sta+1;
+    while (s[cur]!=')') cur++;
+    int number = _loadXn(s.substr(sta, cur-sta+1));
+    sta = cur+2;
+    cur = sta;
+    while (s[cur]!=']')
+    {
+        while (s[cur]!=':') cur++;
+        string type = s.substr(sta, cur-sta);
+        sta = cur+1;
+        cur = sta;
+        while (s[cur]!=']' && s[cur]!=',') cur++;
+        int x = _loadXn(s.substr(sta, cur-sta));
+        sta = cur+1;
+        variables.push_back(make_pair(type, x));
+    }
+    
+    return make_pair(func, number);
+}
+
+
 static vector<vector<const GPProducerUtils::func*> > _filterOutputType(const vector<vector<const GPProducerUtils::func*> >& origin, const std::vector<const IStatusType*>& inputType)
 {
     vector<vector<const GPProducerUtils::func*> > result;
@@ -26,7 +73,6 @@ static vector<vector<const GPProducerUtils::func*> > _filterOutputType(const vec
     }
     return result;
 }
-
 
 static void _findMatchedFuncton(std::vector<std::vector<const GPProducerUtils::func*> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, const GPProducerUtils& mUtils)
 {
@@ -62,9 +108,44 @@ static void _findMatchedFuncton(std::vector<std::vector<const GPProducerUtils::f
     } while(group.next());
 }
 
-GPFunctionTree* GPFunctionFrontEndProducer::vCreateOneFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
+/*Check If the real types can contain all inputs from target*/
+static bool _ValidateInputs(const vector<const IStatusType*>& real, const vector<const IStatusType*>& target)
 {
-    /*Find all available output function*/
+    if (real.size() < target.size())
+    {
+        return false;
+    }
+    /*Generate type counts*/
+    std::map<const IStatusType*, int> typescount;
+    for (auto t : target)
+    {
+        if (typescount.find(t)==typescount.end())
+        {
+            typescount.insert(make_pair(t, 0));
+        }
+        typescount.find(t)->second++;
+    }
+    for (auto t : real)
+    {
+        if (typescount.find(t)==typescount.end())
+        {
+            GPASSERT(0);//This should be confirm in search
+            return false;
+        }
+        typescount.find(t)->second--;
+    }
+    for (auto iter : typescount)
+    {
+        if (iter.second>0)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+static GPFunctionTreePoint* _createOnePoint(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, const GPProducerUtils& mUtils)
+{
     vector<vector<const GPProducerUtils::func*> > warpOutput;
     _findMatchedFuncton(warpOutput, outputType, inputType, mUtils);
     warpOutput = _filterOutputType(warpOutput, inputType);
@@ -76,9 +157,72 @@ GPFunctionTree* GPFunctionFrontEndProducer::vCreateOneFunction(const std::vector
     /*Get All sequence*/
     computePoint* start = new computePoint(warpOutput, avail, inputType);
     computeSearchTree tree(start);
-    vector<GPFunctionTreePoint*> queue = tree.searchOne();
+    vector<GPFunctionTreePoint*> queue;
+    bool find = false;
+    while (tree.searchOne(&queue))
+    {
+        GPASSERT(1==queue.size());
+        /*Make Sure the result use all inputs*/
+        GPFunctionTreePoint* _point = queue[0];
+        AUTOCLEAN(_point);
+        auto real_inp = _point->getInputTypes();
+        if (!_ValidateInputs(real_inp, inputType))
+        {
+            continue;
+        }
+        find = true;
+        _point->addRef();
+        break;
+    }
+    if (!find)
+    {
+        return NULL;
+    }
     GPASSERT(1 == queue.size());
-    return new GPFunctionTree(queue[0]);
+    GPFunctionTreePoint* originpoint = queue[0];
+    /*Make Input Map*/
+    auto real_inputs = originpoint->getInputTypes();
+    map<int, int> inputPosMap;
+    vector<pair<const IStatusType*, bool>> usedInputs;
+    for (size_t i=0; i<inputType.size(); ++i)
+    {
+        usedInputs.push_back(make_pair(inputType[i], false));
+    }
+    for (size_t i=0; i<real_inputs.size(); ++i)
+    {
+        /*Find not used pos firstly*/
+        size_t pos;
+        auto neededtype = real_inputs[i];
+        for (pos=0; pos < usedInputs.size(); ++pos)
+        {
+            if ((!usedInputs[pos].second) && neededtype == usedInputs[pos].first)
+            {
+                usedInputs[pos].second = true;
+                break;
+            }
+        }
+        if (pos >= usedInputs.size())
+        {
+            /*Not found unused one, find first one instead*/
+            for (pos=0; pos < usedInputs.size(); ++pos)
+            {
+                if (neededtype == usedInputs[pos].first)
+                {
+                    inputPosMap.insert(make_pair(i, pos));
+                    break;
+                }
+            }
+        }
+        GPASSERT(pos < usedInputs.size());
+    }
+    originpoint->mapInput(inputPosMap);
+    return originpoint;
+}
+
+
+GPFunctionTree* GPFunctionFrontEndProducer::vCreateOneFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
+{
+    return new GPFunctionTree(_createOnePoint(outputType, inputType, mUtils));
 }
 
 static std::vector<GPFunctionTreePoint*> _searchAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, const GPProducerUtils& utils)
@@ -144,7 +288,7 @@ std::vector<GPFunctionTree*> GPFunctionFrontEndProducer::vCreateAllFunction(cons
 class formulaCopy:public GPAbstractPoint::IPointCopy
 {
 public:
-    formulaCopy(const GPFunctionDataBase* base):mBase(base){}
+    formulaCopy(const GPFunctionDataBase* base, const GPProducerUtils& utils):mBase(base), mUtils(utils){}
     virtual ~formulaCopy(){}
     virtual GPAbstractPoint* copy(GPAbstractPoint* src)
     {
@@ -153,21 +297,28 @@ public:
         if (GPFormulaTreePoint::NUM == point->type())
         {
             std::string s = point->name();
-            int n = (int)(s.size());
-            int sum = 0;
-            for(int i=n-1; i>=0; --i)
+            return new GPFunctionTreePoint(NULL, _loadXn(s));
+        }
+        else if (GPFormulaTreePoint::ADF == point->type())
+        {
+            vector<pair<string, int>> inputMap;
+            auto outputMap = _loadADF(point->name(), inputMap);
+            std::vector<const IStatusType*> outputType;
+            outputType.push_back(mBase->vQueryFunctionByShortName(outputMap.first)->inputType[outputMap.second]);
+            std::vector<const IStatusType*> inputType;
+            for (size_t i=0; i<inputMap.size(); ++i)
             {
-                if (s[i]>='0' && s[i]<='9')
-                {
-                    sum*=10;
-                    sum += s[i]-'0';
-                }
-                else
-                {
-                    break;
-                }
+                inputType.push_back(mBase->vQueryType(inputMap[i].first));
             }
-            return new GPFunctionTreePoint(NULL, sum);
+            auto originpoint = _createOnePoint(outputType, inputType, mUtils);
+            /*Second Map for not-inorder input*/
+            map<int, int> inputmaps;
+            for (size_t i=0; i<inputMap.size(); ++i)
+            {
+                inputmaps.insert(make_pair(i, inputMap[i].second));
+            }
+            originpoint->mapInput(inputmaps);
+            return originpoint;
         }
         const GPFunctionDataBase::function* f = mBase->vQueryFunctionByShortName(point->name());
         if (NULL == f)
@@ -179,13 +330,14 @@ public:
     }
 private:
     const GPFunctionDataBase* mBase;
+    const GPProducerUtils& mUtils;
 };
 
 GPFunctionTree* GPFunctionFrontEndProducer::vCreateFromFormula(const std::string& formula) const
 {
     GPFormulaTree tree;
     tree.setFormula(formula);
-    formulaCopy copy(mUtils.getOriginBase());
+    formulaCopy copy(mUtils.getOriginBase(), mUtils);
     auto a = (GPFunctionTreePoint*)(GPAbstractPoint::deepCopy(tree.root(), &copy));
     return new GPFunctionTree(a);
 }

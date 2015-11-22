@@ -279,6 +279,11 @@ const IStatusType* GPFunctionDataBase::vQueryType(const std::string& name) const
             break;
         }
     }
+    if (NULL == res)
+    {
+        FUNC_PRINT_ALL(name.c_str(), s);
+        GPASSERT(NULL!=res);//FIXME
+    }
     return res;
 }
 const GPFunctionDataBase::function* GPFunctionDataBase::vQueryFunctionByShortName(const std::string& name) const
