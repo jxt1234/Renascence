@@ -29,12 +29,15 @@ vector<int> computePoint::filter(const vector<vector<const GPProducerUtils::func
         for (int j=0; j<comboUnit.size(); ++j)
         {
             /*Check if it contained old output*/
-            for (auto forbids : output)
+            if (mLayer<=0)
             {
-                if (comboUnit[j]->basic == forbids->basic)
+                for (auto forbids : output)
                 {
-                    fit = false;
-                    break;
+                    if (comboUnit[j]->basic == forbids->basic)
+                    {
+                        fit = false;
+                        break;
+                    }
                 }
             }
             if (!fit)
@@ -141,7 +144,8 @@ bool computePoint::vGrow()
         currentOutputId.erase(currentOutputId.end()-1);
         if (!avail.empty())
         {
-            computePoint* midres = new computePoint(inputData, avail, mInput);
+            int layer = max(mLayer-1, 0);
+            computePoint* midres = new computePoint(inputData, avail, mInput, layer);
             midres->mDepend = this;
             midres->mParent = i;
             mChild.push_back(midres);

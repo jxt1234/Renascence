@@ -14,26 +14,25 @@
    limitations under the License.
 ******************************************************************/
 #include "utils/GPRandom.h"
-#include <stdlib.h>
-#include <time.h>
+#include <random>
 namespace GPRandom
 {
-    static const int inc = 10000;
+    static const int inc = 100000;
+    static std::random_device gDevice;
     float rate()
     {
-        int r = rand()%inc;
+        int r = gDevice()%inc;
         float p = (float)r/(float)inc;
         return p;
     }
 
     bool init()
     {
-        srand((unsigned) time(NULL));
         return true;
     }
     int mid(int min_, int max_)
     {
-        int r = rand()%(max_-min_);
+        int r = gDevice()%(max_-min_);
         return r+min_;
     }
 

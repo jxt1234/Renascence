@@ -15,29 +15,29 @@ using namespace std;
 #include "backend/GPGraphicADF.h"
 using namespace std;
 
-int test_main()
+static int test_main()
 {
-    GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
+    //string formula = "TrPackageCompse(TrPackageSaturation(TrPackageInput()), TrPackageFilterMatrix(TrPackageInput()))";
+    string formula = "C(S(I()), F(I()))";
+    GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
+    AUTOCLEAN(base);
     {
-        GPPtr<GPProducer> gen = GPFactory::createProducer(base.get(), GPFactory::GRAPHIC);
-        xmlReader r;
-        auto n = r.loadFile("graphic_test.xml");
-        GPPtr<IGPAutoDefFunction> gp = gen->createFunction(n);
-        GPPtr<GPTreeNode> node = gp->vSave();
-        GPPtr<GPWStreamWrap> outp = GPStreamFactory::NewWStream("output/GPGraphicTest.xml");
-        xmlReader::dumpNodes(node.get(), outp.get());
+        GPProducer* sys = GPFactory::createProducer(base);
         {
-            GPContents contents;
-            contents.push(NULL, NULL);
-            GPContents* out = gp->vRun(&contents);
-            GPASSERT(out->size() == 1);
-            double* result = (double*)out->get(0);
-            cout << *result <<endl;
+            IGPAutoDefFunction* f = sys->createFunction(formula);
+            AUTOCLEAN(f);
+            GPContents inp;
+            GPContents* out = f->vRun(&inp);
+            IGPAutoDefFunction* comp = sys->createFunction("TrPackageFitCompute(ADF(TrBmp:x0, TrBmp:x0, TrBmp:x0))");
+            auto _fits = comp->vRun(out);
+            double* __fit = (double*)_fits->get(0);
+            FUNC_PRINT_ALL(*__fit, f);
+            _fits->clear();
             out->clear();
+            delete _fits;
             delete out;
         }
     }
-    GPASSERT(0 == GPGraphicADF::Point::numberOfInstance());
     return 1;
 }
 

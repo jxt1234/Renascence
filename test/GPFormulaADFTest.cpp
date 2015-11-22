@@ -26,7 +26,7 @@ void GPFormulaADFTest::run()
             AUTOCLEAN(f);
             GPContents inp;
             GPContents* out = f->vRun(&inp);
-            IGPAutoDefFunction* comp = sys->createFunction("TrPackageFitCompute(ADF(TrBmp:x0))");
+            IGPAutoDefFunction* comp = sys->createFunction("TrPackageFitCompute(ADF(TrBmp:x0, TrBmp:x0, TrBmp:x0))");
             auto _fits = comp->vRun(out);
             double* __fit = (double*)_fits->get(0);
             FUNC_PRINT_ALL(*__fit, f);

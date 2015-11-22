@@ -153,9 +153,13 @@ static GPFunctionTreePoint* _createOnePoint(const std::vector<const IStatusType*
     {
         return NULL;
     }
-    vector<int> avail(1,warpOutput.size()-1);
+    vector<int> avail;
+    for (int i=0; i<warpOutput.size(); ++i)
+    {
+        avail.push_back(i);
+    }
     /*Get All sequence*/
-    computePoint* start = new computePoint(warpOutput, avail, inputType);
+    computePoint* start = new computePoint(warpOutput, avail, inputType, (int)(inputType.size()));
     computeSearchTree tree(start);
     vector<GPFunctionTreePoint*> queue;
     bool find = false;
@@ -241,7 +245,7 @@ static std::vector<GPFunctionTreePoint*> _searchAllFunction(const std::vector<co
         avail.push_back(i);
     }
     /*Get All sequence*/
-    computePoint* start = new computePoint(warpOutput, avail, inputType);
+    computePoint* start = new computePoint(warpOutput, avail, inputType, 0);
     computeSearchTree tree(start);
     auto contents = tree.searchAll();
     std::vector<GPFunctionTreePoint*> result;
@@ -311,6 +315,7 @@ public:
                 inputType.push_back(mBase->vQueryType(inputMap[i].first));
             }
             auto originpoint = _createOnePoint(outputType, inputType, mUtils);
+            GPASSERT(NULL!=originpoint);
             /*Second Map for not-inorder input*/
             map<int, int> inputmaps;
             for (size_t i=0; i<inputMap.size(); ++i)

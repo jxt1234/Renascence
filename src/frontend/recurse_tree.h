@@ -23,7 +23,7 @@ class computePoint:public carryPoint
 {
 friend class computeSearchTree;
 public:
-    computePoint(const std::vector<std::vector<const GPProducerUtils::func*> >& data, const std::vector<int>& avail, const std::vector<const IStatusType*>& input):mData(data), mAvail(avail), mCur(0), mInput(input)
+    computePoint(const std::vector<std::vector<const GPProducerUtils::func*> >& data, const std::vector<int>& avail, const std::vector<const IStatusType*>& input, int maxSameLayer):mData(data), mAvail(avail), mCur(0), mInput(input), mLayer(maxSameLayer)
     {
     }
     const std::vector<const GPProducerUtils::func*>& getData() const
@@ -57,6 +57,7 @@ private:
     std::vector<int> mAvail;
     int mCur;
     int mParent;
+    int mLayer;
 };
 
 
