@@ -17,6 +17,7 @@
 #include "backend/GPStreamADFProducer.h"
 #include "midend/GPMultiLayerTree.h"
 #include "GPStreamADF.h"
+#include <iostream>
 
 GPStreamADFProducer::GPStreamADFProducer()
 {
@@ -28,6 +29,8 @@ IGPAutoDefFunction* GPStreamADFProducer::vCreateFromFuncTree(const GPFunctionTre
 {
     /*TODO Add Optional to Disable Optimize*/
     //return new GPStreamADF(tree);
+    GPASSERT(NULL!=tree);
+    //std::cout << tree->dump() << "\n";
     GPPtr<GPMultiLayerTree> multi_tree = new GPMultiLayerTree(tree);
 #if 0
     for (auto l : multi_tree->layers())

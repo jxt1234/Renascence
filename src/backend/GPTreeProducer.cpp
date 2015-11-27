@@ -29,7 +29,7 @@ class GPFunctionTreeCopy:public GPAbstractPoint::IPointCopy
 public:
     GPFunctionTreeCopy(){}
     virtual ~GPFunctionTreeCopy(){}
-    virtual GPAbstractPoint* copy(GPAbstractPoint* src)
+    virtual GPAbstractPoint* copy(GPAbstractPoint* src, bool&)
     {
         GPFunctionTreePoint* point = (GPFunctionTreePoint*)(src);
         GPASSERT(NULL!=point);

@@ -76,8 +76,9 @@ GPAbstractPoint* GPAbstractPoint::deepCopy(GPAbstractPoint* src, GPAbstractPoint
     GPASSERT(NULL!=src);
     GPASSERT(NULL!=copy);
     GPAbstractPoint* result;
-    result = copy->copy(src);
-    if (NULL == result)
+    bool needcopyChild = false;
+    result = copy->copy(src, needcopyChild);
+    if (NULL == result && !needcopyChild)
     {
         return result;
     }

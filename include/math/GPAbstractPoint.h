@@ -28,7 +28,7 @@ public:
     class IPointCopy
     {
     public:
-        virtual GPAbstractPoint* copy(GPAbstractPoint* src) = 0;
+        virtual GPAbstractPoint* copy(GPAbstractPoint* src, bool& needCopyChild) = 0;
     };
     GPAbstractPoint(){}
     /*Use for different types of tree to transform*/

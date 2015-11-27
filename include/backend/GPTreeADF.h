@@ -46,7 +46,7 @@ private:
     public:
         GPTreeADFCopy(){}
         virtual ~GPTreeADFCopy(){}
-        virtual GPAbstractPoint* copy(GPAbstractPoint* src);
+        virtual GPAbstractPoint* copy(GPAbstractPoint* src, bool&);
     };
     friend class GPTreeADF;
     friend class xmlCopy;

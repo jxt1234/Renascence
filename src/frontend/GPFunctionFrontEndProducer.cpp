@@ -9,7 +9,7 @@ static int _loadXn(const string& s)
 {
     int n = (int)(s.size());
     int sum = 0;
-    for(int i=n-1; i>=0; --i)
+    for(int i=1; i<n; ++i)
     {
         if (s[i]>='0' && s[i]<='9')
         {
@@ -294,18 +294,24 @@ class formulaCopy:public GPAbstractPoint::IPointCopy
 public:
     formulaCopy(const GPFunctionDataBase* base, const GPProducerUtils& utils):mBase(base), mUtils(utils){}
     virtual ~formulaCopy(){}
-    virtual GPAbstractPoint* copy(GPAbstractPoint* src)
+    const std::map<string, GPFunctionTreePoint*>& getMutable() const {return mADFs;}
+    virtual GPAbstractPoint* copy(GPAbstractPoint* src, bool& needcopyChild)
     {
         GPFormulaTreePoint* point = (GPFormulaTreePoint*)(src);
         GPASSERT(NULL!=point);
         if (GPFormulaTreePoint::NUM == point->type())
         {
             std::string s = point->name();
+            if (mADFs.find(s)!=mADFs.end())
+            {
+                return mADFs.find(s)->second;
+            }
             return new GPFunctionTreePoint(NULL, _loadXn(s));
         }
         else if (GPFormulaTreePoint::ADF == point->type())
         {
             vector<pair<string, int>> inputMap;
+            //GPASSERT(point->getChildrenNumber()>=1);
             auto outputMap = _loadADF(point->name(), inputMap);
             std::vector<const IStatusType*> outputType;
             outputType.push_back(mBase->vQueryFunctionByShortName(outputMap.first)->inputType[outputMap.second]);
@@ -323,6 +329,7 @@ public:
                 inputmaps.insert(make_pair(i, inputMap[i].second));
             }
             originpoint->mapInput(inputmaps);
+            needcopyChild = false;
             return originpoint;
         }
         const GPFunctionDataBase::function* f = mBase->vQueryFunctionByShortName(point->name());
@@ -336,6 +343,7 @@ public:
 private:
     const GPFunctionDataBase* mBase;
     const GPProducerUtils& mUtils;
+    std::map<string, GPFunctionTreePoint*> mADFs;
 };
 
 GPFunctionTree* GPFunctionFrontEndProducer::vCreateFromFormula(const std::string& formula) const

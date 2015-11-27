@@ -137,7 +137,7 @@ GPTreeADFPoint* GPTreeADFPoint::xmlLoad(const GPTreeNode* node, const GPFunction
     return res;
 }
 
-GPAbstractPoint* GPTreeADFPoint::GPTreeADFCopy::copy(GPAbstractPoint* src)
+GPAbstractPoint* GPTreeADFPoint::GPTreeADFCopy::copy(GPAbstractPoint* src, bool&)
 {
     GPTreeADFPoint* s = (GPTreeADFPoint*)(src);
     GPTreeADFPoint* result = new GPTreeADFPoint(s->mFunc, s->mInputPos);

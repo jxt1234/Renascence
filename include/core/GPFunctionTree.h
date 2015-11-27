@@ -42,6 +42,8 @@ public:
     bool equal(const GPFunctionTreePoint* point) const;
     size_t depth() const;
     void render(std::ostream& output) const;
+    
+    void valid() const;
 private:
     void _getInputTypes(std::vector<const IStatusType*>& types) const;
     /*mF=NULL for input node, mInputNumber = -1 for function node*/

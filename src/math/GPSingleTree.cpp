@@ -47,7 +47,7 @@ GPFLOAT GPSinglePoint::compute()
     return mF->compute(mCache);
 }
 
-GPAbstractPoint* GPSinglePoint::GPSinglePointCopy::copy(GPAbstractPoint* src)
+GPAbstractPoint* GPSinglePoint::GPSinglePointCopy::copy(GPAbstractPoint* src, bool&)
 {
     GPSinglePoint* s = (GPSinglePoint*)src;
     GPSinglePoint* res = new GPSinglePoint(s->mF);

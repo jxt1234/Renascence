@@ -10,6 +10,24 @@ GPFunctionTreePoint::GPFunctionTreePoint(const GPFunctionDataBase::function* f, 
 GPFunctionTreePoint::~GPFunctionTreePoint()
 {
 }
+
+void GPFunctionTreePoint::valid() const
+{
+    if (NULL!=mF)
+    {
+        for (size_t i=0; i<mChildren.size(); ++i)
+        {
+            auto pp = GPCONVERT(GPFunctionTreePoint, mChildren[i]);
+            if (NULL!=pp->function())
+            {
+                GPASSERT(pp->function()->outputType[0] == mF->inputType[i]);
+                pp->valid();
+            }
+        }
+    }
+}
+
+
 bool GPFunctionTreePoint::equal(const GPFunctionTreePoint* point) const
 {
     GPASSERT(NULL!=point);
@@ -111,6 +129,7 @@ GPFunctionTree::GPFunctionTree(GPPtr<GPFunctionTreePoint> root, bool totalVariab
     {
         mVariableSubTree.push_back(root.get());
     }
+    root->valid();
 }
 GPFunctionTree::~GPFunctionTree()
 {
@@ -148,7 +167,7 @@ void GPFunctionTree::addVariableSubTree(GPFunctionTreePoint* subtree)
 class GPFunctionTreePointCopy:public GPAbstractPoint::IPointCopy
 {
 public:
-    virtual GPAbstractPoint* copy(GPAbstractPoint* src)
+    virtual GPAbstractPoint* copy(GPAbstractPoint* src, bool& needCopyChild)
     {
         GPFunctionTreePoint* _src = GPCONVERT(GPFunctionTreePoint, src);
         GPFunctionTreePoint* res = new GPFunctionTreePoint(_src->function(), _src->inputNumber());

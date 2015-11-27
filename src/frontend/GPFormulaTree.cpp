@@ -76,9 +76,10 @@ GPFormulaTreePoint::~GPFormulaTreePoint()
 
 void GPFormulaTreePoint::mergeForStatement(GPFormulaTreePoint* parent, size_t n)
 {
-    if (mT == OPERATOR && mName == "ADF")
+    if (mT == ADF && mName == "ADF")
     {
         GPASSERT(NULL!=parent && n>=0);
+        mName = parent->mName;
         mT = ADF;
         std::ostringstream merge;
         merge << "("<<parent->mName << ":"<<n<<")";
@@ -138,7 +139,14 @@ void GPFormulaTree::setFormula(const std::string& formula)
     {
         if ("(" == words[i])
         {
-            current->mT = GPFormulaTreePoint::OPERATOR;
+            if (current->mName == "ADF")
+            {
+                current->mT = GPFormulaTreePoint::ADF;
+            }
+            else
+            {
+                current->mT = GPFormulaTreePoint::OPERATOR;
+            }
             parentstack.push_front(current);
             parent = parentstack.front();
         }

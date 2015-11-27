@@ -57,7 +57,7 @@ class GPSinglePoint:public GPAbstractPoint
         class GPSinglePointCopy:public GPAbstractPoint::IPointCopy
         {
             public:
-                virtual GPAbstractPoint* copy(GPAbstractPoint* src);
+                virtual GPAbstractPoint* copy(GPAbstractPoint* src, bool&);
         };
     protected:
         virtual void printBefore(std::ostream& out){}

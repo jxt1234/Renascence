@@ -66,7 +66,15 @@ private:
         SP(const IStatusType* type):mType(type), Point(0, 1){}
         virtual ~SP(){}
         inline const IStatusType* type() const { return mType;}
-        inline void setType(const IStatusType* type) {GPASSERT(NULL==mType || mType==type); mType = type;}
+        inline void setType(const IStatusType* type)
+        {
+            if (mType != NULL && type != mType)
+            {
+                FUNC_PRINT_ALL(type->name().c_str(), s);
+                FUNC_PRINT_ALL(mType->name().c_str(), s);
+            }
+            GPASSERT(NULL==mType || mType==type); mType = type;
+        }
         virtual bool vReceive(CONTENT con, const Point* source);
     private:
         const IStatusType* mType;
