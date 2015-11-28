@@ -40,6 +40,7 @@ public:
                 mT->vFree(mContent);
             }
         }
+        bool needFree() const {return mOwn;}
         void releaseForFree()
         {
             mOwn = false;

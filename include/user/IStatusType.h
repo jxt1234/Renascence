@@ -44,10 +44,10 @@ public:
     virtual bool vCheckCompleted(void* content) const {return NULL!=content;}
     /* Merge(Optional)
      * For Continue Data (Stream), Merge the src data to dst, dst and src must be not null
-     * Normally, src will be freed after calling this api
-     * return true if the merge is success, return false means can't merge
+     * Normally, dst and src will be freed after calling this api
+     * return NULL means can't merge
      */
-    virtual bool vMerge(void* dst, void* src) const {return false;}
+    virtual void* vMerge(void* dst, void* src) const {return NULL;}
 
 private:
     std::string mName;

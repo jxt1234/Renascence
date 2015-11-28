@@ -174,7 +174,7 @@ def generateTypeFiles(filelist, outputt, inputt):
         typecontents+='if (NULL == value || NULL == content)\n{\nreturn mapnumber;\n}\nif (NULL == *content)\n{\n}\n'
         typecontents+='return mapnumber;\n}\n'
         typecontents+='virtual bool vCheckCompleted(void* content) const {return NULL!=content;}\n'
-        typecontents+='virtual bool vMerge(void* dst, void* src) const {return false;}\n'
+        typecontents+='virtual void* vMerge(void* dst, void* src) const {return NULL;}\n'
         typecontents+="};\n"
         typefile = 'src/package/'+turnType(t)+'.h'
 

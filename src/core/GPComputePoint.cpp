@@ -45,15 +45,30 @@ bool GPComputePoint::receive(GPPtr<ContentWrap> inputs, int n)
         {
             return false;
         }
-        bool merge = dst->getType()->vMerge(dst->getContent(), inputs->getContent());
-        if (!merge)
+        void* merge = dst->getType()->vMerge(dst->getContent(), inputs->getContent());
+        if (NULL == merge)
         {
             mCache[n] = inputs;
+        }
+        else
+        {
+            GPPtr<ContentWrap> wrap = new ContentWrap(merge, dst->getType());
+            mCache[n] = wrap;
         }
     }
     else
     {
-        mCache[n] = inputs;
+        auto type = inputs->getType();
+        void* merge = NULL;
+        merge = type->vMerge(NULL, inputs->getContent());
+        if (NULL == merge)
+        {
+            mCache[n] = inputs;
+        }
+        else
+        {
+            mCache[n] = new ContentWrap(merge, type);
+        }
     }
     mComplte = _computeCompleteStatus();
     return mComplte;
