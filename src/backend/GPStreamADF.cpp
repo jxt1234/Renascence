@@ -85,9 +85,14 @@ GPStreamADF::DP::DP(const IStatusType* t):Point(1, 0)
 bool GPStreamADF::DP::vReceive(CONTENT c, const Point* source)
 {
     GPASSERT(1 == mInputs.size());
+    if (NULL!=mContents.get())
+    {
+        GPASSERT(mContents->getType() == c->getType());
+    }
     mContents = c;
     return false;
 }
+
 
 void GPStreamADF::DP::reset()
 {
@@ -102,6 +107,26 @@ bool GPStreamADF::TP::vReceive(CONTENT c, const Point* source)
         p->vReceive(c, this);
     }
     return true;
+}
+
+GPPtr<GPTreeNode> GPStreamADF::TP::dump() const
+{
+    GPPtr<GPTreeNode> root = new GPTreeNode(_constructNodeName((void*)this), "");
+    std::ostringstream inputs_str;
+    for (auto input : mInputs)
+    {
+        inputs_str << _constructNodeName((void*)input)<<" ";
+    }
+    GPPtr<GPTreeNode> inputs = new GPTreeNode("Input", inputs_str.str());
+    root->addChild(inputs);
+    std::ostringstream outputs_str;
+    for (auto output : mOutputs)
+    {
+        outputs_str << _constructNodeName((void*)(output.get())) << " ";
+    }
+    GPPtr<GPTreeNode> outputs = new GPTreeNode("Output", outputs_str.str());
+    root->addChild(outputs);
+    return root;
 }
 
 
@@ -175,6 +200,7 @@ GPStreamADF::GPStreamADF(const GPMultiLayerTree* opttree)
             auto replacePos = iter.first;
             auto outputPoints = inputLists.find(replacePos)->second;
             GPPtr<Point> transform = new TP((int)outputPoints.size());
+            mTPS.push_back((TP*)transform.get());
             GPPtr<Point> inputPoint = maplists.find(iter.second.get())->second;
             inputPoint->connectOutput(transform, 0);
             transform->connectInput(inputPoint.get(), 0);
@@ -192,23 +218,16 @@ GPStreamADF::GPStreamADF(const GPMultiLayerTree* opttree)
     GPASSERT(inputLists.size()>0);
     for (auto iter : inputLists)
     {
-        GPPtr<Point> source_point = new SP(NULL);
-        mSources.push_back(source_point);
-        mInputPos.push_back(iter.first);
-        for (auto cpiter : maplists)
+        for (auto v : iter.second)
         {
-            auto tree = cpiter.first;
-            size_t n = tree->getChildrenNumber();
-            for (int i=0; i<n; ++i)
-            {
-                auto _p = GPCONVERT(const GPFunctionTreePoint, tree->getChild(i));
-                if (_p->inputNumber() == iter.first)
-                {
-                    ((SP*)(source_point.get()))->setType(tree->function()->inputType[i]);
-                    source_point->connectOutput(cpiter.second, 0);
-                    cpiter.second->connectInput(source_point.get(), i);
-                }
-            }
+            auto tree = v.first;
+            auto pos = v.second;
+            auto point = maplists.find(tree)->second;
+            GPPtr<Point> source_point = new SP(tree->function()->inputType[pos]);
+            source_point->connectOutput(point, 0);
+            point->connectInput(source_point.get(), pos);
+            mSources.push_back(source_point);
+            mInputPos.push_back(iter.first);
         }
     }
     
@@ -452,9 +471,13 @@ GPTreeNode* GPStreamADF::vSave() const
     GPPtr<GPTreeNode> status_node = new GPTreeNode("Status", "");
     GPPtr<GPTreeNode> cp_node = new GPTreeNode("ComputePoint","");
     GPPtr<GPTreeNode> source_node = new GPTreeNode("Source", "");
+    GPPtr<GPTreeNode> tp_node = new GPTreeNode("Transform", "");
+    GPPtr<GPTreeNode> dp_node = new GPTreeNode("Dest", "");
     root->addChild(source_node);
     root->addChild(cp_node);
     root->addChild(status_node);
+    root->addChild(tp_node);
+    root->addChild(dp_node);
     
     for (auto sv : mSources)
     {
@@ -464,6 +487,14 @@ GPTreeNode* GPStreamADF::vSave() const
     for (auto c : mFunctions)
     {
         cp_node->addChild(c->dump());
+    }
+    for (auto c : mTPS)
+    {
+        tp_node->addChild(c->dump());
+    }
+    for (auto dv : mDest)
+    {
+        dp_node->addChild(_constructNodeName(dv.get()), "");
     }
     return root;
 }

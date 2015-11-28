@@ -98,6 +98,7 @@ private:
         TP(int outputNumber):Point(1, outputNumber){}
         virtual ~TP(){}
         virtual bool vReceive(CONTENT c, const Point* source);
+        GPPtr<GPTreeNode> dump() const;
     };
     /*Dest Point*/
     class DP:public Point
@@ -118,8 +119,10 @@ private:
     std::vector<int> mInputPos;
     std::vector<GPPtr<Point>> mDest;
     
-    /*Only has soft reference, for vMap to use*/
+    /*Only has soft reference, for vMap and vSave to use*/
     std::vector<CP*> mFunctions;
+    /*Only has soft reference, for vSave to use*/
+    std::vector<TP*> mTPS;
     
 };
 #endif /* defined(__GP__GPStreamADF__) */
