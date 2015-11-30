@@ -1,11 +1,30 @@
 #include "test/GPTest.h"
 #include "core/GPStreamFactory.h"
 #include "user/GPAPI.h"
+#include "user/GPContents.h"
 #include <assert.h>
 #include <fstream>
 #include <iostream>
 #include <string>
 using namespace std;
+
+struct OptMeta
+{
+    IGPAutoDefFunction* pFit;
+};
+
+static double _OptFunction(IGPAutoDefFunction* target, void* meta)
+{
+    OptMeta* _meta = (OptMeta*)meta;
+    GPContents nullInput;
+    auto output = GP_Function_Run(target, &nullInput);
+    auto foutput = GP_Function_Run(_meta->pFit, output);
+    double res = *(double*)(foutput->get(0));
+    output->clear();
+    GPContents::destroy(output);
+    GPContents::destroy(foutput);
+    return res;
+}
 
 static int test_main()
 {
@@ -16,7 +35,7 @@ static int test_main()
     GPPtr<GPWStreamWrap> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
     /*Input and output*/
     {
-        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "");
+        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "", NULL);
         {
             GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_base.txt");
             GP_Function_Save(adf, output.get());
@@ -33,14 +52,14 @@ static int test_main()
     /*Formula*/
     {
         string formula = "C(S(I()), F(I()))";
-        auto adf = GP_Function_Create_ByFormula(producer, formula.c_str());
+        auto adf = GP_Function_Create_ByFormula(producer, formula.c_str(), NULL);
         GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Formula.txt");
         GP_Function_Save(adf, output.get());
         GP_Function_Destroy(adf);
     }
     /*Run*/
     {
-        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "");
+        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "", NULL);
         GPContents gp_inputs;
         auto gp_output = GP_Function_Run(adf, &gp_inputs);
         assert(1==gp_output->size());
@@ -51,31 +70,31 @@ static int test_main()
     }
     /*Optimize*/
     {
-        auto fitf = GP_Function_Create_ByType(producer, "double", "TrBmp");
-        auto fitfunction = [=](IGPAutoDefFunction* target){
-            GPContents nullinput;
-            auto output = GP_Function_Run(target, &nullinput);
-            auto foutput = GP_Function_Run(fitf, output);
-            double res = *(double*)(foutput->get(0));
-            output->clear();
-            GPContents::destroy(output);
-            GPContents::destroy(foutput);
-            return res;
-        };
+        auto fitf = GP_Function_Create_ByType(producer, "double", "TrBmp", NULL);
+        OptMeta meta;
+        meta.pFit = fitf;
+        GPOptimizorInfo optinfo;
+        optinfo.pMeta = &meta;
+        optinfo.pFitComputeFunction = _OptFunction;
+        optinfo.nMaxADFDepth = 10;
+        optinfo.nMaxRunTimes = 1000;
+        optinfo.nOptimizeType = 0;
         /*Single Opt*/
         {
             string formula = "C(S(I()), F(I()))";
-            auto adf  = GP_Function_Create_ByFormula(producer, formula.c_str());
-            GP_Function_Optimize(adf, fitfunction, 1, "time=10");
-            cout << fitfunction(adf) << endl;
+            auto adf  = GP_Function_Create_ByFormula(producer, formula.c_str(), NULL);
+            optinfo.nMaxRunTimes = 100;
+            GP_Function_Optimize(adf, &optinfo);
+            cout << _OptFunction(adf, &meta) << endl;
             GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Formula_SOpt.txt");
             GP_Function_Save(adf, output.get());
             GP_Function_Destroy(adf);
         }
         /*Find Best, evolution group*/
         {
-            auto bestf = GP_Function_CreateBest_ByType(producer, "TrBmp", "", fitfunction, 10);
-            cout << fitfunction(bestf) << endl;
+            auto bestf = GP_Function_Create_ByType(producer, "TrBmp", "", &optinfo);
+            cout << _OptFunction(bestf, &meta) << endl;
+            optinfo.nMaxRunTimes = 10;
             GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Evolution.txt");
             GP_Function_Save(bestf, output.get());
             GP_Function_Destroy(bestf);
