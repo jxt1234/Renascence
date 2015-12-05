@@ -1,6 +1,7 @@
 #!/usr/bin/python
 GPSIGN = "/*GP FUNCTION*/"
 GPSTATUSSIGN="/*S*/"
+GPCOMPLTESIGN="/*T*/"
 import os
 def collectFiles(path):
     filelist = []
@@ -23,6 +24,7 @@ def analysisHeadFile(filename, functionresult):
             self.inputs = []
             self.status = []
             self.inputPos = []
+            self.inputFlags = []
             self.statusPos = []
         def prints(self):
             print "Function Begin"
@@ -32,6 +34,7 @@ def analysisHeadFile(filename, functionresult):
             print 'status: ', self.status
             print 'inputPos: ', self.inputPos
             print 'statusPos: ', self.statusPos
+            print 'inputFlags: ', self.inputFlags
             print "Function End"
         def valid(self):
             assert(self.output != 'void')
@@ -42,7 +45,7 @@ def analysisHeadFile(filename, functionresult):
         for [i, line] in enumerate(lines):
             if line.find(GPSIGN)!=-1:
                 line = line.replace('const ', '')
-                newline = line.replace(GPSTATUSSIGN, '')
+                newline = line.replace(GPSTATUSSIGN, '').replace(GPCOMPLTESIGN,'')
                 findfunc = True
                 newline = re.sub('/\*.*\*/', "", newline)
                 variables = re.findall('\w+[*| ]', newline)
@@ -57,8 +60,12 @@ def analysisHeadFile(filename, functionresult):
                         func.status.append(variables[i].replace(' ', ''))
                         func.statusPos.append(i-1)
                     else:
+                        flags = 'False'
+                        if words[i-1].find(GPCOMPLTESIGN)!=-1:
+                            flags = 'True'
                         func.inputs.append(variables[i].replace(' ', ''))
                         func.inputPos.append(i-1)
+                        func.inputFlags.append(flags)
                 functionresult.append(func)
     return findfunc
 def producelist():
@@ -237,6 +244,10 @@ def generateXML(functions):
         for t in func.inputs:
             xmlcontents += t.replace('*', '') + ' '
         xmlcontents += '</input>\n'
+        xmlcontents += '<inputNeedComplete>'
+        for f in func.inputFlags:
+            xmlcontents += f + ' '
+        xmlcontents += '</inputNeedComplete>\n'
         xmlcontents += '</'+renameFunction(func.name)+'>\n\n'
     xmlcontents += '</NULL>\n'
     return xmlcontents
