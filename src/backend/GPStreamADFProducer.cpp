@@ -37,6 +37,7 @@ IGPAutoDefFunction* GPStreamADFProducer::vCreateFromFuncTree(const GPFunctionTre
     {
         for (auto iter:l)
         {
+            std::cout << iter.first << ": ";
             iter.second->render(std::cout);
             std::cout << "\n";
         }

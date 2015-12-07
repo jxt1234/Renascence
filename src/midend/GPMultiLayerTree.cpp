@@ -25,15 +25,18 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
     {
         /*Generate Next workLists*/
         workLists.clear();
-        for (auto iter :mLayers[currentLayer])
+        for (int cur=0; cur<=currentLayer; ++cur)
         {
-            auto childrens = iter.second->display();
-            for (auto p : childrens)
+            for (auto iter :mLayers[cur])
             {
-                auto pp = GPCONVERT(const GPFunctionTreePoint, p);
-                if (pp != iter.second.get() && pp->function()!=NULL)
+                auto childrens = iter.second->display();
+                for (auto p : childrens)
                 {
-                    workLists.push_back((GPFunctionTreePoint*)pp);
+                    auto pp = GPCONVERT(const GPFunctionTreePoint, p);
+                    if (pp != iter.second.get() && pp->function()!=NULL)
+                    {
+                        workLists.push_back((GPFunctionTreePoint*)pp);
+                    }
                 }
             }
         }
@@ -96,18 +99,23 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
                 equallist.insert(std::make_pair(forcompare, equalpairs));
             }
         }
+        
         POINTS layer;
         /*Generate Layer*/
         for (auto iter : equallist)
         {
+            /*replace will decRef the iter.first, addRef to avoid free*/
             iter.first->addRef();
             GPFunctionTreePoint* inputpoints = new GPFunctionTreePoint(NULL, subtree_inputpos);
-            for (auto root_iter : mLayers[currentLayer])
+            for (int cur=0; cur<=currentLayer; ++cur)
             {
-                root_iter.second->replace((GPFunctionTreePoint*)iter.first, inputpoints);
-                for (auto p : iter.second)
+                for (auto root_iter : mLayers[cur])
                 {
-                    root_iter.second->replace((GPFunctionTreePoint*)p, inputpoints);
+                    root_iter.second->replace((GPFunctionTreePoint*)iter.first, inputpoints);
+                    for (auto p : iter.second)
+                    {
+                        root_iter.second->replace((GPFunctionTreePoint*)p, inputpoints);
+                    }
                 }
             }
             inputpoints->decRef();

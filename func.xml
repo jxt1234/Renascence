@@ -30,6 +30,7 @@
 </TrPackageFitCompute>
 
 <TrPackageFilterMatrixRegress>
+    <shortName>FR</shortName>
 	<output>TrFilterMatrix</output>
 	<status>TrRegreeMode</status>
     <input>TrBmp TrBmp</input>
@@ -37,6 +38,7 @@
 
 
 <TrPackageFilterTransformFromRegress>
+    <shortName>TFR</shortName>
 	<output>TrBmp</output>
     <input>TrBmp TrFilterMatrix</input>
 </TrPackageFilterTransformFromRegress>
