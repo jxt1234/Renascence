@@ -81,21 +81,28 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
             /*Valid Point, Added to equallist*/
             if (!equalpairs.empty())
             {
+                std::map<GPFunctionTreePoint*, std::vector<GPFunctionTreePoint*>> filtered_equallist;
                 for (auto iter : equallist)
                 {
+                    bool valid = true;
                     if (iter.first->isChildOf(forcompare))
                     {
-                        equallist.erase(iter.first);
+                        continue;
                     }
                     for (auto p : iter.second)
                     {
                         if (p->isChildOf(forcompare))
                         {
-                            equallist.erase(iter.first);
+                            valid = false;
                             break;
                         }
                     }
+                    if (valid)
+                    {
+                        filtered_equallist.insert(std::make_pair(iter.first, iter.second));
+                    }
                 }
+                equallist = filtered_equallist;
                 equallist.insert(std::make_pair(forcompare, equalpairs));
             }
         }
