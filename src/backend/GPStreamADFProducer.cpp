@@ -54,5 +54,3 @@ IGPAutoDefFunction* GPStreamADFProducer::vCreateFromNode(const GPTreeNode* p, co
     }
     return new GPStreamADF(p, base);
 }
-
-

@@ -19,24 +19,65 @@ using namespace std;
 
 static int test_main()
 {
-    GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
-    AUTOCLEAN(base);
+    GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
     {
-        GPProducer* sys = GPFactory::createProducer(base);
-        AUTOCLEAN(sys);
-        GPPtr<GPFunctionTree> tree = sys->getFront()->vCreateFromFormula("S(TFR(C(C(x0,S(x1)),S(x1)), FR(C(C(x0,S(x1)),S(x1)), C(C(x0,S(x1)),S(S(x1))))))");
-        GPPtr<GPMultiLayerTree> multiTree = new GPMultiLayerTree(tree.get());
-        auto layers = multiTree->layers();
-        for (size_t i=0; i<layers.size(); ++i)
+        GPPtr<GPProducer> gen = GPFactory::createProducer(base.get(), GPFactory::STREAM);
+        xmlReader r;
+        auto n = r.loadFile("stream_test.xml");
+        GPPtr<IGPAutoDefFunction> gp = gen->createFunction(n);
+        GPPtr<GPTreeNode> node = gp->vSave();
+        GPPtr<GPWStreamWrap> outp = GPStreamFactory::NewWStream("output/GPStreamTest.xml");
+        xmlReader::dumpNodes(node.get(), outp.get());
+        auto bmptype = base->vQueryType("TrBmp");
+        outp->flush();
         {
-            GPPRINT("The %ld Layer: ", i);
-            for (auto iter : layers[i])
-            {
-                std::ostringstream formulas;
-                iter.second->render(formulas);
-                GPPRINT("%d:%s, ", iter.first, formulas.str().c_str());
-            }
-            GPPRINT_FL("\n");
+            GPContents contents;
+            GPPtr<GPStreamWrap> inputjpeg = GPStreamFactory::NewStream("input.jpg", GPStreamFactory::FILE);
+            auto pic = bmptype->vLoad(inputjpeg.get());
+            contents.push(pic, bmptype);
+            inputjpeg = GPStreamFactory::NewStream("output.jpg", GPStreamFactory::FILE);
+            pic = bmptype->vLoad(inputjpeg.get());
+            contents.push(pic, bmptype);
+            inputjpeg = GPStreamFactory::NewStream("input_sharp.jpg", GPStreamFactory::FILE);
+            pic = bmptype->vLoad(inputjpeg.get());
+            contents.push(pic, bmptype);
+            inputjpeg = GPStreamFactory::NewStream("output.jpg", GPStreamFactory::FILE);
+            pic = bmptype->vLoad(inputjpeg.get());
+            contents.push(pic, bmptype);
+            
+            GPContents* out = gp->vRun(&contents);
+            GPASSERT(NULL!=out);
+            GPASSERT(out->size() == 1);
+            GPPtr<GPWStreamWrap> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest.jpg", GPStreamFactory::FILE);
+            out->contents[0].type->vSave(out->get(0), outputjpeg.get());
+            out->clear();
+            delete out;
+            contents.clear();
+        }
+        gp = gen->createFunction("TrPackageSaturation(TrPackageFilterTransformFromRegress(TrPackageCompse(x0,x1), TrPackageFilterMatrixRegress(x2, x3)))");
+        {
+            GPContents contents;
+            GPPtr<GPStreamWrap> inputjpeg = GPStreamFactory::NewStream("input.jpg", GPStreamFactory::FILE);
+            auto pic = bmptype->vLoad(inputjpeg.get());
+            contents.push(pic, bmptype);
+            inputjpeg = GPStreamFactory::NewStream("output.jpg", GPStreamFactory::FILE);
+            pic = bmptype->vLoad(inputjpeg.get());
+            contents.push(pic, bmptype);
+            inputjpeg = GPStreamFactory::NewStream("input_sharp.jpg", GPStreamFactory::FILE);
+            pic = bmptype->vLoad(inputjpeg.get());
+            contents.push(pic, bmptype);
+            inputjpeg = GPStreamFactory::NewStream("output.jpg", GPStreamFactory::FILE);
+            pic = bmptype->vLoad(inputjpeg.get());
+            contents.push(pic, bmptype);
+            
+            GPContents* out = gp->vRun(&contents);
+            GPASSERT(NULL!=out);
+            GPASSERT(out->size() == 1);
+            GPPtr<GPWStreamWrap> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest2.jpg", GPStreamFactory::FILE);
+            out->contents[0].type->vSave(out->get(0), outputjpeg.get());
+            out->clear();
+            delete out;
+            contents.clear();
         }
     }
     return 1;

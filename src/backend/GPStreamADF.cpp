@@ -42,9 +42,9 @@ bool GPStreamADF::CP::vReceive(CONTENT c, const Point* source)
             {
                 auto comp = mPoint->compute();
                 GPASSERT(comp.size() == mOutputs.size());
-                for (int i=0; i<mOutputs.size(); ++i)
+                for (int j=0; j<mOutputs.size(); ++j)
                 {
-                    mOutputs[i]->vReceive(comp[i], this);
+                    mOutputs[j]->vReceive(comp[j], this);
                 }
             }
             return true;
@@ -206,10 +206,14 @@ GPStreamADF::GPStreamADF(const GPMultiLayerTree* opttree)
             transform->connectInput(inputPoint.get(), 0);
             for (int j=0; j<outputPoints.size(); ++j)
             {
+                GPPtr<Point> transform_node = new TP(1);
+                mTPS.push_back((TP*)transform_node.get());
+                transform->connectOutput(transform_node, j);
+                transform_node->connectInput(transform.get(), 0);
                 auto o_tree = outputPoints[j];
                 auto o = maplists.find(o_tree.first)->second;
-                transform->connectOutput(o, j);
-                o->connectInput(transform.get(), o_tree.second);
+                o->connectInput(transform_node.get(), o_tree.second);
+                transform_node->connectOutput(o, 0);
             }
             inputLists.erase(replacePos);
         }
