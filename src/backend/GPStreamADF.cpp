@@ -38,7 +38,7 @@ bool GPStreamADF::CP::vReceive(CONTENT c, const Point* source)
     {
         if (mInputs[i] == source)
         {
-            if (mPoint->receive(c, i))
+            if (mPoint->receive(c, i) && mOpen)
             {
                 auto comp = mPoint->compute();
                 GPASSERT(comp.size() == mOutputs.size());
@@ -46,6 +46,7 @@ bool GPStreamADF::CP::vReceive(CONTENT c, const Point* source)
                 {
                     mOutputs[j]->vReceive(comp[j], this);
                 }
+                mOpen = false;
             }
             return true;
         }
@@ -427,6 +428,10 @@ GPStreamADF::~GPStreamADF()
 GPContents* GPStreamADF::vRun(GPContents* inputs)
 {
     GPASSERT(NULL!=inputs);
+    for (auto c : mFunctions)
+    {
+        c->open();
+    }
     for (int i=0; i<inputs->size(); ++i)
     {
         //FUNC_PRINT_ALL(inputs->getContent(mInputPos[i]).content, p);

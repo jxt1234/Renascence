@@ -83,13 +83,15 @@ private:
     class CP:public Point
     {
     public:
-        CP(GPPtr<GPComputePoint> point):mPoint(point), Point(point->get()->inputType.size(), point->get()->outputType.size()){}
+        CP(GPPtr<GPComputePoint> point):mPoint(point), Point(point->get()->inputType.size(), point->get()->outputType.size()){mOpen = false;}
         virtual ~CP(){}
         inline GPComputePoint* get() const {return mPoint.get();}
         virtual bool vReceive(CONTENT c, const Point* source);
         GPPtr<GPTreeNode> dump() const;
+        void open() {mOpen = true;}
     private:
         GPPtr<GPComputePoint> mPoint;
+        bool mOpen;
     };
     /*Transmit Point, Used to copy contents*/
     class TP:public Point
