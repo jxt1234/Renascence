@@ -41,6 +41,7 @@ IGPAutoDefFunction* GPStreamADFProducer::vCreateFromFuncTree(const GPFunctionTre
             iter.second->render(std::cout);
             std::cout << "\n";
         }
+        std::cout << "\n";
     }
 #endif
     return new GPStreamADF(multi_tree.get());
