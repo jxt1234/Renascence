@@ -3,11 +3,7 @@
 GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
 {
     GPPtr<GPFunctionTreePoint> root = GPFunctionTree::copy(tree->root());
-    {
-        POINTS firstLayer;
-        firstLayer.insert(std::make_pair(-1, root));
-        mLayers.push_back(firstLayer);
-    }
+    mLayers.insert(std::make_pair(-1, root));
     /*Find Origin Inputs*/
     int maxInputNumber = -1;
     for (auto p : root->display())
@@ -25,18 +21,15 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
     {
         /*Generate Next workLists*/
         workLists.clear();
-        for (int cur=0; cur<=currentLayer; ++cur)
+        for (auto iter :mLayers)
         {
-            for (auto iter :mLayers[cur])
+            auto childrens = iter.second->display();
+            for (auto p : childrens)
             {
-                auto childrens = iter.second->display();
-                for (auto p : childrens)
+                auto pp = GPCONVERT(const GPFunctionTreePoint, p);
+                if (pp->function()!=NULL)
                 {
-                    auto pp = GPCONVERT(const GPFunctionTreePoint, p);
-                    if (pp->function()!=NULL)
-                    {
-                        workLists.push_back((GPFunctionTreePoint*)pp);
-                    }
+                    workLists.push_back((GPFunctionTreePoint*)pp);
                 }
             }
         }
@@ -107,21 +100,19 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
             }
         }
         
-        POINTS layer;
         /*Generate Layer*/
         for (auto iter : equallist)
         {
             GPFunctionTreePoint* inputpoints = NULL;
+            int inputCur = -1;
             /*Find iter.first in previous layer*/
-            for (int layeriter=1; layeriter<mLayers.size(); ++layeriter)
+            for (auto l : mLayers)
             {
-                for (auto l : mLayers[layeriter])
+                if (iter.first->equal(l.second.get()))
                 {
-                    if (iter.first->equal(l.second.get()))
-                    {
-                        inputpoints = new GPFunctionTreePoint(NULL, l.first);
-                        break;
-                    }
+                    inputpoints = new GPFunctionTreePoint(NULL, l.first);
+                    inputCur = l.first;
+                    break;
                 }
             }
             /*Not find exists tree, create a new one*/
@@ -131,12 +122,13 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
                 iter.first->addRef();
                 inputpoints = new GPFunctionTreePoint(NULL, subtree_inputpos);
                 GPPtr<GPFunctionTreePoint> match = (GPFunctionTreePoint*)iter.first;
-                layer.insert(std::make_pair(subtree_inputpos, match));
+                mLayers.insert(std::make_pair(subtree_inputpos, match));
+                inputCur = subtree_inputpos;
                 subtree_inputpos++;
             }
-            for (int cur=0; cur<=currentLayer; ++cur)
+            for (auto root_iter : mLayers)
             {
-                for (auto root_iter : mLayers[cur])
+                if (root_iter.first!=inputCur)
                 {
                     root_iter.second->replace((GPFunctionTreePoint*)iter.first, inputpoints);
                     for (auto p : iter.second)
@@ -145,13 +137,8 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
                     }
                 }
             }
-                
+            
             inputpoints->decRef();
-        }
-        if (!layer.empty())
-        {
-            mLayers.push_back(layer);
-            currentLayer++;
         }
         if (equallist.empty())
         {

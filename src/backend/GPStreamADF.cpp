@@ -138,19 +138,16 @@ GPStreamADF::GPStreamADF(const GPMultiLayerTree* opttree)
     std::map<const GPFunctionTreePoint*, GPPtr<Point>> maplists;
     GPASSERT(layers.size()>=1);
     /*Create All CP*/
-    for (auto layer : layers)
+    for (auto iter : layers)
     {
-        for (auto iter:layer)
+        for (auto p : iter.second->display())
         {
-            for (auto p : iter.second->display())
+            auto pp = (GPFunctionTreePoint*)p;
+            if (NULL != pp->function())
             {
-                auto pp = (GPFunctionTreePoint*)p;
-                if (NULL != pp->function())
-                {
-                    GPPtr<Point> cp = new CP(new GPComputePoint(pp->function()));
-                    mFunctions.push_back((CP*)(cp.get()));
-                    maplists.insert(std::make_pair(pp, cp));
-                }
+                GPPtr<Point> cp = new CP(new GPComputePoint(pp->function()));
+                mFunctions.push_back((CP*)(cp.get()));
+                maplists.insert(std::make_pair(pp, cp));
             }
         }
     }
@@ -193,10 +190,9 @@ GPStreamADF::GPStreamADF(const GPMultiLayerTree* opttree)
         }
     }
     /*Replace inputpos from layers*/
-    for (int i=1; i<layers.size(); ++i)
+    for (auto iter : layers)
     {
-        auto layer = layers[i];
-        for (auto iter : layer)
+        if (iter.first >= 0)
         {
             auto replacePos = iter.first;
             auto outputPoints = inputLists.find(replacePos)->second;
@@ -237,17 +233,18 @@ GPStreamADF::GPStreamADF(const GPMultiLayerTree* opttree)
     }
     
     /*Create DP*/
-    auto firstLayer = opttree->layers()[0];
-    for (auto iter : firstLayer)
+    for (auto iter : opttree->layers())
     {
-        GPASSERT(iter.first < 0);
-        GPPtr<Point> input = maplists.find(iter.second.get())->second;
-        for (size_t i=0; i<iter.second->function()->outputType.size(); ++i)
+        if(iter.first < 0)
         {
-            GPPtr<Point> dst = new DP(iter.second->function()->outputType[i]);
-            mDest.push_back(dst);
-            dst->connectInput(input.get(), 0);
-            input->connectOutput(dst, 0);
+            GPPtr<Point> input = maplists.find(iter.second.get())->second;
+            for (size_t i=0; i<iter.second->function()->outputType.size(); ++i)
+            {
+                GPPtr<Point> dst = new DP(iter.second->function()->outputType[i]);
+                mDest.push_back(dst);
+                dst->connectInput(input.get(), 0);
+                input->connectOutput(dst, 0);
+            }
         }
     }
 }

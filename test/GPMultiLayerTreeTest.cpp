@@ -24,15 +24,11 @@ static int test_main()
         GPPtr<GPFunctionTree> tree = sys->getFront()->vCreateFromFormula("TrPackageSaturation(TrPackageFilterTransformFromRegress(TrPackageCompse(TrPackageCompse(x0,TrPackageSaturation(x1)),TrPackageSaturation(x1)), TrPackageFilterMatrixRegress(x2, TrPackageCompse(TrPackageCompse(x0,TrPackageSaturation(x1)),TrPackageSaturation(x1)))))");
         GPPtr<GPMultiLayerTree> multiTree = new GPMultiLayerTree(tree.get());
         auto layers = multiTree->layers();
-        for (size_t i=0; i<layers.size(); ++i)
+        for (auto iter : layers)
         {
-            GPPRINT("The %ld Layer: ", i);
-            for (auto iter : layers[i])
-            {
-                GPPRINT("%d:%s, ", iter.first, iter.second->function()->name.c_str());
-            }
-            GPPRINT_FL("\n");
+            GPPRINT("%d:%s, ", iter.first, iter.second->function()->name.c_str());
         }
+        GPPRINT_FL("\n");
     }
     return 1;
 }

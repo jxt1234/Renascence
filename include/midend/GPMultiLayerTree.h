@@ -23,9 +23,9 @@ public:
     typedef std::map<int, GPPtr<GPFunctionTreePoint>> POINTS;
     GPMultiLayerTree(const GPFunctionTree* tree);
     virtual ~GPMultiLayerTree();
-    inline const std::vector<POINTS>& layers() const {return mLayers;}
+    inline const POINTS& layers() const {return mLayers;}
 private:
-    std::vector<POINTS> mLayers;
+    POINTS mLayers;
 };
 
 
