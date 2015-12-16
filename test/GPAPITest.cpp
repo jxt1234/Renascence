@@ -11,18 +11,17 @@ using namespace std;
 struct OptMeta
 {
     IGPAutoDefFunction* pFit;
-    GPContents* pMeta;
+    GPContents* pInput;
+    GPContents* pOutput;
 };
 
 static double _OptFunction(IGPAutoDefFunction* target, void* meta)
 {
     OptMeta* _meta = (OptMeta*)meta;
-    GPContents input;
-    input.push(_meta->pMeta->getContent(0));
-    auto output = GP_Function_Run(target, &input);
+    auto output = GP_Function_Run(target, _meta->pInput);
     GPContents totalInput;
     totalInput.push(output->getContent(0));
-    totalInput.push(_meta->pMeta->getContent(1));
+    totalInput.push(_meta->pOutput->getContent(0));
     auto foutput = GP_Function_Run(_meta->pFit, &totalInput);
     double res = *(double*)(foutput->get(0));
     output->clear();
@@ -41,7 +40,7 @@ static int test_main()
     GPPtr<GPWStreamWrap> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
     /*Input and output*/
     {
-        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "", NULL);
+        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "TrBmp TrBmp", NULL);
         {
             GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_base.txt");
             GP_Function_Save(adf, output.get());
@@ -57,22 +56,29 @@ static int test_main()
     }
     /*Formula*/
     {
-        string formula = "C(S(I()), F(I()))";
-        auto adf = GP_Function_Create_ByFormula(producer, formula.c_str(), "", NULL);
+        string formula = "C(S(x0), F(x0))";
+        auto adf = GP_Function_Create_ByFormula(producer, formula.c_str(), "TrBmp", NULL);
         GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Formula.txt");
         GP_Function_Save(adf, output.get());
         GP_Function_Destroy(adf);
     }
     /*Run*/
     {
-        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "", NULL);
-        GPContents gp_inputs;
-        auto gp_output = GP_Function_Run(adf, &gp_inputs);
+        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "TrBmp TrBmp", NULL);
+        GPStream* input[2];
+        input[0] = GP_Stream_Create("input.jpg");
+        input[1] = GP_Stream_Create("output.jpg");
+        auto inputs = GP_Contents_Load(producer, input, "TrBmp TrBmp", 2);
+        GP_Stream_Destroy(input[0]);
+        GP_Stream_Destroy(input[1]);
+        auto gp_output = GP_Function_Run(adf, inputs);
+        GP_Contents_Destroy(inputs);
         assert(1==gp_output->size());
         auto unit = gp_output->contents[0];
         unit.type->vSave(unit.content, screen.get());
-        GPContents::destroy(gp_output);
+        GP_Contents_Destroy(gp_output);
         GP_Function_Destroy(adf);
+        cout << endl;
     }
     /*Optimize*/
     {
@@ -81,10 +87,13 @@ static int test_main()
         meta.pFit = fitf;
         GPStream* input[2];
         input[0] = GP_Stream_Create("input.jpg");
-        input[1] = GP_Stream_Create("output.jpg");
-        meta.pMeta = GP_Contents_Load(producer, input, "TrBmp TrBmp", 2);
+        input[1] = GP_Stream_Create("input_test_simple.jpg");
+        meta.pInput = GP_Contents_Load(producer, input, "TrBmp TrBmp", 2);
         GP_Stream_Destroy(input[0]);
         GP_Stream_Destroy(input[1]);
+        input[0] = GP_Stream_Create("output.jpg");
+        meta.pOutput = GP_Contents_Load(producer, input, "TrBmp", 1);
+        GP_Stream_Destroy(input[0]);
         
         GPOptimizorInfo optinfo;
         optinfo.pMeta = &meta;
@@ -95,7 +104,7 @@ static int test_main()
         /*Single Opt*/
         {
             string formula = "C(S(x0), F(x0))";
-            auto adf  = GP_Function_Create_ByFormula(producer, formula.c_str(),"", NULL);
+            auto adf  = GP_Function_Create_ByFormula(producer, formula.c_str(),"TrBmp", NULL);
             optinfo.nMaxRunTimes = 100;
             GP_Function_Optimize(adf, &optinfo);
             cout << _OptFunction(adf, &meta) << endl;
@@ -105,7 +114,7 @@ static int test_main()
         }
         /*Find Best, evolution group*/
         {
-            auto bestf = GP_Function_Create_ByType(producer, "TrBmp", "", &optinfo);
+            auto bestf = GP_Function_Create_ByType(producer, "TrBmp", "TrBmp TrBmp", &optinfo);
             cout << _OptFunction(bestf, &meta) << endl;
             optinfo.nMaxRunTimes = 10;
             GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Evolution.txt");
@@ -113,7 +122,8 @@ static int test_main()
             GP_Function_Destroy(bestf);
         }
         GP_Function_Destroy(fitf);
-        GP_Contents_Destroy(meta.pMeta);
+        GP_Contents_Destroy(meta.pOutput);
+        GP_Contents_Destroy(meta.pInput);
     }
     GP_Producer_Destroy(producer);
     return 1;

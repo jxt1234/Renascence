@@ -17,7 +17,7 @@ class GPFormulaADFTest:public GPTest
 void GPFormulaADFTest::run()
 {
     GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
-    const char* formula = "TrPackageFitCompute(C(x1, ADF[filter, x1, x1, x1, C(x0, S(x0))]), x0)";
+    const char* formula = "FIT(C(x1, ADF[filter, x1, x1, x1, C(x0, S(x0))]), x0)";
     AUTOCLEAN(base);
     {
         GPProducer* sys = GPFactory::createProducer(base);

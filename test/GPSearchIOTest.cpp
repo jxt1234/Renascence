@@ -23,11 +23,17 @@ class GPSearchIOTest:public GPTest
                 GPProducer& gen = *sys;
                 AUTOCLEAN(sys);
                 const IStatusType* ist = base->vQueryType(string("TrFilterMatrix"));
+                const IStatusType* bmp = base->vQueryType("TrBmp");
                 vector<const IStatusType*> out;
                 out.push_back(ist);
-                vector<const IStatusType*> inp;
+                vector<const IStatusType*> inp(2, bmp);
                 IGPAutoDefFunction* f = gen.createFunction(out, inp);
                 GPContents GPinp;
+                GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream("input.jpg");
+                GPinp.push(bmp->vLoad(input.get()), bmp);
+                input = GPStreamFactory::NewStream("output.jpg");
+                GPinp.push(bmp->vLoad(input.get()), bmp);
+                input = NULL;
                 auto _output = f->vRun(&GPinp);
                 GPASSERT(_output->size()==1);
                 ist->vSave(_output->get(0), screen.get());
@@ -53,6 +59,7 @@ class GPSearchIOTest:public GPTest
                     GPPtr<GPTreeNode> n = f_mul[i]->vSave();
                     xmlReader::dumpNodes(n.get(), output.get());
                 }
+                GPinp.clear();
             }
         }
         GPSearchIOTest(){}

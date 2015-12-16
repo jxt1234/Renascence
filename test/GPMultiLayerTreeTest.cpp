@@ -27,7 +27,9 @@ static int test_main()
         auto layers = multiTree->layers();
         for (auto iter : layers)
         {
-            GPPRINT("%d:%s, ", iter.first, iter.second->function()->name.c_str());
+            std::ostringstream outputstring;
+            iter.second->render(outputstring);
+            GPPRINT("%d:%s, ", iter.first, outputstring.str().c_str());
         }
         GPPRINT_FL("\n");
     }

@@ -95,7 +95,7 @@ GPEvolutionGroup::~GPEvolutionGroup()
 
 void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)>& f)
 {
-    GPASSERT(mGroup.size()>1);
+    GPASSERT(mGroup.size()>=1);
     double _max = f((*mGroup.begin())->mFunction.get());
     auto iter = mGroup.begin();
     auto best = mGroup[0];

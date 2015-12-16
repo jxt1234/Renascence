@@ -44,15 +44,4 @@
     <input>TrBmp TrFilterMatrix</input>
 </TrPackageFilterTransformFromRegress>
 
-<TrPackageInput>
-    <shortName>I</shortName>
-    <output>TrBmp</output>
-    <input></input>
-</TrPackageInput>
-
-<TrPackageInputTarget>
-    <shortName>IT</shortName>
-    <output>TrBmp</output>
-    <input></input>
-</TrPackageInputTarget>
 </libpics>

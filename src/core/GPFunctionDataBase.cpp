@@ -307,5 +307,7 @@ const GPFunctionDataBase::function* GPFunctionDataBase::vQueryFunction (const st
             return mFunctionTable[i];
         }
     }
+    GPPRINT("Function %s Not Found!!\n", name.c_str());
+    GPASSERT(0);
     return NULL;
 }

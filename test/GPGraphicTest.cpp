@@ -6,6 +6,7 @@
 #include "core/GPStreamFactory.h"
 #include "core/GPProducer.h"
 #include "backend/GPGraphicADF.h"
+#include "user/GPAPI.h"
 using namespace std;
 class GPGraphicTest:public GPTest
 {
@@ -23,13 +24,19 @@ class GPGraphicTest:public GPTest
                 xmlReader::dumpNodes(node.get(), outp.get());
                 {
                     GPContents contents;
-                    contents.push(NULL, NULL);
+                    auto bmptype = base->vQueryType("TrBmp");
+                    GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream("input.jpg");
+                    contents.push(bmptype->vLoad(input.get()), NULL);
+                    input = GPStreamFactory::NewStream("output.jpg");
+                    contents.push(bmptype->vLoad(input.get()), NULL);
+                    input = NULL;
                     GPContents* out = gp->vRun(&contents);
                     GPASSERT(out->size() == 1);
                     double* result = (double*)out->get(0);
                     cout << *result <<endl;
                     out->clear();
                     delete out;
+                    contents.clear();
                 }
             }
             GPASSERT(0 == GPGraphicADF::Point::numberOfInstance());

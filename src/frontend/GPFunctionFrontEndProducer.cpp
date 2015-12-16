@@ -339,6 +339,7 @@ public:
             {
                 inputType.push_back(mBase->vQueryFunctionByShortName(p->name())->outputType[0]);
                 GPFunctionTreePoint* funcPoint = (GPFunctionTreePoint*)GPAbstractPoint::deepCopy(p, this);
+                funcPoint->valid();
                 inputFunc.insert(std::make_pair(i-1, funcPoint));
             }
             else
@@ -360,6 +361,7 @@ public:
             iter.second->decRef();
         }
         mADFs.insert(std::make_pair(point->name(), std::make_pair(originpoint, immutable)));
+        originpoint->valid();
         return originpoint;
     }
     virtual GPAbstractPoint* copy(GPAbstractPoint* src, bool& needcopyChild)
@@ -371,6 +373,7 @@ public:
             case GPFormulaTreePoint::NUM:
             {
                 std::string s = point->name();
+                needcopyChild = false;
                 return new GPFunctionTreePoint(NULL, _loadXn(s));
             }
             case GPFormulaTreePoint::ADF:
@@ -380,6 +383,7 @@ public:
             }
             case GPFormulaTreePoint::OPERATOR:
             {
+                needcopyChild = true;
                 const GPFunctionDataBase::function* f = mBase->vQueryFunctionByShortName(point->name());
                 if (NULL == f)
                 {
@@ -476,11 +480,10 @@ private:
 int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter* para, bool& changed) const
 {
     GPASSERT(NULL!=tree);
-    
+    changed = false;
     const int magic_number = 3;
     if (NULL == para)
     {
-        changed = false;
         return magic_number;
     }
     PFLOAT p0 = para->get(0);
@@ -489,17 +492,14 @@ int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter*
     
     if (p0 < 0.3)//TODO
     {
-        changed = false;
         return magic_number;
     }
     /*Search All Variable Points*/
     auto& variable_points = tree->getVariable();
     if (variable_points.empty())
     {
-        changed = false;
         return magic_number;
     }
-    changed = true;
     auto cacheMaps = makeReplace(variable_points);
     AutoRestore _r(cacheMaps);
     std::vector<GPFunctionTreePoint*> allpoints;
@@ -509,12 +509,17 @@ int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter*
         for (auto pp : p.first->display())
         {
             /*Don't modified root*/
-            if (pp != tree->root())
+            if (pp != p.first && pp->getChildrenNumber()>0)
             {
                 allpoints.push_back((GPFunctionTreePoint*)pp);
             }
         }
     }
+    if (allpoints.empty())
+    {
+        return magic_number;
+    }
+    changed = true;
     size_t n = p1*allpoints.size();
     if (n >= allpoints.size())
     {
