@@ -122,9 +122,10 @@ extern "C"{
     /*Create GP by formula like this: f(g(a, b), c)
      * p: the AGPProducer created by GP_Producer_Create
      * formula: the string of formula
-     * Example: auto adf = GP_Function_Create_ByFormula(p, "f(x0, g(x1))", NULL);
+     * inputType: the string of all types
+     * Example: auto adf = GP_Function_Create_ByFormula(p, "f(x0, g(x1))", "Matrix Matrix", NULL);
      */
-    IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula, GPOptimizorInfo* pInfo);
+    IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula, const char* inputType, GPOptimizorInfo* pInfo);
     
     /*The Inputs should be generate from stream by IStatusType inorder by the inputTypes return from GP_Function_Get_Inputs*/
     /*The Outputs can be write to stream by IStatusType get from GP_Function_Get_Outputs*/

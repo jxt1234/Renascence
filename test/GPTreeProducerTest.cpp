@@ -25,7 +25,8 @@ void GPTreeProducerTest::run()
         auto fs = sys->listAllFunction(output, input);
         GPASSERT(fs.size()>0);
         GPContents inp;
-        IGPAutoDefFunction* fit = sys->createFunction(string("TrPackageFitCompute(x0)"));
+        std::vector<const IStatusType*> inputs;
+        IGPAutoDefFunction* fit = sys->createFunction(string("TrPackageFitCompute(x0)"), inputs);
         int sum = 0;
         for (auto f : fs)
         {

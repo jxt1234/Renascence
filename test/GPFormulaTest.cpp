@@ -22,11 +22,12 @@ void GPFormulaTest::run()
     {
         GPProducer* sys = GPFactory::createProducer(base);
         {
-            IGPAutoDefFunction* f = sys->createFunction(formula);
+            std::vector<const IStatusType*> types;
+            IGPAutoDefFunction* f = sys->createFunction(formula, types);
             AUTOCLEAN(f);
             GPContents inp;
             GPContents* out = f->vRun(&inp);
-            IGPAutoDefFunction* comp = sys->createFunction("TrPackageFitCompute(x0)");
+            IGPAutoDefFunction* comp = sys->createFunction("TrPackageFitCompute(x0)", types);
             auto _fits = comp->vRun(out);
             double* __fit = (double*)_fits->get(0);
             FUNC_PRINT_ALL(*__fit, f);

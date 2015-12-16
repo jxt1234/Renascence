@@ -15,9 +15,8 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
         }
     }
     int subtree_inputpos = maxInputNumber+1;
-    int currentLayer = 0;
     std::vector<GPFunctionTreePoint*> workLists;
-    do
+    while (true)
     {
         /*Generate Next workLists*/
         workLists.clear();
@@ -100,7 +99,7 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
             }
         }
         
-        /*Generate Layer*/
+        /*Generate New Points*/
         for (auto iter : equallist)
         {
             GPFunctionTreePoint* inputpoints = NULL;
@@ -144,8 +143,7 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
         {
             break;
         }
-    }while (!workLists.empty());
-
+    }
 }
 
 GPMultiLayerTree::~GPMultiLayerTree()

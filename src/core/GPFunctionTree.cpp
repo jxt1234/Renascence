@@ -27,6 +27,24 @@ void GPFunctionTreePoint::valid() const
     }
 }
 
+int GPFunctionTreePoint::maxInputPos() const
+{
+    if (NULL==mF)
+    {
+        return mInputNumber;
+    }
+    int maxPos = -1;
+    for (size_t i=0; i<mChildren.size(); ++i)
+    {
+        auto pp = GPCONVERT(GPFunctionTreePoint, mChildren[i]);
+        int cur = pp->maxInputPos();
+        if (cur > maxPos)
+        {
+            maxPos = cur;
+        }
+    }
+    return maxPos;
+}
 
 bool GPFunctionTreePoint::equal(const GPFunctionTreePoint* point) const
 {
@@ -70,6 +88,29 @@ void GPFunctionTreePoint::mapInput(const std::map<int, int>& inputMap)
     }
 }
 
+void GPFunctionTreePoint::mapInput(const std::map<int, GPFunctionTreePoint*>& inputMap)
+{
+    for (size_t i=0; i<mChildren.size(); ++i)
+    {
+        auto pp = GPCONVERT(GPFunctionTreePoint, mChildren[i]);
+        if (NULL == pp->function())
+        {
+            if (inputMap.find(pp->mInputNumber)!=inputMap.end())
+            {
+                mChildren[i] = inputMap.find(pp->mInputNumber)->second;
+                mChildren[i]->addRef();
+                pp->decRef();
+            }
+        }
+        else
+        {
+            pp->mapInput(inputMap);
+        }
+    }
+    
+}
+
+
 
 size_t GPFunctionTreePoint::depth() const
 {
@@ -84,18 +125,18 @@ size_t GPFunctionTreePoint::depth() const
 }
 
 
-std::vector<const IStatusType*> GPFunctionTreePoint::getInputTypes() const
+std::map<int, const IStatusType*> GPFunctionTreePoint::getInputTypes() const
 {
-    std::vector<const IStatusType*> result;
+    std::map<int, const IStatusType*> result;
     _getInputTypes(result);
     /*Check Valid*/
     for (auto t : result)
     {
-        GPASSERT(NULL!=t);
+        GPASSERT(NULL!=t.second);
     }
     return result;
 }
-void GPFunctionTreePoint::_getInputTypes(std::vector<const IStatusType*>& types) const
+void GPFunctionTreePoint::_getInputTypes(std::map<int, const IStatusType*>& types) const
 {
     GPASSERT(NULL!=mF);
     for (size_t i=0; i<mChildren.size(); ++i)
@@ -103,14 +144,14 @@ void GPFunctionTreePoint::_getInputTypes(std::vector<const IStatusType*>& types)
         auto p = GPCONVERT(GPFunctionTreePoint, mChildren[i]);
         if (p->inputNumber()>=0)
         {
-            if (types.size() <= p->inputNumber())
+            if (types.find(p->inputNumber())!=types.end())
             {
-                for (size_t j=types.size(); j<=p->inputNumber(); ++j)
-                {
-                    types.push_back(NULL);
-                }
+                GPASSERT(types.find(p->inputNumber())->second == mF->inputType[i]);
             }
-            types[p->inputNumber()] = mF->inputType[i];
+            else
+            {
+                types.insert(std::make_pair(p->inputNumber(), mF->inputType[i]));
+            }
         }
         else
         {
@@ -127,7 +168,8 @@ GPFunctionTree::GPFunctionTree(GPPtr<GPFunctionTreePoint> root, bool totalVariab
     mRoot = root;
     if (totalVariable)
     {
-        mVariableSubTree.push_back(root.get());
+        std::vector<GPFunctionTreePoint*> immutable;
+        mVariableSubTree.insert(std::make_pair(root.get(), immutable));
     }
     root->valid();
 }
@@ -136,7 +178,7 @@ GPFunctionTree::~GPFunctionTree()
 }
 
 
-void GPFunctionTree::addVariableSubTree(GPFunctionTreePoint* subtree)
+void GPFunctionTree::addVariableSubTree(GPFunctionTreePoint* subtree, const std::vector<GPFunctionTreePoint*>& immutable)
 {
     /*TODO find other way to validate*/
     auto points = mRoot->display();
@@ -152,7 +194,7 @@ void GPFunctionTree::addVariableSubTree(GPFunctionTreePoint* subtree)
     GPASSERT(issubtree);
     for (auto p : mVariableSubTree)
     {
-        for (auto pp : p->display())
+        for (auto pp : p.first->display())
         {
             if (pp == subtree)
             {
@@ -161,8 +203,9 @@ void GPFunctionTree::addVariableSubTree(GPFunctionTreePoint* subtree)
             }
         }
     }
-    mVariableSubTree.push_back(subtree);
+    mVariableSubTree.insert(std::make_pair(subtree, immutable));
 }
+
 
 class GPFunctionTreePointCopy:public GPAbstractPoint::IPointCopy
 {

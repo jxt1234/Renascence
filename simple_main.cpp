@@ -17,69 +17,115 @@
 #include <sstream>
 using namespace std;
 
+struct OptMeta
+{
+    IGPAutoDefFunction* pFit;
+    GPContents* pMeta;
+};
+
+static double _OptFunction(IGPAutoDefFunction* target, void* meta)
+{
+    OptMeta* _meta = (OptMeta*)meta;
+    GPContents input;
+    input.push(_meta->pMeta->getContent(0));
+    auto output = GP_Function_Run(target, &input);
+    GPContents totalInput;
+    totalInput.push(output->getContent(0));
+    totalInput.push(_meta->pMeta->getContent(1));
+    auto foutput = GP_Function_Run(_meta->pFit, &totalInput);
+    double res = *(double*)(foutput->get(0));
+    output->clear();
+    GPContents::destroy(output);
+    GPContents::destroy(foutput);
+    return res;
+}
+
+
 static int test_main()
 {
-    GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
+    GPPtr<GPStreamWrap> soxml = GPStreamFactory::NewStream("func.xml", GPStreamFactory::FILE);
+    IFunctionTable* tables = NULL;
+    GPStream* streamTables = soxml.get();
+    auto producer = GP_Producer_Create(&streamTables, &tables, 1, 0);
+    GPPtr<GPWStreamWrap> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
+    /*Input and output*/
     {
-        GPPtr<GPProducer> gen = GPFactory::createProducer(base.get(), GPFactory::STREAM);
-        xmlReader r;
-        auto n = r.loadFile("stream_test.xml");
-        GPPtr<IGPAutoDefFunction> gp = gen->createFunction(n);
-        GPPtr<GPTreeNode> node = gp->vSave();
-        GPPtr<GPWStreamWrap> outp = GPStreamFactory::NewWStream("output/GPStreamTest.xml");
-        xmlReader::dumpNodes(node.get(), outp.get());
-        auto bmptype = base->vQueryType("TrBmp");
-        outp->flush();
+        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "", NULL);
         {
-            GPContents contents;
-            GPPtr<GPStreamWrap> inputjpeg = GPStreamFactory::NewStream("input.jpg", GPStreamFactory::FILE);
-            auto pic = bmptype->vLoad(inputjpeg.get());
-            contents.push(pic, bmptype);
-            inputjpeg = GPStreamFactory::NewStream("output.jpg", GPStreamFactory::FILE);
-            pic = bmptype->vLoad(inputjpeg.get());
-            contents.push(pic, bmptype);
-            inputjpeg = GPStreamFactory::NewStream("input_sharp.jpg", GPStreamFactory::FILE);
-            pic = bmptype->vLoad(inputjpeg.get());
-            contents.push(pic, bmptype);
-            inputjpeg = GPStreamFactory::NewStream("output.jpg", GPStreamFactory::FILE);
-            pic = bmptype->vLoad(inputjpeg.get());
-            contents.push(pic, bmptype);
-            
-            GPContents* out = gp->vRun(&contents);
-            GPASSERT(NULL!=out);
-            GPASSERT(out->size() == 1);
-            GPPtr<GPWStreamWrap> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest.jpg", GPStreamFactory::FILE);
-            out->contents[0].type->vSave(out->get(0), outputjpeg.get());
-            out->clear();
-            delete out;
-            contents.clear();
+            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_base.txt");
+            GP_Function_Save(adf, output.get());
         }
-        gp = gen->createFunction("TrPackageSaturation(TrPackageFilterTransformFromRegress(TrPackageCompse(x0,x1), TrPackageFilterMatrixRegress(x2, x3)))");
+        GP_Function_Destroy(adf);
+        GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream("output/GPAPI_base.txt");
+        auto adf2 = GP_Function_Create_ByStream(producer, input.get());
         {
-            GPContents contents;
-            GPPtr<GPStreamWrap> inputjpeg = GPStreamFactory::NewStream("input.jpg", GPStreamFactory::FILE);
-            auto pic = bmptype->vLoad(inputjpeg.get());
-            contents.push(pic, bmptype);
-            inputjpeg = GPStreamFactory::NewStream("output.jpg", GPStreamFactory::FILE);
-            pic = bmptype->vLoad(inputjpeg.get());
-            contents.push(pic, bmptype);
-            inputjpeg = GPStreamFactory::NewStream("input_sharp.jpg", GPStreamFactory::FILE);
-            pic = bmptype->vLoad(inputjpeg.get());
-            contents.push(pic, bmptype);
-            inputjpeg = GPStreamFactory::NewStream("output.jpg", GPStreamFactory::FILE);
-            pic = bmptype->vLoad(inputjpeg.get());
-            contents.push(pic, bmptype);
-            
-            GPContents* out = gp->vRun(&contents);
-            GPASSERT(NULL!=out);
-            GPASSERT(out->size() == 1);
-            GPPtr<GPWStreamWrap> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest2.jpg", GPStreamFactory::FILE);
-            out->contents[0].type->vSave(out->get(0), outputjpeg.get());
-            out->clear();
-            delete out;
-            contents.clear();
+            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_base2.txt");
+            GP_Function_Save(adf2, output.get());
         }
+        GP_Function_Destroy(adf2);
     }
+    /*Formula*/
+    {
+        string formula = "C(S(I()), F(I()))";
+        auto adf = GP_Function_Create_ByFormula(producer, formula.c_str(), "", NULL);
+        GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Formula.txt");
+        GP_Function_Save(adf, output.get());
+        GP_Function_Destroy(adf);
+    }
+    /*Run*/
+    {
+        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "", NULL);
+        GPContents gp_inputs;
+        auto gp_output = GP_Function_Run(adf, &gp_inputs);
+        assert(1==gp_output->size());
+        auto unit = gp_output->contents[0];
+        unit.type->vSave(unit.content, screen.get());
+        GPContents::destroy(gp_output);
+        GP_Function_Destroy(adf);
+    }
+    /*Optimize*/
+    {
+        auto fitf = GP_Function_Create_ByFormula(producer, "FIT(x0,x1)", "TrBmp TrBmp", NULL);
+        OptMeta meta;
+        meta.pFit = fitf;
+        GPStream* input[2];
+        input[0] = GP_Stream_Create("input.jpg");
+        input[1] = GP_Stream_Create("output.jpg");
+        meta.pMeta = GP_Contents_Load(producer, input, "TrBmp TrBmp", 2);
+        GP_Stream_Destroy(input[0]);
+        GP_Stream_Destroy(input[1]);
+        
+        GPOptimizorInfo optinfo;
+        optinfo.pMeta = &meta;
+        optinfo.pFitComputeFunction = _OptFunction;
+        optinfo.nMaxADFDepth = 10;
+        optinfo.nMaxRunTimes = 1000;
+        optinfo.nOptimizeType = 0;
+        /*Single Opt*/
+        {
+            string formula = "C(S(x0), F(x0))";
+            auto adf  = GP_Function_Create_ByFormula(producer, formula.c_str(),"", NULL);
+            optinfo.nMaxRunTimes = 100;
+            GP_Function_Optimize(adf, &optinfo);
+            cout << _OptFunction(adf, &meta) << endl;
+            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Formula_SOpt.txt");
+            GP_Function_Save(adf, output.get());
+            GP_Function_Destroy(adf);
+        }
+        /*Find Best, evolution group*/
+        {
+            auto bestf = GP_Function_Create_ByType(producer, "TrBmp", "", &optinfo);
+            cout << _OptFunction(bestf, &meta) << endl;
+            optinfo.nMaxRunTimes = 10;
+            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Evolution.txt");
+            GP_Function_Save(bestf, output.get());
+            GP_Function_Destroy(bestf);
+        }
+        GP_Function_Destroy(fitf);
+        GP_Contents_Destroy(meta.pMeta);
+    }
+    GP_Producer_Destroy(producer);
+    return 1;
     return 1;
 }
 

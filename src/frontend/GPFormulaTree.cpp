@@ -69,45 +69,10 @@ static void divideFormula(std::vector<std::string>& results, const std::string& 
 }
 GPFormulaTreePoint::GPFormulaTreePoint()
 {
+    mFather = NULL;
 }
 GPFormulaTreePoint::~GPFormulaTreePoint()
 {
-}
-
-void GPFormulaTreePoint::mergeForStatement(GPFormulaTreePoint* parent, size_t n)
-{
-    if (mT == ADF && mName == "ADF")
-    {
-        GPASSERT(NULL!=parent && n>=0);
-        mName = parent->mName;
-        mT = ADF;
-        std::ostringstream merge;
-        merge << "("<<parent->mName << ":"<<n<<")";
-        merge<<"[";
-        for (size_t i=0; i<mChildren.size()-1; ++i)
-        {
-            auto pp = GPCONVERT(GPFormulaTreePoint, mChildren[i]);
-            GPASSERT(pp->type() == NUM);
-            merge << pp->name() << ",";
-            pp->decRef();
-        }
-        if (!mChildren.empty())
-        {
-            auto pp = GPCONVERT(GPFormulaTreePoint, mChildren[mChildren.size()-1]);
-            GPASSERT(pp->type() == NUM);
-            merge << pp->name();
-            pp->decRef();
-        }
-        merge << "]";
-        mName = merge.str();
-        mChildren.clear();
-        return;
-    }
-    for (size_t i=0; i<mChildren.size(); ++i)
-    {
-        auto pp = GPCONVERT(GPFormulaTreePoint, mChildren[i]);
-        pp->mergeForStatement(this, i);
-    }
 }
 
 
@@ -167,11 +132,10 @@ void GPFormulaTree::setFormula(const std::string& formula)
             if (parent)
             {
                 parent->addPoint(current);
+                current->mFather = parent;
             }
         }
     }
-    /*Merge Spectial Statement*/
-    mRoot->mergeForStatement(NULL, -1);
 }
 
 GPFormulaTreePoint::TYPE GPFormulaTreePoint::getChildType(size_t i) const

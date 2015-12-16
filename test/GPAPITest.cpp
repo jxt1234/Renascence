@@ -11,20 +11,26 @@ using namespace std;
 struct OptMeta
 {
     IGPAutoDefFunction* pFit;
+    GPContents* pMeta;
 };
 
 static double _OptFunction(IGPAutoDefFunction* target, void* meta)
 {
     OptMeta* _meta = (OptMeta*)meta;
-    GPContents nullInput;
-    auto output = GP_Function_Run(target, &nullInput);
-    auto foutput = GP_Function_Run(_meta->pFit, output);
+    GPContents input;
+    input.push(_meta->pMeta->getContent(0));
+    auto output = GP_Function_Run(target, &input);
+    GPContents totalInput;
+    totalInput.push(output->getContent(0));
+    totalInput.push(_meta->pMeta->getContent(1));
+    auto foutput = GP_Function_Run(_meta->pFit, &totalInput);
     double res = *(double*)(foutput->get(0));
     output->clear();
     GPContents::destroy(output);
     GPContents::destroy(foutput);
     return res;
 }
+
 
 static int test_main()
 {
@@ -42,17 +48,17 @@ static int test_main()
         }
         GP_Function_Destroy(adf);
         GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream("output/GPAPI_base.txt");
-		auto adf2 = GP_Function_Create_ByStream(producer, input.get());
+        auto adf2 = GP_Function_Create_ByStream(producer, input.get());
         {
             GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_base2.txt");
             GP_Function_Save(adf2, output.get());
         }
-		GP_Function_Destroy(adf2);
+        GP_Function_Destroy(adf2);
     }
     /*Formula*/
     {
         string formula = "C(S(I()), F(I()))";
-        auto adf = GP_Function_Create_ByFormula(producer, formula.c_str(), NULL);
+        auto adf = GP_Function_Create_ByFormula(producer, formula.c_str(), "", NULL);
         GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_Formula.txt");
         GP_Function_Save(adf, output.get());
         GP_Function_Destroy(adf);
@@ -70,9 +76,16 @@ static int test_main()
     }
     /*Optimize*/
     {
-        auto fitf = GP_Function_Create_ByType(producer, "double", "TrBmp", NULL);
+        auto fitf = GP_Function_Create_ByFormula(producer, "FIT(x0,x1)", "TrBmp TrBmp", NULL);
         OptMeta meta;
         meta.pFit = fitf;
+        GPStream* input[2];
+        input[0] = GP_Stream_Create("input.jpg");
+        input[1] = GP_Stream_Create("output.jpg");
+        meta.pMeta = GP_Contents_Load(producer, input, "TrBmp TrBmp", 2);
+        GP_Stream_Destroy(input[0]);
+        GP_Stream_Destroy(input[1]);
+        
         GPOptimizorInfo optinfo;
         optinfo.pMeta = &meta;
         optinfo.pFitComputeFunction = _OptFunction;
@@ -81,8 +94,8 @@ static int test_main()
         optinfo.nOptimizeType = 0;
         /*Single Opt*/
         {
-            string formula = "C(S(I()), F(I()))";
-            auto adf  = GP_Function_Create_ByFormula(producer, formula.c_str(), NULL);
+            string formula = "C(S(x0), F(x0))";
+            auto adf  = GP_Function_Create_ByFormula(producer, formula.c_str(),"", NULL);
             optinfo.nMaxRunTimes = 100;
             GP_Function_Optimize(adf, &optinfo);
             cout << _OptFunction(adf, &meta) << endl;
@@ -100,6 +113,7 @@ static int test_main()
             GP_Function_Destroy(bestf);
         }
         GP_Function_Destroy(fitf);
+        GP_Contents_Destroy(meta.pMeta);
     }
     GP_Producer_Destroy(producer);
     return 1;

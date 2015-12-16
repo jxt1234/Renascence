@@ -36,7 +36,7 @@ public:
     std::vector<const GPAbstractPoint*> display() const;
     virtual ~GPAbstractPoint();
     void addPoint(GPAbstractPoint* p);
-    inline size_t getChildrenNumber() const {return mChildren.size();}
+    inline int getChildrenNumber() const {return (int)(mChildren.size());}
     inline const GPAbstractPoint* getChild(int n) const
     {
         GPASSERT(n>=0 && n<mChildren.size());

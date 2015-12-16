@@ -35,9 +35,9 @@ std::vector<GPPtr<IGPAutoDefFunction>> GPProducer::listAllFunction(const std::ve
     }
     return result;
 }
-IGPAutoDefFunction* GPProducer::createFunction(const std::string& formula)
+IGPAutoDefFunction* GPProducer::createFunction(const std::string& formula, const std::vector<const IStatusType*>& inputs)
 {
-    GPPtr<GPFunctionTree> ft = mFront->vCreateFromFormula(formula);
+    GPPtr<GPFunctionTree> ft = mFront->vCreateFromFormula(formula, inputs);
     return mBack->vCreateFromFuncTree(ft.get());
 }
 IGPAutoDefFunction* GPProducer::createFunction(const GPTreeNode* node)

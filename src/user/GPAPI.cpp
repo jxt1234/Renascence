@@ -121,7 +121,7 @@ IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* 
     return best.get();
 
 }
-IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula, GPOptimizorInfo* pInfo)
+IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula, const char* inputType, GPOptimizorInfo* pInfo)
 {
     if (NULL == formula || NULL == p)
     {
@@ -129,7 +129,7 @@ IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const cha
         return NULL;;
     }
     /*TODO: Make Optimization*/
-    return p->P->createFunction(std::string(formula));
+    return p->P->createFunction(std::string(formula), _transform(inputType, p));
 }
 
 GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input)

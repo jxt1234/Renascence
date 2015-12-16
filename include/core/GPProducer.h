@@ -29,7 +29,7 @@ public:
     
     IGPAutoDefFunction* createFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs);
     std::vector<GPPtr<IGPAutoDefFunction>> listAllFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs);
-    IGPAutoDefFunction* createFunction(const std::string& formula);
+    IGPAutoDefFunction* createFunction(const std::string& formula, const std::vector<const IStatusType*>& inputs);
     IGPAutoDefFunction* createFunction(const GPTreeNode* node);
     
     

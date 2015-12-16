@@ -36,11 +36,13 @@ public:
     TYPE getChildType(size_t i) const;
     void render(std::ostream& output) const;
     void mergeForStatement(GPFormulaTreePoint* parent, size_t n);
-    
+    const GPFormulaTreePoint* father() const {return mFather;}
     void valid() const;
 private:
     TYPE mT;
     std::string mName;
+    
+    GPFormulaTreePoint* mFather;
 };
 class GPFormulaTree:public RefCount
 {

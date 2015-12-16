@@ -25,30 +25,9 @@ static int _loadXn(const string& s)
 }
 
 /*Like This Format: (TrPackageCompse:1)[TrBmp:x5,TrBmp:x6]*/
-static pair<string, int> _loadADF(const string& s, vector<pair<string, int>>& variables)
+void _loadADF(const GPFormulaTreePoint* point, vector<pair<string, int>>& variables)
 {
-    size_t cur = 1;
-    while (s[cur]!=':') cur++;
-    string func = s.substr(1, cur-1);
-    size_t sta = cur+1;
-    cur = sta+1;
-    while (s[cur]!=')') cur++;
-    int number = _loadXn(s.substr(sta, cur-sta+1));
-    sta = cur+2;
-    cur = sta;
-    while (s[cur]!=']')
-    {
-        while (s[cur]!=':') cur++;
-        string type = s.substr(sta, cur-sta);
-        sta = cur+1;
-        cur = sta;
-        while (s[cur]!=']' && s[cur]!=',') cur++;
-        int x = _loadXn(s.substr(sta, cur-sta));
-        sta = cur+1;
-        variables.push_back(make_pair(type, x));
-    }
-    
-    return make_pair(func, number);
+    GPASSERT(NULL!=point);
 }
 
 
@@ -144,6 +123,27 @@ static bool _ValidateInputs(const vector<const IStatusType*>& real, const vector
     return true;
 }
 
+static std::vector<const IStatusType*> reshape(const std::map<int, const IStatusType*> maps)
+{
+    std::vector<const IStatusType*> result;
+    for (auto iter : maps)
+    {
+        if (result.size() <= iter.first)
+        {
+            for (size_t i=result.size(); i<=iter.first; ++i)
+            {
+                result.push_back(NULL);
+            }
+        }
+        result[iter.first] = iter.second;
+    }
+    for (auto r : result)
+    {
+        GPASSERT(NULL!=r);
+    }
+    return result;
+}
+
 static GPFunctionTreePoint* _createOnePoint(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, const GPProducerUtils& mUtils)
 {
     vector<vector<const GPProducerUtils::func*> > warpOutput;
@@ -169,7 +169,7 @@ static GPFunctionTreePoint* _createOnePoint(const std::vector<const IStatusType*
         /*Make Sure the result use all inputs*/
         GPFunctionTreePoint* _point = queue[0];
         AUTOCLEAN(_point);
-        auto real_inp = _point->getInputTypes();
+        auto real_inp = reshape(_point->getInputTypes());
         if (!_ValidateInputs(real_inp, inputType))
         {
             continue;
@@ -185,7 +185,7 @@ static GPFunctionTreePoint* _createOnePoint(const std::vector<const IStatusType*
     GPASSERT(1 == queue.size());
     GPFunctionTreePoint* originpoint = queue[0];
     /*Make Input Map*/
-    auto real_inputs = originpoint->getInputTypes();
+    auto real_inputs = reshape(originpoint->getInputTypes());
     map<int, int> inputPosMap;
     vector<pair<const IStatusType*, bool>> usedInputs;
     for (size_t i=0; i<inputType.size(); ++i)
@@ -292,67 +292,127 @@ std::vector<GPFunctionTree*> GPFunctionFrontEndProducer::vCreateAllFunction(cons
 class formulaCopy:public GPAbstractPoint::IPointCopy
 {
 public:
-    formulaCopy(const GPFunctionDataBase* base, const GPProducerUtils& utils):mBase(base), mUtils(utils){}
+    formulaCopy(const GPFunctionDataBase* base, const GPProducerUtils& utils, const std::vector<const IStatusType*>& inputTypes):mBase(base), mUtils(utils), mInputTypes(inputTypes){}
     virtual ~formulaCopy(){}
-    const std::map<string, GPFunctionTreePoint*>& getMutable() const {return mADFs;}
+    const std::map<string, std::pair<GPFunctionTreePoint*, std::vector<GPFunctionTreePoint*>>>& getMutable() const {return mADFs;}
+    GPFunctionTreePoint* newAdf(GPFormulaTreePoint* point)
+    {
+        GPASSERT(!mInputTypes.empty());
+        GPASSERT(point->getChildrenNumber()>=1);
+        auto adfname = ((const GPFormulaTreePoint*)(point->getChild(0)))->name();
+        if (mADFs.find(adfname)!=mADFs.end())
+        {
+            auto result = mADFs.find(adfname)->second.first;
+            result->addRef();
+            return result;
+        }
+        //Find output
+        std::vector<const IStatusType*> outputType;
+        auto father = point->father();
+        int n = father->getChildrenNumber();
+        int pos = -1;
+        for (int i=0; i<n; ++i)
+        {
+            if (father->getChild(i) == point)
+            {
+                pos = i;
+                break;
+            }
+        }
+        GPASSERT(-1!=pos);
+        outputType.push_back(mBase->vQueryFunctionByShortName(father->name())->inputType[pos]);
+        //Find Input
+        std::vector<const IStatusType*> inputType;
+        std::map<int, GPFunctionTreePoint*> inputFunc;
+        std::map<int, int> inputmaps;
+        for (int i=1; i<point->getChildrenNumber(); ++i)
+        {
+            GPFormulaTreePoint* p = (GPFormulaTreePoint*)(point->getChild(i));
+            if (GPFormulaTreePoint::NUM == p->type())
+            {
+                int pos = _loadXn(p->name());
+                GPASSERT(pos < mInputTypes.size());
+                inputType.push_back(mInputTypes[pos]);
+                inputmaps.insert(make_pair(i-1, pos));
+            }
+            else if (GPFormulaTreePoint::OPERATOR == p->type())
+            {
+                inputType.push_back(mBase->vQueryFunctionByShortName(p->name())->outputType[0]);
+                GPFunctionTreePoint* funcPoint = (GPFunctionTreePoint*)GPAbstractPoint::deepCopy(p, this);
+                inputFunc.insert(std::make_pair(i-1, funcPoint));
+            }
+            else
+            {
+                GPASSERT(0);
+            }
+        }
+        auto originpoint = _createOnePoint(outputType, inputType, mUtils);
+        GPASSERT(NULL!=originpoint);
+        /*Second Map for not-inorder input*/
+        originpoint->mapInput(inputmaps);
+        originpoint->mapInput(inputFunc);
+        
+        /*The FuncPoint will be ref by mapInput, deRef them now*/
+        std::vector<GPFunctionTreePoint*> immutable;
+        for (auto& iter : inputFunc)
+        {
+            immutable.push_back(iter.second);
+            iter.second->decRef();
+        }
+        mADFs.insert(std::make_pair(point->name(), std::make_pair(originpoint, immutable)));
+        return originpoint;
+    }
     virtual GPAbstractPoint* copy(GPAbstractPoint* src, bool& needcopyChild)
     {
         GPFormulaTreePoint* point = (GPFormulaTreePoint*)(src);
         GPASSERT(NULL!=point);
-        if (GPFormulaTreePoint::NUM == point->type())
+        switch (point->type())
         {
-            std::string s = point->name();
-            if (mADFs.find(s)!=mADFs.end())
+            case GPFormulaTreePoint::NUM:
             {
-                return mADFs.find(s)->second;
+                std::string s = point->name();
+                return new GPFunctionTreePoint(NULL, _loadXn(s));
             }
-            return new GPFunctionTreePoint(NULL, _loadXn(s));
-        }
-        else if (GPFormulaTreePoint::ADF == point->type())
-        {
-            vector<pair<string, int>> inputMap;
-            //GPASSERT(point->getChildrenNumber()>=1);
-            auto outputMap = _loadADF(point->name(), inputMap);
-            std::vector<const IStatusType*> outputType;
-            outputType.push_back(mBase->vQueryFunctionByShortName(outputMap.first)->inputType[outputMap.second]);
-            std::vector<const IStatusType*> inputType;
-            for (size_t i=0; i<inputMap.size(); ++i)
+            case GPFormulaTreePoint::ADF:
             {
-                inputType.push_back(mBase->vQueryType(inputMap[i].first));
+                needcopyChild = false;
+                return newAdf(point);
             }
-            auto originpoint = _createOnePoint(outputType, inputType, mUtils);
-            GPASSERT(NULL!=originpoint);
-            /*Second Map for not-inorder input*/
-            map<int, int> inputmaps;
-            for (size_t i=0; i<inputMap.size(); ++i)
+            case GPFormulaTreePoint::OPERATOR:
             {
-                inputmaps.insert(make_pair(i, inputMap[i].second));
+                const GPFunctionDataBase::function* f = mBase->vQueryFunctionByShortName(point->name());
+                if (NULL == f)
+                {
+                    f = mBase->vQueryFunction(point->name());
+                }
+                GPASSERT(NULL!=f);
+                return new GPFunctionTreePoint(f, -1);
             }
-            originpoint->mapInput(inputmaps);
-            needcopyChild = false;
-            return originpoint;
+            default:
+                GPASSERT(0);
+                break;
         }
-        const GPFunctionDataBase::function* f = mBase->vQueryFunctionByShortName(point->name());
-        if (NULL == f)
-        {
-            f = mBase->vQueryFunction(point->name());
-        }
-        GPASSERT(NULL!=f);
-        return new GPFunctionTreePoint(f, -1);
+        return NULL;
     }
 private:
     const GPFunctionDataBase* mBase;
     const GPProducerUtils& mUtils;
-    std::map<string, GPFunctionTreePoint*> mADFs;
+    std::map<string, std::pair<GPFunctionTreePoint*, std::vector<GPFunctionTreePoint*>>> mADFs;
+    const std::vector<const IStatusType*>& mInputTypes;
 };
 
-GPFunctionTree* GPFunctionFrontEndProducer::vCreateFromFormula(const std::string& formula) const
+GPFunctionTree* GPFunctionFrontEndProducer::vCreateFromFormula(const std::string& formula, const std::vector<const IStatusType*> inputTypes) const
 {
     GPFormulaTree tree;
     tree.setFormula(formula);
-    formulaCopy copy(mUtils.getOriginBase(), mUtils);
-    auto a = (GPFunctionTreePoint*)(GPAbstractPoint::deepCopy(tree.root(), &copy));
-    return new GPFunctionTree(a);
+    formulaCopy copy(mUtils.getOriginBase(), mUtils, inputTypes);
+    GPPtr<GPFunctionTreePoint> a = (GPFunctionTreePoint*)(GPAbstractPoint::deepCopy(tree.root(), &copy));
+    GPFunctionTree* result = new GPFunctionTree(a, false);
+    for (auto& adfiter : copy.getMutable())
+    {
+        result->addVariableSubTree(adfiter.second.first, adfiter.second.second);
+    }
+    return result;
 }
 
 
@@ -362,6 +422,56 @@ GPFunctionFrontEndProducer::GPFunctionFrontEndProducer(const GPFunctionDataBase*
 GPFunctionFrontEndProducer::~GPFunctionFrontEndProducer()
 {
 }
+
+
+static std::map<GPFunctionTreePoint*, std::map<int, GPFunctionTreePoint*>> makeReplace(const std::map<GPFunctionTreePoint*, std::vector<GPFunctionTreePoint*>>& variable)
+{
+    std::map<GPFunctionTreePoint*, std::map<int, GPFunctionTreePoint*>> result;
+    /*Find max input pos*/
+    for (auto iter : variable)
+    {
+        GPFunctionTreePoint* root = iter.first;
+        int replaceId = root->maxInputPos()+1;
+        std::map<int, GPFunctionTreePoint*> temp_result;
+        for (auto p : iter.second)
+        {
+            GPPtr<GPFunctionTreePoint> replace = new GPFunctionTreePoint(0, replaceId);
+            temp_result.insert(std::make_pair(replaceId, p));
+            p->addRef();//Ref the point because replace wil deRef it
+            root->replace(p, replace.get());
+            replaceId++;
+        }
+        result.insert(std::make_pair(root, temp_result));
+    }
+    return result;
+}
+static void restore( std::map<GPFunctionTreePoint*, std::map<int, GPFunctionTreePoint*>>& result)
+{
+    for (auto iter : result)
+    {
+        GPFunctionTreePoint* root = iter.first;
+        root->mapInput(iter.second);
+        for (auto p : iter.second)
+        {
+            p.second->decRef();
+        }
+    }
+}
+
+class AutoRestore:public RefCount
+{
+public:
+    AutoRestore(std::map<GPFunctionTreePoint*, std::map<int, GPFunctionTreePoint*>>& map):mMap(map)
+    {
+    }
+    ~AutoRestore()
+    {
+        restore(mMap);
+    }
+private:
+    std::map<GPFunctionTreePoint*, std::map<int, GPFunctionTreePoint*>>& mMap;
+};
+
 
 int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter* para, bool& changed) const
 {
@@ -377,40 +487,49 @@ int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter*
     PFLOAT p1 = para->get(1);
     PFLOAT p2 = para->get(2);
     
-    if (p0 < 0.3)
+    if (p0 < 0.3)//TODO
     {
         changed = false;
         return magic_number;
     }
-    std::vector<GPFunctionTreePoint*> allpoints;
     /*Search All Variable Points*/
+    auto& variable_points = tree->getVariable();
+    if (variable_points.empty())
     {
-        auto variable_points = tree->getVariable();
-        for (auto p : variable_points)
+        changed = false;
+        return magic_number;
+    }
+    changed = true;
+    auto cacheMaps = makeReplace(variable_points);
+    AutoRestore _r(cacheMaps);
+    std::vector<GPFunctionTreePoint*> allpoints;
+    /*FIXME inputmap and function save*/
+    for (auto p : variable_points)
+    {
+        for (auto pp : p.first->display())
         {
-            for (auto pp : p->display())
+            /*Don't modified root*/
+            if (pp != tree->root())
             {
-                /*Don't modified root*/
-                if (pp != tree->root())
-                {
-                    allpoints.push_back((GPFunctionTreePoint*)pp);
-                }
+                allpoints.push_back((GPFunctionTreePoint*)pp);
             }
         }
-    }
-    if (allpoints.empty())
-    {
-        changed = false;
-        return magic_number;
     }
     size_t n = p1*allpoints.size();
     if (n >= allpoints.size())
     {
         n = allpoints.size()-1;
     }
-    changed = true;
     GPFunctionTreePoint* origin_point = allpoints[n];
-    auto inputs = origin_point->getInputTypes();
+    auto inputsTotal = origin_point->getInputTypes();
+    std::vector<const IStatusType*> inputs;
+    std::map<int, int> inputMap;
+    int cur = 0;
+    for (auto& iter : inputsTotal)
+    {
+        inputs.push_back(iter.second);
+        inputMap.insert(std::make_pair(cur++, iter.first));
+    }
     auto outputs = origin_point->function()->outputType;
     auto treepoints = _searchAllFunction(outputs, inputs, mUtils);
     if (treepoints.empty())
@@ -424,6 +543,7 @@ int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter*
         n = treepoints.size()-1;
     }
     auto replace_point = treepoints[n];
+    replace_point->mapInput(inputMap);
     tree->root()->replace(origin_point, replace_point);
     
     for (auto p : treepoints)

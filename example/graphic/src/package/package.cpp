@@ -50,12 +50,8 @@ GPContents* TrPackageOutput(GPContents* inputs)
 GPContents* TrPackageFitCompute(GPContents* inputs)
 {
     GPContents* result = new GPContents;
-    static TrBmp* target = NULL;
-    if (!target)
-    {
-        target = TrLoadPixels("output.jpg");
-    }
     TrBmp* output = (TrBmp*)inputs->get(0);
+    TrBmp* target = (TrBmp*)inputs->get(1);
     double* fit = new double;
     *fit = -TrCompareBmp(output, target);
     result->push(fit, &gTrDoubleType);

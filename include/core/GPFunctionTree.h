@@ -28,7 +28,7 @@ public:
     inline const GPFunctionDataBase::function* function() const {return mF;}
     inline int inputNumber() const {return mInputNumber;}
     
-    std::vector<const IStatusType*> getInputTypes() const;
+    std::map<int, const IStatusType*> getInputTypes() const;
     
     class Iter :public RefCount
     {
@@ -39,13 +39,15 @@ public:
         virtual bool vNext() = 0;
     };
     void mapInput(const std::map<int, int>& inputMap);
+    void mapInput(const std::map<int, GPFunctionTreePoint*>& inputMap);
     bool equal(const GPFunctionTreePoint* point) const;
+    int maxInputPos() const;
     size_t depth() const;
     void render(std::ostream& output) const;
     
     void valid() const;
 private:
-    void _getInputTypes(std::vector<const IStatusType*>& types) const;
+    void _getInputTypes(std::map<int, const IStatusType*>& types) const;
     /*mF=NULL for input node, mInputNumber = -1 for function node*/
     const GPFunctionDataBase::function* mF;
     int mInputNumber;
@@ -61,9 +63,9 @@ public:
     inline GPFunctionTreePoint* root() const {return mRoot.get();}
     
     /*This kind of tree can be changed by mapStructure, the subtree shouldn't be one subtree of points in mVariableSubTree, If mVariableSubTree contains mRoot, all subtree can't be add*/
-    void addVariableSubTree(GPFunctionTreePoint* subtree);
+    void addVariableSubTree(GPFunctionTreePoint* subtree, const std::vector<GPFunctionTreePoint*>& immutable);
     
-    inline const std::vector<GPFunctionTreePoint*>& getVariable() const {return mVariableSubTree;}
+    inline const std::map<GPFunctionTreePoint*, std::vector<GPFunctionTreePoint*>>& getVariable() const {return mVariableSubTree;}
     
     static GPFunctionTree* copy(const GPFunctionTree* origin);
     static GPFunctionTreePoint* copy(const GPFunctionTreePoint* origin);
@@ -71,7 +73,8 @@ private:
     GPPtr<GPFunctionTreePoint> mRoot;
     
     /*Important: the subtree can't has child-parent relation, if mRoot is put into mVariableSubTree, it can only has mRoot*/
-    std::vector<GPFunctionTreePoint*> mVariableSubTree;
+    std::map<GPFunctionTreePoint*, std::vector<GPFunctionTreePoint*>> mVariableSubTree;
+    
 };
 
 #endif

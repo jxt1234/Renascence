@@ -33,16 +33,16 @@ IGPAutoDefFunction* GPStreamADFProducer::vCreateFromFuncTree(const GPFunctionTre
     //std::cout << tree->dump() << "\n";
     GPPtr<GPMultiLayerTree> multi_tree = new GPMultiLayerTree(tree);
 #if 0
-    for (auto l : multi_tree->layers())
+    std::cout << "\n";
+    for (auto iter : multi_tree->layers())
     {
-        for (auto iter:l)
         {
             std::cout << iter.first << ": ";
             iter.second->render(std::cout);
             std::cout << "\n";
         }
-        std::cout << "\n";
     }
+    std::cout << "\n";
 #endif
     return new GPStreamADF(multi_tree.get());
 }
