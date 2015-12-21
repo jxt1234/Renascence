@@ -110,14 +110,15 @@ def Generate_Output(outName, srcDirs, srcFiles, CLINK, depend):
     fileContents+='\n'
     #Program
     target = ''
+    main_files = ""
+    for obj in objs:
+        main_files+=(' '+MIDPATH+obj)
     if (main.find('.so')>-1):
         target = ' --shared '
     if (main.find('.a')!=-1):
-        fileContents+=('\t' + 'ar rcs '  + main+' ')
+        fileContents+=('\t' + 'ar rcs '  + main+' '+main_files)
     else:
-        fileContents+=('\t' + CPP + " " + CFLAGS + ' ' + target  + ' ' + CLINK  +' -o ' + main+' ')
-    for obj in objs:
-        fileContents+=(' '+MIDPATH+obj)
+        fileContents+=('\t' + CPP + " " + main_files + " " + CFLAGS + ' ' + target  + ' ' + CLINK  + ' -o ' + main)
     fileContents+=(' ${SELF_VARIABLES}' + '\n')
     #All objs' make 
     for sequence in sequences:
