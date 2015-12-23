@@ -35,6 +35,7 @@ public:
     virtual void vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func);
     inline GPPtr<IGPAutoDefFunction> getBest(){return mBestWrap.mFunction;}
     inline double getBestFit() const {return mBestFit;}
+    void setBestTree(GPPtr<GPFunctionTree> tree);
     void loadBest(const GPTreeNode* node);
 private:
     struct func_para:public RefCount

@@ -164,18 +164,26 @@ void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)>
 {
     if (NULL!=mBestWrap.mFunction.get())
     {
+        if (NULL == mPara.get())
+        {
+            mPara = new func_para;
+            mPara->init(mBestWrap.mFunction.get(), mBestWrap.mTree.get(), mSys);
+        }
         mBestFit = fit_func(mBestWrap.mFunction.get());
     }
-    /*Create the initial group*/
-    mGroup.clear();
-    auto group = mSys->listAllFunctionWithBackUp(mOutput, mInput);
-    GPASSERT(!group.empty());
-    for (int i=0; i<group.size() && i<mSize; ++i)
+    else
     {
-        mGroup.push_back(group[i]);
+        /*Create the initial group*/
+        mGroup.clear();
+        auto group = mSys->listAllFunctionWithBackUp(mOutput, mInput);
+        GPASSERT(!group.empty());
+        for (int i=0; i<group.size() && i<mSize; ++i)
+        {
+            mGroup.push_back(group[i]);
+        }
+        group.clear();
+        _best(fit_func);
     }
-    group.clear();
-    _best(fit_func);
     _expand();
     /*Evolution*/
     for (int i=0; i<mTime; ++i)
@@ -185,3 +193,10 @@ void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)>
         _expand();
     }
 }
+void GPEvolutionGroup::setBestTree(GPPtr<GPFunctionTree> tree)
+{
+    GPASSERT(NULL!=tree.get());
+    mBestWrap.mTree = tree;
+    mBestWrap.mFunction = mSys->getBack()->vCreateFromFuncTree(tree.get());
+}
+

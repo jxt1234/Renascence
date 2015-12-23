@@ -4,6 +4,8 @@
 #include "core/IGPAutoDefFunction.h"
 #include "core/GPProducer.h"
 #include "core/GPFactory.h"
+#include "frontend/GPFrontEndProducer.h"
+#include "backend/GPBackEndProducer.h"
 #include "evolution/GPEvolutionGroup.h"
 #include "optimizor/GPOptimizorFactory.h"
 #include "AGPProducer.h"
@@ -128,8 +130,24 @@ IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const cha
         FUNC_PRINT(1);
         return NULL;;
     }
-    /*TODO: Make Optimization*/
-    return p->P->createFunction(std::string(formula), _transform(inputType, p));
+    if (NULL == pInfo)
+    {
+        return p->P->createFunction(std::string(formula), _transform(inputType, p));
+    }
+    GPPtr<GPFunctionTree> first = p->P->getFront()->vCreateFromFormula(formula, _transform(inputType, p));
+    if (first->getVariable().empty())
+    {
+        return p->P->getBack()->vCreateFromFuncTree(first.get());
+    }
+    GPPtr<GPEvolutionGroup> group = new GPEvolutionGroup(p->P, pInfo->nMaxRunTimes/20, 20);
+    auto fit_func = [pInfo](IGPAutoDefFunction* f){
+        return pInfo->pFitComputeFunction(f, pInfo->pMeta);
+    };
+    group->setBestTree(first);
+    group->vEvolutionFunc(fit_func);
+    auto best = group->getBest();
+    best->addRef();
+    return best.get();
 }
 
 GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input)
