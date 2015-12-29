@@ -16,7 +16,7 @@
 #ifndef CORE_GPCOMPUTEPOINT_H
 #define CORE_GPCOMPUTEPOINT_H
 #include "head.h"
-#include "GPFunctionDataBase.h"
+#include "core/GPFunctionDataBase.h"
 #include "user/GPContents.h"
 #include <vector>
 #include "core/GPStatusContent.h"

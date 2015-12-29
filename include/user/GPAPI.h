@@ -15,21 +15,21 @@
  ******************************************************************/
 #ifndef USER_GPAPI_H
 #define USER_GPAPI_H
+#ifdef __cplusplus
 extern "C"{
-    class IGPAutoDefFunction;
-    class AGPProducer;
-    class GPStream;
-    class GPContents;
-    class GPWStream;
-    class IFunctionTable;
+#endif
+    typedef struct IGPAutoDefFunction IGPAutoDefFunction;
+    typedef struct AGPProducer AGPProducer;
+    typedef struct GPStream GPStream;
+    typedef struct GPContents GPContents;
+    typedef struct GPWStream GPWStream;
+    typedef struct IFunctionTable IFunctionTable;
     enum
     {
         GP_PRODUCER_TREE=0,
         GP_PRODUCER_GRAPHIC=1,
         GP_PRODUCER_STREAM=2
     };
-    
-    
     /*Set basic path of lib
      * The lib will be loaded  from basic_path/
      * For Example, set basic_path as /a/b/c/
@@ -91,7 +91,7 @@ extern "C"{
     void GP_Producer_Destroy(AGPProducer* p);
     
     
-    struct GPOptimizorInfo
+    typedef struct GPOptimizorInfo
     {
         /*The Max Tree Depth For all ADF Function
          * For Example:
@@ -108,7 +108,7 @@ extern "C"{
 
         /*The max time for pFitComputeFunction to call in optimization*/
         int nMaxRunTimes;
-    };
+    }GPOptimizorInfo;
     
     /*Create a IGPAutoDefFunction by inputTypes and outputTypes, the types must be divided by space*/
     /*For example: IGPAutoDefFunction* f = GP_Create_Function_ByType(p, "SkBitmap SkPaint", "SkStream", false)*/
@@ -157,6 +157,7 @@ extern "C"{
      }
      */
     void GP_Function_Optimize(IGPAutoDefFunction* f, GPOptimizorInfo* pInfo);
+#ifdef __cplusplus
 }
-
+#endif
 #endif

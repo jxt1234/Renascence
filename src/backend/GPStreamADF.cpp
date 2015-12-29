@@ -15,7 +15,6 @@
  ******************************************************************/
 
 #include "utils/GPStringHelper.h"
-#include "core/GPStreamFactory.h"
 #include "GPStreamADF.h"
 #include <sstream>
 static std::string _constructNodeName(void* p)

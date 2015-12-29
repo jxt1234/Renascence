@@ -222,6 +222,7 @@ private:
 
 GPFunctionTree* GPFunctionTree::copy(const GPFunctionTree* origin)
 {
+    GPASSERT(NULL!=origin);
     GPFunctionTreePointCopy copyt;
     GPFunctionTreePoint* p = GPCONVERT(GPFunctionTreePoint, GPAbstractPoint::deepCopy(origin->root(), &copyt));
     return new GPFunctionTree(p);

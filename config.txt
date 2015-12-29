@@ -26,8 +26,8 @@ LINKS: ./libGP.so -lpthread -ldl
 ##########
 
 TARGET:example.out
-DEPENDS:libGP.so
+DEPENDS:libGP.a
 DIRS:
 SRCS:simple_main.cpp
-LINKS: ./libGP.so -ldl -lpthread
+LINKS: ./libGP.a -ldl -lpthread
 

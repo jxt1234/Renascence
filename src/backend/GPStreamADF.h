@@ -18,9 +18,9 @@
 #define __GP__GPStreamADF__
 
 #include "core/IGPAutoDefFunction.h"
-#include "core/GPComputePoint.h"
 #include "core/GPFunctionTree.h"
 #include "midend/GPMultiLayerTree.h"
+#include "backend/GPComputePoint.h"
 
 /*Spectial ADF
  * This kind of ADF will change input and status itself
