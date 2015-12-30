@@ -216,7 +216,7 @@ void GP_Function_Optimize(IGPAutoDefFunction* origin, GPOptimizorInfo* pInfo)
         return;
     }
     GPPtr<IGPOptimizor> opt;
-    GPPtr<IGPAutoDefFunction> f = origin->vCopy();
+    GPPtr<GPParameter> origin_paramera = origin->getParameters();
     double originfit = pInfo->pFitComputeFunction(origin, pInfo->pMeta);
     switch(pInfo->nOptimizeType)
     {
@@ -234,19 +234,20 @@ void GP_Function_Optimize(IGPAutoDefFunction* origin, GPOptimizorInfo* pInfo)
         FUNC_PRINT(1);
         return;
     }
-    auto optfun = [pInfo, f](GPPtr<GPParameter> para){
-        f->vMap(para.get());
-        return pInfo->pFitComputeFunction(f.get(), pInfo->pMeta);
+    auto optfun = [pInfo, origin](GPPtr<GPParameter> para){
+        origin->vMap(para.get());
+        return pInfo->pFitComputeFunction(origin, pInfo->pMeta);
     };
-    GPPtr<GPParameter> result;
-    int n = f->vMap(result.get());//Get the count
-    result = opt->vFindBest(n, optfun);
-    f->vMap(result.get());
-    auto newfit = pInfo->pFitComputeFunction(f.get(), pInfo->pMeta);
-    if (newfit > originfit)
+    int n = origin->vMap(NULL);//Get the count
+    GPPtr<GPParameter> result = opt->vFindBest(n, optfun);
+    origin->vMap(result.get());
+    origin->setParameters(result);
+    auto newfit = pInfo->pFitComputeFunction(origin, pInfo->pMeta);
+    if (newfit < originfit && origin_paramera.get() != NULL)
     {
-        origin->vMap(result.get());
-        origin->setParameters(result);
+        /*Revert to first one*/
+        origin->vMap(origin_paramera.get());
+        origin->setParameters(origin_paramera);
     }
 }
 

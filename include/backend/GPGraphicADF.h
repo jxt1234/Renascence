@@ -29,7 +29,6 @@ public:
     typedef GPContents::GP_Unit UNIT;
     virtual GPContents* vRun(GPContents*  inputs);
     virtual GPTreeNode* vSave() const;
-    virtual IGPAutoDefFunction* vCopy() const;
     
     virtual int vMap(GPParameter* p);
     GPGraphicADF(const GPTreeNode* node, const GPFunctionDataBase* base);

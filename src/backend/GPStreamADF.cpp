@@ -503,10 +503,7 @@ GPTreeNode* GPStreamADF::vSave() const
     }
     return root;
 }
-IGPAutoDefFunction* GPStreamADF::vCopy() const
-{
-    return NULL;
-}
+
 int GPStreamADF::vMap(GPParameter* para)
 {
     int sum = 0;

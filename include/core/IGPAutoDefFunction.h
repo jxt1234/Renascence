@@ -29,9 +29,7 @@ class IGPAutoDefFunction:public RefCount
 public:
     virtual GPContents* vRun(GPContents* inputs) = 0;
     virtual GPTreeNode* vSave() const = 0;
-    /*Return a new copy of this Function*/
-    virtual IGPAutoDefFunction* vCopy() const= 0;
-    
+
     /*Set self Parameters without change the structure, Return the number of parameter needed, do nothing if para==null, the number of vMap will not change*/
     virtual int vMap(GPParameter* para) = 0;
 

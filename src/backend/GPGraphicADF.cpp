@@ -205,11 +205,6 @@ GPContents* GPGraphicADF::vRun(GPContents* inputs)
     }
     return result;
 }
-IGPAutoDefFunction* GPGraphicADF::vCopy() const
-{
-    /*TODO*/
-    return NULL;
-}
 
 void GPGraphicADF::_findAllPoints(std::set<Point*>& allPoints) const
 {

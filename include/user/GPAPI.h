@@ -178,6 +178,9 @@ extern "C"{
     AGPStrings* GP_Producer_ListFunctions(AGPProducer* producer);
     AGPStrings* GP_Producer_ListTypes(AGPProducer* producer);
     
+    /*Default GPOptimizorInfo*/
+    GPOptimizorInfo* GP_OptimzorInfo_Create();
+    
 
 #ifdef __cplusplus
 }

@@ -38,8 +38,6 @@ public:
     
     virtual GPContents* vRun(GPContents* inputs);
     virtual GPTreeNode* vSave() const;
-    /*Return a new copy of this Function*/
-    virtual IGPAutoDefFunction* vCopy() const;
     /*Return the number of parameter needed, do nothing if para.get()==null*/
     virtual int vMap(GPParameter* para);
     

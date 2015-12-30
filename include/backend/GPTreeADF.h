@@ -41,13 +41,6 @@ private:
     /*Function needed*/
     GPContents* compute(GPContents* input);
     
-    class GPTreeADFCopy:public GPAbstractPoint::IPointCopy
-    {
-    public:
-        GPTreeADFCopy(){}
-        virtual ~GPTreeADFCopy(){}
-        virtual GPAbstractPoint* copy(GPAbstractPoint* src, bool&);
-    };
     friend class GPTreeADF;
     friend class xmlCopy;
 };
@@ -59,7 +52,6 @@ public:
     //Basic Functions
     GPTreeADF(GPTreeADFPoint* root);
     virtual ~GPTreeADF();
-    virtual IGPAutoDefFunction* vCopy() const;
     //Basic API
     inline GPTreeADFPoint* root() const {return mRoot;}
     GPTreeADFPoint* find(float rate);/*rate must be [0,1), return n*rate's element*/

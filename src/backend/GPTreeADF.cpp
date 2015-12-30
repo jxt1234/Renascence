@@ -137,20 +137,6 @@ GPTreeADFPoint* GPTreeADFPoint::xmlLoad(const GPTreeNode* node, const GPFunction
     return res;
 }
 
-GPAbstractPoint* GPTreeADFPoint::GPTreeADFCopy::copy(GPAbstractPoint* src, bool&)
-{
-    GPTreeADFPoint* s = (GPTreeADFPoint*)(src);
-    GPTreeADFPoint* result = new GPTreeADFPoint(s->mFunc, s->mInputPos);
-    vector<GPPtr<GPStatusContent>>& ss = s->mStatus;
-    result->mStatus.clear();
-    for (int i=0; i<ss.size(); ++i)
-    {
-        GPStatusContent* c = new GPStatusContent(*(ss[i]));
-        (result->mStatus).push_back(c);
-    }
-    return result;
-}
-
 
 GPContents* GPTreeADFPoint::compute(GPContents* input)
 {
@@ -226,13 +212,6 @@ GPContents* GPTreeADF::vRun(GPContents* inputs)
     return mRoot->compute(inputs);
 }
 
-IGPAutoDefFunction* GPTreeADF::vCopy() const
-{
-    GPTreeADFPoint::GPTreeADFCopy c;
-    GPTreeADFPoint* root = mRoot;
-    GPTreeADFPoint* p = (GPTreeADFPoint*)GPAbstractPoint::deepCopy(root, &c);
-    return new GPTreeADF(p);
-}
 int GPTreeADF::vMap(GPParameter* para)
 {
     GPASSERT(NULL!=mRoot);
