@@ -33,7 +33,10 @@ public:
     virtual void vSetOutput(const std::vector<const IStatusType*>& output){mOutput = output;}
     /*The fit function is assume to output only one double value*/
     virtual void vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func);
-    inline GPPtr<IGPAutoDefFunction> getBest(){return mBestWrap.mFunction;}
+    inline GPPtr<IGPAutoDefFunction> getBest()
+    {
+        return mBest;
+    }
     inline double getBestFit() const {return mBestFit;}
     void setBestTree(GPPtr<GPFunctionTree> tree);
     void loadBest(const GPTreeNode* node);
@@ -43,7 +46,7 @@ private:
         GPPtr<GPParameter> pStructure;
         GPPtr<GPParameter> pParamter;
         void init(IGPAutoDefFunction* function, GPFunctionTree* basic, const GPProducer* sys);
-        GPPtr<IGPAutoDefFunction> invalidate(GPPtr<IGPAutoDefFunction> function, GPFunctionTree* basic, const GPProducer* sys);
+        GPPtr<IGPAutoDefFunction> invalidate(GPPtr<IGPAutoDefFunction> function, const GPProducer* sys);
         void mutate();
     };
     void _best(std::function<double(IGPAutoDefFunction*)>& fitf);
@@ -51,9 +54,9 @@ private:
     void _mutate();
     
     GPProducer* mSys;
-    GPProducer::FunctionWrap mBestWrap;
+    GPPtr<IGPAutoDefFunction> mBest;
     double mBestFit;
-    std::vector<GPPtr<GPProducer::FunctionWrap>> mGroup;
+    std::vector<GPPtr<IGPAutoDefFunction>> mGroup;
     GPPtr<func_para> mPara;
     
     std::vector<const IStatusType*> mInput;

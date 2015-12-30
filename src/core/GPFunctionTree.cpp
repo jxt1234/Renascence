@@ -178,7 +178,7 @@ GPFunctionTree::~GPFunctionTree()
 }
 
 
-void GPFunctionTree::addVariableSubTree(GPFunctionTreePoint* subtree, const std::vector<GPFunctionTreePoint*>& immutable)
+void GPFunctionTree::addVariableSubTree(GPFunctionTreePoint* subtree, const std::vector<GPFunctionTreePoint*>& immutable, const std::string& name)
 {
     /*TODO find other way to validate*/
     auto points = mRoot->display();
@@ -204,33 +204,84 @@ void GPFunctionTree::addVariableSubTree(GPFunctionTreePoint* subtree, const std:
         }
     }
     mVariableSubTree.insert(std::make_pair(subtree, immutable));
+    mSubTreeName.insert(std::make_pair(name, subtree));
 }
 
 
 class GPFunctionTreePointCopy:public GPAbstractPoint::IPointCopy
 {
 public:
+    GPFunctionTreePointCopy(const GPFunctionTree* basic) : mBasic(basic){}
+    virtual ~GPFunctionTreePointCopy(){}
+    
+    std::map<GPFunctionTreePoint*, GPFunctionTreePoint*> pMapTable;
     virtual GPAbstractPoint* copy(GPAbstractPoint* src, bool& needCopyChild)
     {
         GPFunctionTreePoint* _src = GPCONVERT(GPFunctionTreePoint, src);
         GPFunctionTreePoint* res = new GPFunctionTreePoint(_src->function(), _src->inputNumber());
+        if (NULL == mBasic)
+        {
+            return res;
+        }
+        for (auto iter : mBasic->getVariable())
+        {
+            if (_src == iter.first)
+            {
+                pMapTable.insert(std::make_pair(_src, res));
+                return res;
+            }
+            for (auto c : iter.second)
+            {
+                if (c == _src)
+                {
+                    pMapTable.insert(std::make_pair(_src, res));
+                    return res;
+                }
+            }
+        }
         return res;
     }
 private:
+    const GPFunctionTree* mBasic;
 };
 
 
 GPFunctionTree* GPFunctionTree::copy(const GPFunctionTree* origin)
 {
     GPASSERT(NULL!=origin);
-    GPFunctionTreePointCopy copyt;
+    GPFunctionTreePointCopy copyt(origin);
     GPFunctionTreePoint* p = GPCONVERT(GPFunctionTreePoint, GPAbstractPoint::deepCopy(origin->root(), &copyt));
-    return new GPFunctionTree(p);
+    if (origin->mVariableSubTree.empty())
+    {
+        return new GPFunctionTree(p);
+    }
+    GPFunctionTree* newp = new GPFunctionTree(p, false);
+    auto names = origin->getSubTreeName();
+    for (auto iter : origin->getVariable())
+    {
+        GPFunctionTreePoint* first = copyt.pMapTable.find(iter.first)->second;
+        std::vector<GPFunctionTreePoint*> subtree;
+        for (auto c : iter.second)
+        {
+            subtree.push_back(copyt.pMapTable.find(c)->second);
+        }
+        std::string name_;
+        for (auto name_iter : names)
+        {
+            if (name_iter.second == iter.first)
+            {
+                name_ = name_iter.first;
+                break;
+            }
+        }
+        newp->addVariableSubTree(first, subtree, name_);
+    }
+    return newp;
 }
 
 GPFunctionTreePoint* GPFunctionTree::copy(const GPFunctionTreePoint* origin)
 {
-    GPFunctionTreePointCopy copyt;
+    GPFunctionTreePointCopy copyt(NULL);
     GPFunctionTreePoint* p = GPCONVERT(GPFunctionTreePoint, GPAbstractPoint::deepCopy((GPFunctionTreePoint*)origin, &copyt));
     return p;
 }
@@ -239,7 +290,15 @@ void GPFunctionTreePoint::render(std::ostream& output) const
 {
     if (NULL!=mF)
     {
-        output << mF->name << "(";
+        if (mF->shortname!="")
+        {
+            output <<mF->shortname;
+        }
+        else
+        {
+            output << mF->name;
+        }
+        output << "(";
         for (size_t i=0; i<mChildren.size()-1; ++i)
         {
             auto pp = (GPFunctionTreePoint*)mChildren[i];

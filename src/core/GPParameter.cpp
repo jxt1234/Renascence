@@ -17,7 +17,10 @@ GPParameter::GPParameter(int n, const PFLOAT* c)
     }
     else
     {
-        ::memset(mContent, 0, sizeof(PFLOAT)*n);
+        for (int i=0; i<n; ++i)
+        {
+            mContent[i] = 0.5;
+        }
     }
 }
 
@@ -49,4 +52,8 @@ void GPParameter::makeValid()
         }
         mContent[i] = f;
     }
+}
+GPParameter* GPParameter::copy() const
+{
+    return new GPParameter(mNum, mContent);
 }

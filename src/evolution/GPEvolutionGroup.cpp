@@ -56,15 +56,16 @@ void GPEvolutionGroup::func_para::mutate()
     pStructure->makeValid();
     pParamter->makeValid();
 }
-GPPtr<IGPAutoDefFunction> GPEvolutionGroup::func_para::invalidate(GPPtr<IGPAutoDefFunction> function, GPFunctionTree* basic, const GPProducer* sys)
+GPPtr<IGPAutoDefFunction> GPEvolutionGroup::func_para::invalidate(GPPtr<IGPAutoDefFunction> function, const GPProducer* sys)
 {
-    GPASSERT(NULL!=basic);
     bool changed;
-    sys->getFront()->vMapStructure(basic, pStructure.get(), changed);
+    auto basic = function->getBasicTree();
+    sys->getFront()->vMapStructure(basic.get(), pStructure.get(), changed);
     if (changed)
     {
         /*Randomly initialize*/
-        function = sys->getBack()->vCreateFromFuncTree(basic);
+        function = sys->getBack()->vCreateFromFuncTree(basic.get());
+        function->setBasicTree(basic);
         auto pn = function->vMap(NULL);
         GPPtr<GPParameter> new_p = new GPParameter(pn);
         for (int i=0; i<new_p->size(); ++i)
@@ -72,16 +73,18 @@ GPPtr<IGPAutoDefFunction> GPEvolutionGroup::func_para::invalidate(GPPtr<IGPAutoD
             new_p->attach()[i] = GPRandom::rate();
         }
         function->vMap(new_p.get());
+        function->setParameters(new_p);
     }
     else
     {
         function->vMap(pParamter.get());
+        function->setParameters(pParamter->copy());
     }
     return function;
 }
 
 
-GPEvolutionGroup::GPEvolutionGroup(GPProducer* sys, int time, int size):mSys(sys), mBestWrap(NULL,NULL)
+GPEvolutionGroup::GPEvolutionGroup(GPProducer* sys, int time, int size):mSys(sys)
 {
     GPASSERT(NULL!=sys);
     mTime = time;
@@ -96,12 +99,16 @@ GPEvolutionGroup::~GPEvolutionGroup()
 void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)>& f)
 {
     GPASSERT(mGroup.size()>=1);
-    double _max = f((*mGroup.begin())->mFunction.get());
+    double _max = f((mGroup.begin()->get()));
     auto iter = mGroup.begin();
     auto best = mGroup[0];
     for (iter++; iter!=mGroup.end(); iter++)
     {
-        double _f = f((*iter)->mFunction.get());
+        if (NULL!=iter->get()->getParameters().get())
+        {
+            GPASSERT(iter->get()->getParameters()->size() == iter->get()->vMap(NULL));
+        }
+        double _f = f(iter->get());
         if (_f > _max)
         {
             best = *iter;
@@ -109,12 +116,17 @@ void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)>& f)
         }
     }
     bool changed = true;
-    if (mBestWrap.mFunction.get()!=NULL)
+    if (mBest.get()!=NULL)
     {
         if (mBestFit <= _max)
         {
-            mBestWrap.mFunction = best->mFunction->vCopy();
-            mBestWrap.mTree = GPFunctionTree::copy(best->mTree.get());
+            mBest = mSys->getBack()->vCreateFromFuncTree(best->getBasicTree().get());
+            mBest->setBasicTree(GPFunctionTree::copy(best->getBasicTree().get()));
+            if (NULL!=best->getParameters().get())
+            {
+                mBest->setParameters(best->getParameters()->copy());
+                mBest->vMap(best->getParameters().get());
+            }
             mBestFit = _max;
         }
         else
@@ -124,14 +136,19 @@ void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)>& f)
     }
     else
     {
-        mBestWrap.mFunction = best->mFunction->vCopy();
-        mBestWrap.mTree = GPFunctionTree::copy(best->mTree.get());
+        mBest = mSys->getBack()->vCreateFromFuncTree(best->getBasicTree().get());
+        mBest->setBasicTree(GPFunctionTree::copy(best->getBasicTree().get()));
+        if (NULL!=best->getParameters().get())
+        {
+            mBest->setParameters(best->getParameters()->copy());
+            mBest->vMap(best->getParameters().get());
+        }
         mBestFit = _max;
     }
     if (changed)
     {
         mPara = new func_para;
-        mPara->init(mBestWrap.mFunction.get(), mBestWrap.mTree.get(), mSys);
+        mPara->init(mBest.get(), mBest->getBasicTree().get(), mSys);
     }
 }
 
@@ -140,17 +157,24 @@ void GPEvolutionGroup::_expand()
     mGroup.clear();
     for (int i=0; i<mSize; ++i)
     {
-        mGroup.push_back(new GPProducer::FunctionWrap(mBestWrap.mFunction->vCopy(), GPFunctionTree::copy(mBestWrap.mTree.get())));
+        GPPtr<IGPAutoDefFunction> adf = mSys->getBack()->vCreateFromFuncTree(mBest->getBasicTree().get());
+        adf->setBasicTree(GPFunctionTree::copy(mBest->getBasicTree().get()));
+        if (NULL!=mBest->getParameters().get())
+        {
+            adf->setParameters(mBest->getParameters()->copy());
+            adf->vMap(adf->getParameters().get());
+        }
+        mGroup.push_back(adf);
     }
 }
 
 void GPEvolutionGroup::_mutate()
 {
     GPASSERT(NULL!=mPara.get());
-    for (auto f:mGroup)
+    for (auto& f:mGroup)
     {
         mPara->mutate();
-        f->mFunction = mPara->invalidate(f->mFunction, f->mTree.get(), mSys);
+        f = mPara->invalidate(f, mSys);
     }
 }
 
@@ -158,19 +182,19 @@ void GPEvolutionGroup::_mutate()
 void GPEvolutionGroup::loadBest(const GPTreeNode* node)
 {
     GPASSERT(NULL!=mSys);
-    mBestWrap.mFunction = mSys->createFunction(node);
+    mBest = mSys->createFunction(node);
 }
 
 void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func)
 {
-    if (NULL!=mBestWrap.mFunction.get())
+    if (NULL!=mBest.get())
     {
         if (NULL == mPara.get())
         {
             mPara = new func_para;
-            mPara->init(mBestWrap.mFunction.get(), mBestWrap.mTree.get(), mSys);
+            mPara->init(mBest.get(), mBest->getBasicTree().get(), mSys);
         }
-        mBestFit = fit_func(mBestWrap.mFunction.get());
+        mBestFit = fit_func(mBest.get());
     }
     else
     {
@@ -197,7 +221,14 @@ void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)>
 void GPEvolutionGroup::setBestTree(GPPtr<GPFunctionTree> tree)
 {
     GPASSERT(NULL!=tree.get());
-    mBestWrap.mTree = tree;
-    mBestWrap.mFunction = mSys->getBack()->vCreateFromFuncTree(tree.get());
+    mBest = mSys->getBack()->vCreateFromFuncTree(tree.get());
+    mBest->setBasicTree(tree);
+    int n = mBest->vMap(NULL);
+    if (n>0)
+    {
+        GPPtr<GPParameter> par = new GPParameter(n);
+        mBest->setParameters(par);
+        mBest->vMap(par.get());
+    }
 }
 

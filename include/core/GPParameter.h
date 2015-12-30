@@ -29,6 +29,7 @@ public:
     inline PFLOAT* attach() {return mContent;}
     void clear(PFLOAT f);
     void makeValid();
+    GPParameter* copy() const;
 private:
     PFLOAT* mContent;
     int mNum;

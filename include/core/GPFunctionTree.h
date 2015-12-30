@@ -63,9 +63,10 @@ public:
     inline GPFunctionTreePoint* root() const {return mRoot.get();}
     
     /*This kind of tree can be changed by mapStructure, the subtree shouldn't be one subtree of points in mVariableSubTree, If mVariableSubTree contains mRoot, all subtree can't be add*/
-    void addVariableSubTree(GPFunctionTreePoint* subtree, const std::vector<GPFunctionTreePoint*>& immutable);
+    void addVariableSubTree(GPFunctionTreePoint* subtree, const std::vector<GPFunctionTreePoint*>& immutable, const std::string& name);
     
     inline const std::map<GPFunctionTreePoint*, std::vector<GPFunctionTreePoint*>>& getVariable() const {return mVariableSubTree;}
+    inline const std::map<std::string, GPFunctionTreePoint*>& getSubTreeName() const {return mSubTreeName;}
     
     static GPFunctionTree* copy(const GPFunctionTree* origin);
     static GPFunctionTreePoint* copy(const GPFunctionTreePoint* origin);
@@ -74,7 +75,7 @@ private:
     
     /*Important: the subtree can't has child-parent relation, if mRoot is put into mVariableSubTree, it can only has mRoot*/
     std::map<GPFunctionTreePoint*, std::vector<GPFunctionTreePoint*>> mVariableSubTree;
-    
+    std::map<std::string, GPFunctionTreePoint*> mSubTreeName;
 };
 
 #endif

@@ -47,6 +47,7 @@ extern "C"{
     /*Destroy the stream created by GP_Stream_Create, must not be used to destroy other Stream*/
     void GP_Stream_Destroy(GPStream* s);
     
+    
     /*Create Write Stream for file, using wb mode. The Real file is basic_path + filename*/
     GPWStream* GP_WStream_Create(const char* filename);
     /*Destroy the stream created by GP_WStream_Create, must not be used to destroy other Stream*/
@@ -83,7 +84,7 @@ extern "C"{
      * metaStream:
      * table: obtain the method to get function, can be NULL, then GP will create table by the path decribed by meta file
      * n: the number of stream and tables
-     * type: ALL:-1, TREE:0, GRAPIC:1
+     * type: ALL:-1, TREE:0, GRAPIC:1, STREAM:2
      */
     AGPProducer* GP_Producer_Create(GPStream** metaStream, IFunctionTable** table, int n, int type);
     
@@ -123,12 +124,12 @@ extern "C"{
      * p: the AGPProducer created by GP_Producer_Create
      * formula: the string of formula
      * inputType: the string of all types
+     * pInfo：The Optimization info, only valid where formula contains ADF
      * Example: auto adf = GP_Function_Create_ByFormula(p, "f(x0, g(x1))", "Matrix Matrix", NULL);
      */
     IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula, const char* inputType, GPOptimizorInfo* pInfo);
     
     /*The Inputs should be generate from stream by IStatusType inorder by the inputTypes return from GP_Function_Get_Inputs*/
-    /*The Outputs can be write to stream by IStatusType get from GP_Function_Get_Outputs*/
     GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input);
     /*Free the memory of function*/
     void GP_Function_Destroy(IGPAutoDefFunction* f);
@@ -157,6 +158,27 @@ extern "C"{
      }
      */
     void GP_Function_Optimize(IGPAutoDefFunction* f, GPOptimizorInfo* pInfo);
+    
+    
+    /*For the convenience of Python/Go API*/
+    GPStream** GP_Streams_Malloc(int n);
+    void GP_Streams_Free(GPStream** streams);
+    GPStream* GP_Streams_Get(GPStream** streams, int n);
+    void GP_Streams_Set(GPStream** streams,GPStream* contents, int n);
+    
+    /*For Print*/
+    typedef struct AGPStrings AGPStrings;
+    int GP_Strings_Number(AGPStrings* strings);
+    const char* GP_Strings_Get(AGPStrings* strings, int n);
+    void GP_Strings_Free(AGPStrings* strings);
+    
+    /*AGPStrings come from function must be free by GP_Strings_Free*/
+    AGPStrings* GP_Function_GetFormula(IGPAutoDefFunction* f, const char* name);
+    AGPStrings* GP_Function_GetParameters(IGPAutoDefFunction* f);
+    AGPStrings* GP_Producer_ListFunctions(AGPProducer* producer);
+    AGPStrings* GP_Producer_ListTypes(AGPProducer* producer);
+    
+
 #ifdef __cplusplus
 }
 #endif

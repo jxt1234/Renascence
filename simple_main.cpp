@@ -75,6 +75,13 @@ static int test_main()
             auto bestf = GP_Function_Create_ByFormula(producer, "C(x1, ADF[filter, x1, x1, x1, C(x0, S(x0))])", "TrBmp TrBmp", &optinfo);
             cout << "ADF" << _OptFunction(bestf, &meta) << endl;
             optinfo.nMaxRunTimes = 1000000;
+            AGPStrings* s = GP_Function_GetFormula(bestf, "filter");
+            int n = GP_Strings_Number(s);
+            for (int i=0; i<n; ++i)
+            {
+                FUNC_PRINT_ALL(GP_Strings_Get(s, i), s);
+            }
+            GP_Strings_Free(s);
             GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_EvolutionADF.txt");
             GP_Function_Save(bestf, output.get());
             GP_Function_Destroy(bestf);

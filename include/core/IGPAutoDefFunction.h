@@ -18,6 +18,7 @@
 #include "user/GPContents.h"
 #include "utils/GPTreeNode.h"
 #include "GPFunctionDataBase.h"
+#include "GPFunctionTree.h"
 #include <istream>
 #include <ostream>
 #include "head.h"
@@ -37,6 +38,15 @@ public:
     //Basic Function
     IGPAutoDefFunction(){}
     virtual ~IGPAutoDefFunction(){}
+    
+    void setBasicTree(GPPtr<GPFunctionTree> basic) {mBasic = basic;}
+    GPPtr<GPFunctionTree> getBasicTree() const {return mBasic;}
+    void setParameters(GPPtr<GPParameter> para) {mPara = para;}
+    GPPtr<GPParameter> getParameters() const {return mPara;}
+    
+private:
+    GPPtr<GPFunctionTree> mBasic;
+    GPPtr<GPParameter> mPara;
 };
 
 #endif

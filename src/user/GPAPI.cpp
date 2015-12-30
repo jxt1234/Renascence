@@ -24,7 +24,7 @@ void GP_Set_Lib_Path(const char* basic_path)
 AGPProducer* GP_Producer_Create(GPStream** metaStream, IFunctionTable** table, int n, int type)
 {
     FUNC_PRINT(type);
-    if (n <= 0 || NULL == metaStream || NULL == table)
+    if (n <= 0 || NULL == metaStream)
     {
         GPPRINT("InValid parameters!!");
         return NULL;
@@ -43,7 +43,14 @@ AGPProducer* GP_Producer_Create(GPStream** metaStream, IFunctionTable** table, i
             GPPRINT("InValid stream in GP_Producer_Create");
             return NULL;
         }
-        f->loadXml(metaStream[i], table[i]);
+        if (NULL == table)
+        {
+            f->loadXml(metaStream[i]);
+        }
+        else
+        {
+            f->loadXml(metaStream[i], table[i]);
+        }
     }
     GPProducer* p = NULL;
     switch(type)
@@ -137,7 +144,16 @@ IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const cha
     GPPtr<GPFunctionTree> first = p->P->getFront()->vCreateFromFormula(formula, _transform(inputType, p));
     if (first->getVariable().empty())
     {
-        return p->P->getBack()->vCreateFromFuncTree(first.get());
+        auto result = p->P->getBack()->vCreateFromFuncTree(first.get());
+        result->setBasicTree(first);
+        int n = result->vMap(NULL);
+        if (n > 0)
+        {
+            GPPtr<GPParameter> p = new GPParameter(result->vMap(NULL));
+            result->vMap(p.get());
+            result->setParameters(p);
+        }
+        return result;
     }
     GPPtr<GPEvolutionGroup> group = new GPEvolutionGroup(p->P, pInfo->nMaxRunTimes/20, 20);
     auto fit_func = [pInfo](IGPAutoDefFunction* f){
@@ -230,6 +246,7 @@ void GP_Function_Optimize(IGPAutoDefFunction* origin, GPOptimizorInfo* pInfo)
     if (newfit > originfit)
     {
         origin->vMap(result.get());
+        origin->setParameters(result);
     }
 }
 
@@ -316,5 +333,133 @@ void GP_Contents_Destroy(GPContents* content)
 {
     content->clear();
     delete content;
+}
+
+
+GPStream** GP_Streams_Malloc(int n)
+{
+    if (n <=0 || n>10000)
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    return (GPStream**)malloc(sizeof(GPStream*)*n);
+}
+void GP_Streams_Free(GPStream** streams)
+{
+    if (NULL == streams)
+    {
+        FUNC_PRINT(1);
+        return;
+    }
+    free(streams);
+}
+GPStream* GP_Streams_Get(GPStream** streams, int n)
+{
+    if (NULL == streams || n<0)
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    return streams[n];
+}
+void GP_Streams_Set(GPStream** streams,GPStream* contents, int n)
+{
+    if (NULL == streams || n<0)
+    {
+        FUNC_PRINT(1);
+        return;
+    }
+    streams[n] = contents;
+}
+
+struct AGPStrings
+{
+    std::vector<std::string> a;
+};
+
+int GP_Strings_Number(AGPStrings* strings)
+{
+    GPASSERT(NULL!=strings);
+    return (int)strings->a.size();
+}
+void GP_Strings_Free(AGPStrings* strings)
+{
+    GPASSERT(NULL!=strings);
+    delete strings;
+}
+
+const char* GP_Strings_Get(AGPStrings* strings, int n)
+{
+    GPASSERT(strings!=NULL);
+    GPASSERT(0<=n && n<strings->a.size());
+    return strings->a[n].c_str();
+}
+AGPStrings* GP_Function_GetFormula(IGPAutoDefFunction* f, const char* name)
+{
+    const GPFunctionTree* tree = f->getBasicTree().get();
+    GPASSERT(NULL!=tree);
+    if (NULL == name)
+    {
+        AGPStrings* result = new AGPStrings;
+        result->a.push_back(tree->dump());
+        return result;
+    }
+    auto iter = tree->getSubTreeName().find(name);
+    if (iter == tree->getSubTreeName().end())
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    std::ostringstream tempoutput;
+    iter->second->render(tempoutput);
+    AGPStrings* result = new AGPStrings;
+    result->a.push_back(tempoutput.str());
+    return result;
+}
+AGPStrings* GP_Function_GetParameters(IGPAutoDefFunction* f)
+{
+    GPASSERT(NULL!=f);//FIXME
+    GPPtr<GPParameter> p = f->getParameters();
+    GPASSERT(NULL!=p.get());//FIXME
+    auto n = p->size();
+    std::ostringstream tempoutput;
+    for (int i=0; i<n; ++i)
+    {
+        tempoutput << p->get(i) << " ";
+    }
+    AGPStrings* result = new AGPStrings;
+    result->a.push_back(tempoutput.str());
+    return result;
+    
+}
+AGPStrings* GP_Producer_ListFunctions(AGPProducer* producer)
+{
+    GPASSERT(NULL!=producer);//FIXME
+    auto functions = producer->F->getAllFunctions();
+    AGPStrings* result = new AGPStrings;
+    for (auto f : functions)
+    {
+        if (f->shortname!="")
+        {
+            result->a.push_back(f->shortname);
+        }
+        else
+        {
+            result->a.push_back(f->name);
+        }
+    }
+    return result;
+}
+AGPStrings* GP_Producer_ListTypes(AGPProducer* producer)
+{
+    GPASSERT(NULL!=producer);//FIXME
+    auto types = producer->F->getAllType();
+    AGPStrings* result = new AGPStrings;
+    for (auto t : types)
+    {
+        result->a.push_back(t->name());
+    }
+    return result;
 }
 

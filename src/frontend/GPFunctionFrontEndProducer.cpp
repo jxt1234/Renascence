@@ -360,7 +360,7 @@ public:
             immutable.push_back(iter.second);
             iter.second->decRef();
         }
-        mADFs.insert(std::make_pair(point->name(), std::make_pair(originpoint, immutable)));
+        mADFs.insert(std::make_pair(adfname, std::make_pair(originpoint, immutable)));
         originpoint->valid();
         return originpoint;
     }
@@ -414,7 +414,7 @@ GPFunctionTree* GPFunctionFrontEndProducer::vCreateFromFormula(const std::string
     GPFunctionTree* result = new GPFunctionTree(a, false);
     for (auto& adfiter : copy.getMutable())
     {
-        result->addVariableSubTree(adfiter.second.first, adfiter.second.second);
+        result->addVariableSubTree(adfiter.second.first, adfiter.second.second, adfiter.first);
     }
     return result;
 }

@@ -40,6 +40,7 @@ public:
     };
     std::vector<const IStatusType*> queryType(const std::string& typelist);
     //Basic Api
+    std::vector<const IStatusType*> getAllType() const {return mTypes;}
     std::vector<const function*> getAllFunctions() const;
     virtual const function* vQueryFunction(const std::string& name) const;
     virtual const function* vQueryFunctionByShortName(const std::string& name) const;
