@@ -48,7 +48,7 @@ static int test_main()
     GPPtr<GPStreamWrap> soxml = GPStreamFactory::NewStream("func.xml", GPStreamFactory::FILE);
     IFunctionTable* tables = NULL;
     GPStream* streamTables = soxml.get();
-    auto producer = GP_Producer_Create(&streamTables, &tables, 1, 0);
+    auto producer = GP_Producer_Create(&streamTables, &tables, 1, 2);
     GPPtr<GPWStreamWrap> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
     /*Optimize*/
     {

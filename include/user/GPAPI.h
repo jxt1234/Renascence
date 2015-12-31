@@ -215,7 +215,8 @@ extern "C"{
     AGPStrings* GP_Producer_ListTypes(AGPProducer* producer);
     
     /*Default GPOptimizorInfo*/
-    enum{
+    enum
+    {
         GP_OPTIMIZOR_VALUE,
         GP_OPTIMIZOR_TIME
     };
