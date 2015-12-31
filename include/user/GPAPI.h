@@ -21,7 +21,7 @@ extern "C"{
     typedef struct IGPAutoDefFunction IGPAutoDefFunction;
     typedef struct AGPProducer AGPProducer;
     typedef struct GPStream GPStream;
-    typedef struct GPContents GPContents;
+    typedef struct AGPContents AGPContents;
     typedef struct GPWStream GPWStream;
     typedef struct IFunctionTable IFunctionTable;
     enum
@@ -53,31 +53,67 @@ extern "C"{
     /*Destroy the stream created by GP_WStream_Create, must not be used to destroy other Stream*/
     void GP_WStream_Destroy(GPWStream* s);
     
-    /* Load Contents by IStatusType's vLoad method, Cona GPContents
+    /* Load Contents by IStatusType's vLoad method, Cona AGPContents
      * producer: the FunctionProducer
      * inputs: the list of Stream, must assume that all input are not NULL
      * typeNames: the list of types
      * n: select number, must be equal to types
      * For Example:
-     *      GPContents* c = GP_Contents_Load(producer, inputs, "TrBmp TrBmp", 2);
+     *      AGPContents* c = GP_Contents_Load(producer, inputs, "TrBmp TrBmp", 2);
      */
-    GPContents* GP_Contents_Load(AGPProducer* producer, GPStream** inputs, const char* typeNames, int n);
+    AGPContents* GP_Contents_Load(AGPProducer* producer, GPStream** inputs, const char* typeNames, int n);
+    
+    /*Return the number of contents*/
+    int GP_Contents_Size(AGPContents* contents);
+    
+    /*Return the content in the n pos*/
+    void* GP_Contents_Get(AGPContents* contents, int n);
     
     /* Write Contents to appointed stream
      * content: the contents to be write, must not be null
      * outputs: the array of output stream, must not be null, all stream in this list should not be null, too
-     * n: the number of stream, must be the same as content's size
+     * n: the pos of content, must be the range [0, size)
      * Example:
-     *      outputStream = GP_WStream_Create("test.txt");
-     *      GP_Contents_Save(contents, &outputStream, 1);
-     *
+     *      int n = GP_Contents_Size(contents);
+     *      for (int i=0; i<n; ++i)
+     *      {
+     *          char text[20];
+     *          sprintf(text, "test%d.txt", i);
+     *          outputStream = GP_WStream_Create(text);
+     *          GP_Contents_Save(contents, outputStream, i);
+     *          GP_WStream_Destroy(outputStream);
+     *      }
      */
-    void GP_Contents_Save(GPContents* content, GPWStream** outputs, int n);
+    void GP_Contents_Save(AGPContents* content, GPWStream* outputs, int n);
     
-    /*Destroy the contents in GPContents and itself
+    /*Destroy the contents in AGPContents and itself
      * content: The memory to be freed
      */
-    void GP_Contents_Destroy(GPContents* content);
+    void GP_Contents_Destroy(AGPContents* content);
+
+    
+    /* Create a collector, used to merge contents, the collector is also needed to be free by GP_Contents_Destroy, the collector doesn't own its content*/
+    AGPContents* GP_Contents_CreateCollector();
+    
+    /*Select the nth content in B, and add to Collector's end. User should not destroy B before collector is destroyed*/
+    /* Collector: The Dst Container, Must be come from GP_Contents_CreateCollector
+     * B: The Src
+     * n: The pos of content in B, n should be >=0, and n < B->size
+     * Example:
+     *      AGPContents* col = GP_Contents_CreateCollector();
+     *      AGPContents* B = GP_Contents_Load(producer, inputsB, "TrBmp", 1);
+     *      AGPContents* A = GP_Contents_Load(producer, inputsA, "TrBmp TrBmp", 2);
+     *      GP_Contents_Collect(col, A, 0);
+     *      GP_Contents_Collect(col, A, 1);
+     *      GP_Contents_Collect(col, B, 0);
+     *      //Do Something by col
+     *      GP_Contents_Destroy(col);
+     *      GP_Contents_Destroy(A);
+     *      GP_Contents_Destroy(B);
+     */
+    void GP_Contents_Collect(AGPContents* Collector, AGPContents* B, int n);
+    
+    
     
     
     /*Create AGPProducer by function table, meta file and type
@@ -130,7 +166,7 @@ extern "C"{
     IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula, const char* inputType, GPOptimizorInfo* pInfo);
     
     /*The Inputs should be generate from stream by IStatusType inorder by the inputTypes return from GP_Function_Get_Inputs*/
-    GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input);
+    AGPContents* GP_Function_Run(IGPAutoDefFunction* f, AGPContents* input);
     /*Free the memory of function*/
     void GP_Function_Destroy(IGPAutoDefFunction* f);
     
@@ -179,9 +215,18 @@ extern "C"{
     AGPStrings* GP_Producer_ListTypes(AGPProducer* producer);
     
     /*Default GPOptimizorInfo*/
-    GPOptimizorInfo* GP_OptimzorInfo_Create();
+    enum{
+        GP_OPTIMIZOR_VALUE,
+        GP_OPTIMIZOR_TIME
+    };
+    /*Create standard OptimizorInfo, Used by Python/Go
+     *type: GP_OPTIMIZOR_VALUE/GP_OPTIMIZOR_TIME
+     *depth, maxtimes: the value in GPOptimizorInfo
+     */
+    GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput);
     
-
+    /*The info be freed must be come from GP_OptimzorInfo_CreateTemplate and can't be modified*/
+    void GP_OptimzorInfo_FreeTemplate(GPOptimizorInfo* pInfo);
 #ifdef __cplusplus
 }
 #endif

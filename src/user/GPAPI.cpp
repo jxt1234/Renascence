@@ -12,6 +12,40 @@
 #include "user/GPAPI.h"
 #include "xml/xmlReader.h"
 #include "core/GPStreamFactory.h"
+class AGPContents
+{
+public:
+    AGPContents(bool own = false)
+    {
+        mOwn = own;
+        mContent = new GPContents;
+        GPASSERT(NULL!=mContent);
+    }
+    AGPContents(GPContents* content)
+    {
+        mOwn = true;
+        mContent = content;
+    }
+    ~AGPContents()
+    {
+        if (mOwn)
+        {
+            mContent->clearContents();
+        }
+        delete mContent;
+    }
+    bool own() const {return mOwn;}
+    GPContents* get() const
+    {
+        return mContent;
+    }
+    
+private:
+    GPContents* mContent;
+    bool mOwn;
+};
+
+
 void GP_Set_Lib_Path(const char* basic_path)
 {
     if (NULL == basic_path)
@@ -166,15 +200,15 @@ IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const cha
     return best.get();
 }
 
-GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input)
+AGPContents* GP_Function_Run(IGPAutoDefFunction* f, AGPContents* input)
 {
     GPASSERT(NULL!=f);
     if(NULL == input)
     {
         GPContents empty;
-        return f->vRun(&empty);
+        return new AGPContents(f->vRun(&empty));
     }
-    return f->vRun(input);
+    return new AGPContents(f->vRun(input->get()));
 }
 
 IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, GPStream* xmlFile)
@@ -277,7 +311,7 @@ void GP_Set_Stream_Path(const char* basic_path)
     GPStreamFactory::setParentPath(basic_path);
 }
 
-GPContents* GP_Contents_Load(AGPProducer* p, GPStream** inputs, const char* typeNames, int n)
+AGPContents* GP_Contents_Load(AGPProducer* p, GPStream** inputs, const char* typeNames, int n)
 {
     if (NULL == p || NULL == inputs || NULL == typeNames || 0 == n)
     {
@@ -299,40 +333,38 @@ GPContents* GP_Contents_Load(AGPProducer* p, GPStream** inputs, const char* type
         }
     }
     
-    GPContents* c = new GPContents;
+    AGPContents* c = new AGPContents(true);
     for (int i=0; i<n; ++i)
     {
-        c->push(types[i]->vLoad(inputs[i]), types[i]);
+        c->get()->push(types[i]->vLoad(inputs[i]), types[i]);
     }
     return c;
 }
-
-void GP_Contents_Save(GPContents* content, GPWStream** outputs, int n)
+int GP_Contents_Size(AGPContents* contents)
 {
-    if (NULL == content || NULL == outputs || n <= 0 || content->size() != n)
+    if (NULL == contents || NULL == contents->get())
+    {
+        FUNC_PRINT(0);
+        return 0;
+    }
+    return (int)(contents->get()->size());
+}
+
+
+void GP_Contents_Save(AGPContents* content, GPWStream* outputs, int n)
+{
+    if (NULL == content || NULL == outputs || n <0 || content->get()->size() <= n)
     {
         FUNC_PRINT(0);
         return;
     }
-    for (int i=0; i<n; ++i)
-    {
-        if (NULL == outputs[i])
-        {
-            FUNC_PRINT(0);
-            return;
-        }
-    }
-    for (int i=0; i<n; ++i)
-    {
-        auto c = content->contents[i];
-        c.type->vSave(c.content, outputs[i]);
-    }
+    auto c = content->get()->contents[n];
+    c.type->vSave(c.content, outputs);
 }
 
 
-void GP_Contents_Destroy(GPContents* content)
+void GP_Contents_Destroy(AGPContents* content)
 {
-    content->clear();
     delete content;
 }
 
@@ -462,5 +494,70 @@ AGPStrings* GP_Producer_ListTypes(AGPProducer* producer)
         result->a.push_back(t->name());
     }
     return result;
+}
+
+static double _FitValue(IGPAutoDefFunction* adf, void* pMeta)
+{
+    AGPContents* input = (AGPContents*)pMeta;
+    GPContents* output = adf->vRun(input->get());
+    GPASSERT(output->size() == 1);
+    GPASSERT(output->getContent(0).type->name() == "double");
+    double res = *((double*)output->get(0));
+    GPContents::destroy(output);
+    return res;
+}
+static double _FitTime(IGPAutoDefFunction* adf, void* pMeta)
+{
+    AGPContents* input = (AGPContents*)pMeta;
+    /*TODO, find more accurate method*/
+    clock_t sta = clock();
+    GPContents* output = adf->vRun(input->get());
+    clock_t fin = clock();
+    GPContents::destroy(output);
+    return 1.0/(fin - sta);
+}
+
+GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput)
+{
+    if (depth<=0 || maxtimes < 1 || (type != GP_OPTIMIZOR_TIME && type !=GP_OPTIMIZOR_VALUE))
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    GPOptimizorInfo* info = new GPOptimizorInfo;
+    info->nMaxADFDepth = depth;
+    info->pMeta = (void*)pInput;
+    info->nMaxRunTimes = maxtimes;
+    switch (type)
+    {
+        case GP_OPTIMIZOR_VALUE:
+            info->pFitComputeFunction = _FitValue;
+            break;
+        case GP_OPTIMIZOR_TIME:
+            info->pFitComputeFunction = _FitTime;
+            break;
+    }
+    return info;
+}
+
+void* GP_Contents_Get(AGPContents* contents, int n)
+{
+    if (contents==NULL || n<0 || n>=contents->get()->size())
+    {
+        FUNC_PRINT(0);
+        return NULL;
+    }
+    return contents->get()->get(n);
+}
+
+AGPContents* GP_Contents_CreateCollector()
+{
+    return new AGPContents(false);
+}
+
+void GP_Contents_Collect(AGPContents* Collector, AGPContents* B, int n)
+{
+    GPASSERT(NULL!=B && NULL!=Collector && n>=0 && n<B->get()->size());//FIXME
+    Collector->get()->push(B->get()->getContent(n));
 }
 

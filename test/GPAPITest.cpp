@@ -1,7 +1,7 @@
 #include "test/GPTest.h"
-#include "core/GPStreamFactory.h"
 #include "user/GPAPI.h"
-#include "user/GPContents.h"
+#include "core/GPStreamFactory.h"
+#include "utils/RefCount.h"
 #include <assert.h>
 #include <fstream>
 #include <iostream>
@@ -11,22 +11,22 @@ using namespace std;
 struct OptMeta
 {
     IGPAutoDefFunction* pFit;
-    GPContents* pInput;
-    GPContents* pOutput;
+    AGPContents* pInput;
+    AGPContents* pOutput;
 };
 
 static double _OptFunction(IGPAutoDefFunction* target, void* meta)
 {
     OptMeta* _meta = (OptMeta*)meta;
-    auto output = GP_Function_Run(target, _meta->pInput);
-    GPContents totalInput;
-    totalInput.push(output->getContent(0));
-    totalInput.push(_meta->pOutput->getContent(0));
-    auto foutput = GP_Function_Run(_meta->pFit, &totalInput);
-    double res = *(double*)(foutput->get(0));
-    output->clear();
-    GPContents::destroy(output);
-    GPContents::destroy(foutput);
+    AGPContents* output = GP_Function_Run(target, _meta->pInput);
+    AGPContents* totalInput = GP_Contents_CreateCollector();
+    GP_Contents_Collect(totalInput, output, 0);
+    GP_Contents_Collect(totalInput, _meta->pOutput, 0);
+    auto foutput = GP_Function_Run(_meta->pFit, totalInput);
+    double res = *(double*)(GP_Contents_Get(foutput, 0));
+    GP_Contents_Destroy(totalInput);
+    GP_Contents_Destroy(output);
+    GP_Contents_Destroy(foutput);
     return res;
 }
 
@@ -73,9 +73,7 @@ static int test_main()
         GP_Stream_Destroy(input[1]);
         auto gp_output = GP_Function_Run(adf, inputs);
         GP_Contents_Destroy(inputs);
-        assert(1==gp_output->size());
-        auto unit = gp_output->contents[0];
-        unit.type->vSave(unit.content, screen.get());
+        GP_Contents_Save(gp_output, screen.get(), 0);
         GP_Contents_Destroy(gp_output);
         GP_Function_Destroy(adf);
         cout << endl;
