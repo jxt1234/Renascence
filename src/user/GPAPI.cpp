@@ -432,7 +432,7 @@ AGPStrings* GP_Function_GetFormula(IGPAutoDefFunction* f, const char* name)
 {
     const GPFunctionTree* tree = f->getBasicTree().get();
     GPASSERT(NULL!=tree);
-    if (NULL == name)
+    if (NULL == name || "" == std::string(name))
     {
         AGPStrings* result = new AGPStrings;
         result->a.push_back(tree->dump());
@@ -464,7 +464,6 @@ AGPStrings* GP_Function_GetParameters(IGPAutoDefFunction* f)
     AGPStrings* result = new AGPStrings;
     result->a.push_back(tempoutput.str());
     return result;
-    
 }
 AGPStrings* GP_Producer_ListFunctions(AGPProducer* producer)
 {
@@ -540,6 +539,13 @@ GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int typ
     return info;
 }
 
+void GP_OptimzorInfo_FreeTemplate(GPOptimizorInfo* pInfo)
+{
+    GPASSERT(NULL!=pInfo);//FIXME
+    delete pInfo;
+}
+
+
 void* GP_Contents_Get(AGPContents* contents, int n)
 {
     if (contents==NULL || n<0 || n>=contents->get()->size())
@@ -561,3 +567,27 @@ void GP_Contents_Collect(AGPContents* Collector, AGPContents* B, int n)
     Collector->get()->push(B->get()->getContent(n));
 }
 
+double GP_Contents_GetDouble(AGPContents* contents, int n)
+{
+    GPASSERT(NULL!=contents && n>=0 && contents->get()->size()>n);//FIXME
+    return *(double*)(contents->get()->get(n));
+}
+
+void GP_Contents_SetDouble(AGPContents* contents, double value, int n)
+{
+    GPASSERT(NULL!=contents && n>=0 && contents->get()->size()>n);//FIXME
+    *(double*)(contents->get()->get(n)) = value;
+}
+
+AGPStrings* GP_Contents_Types(AGPContents* contents)
+{
+    GPASSERT(NULL!=contents);//FIXME
+    std::ostringstream types;
+    for (int i=0; i<contents->get()->size(); ++i)
+    {
+        types << contents->get()->getContent(i).type->name() << " ";
+    }
+    AGPStrings* s = new AGPStrings;
+    s->a.push_back(types.str());
+    return s;
+}

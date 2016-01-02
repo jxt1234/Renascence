@@ -66,8 +66,15 @@ extern "C"{
     /*Return the number of contents*/
     int GP_Contents_Size(AGPContents* contents);
     
+    
     /*Return the content in the n pos*/
     void* GP_Contents_Get(AGPContents* contents, int n);
+    
+    /*Return the double value of GP, must assert that the type is double*/
+    double GP_Contents_GetDouble(AGPContents* contents, int n);
+    
+    /*Set the double value of GP, must assert that the type is double*/
+    void GP_Contents_SetDouble(AGPContents* contents, double value, int n);
     
     /* Write Contents to appointed stream
      * content: the contents to be write, must not be null
@@ -214,11 +221,15 @@ extern "C"{
     AGPStrings* GP_Producer_ListFunctions(AGPProducer* producer);
     AGPStrings* GP_Producer_ListTypes(AGPProducer* producer);
     
+    /*Return all type name of contents*/
+    AGPStrings* GP_Contents_Types(AGPContents* contents);
+
+    
     /*Default GPOptimizorInfo*/
     enum
     {
-        GP_OPTIMIZOR_VALUE,
-        GP_OPTIMIZOR_TIME
+        GP_OPTIMIZOR_VALUE = 0,
+        GP_OPTIMIZOR_TIME = 1
     };
     /*Create standard OptimizorInfo, Used by Python/Go
      *type: GP_OPTIMIZOR_VALUE/GP_OPTIMIZOR_TIME
