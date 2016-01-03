@@ -30,15 +30,15 @@ public:
             group->vSetOutput(eOut);
             GPContents inp;
             GPPtr<GPStreamWrap> inputStream = GPStreamFactory::NewStream("input.jpg");
-            inp.push(bmp->vLoad(inputStream.get()), NULL);
+            inp.push(bmp->vLoad(inputStream.get()), bmp);
             inputStream = GPStreamFactory::NewStream("input_sharp.jpg");
-            inp.push(bmp->vLoad(inputStream.get()), NULL);
+            inp.push(bmp->vLoad(inputStream.get()), bmp);
             inputStream = GPStreamFactory::NewStream("input_test_simple.jpg");
-            inp.push(bmp->vLoad(inputStream.get()), NULL);
+            inp.push(bmp->vLoad(inputStream.get()), bmp);
             
             GPContents target;
             inputStream = GPStreamFactory::NewStream("output.jpg");
-            target.push(bmp->vLoad(inputStream.get()), NULL);
+            target.push(bmp->vLoad(inputStream.get()), bmp);
             inputStream = NULL;
             
             IGPAutoDefFunction* fit = gen.createFunction("FIT(x0, x1)", vector<const IStatusType*>(2,bmp));

@@ -36,7 +36,7 @@ void GPTreeProducerTest::run()
         
         GPContents targetBitmap;
         inputStream = GPStreamFactory::NewStream("input_test_simple.jpg");
-        targetBitmap.push(bmp->vLoad(inputStream.get()), NULL);
+        targetBitmap.push(bmp->vLoad(inputStream.get()), bmp);
         inputStream = NULL;
         int sum = 0;
         for (auto f : fs)

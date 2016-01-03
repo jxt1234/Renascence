@@ -26,9 +26,9 @@ class GPGraphicTest:public GPTest
                     GPContents contents;
                     auto bmptype = base->vQueryType("TrBmp");
                     GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream("input.jpg");
-                    contents.push(bmptype->vLoad(input.get()), NULL);
+                    contents.push(bmptype->vLoad(input.get()), bmptype);
                     input = GPStreamFactory::NewStream("output.jpg");
-                    contents.push(bmptype->vLoad(input.get()), NULL);
+                    contents.push(bmptype->vLoad(input.get()), bmptype);
                     input = NULL;
                     GPContents* out = gp->vRun(&contents);
                     GPASSERT(out->size() == 1);

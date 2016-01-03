@@ -96,7 +96,7 @@ static int test_main()
         GPOptimizorInfo optinfo;
         optinfo.pMeta = &meta;
         optinfo.pFitComputeFunction = _OptFunction;
-        optinfo.nMaxADFDepth = 10;
+        optinfo.nMaxADFDepth = 0;
         optinfo.nMaxRunTimes = 1000;
         optinfo.nOptimizeType = 0;
         /*Single Opt*/
