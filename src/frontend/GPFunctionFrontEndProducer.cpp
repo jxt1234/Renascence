@@ -549,12 +549,15 @@ int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter*
     }
     auto replace_point = treepoints[n];
     replace_point->mapInput(inputMap);
+    const bool debugVary = false;
+    if (debugVary)
     {
         std::ostringstream formula;
         origin_point->render(formula);
         FUNC_PRINT_ALL(formula.str().c_str(), s);
     }
     origin_point->copyFrom(replace_point);
+    if (debugVary)
     {
         std::ostringstream formula;
         origin_point->render(formula);

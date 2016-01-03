@@ -27,7 +27,7 @@
 class GPEvolutionGroup:public RefCount
 {
 public:
-    GPEvolutionGroup(GPProducer* sys, int time = 10, int size = 10, int depth=1);
+    GPEvolutionGroup(GPProducer* sys, int time = 10, int size = 10, int depth=0);
     virtual ~GPEvolutionGroup();
     virtual void vSetInput(const std::vector<const IStatusType*>& input){mInput = input;}
     virtual void vSetOutput(const std::vector<const IStatusType*>& output){mOutput = output;}
