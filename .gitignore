@@ -25,3 +25,7 @@ temp/*
 output_fix.jpg
 result.xml
 .*
+
+Renascence.egg-info/
+build/
+dist/
