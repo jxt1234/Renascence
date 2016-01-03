@@ -45,61 +45,52 @@ static double _OptFunction(IGPAutoDefFunction* target, void* meta)
 
 static int test_main()
 {
+    GPPtr<GPWStreamWrap> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
+    /*Single*/
     GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
     AUTOCLEAN(base);
     {
         GPProducer* sys = GPFactory::createProducer(base);
         GPProducer& gen = *sys;
         AUTOCLEAN(sys);
-        const IStatusType* bmp = base->vQueryType(string("TrBmp"));
-        vector<const IStatusType*> eOut(1, bmp);
-        vector<const IStatusType*> eInp(3, bmp);
-        
-        
-        GPEvolutionGroup* group = new GPEvolutionGroup(&gen, 2000, 20);
-        group->vSetInput(eInp);
-        group->vSetOutput(eOut);
-        GPContents inp;
-        GPPtr<GPStreamWrap> inputStream = GPStreamFactory::NewStream("input.jpg");
-        inp.push(bmp->vLoad(inputStream.get()), NULL);
-        inputStream = GPStreamFactory::NewStream("input_sharp.jpg");
-        inp.push(bmp->vLoad(inputStream.get()), NULL);
-        inputStream = GPStreamFactory::NewStream("input_test_simple.jpg");
-        inp.push(bmp->vLoad(inputStream.get()), NULL);
-        
-        GPContents target;
-        inputStream = GPStreamFactory::NewStream("output.jpg");
-        target.push(bmp->vLoad(inputStream.get()), NULL);
-        inputStream = NULL;
-        
-        IGPAutoDefFunction* fit = gen.createFunction("FIT(x0, x1)", vector<const IStatusType*>(2,bmp));
-        
-        
-        auto fitfunc = [&](IGPAutoDefFunction* f){
-            GPContents* result = f->vRun(&inp);
-            GPContents temp;
-            temp.push(result->getContent(0));
-            temp.push(target.getContent(0));
-            GPContents* fits = fit->vRun(&temp);
-            double fitresult = *(double*)fits->get(0);
-            result->clear();
-            delete result;
-            fits->clear();
-            delete fits;
-            return fitresult;
-        };
-        group->vEvolutionFunc(fitfunc);
-        fit->decRef();
-        
-        GPPtr<IGPAutoDefFunction> result = group->getBest();
-        GPPRINT_FL("Best Fit is %f", group->getBestFit());
-        
-        delete group;
-        GPPtr<GPWStreamWrap> outputF = GPStreamFactory::NewWStream("output/tree_result.xml");
-        GPPtr<GPTreeNode> n = result->vSave();
-        xmlReader::dumpNodes(n.get(), outputF.get());
-        inp.clear();
-        target.clear();
+        const IStatusType* ist = base->vQueryType(string("TrFilterMatrix"));
+        const IStatusType* bmp = base->vQueryType("TrBmp");
+        vector<const IStatusType*> out;
+        out.push_back(ist);
+        vector<const IStatusType*> inp(2, bmp);
+        IGPAutoDefFunction* f = gen.createFunction(out, inp);
+        GPContents GPinp;
+        GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream("input.jpg");
+        GPinp.push(bmp->vLoad(input.get()), bmp);
+        input = GPStreamFactory::NewStream("output.jpg");
+        GPinp.push(bmp->vLoad(input.get()), bmp);
+        input = NULL;
+        auto _output = f->vRun(&GPinp);
+        GPASSERT(_output->size()==1);
+        ist->vSave(_output->get(0), screen.get());
+        cout <<endl;
+        _output->clear();
+        delete _output;
+        f->decRef();
+        /*Multi*/
+        auto f_mul = gen.listAllFunction(out, inp, 1);
+        GPASSERT(!f_mul.empty());
+        cout <<"Multi function's size = "<< f_mul.size() << endl;
+        for (int i=0; i<f_mul.size()&&i<10; ++i)
+        {
+            ostringstream fileName;
+            fileName << "output/GPSearchIOTest/"<<i<<".xml";
+            auto _output2 = f_mul[i]->vRun(&GPinp);
+            GPASSERT(_output2->size()==1);
+            ist->vSave(_output2->get(0), screen.get());
+            cout << endl;
+            _output2->clear();
+            delete _output2;
+            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream(fileName.str().c_str());
+            GPPtr<GPTreeNode> n = f_mul[i]->vSave();
+            xmlReader::dumpNodes(n.get(), output.get());
+        }
+        GPinp.clear();
     }
     return 1;
 }

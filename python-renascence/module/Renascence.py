@@ -44,7 +44,7 @@ class Producer:
             result.append(RenascenceBasic.GP_Strings_Get(functionStrings, i))
         RenascenceBasic.GP_Strings_Free(functionStrings)
         return result
-    def train(self, formula, inputs, types, depth=1, times=2000):
+    def train(self, formula, inputs, types, depth=0, times=2000):
         optinfo = RenascenceBasic.GP_OptimzorInfo_CreateTemplate(depth, times, types, inputs)
         #TODO check formula before transmit to GP
         inputTypes = RenascenceBasic.GP_Contents_Types(inputs)

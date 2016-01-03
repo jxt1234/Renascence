@@ -518,7 +518,7 @@ static double _FitTime(IGPAutoDefFunction* adf, void* pMeta)
 
 GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput)
 {
-    if (depth<=0 || maxtimes < 1 || (type != GP_OPTIMIZOR_TIME && type !=GP_OPTIMIZOR_VALUE))
+    if (depth<0 || maxtimes < 1 || (type != GP_OPTIMIZOR_TIME && type !=GP_OPTIMIZOR_VALUE))
     {
         FUNC_PRINT(1);
         return NULL;

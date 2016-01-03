@@ -40,7 +40,8 @@ static vector<vector<const GPProducerUtils::func*> > _filterOutputType(const vec
         vector<const IStatusType*> inputs;
         for (auto f : p)
         {
-            inputs.insert(inputs.end(), f->inputs.begin(), f->inputs.end());
+            auto realtypes = f->basic->inputType;
+            inputs.insert(inputs.end(), realtypes.begin(), realtypes.end());
         }
         if (inputs.size() == inputType.size())
         {
@@ -280,9 +281,9 @@ static std::vector<GPFunctionTreePoint*> _searchAllFunction(const std::vector<co
     return result;
 }
 
-std::vector<GPFunctionTree*> GPFunctionFrontEndProducer::vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
+std::vector<GPFunctionTree*> GPFunctionFrontEndProducer::vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, int depth) const
 {
-    auto treepoints = _searchAllFunction(outputType, inputType, mUtils, 0);
+    auto treepoints = _searchAllFunction(outputType, inputType, mUtils, depth);
     std::vector<GPFunctionTree*> result;
     for (auto c : treepoints)
     {

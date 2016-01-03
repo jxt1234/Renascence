@@ -28,11 +28,11 @@ public:
     virtual ~GPProducer();
     
     IGPAutoDefFunction* createFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs);
-    std::vector<GPPtr<IGPAutoDefFunction>> listAllFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs);
+    std::vector<GPPtr<IGPAutoDefFunction>> listAllFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth=0);
     IGPAutoDefFunction* createFunction(const std::string& formula, const std::vector<const IStatusType*>& inputs);
     IGPAutoDefFunction* createFunction(const GPTreeNode* node);
     
-    std::vector<GPPtr<IGPAutoDefFunction>> listAllFunctionWithBackUp(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs);
+    std::vector<GPPtr<IGPAutoDefFunction>> listAllFunctionWithBackUp(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth=0);
     
     inline const GPBackEndProducer* getBack() const {return mBack;}
     inline const GPFrontEndProducer* getFront() const {return mFront;}

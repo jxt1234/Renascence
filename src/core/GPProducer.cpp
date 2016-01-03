@@ -40,9 +40,9 @@ IGPAutoDefFunction* GPProducer::createFunction(const std::vector<const IStatusTy
     GPPtr<GPFunctionTree> ft = mFront->vCreateOneFunction(outputs,inputs);
     return mBack->vCreateFromFuncTree(ft.get());
 }
-std::vector<GPPtr<IGPAutoDefFunction>> GPProducer::listAllFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs)
+std::vector<GPPtr<IGPAutoDefFunction>> GPProducer::listAllFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth)
 {
-    auto fts = mFront->vCreateAllFunction(outputs, inputs);
+    auto fts = mFront->vCreateAllFunction(outputs, inputs, depth);
     std::vector<GPPtr<IGPAutoDefFunction> > result;
     for (auto f : fts)
     {
@@ -61,10 +61,10 @@ IGPAutoDefFunction* GPProducer::createFunction(const GPTreeNode* node)
     return mBack->vCreateFromNode(node, mBase);
 }
 
-std::vector<GPPtr<IGPAutoDefFunction>> GPProducer::listAllFunctionWithBackUp(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs)
+std::vector<GPPtr<IGPAutoDefFunction>> GPProducer::listAllFunctionWithBackUp(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth)
 {
     std::vector<GPPtr<IGPAutoDefFunction>> result;
-    auto fts = mFront->vCreateAllFunction(outputs, inputs);
+    auto fts = mFront->vCreateAllFunction(outputs, inputs, depth);
     for (auto f : fts)
     {
         GPPtr<GPFunctionTree> precompiled = f;
