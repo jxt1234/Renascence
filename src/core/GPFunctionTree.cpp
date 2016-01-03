@@ -323,7 +323,7 @@ void GPFunctionTreePoint::render(std::ostream& output) const
             output << mF->name;
         }
         output << "(";
-        for (size_t i=0; i<mChildren.size()-1; ++i)
+        for (int i=0; i<(int)mChildren.size()-1; ++i)
         {
             auto pp = (GPFunctionTreePoint*)mChildren[i];
             pp->render(output);
@@ -333,8 +333,8 @@ void GPFunctionTreePoint::render(std::ostream& output) const
         {
             auto pp = (GPFunctionTreePoint*)mChildren[mChildren.size()-1];
             pp->render(output);
-            output << ")";
         }
+        output << ")";
     }
     else
     {
