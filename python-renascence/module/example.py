@@ -19,6 +19,7 @@ def main():
     predictor = producer.build(formula)
     x0x1 = producer.merge(x0, x1)
     y_p = predictor.run(x0x1)
+    u = producer.content(9.0)
     TrBmp.save(y_p, "output/output_trained.jpg")
 
 main()

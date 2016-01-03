@@ -47,6 +47,8 @@ class Producer:
     def __del__(self):
         RenascenceBasic.GP_Producer_Destroy(self.nativeProducer)
         return
+    def content(self, value):
+        return Content(value, self)
     def merge(self, *contents):
         n = len(contents)
         result = RenascenceBasic.GP_Contents_CreateCollector()
@@ -74,8 +76,11 @@ class Producer:
             result.append(RenascenceBasic.GP_Strings_Get(functionStrings, i))
         RenascenceBasic.GP_Strings_Free(functionStrings)
         return result
-    def train(self, formula, inputs, times=2000, parameterOptType=0, depth=0):
-        optinfo = RenascenceBasic.GP_OptimzorInfo_CreateTemplate(depth, times, parameterOptType, inputs.get())
+    def train(self, formula, inputs, times=2000, optType=0, depth=0):
+        '''
+        optType: 0 for Best Value and 1 for least Time
+        '''
+        optinfo = RenascenceBasic.GP_OptimzorInfo_CreateTemplate(depth, times, optType, inputs.get())
         #TODO check formula before transmit to GP
         inputTypes = RenascenceBasic.GP_Contents_Types(inputs.get())
         inputTypes_python = RenascenceBasic.GP_Strings_Get(inputTypes, 0)
