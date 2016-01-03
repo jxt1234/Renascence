@@ -1,0 +1,2 @@
+gcc -c renascence_basic_wrap.c -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-migrator/sdk/MacOSX.sdk/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -I/Users/jiangxiaotang/Documents/Genetic-Program-Frame/include -o renascence_basic_wrap.o
+g++ --shared -o _RenascenceBasic.so  renascence_basic_wrap.o /Users/jiangxiaotang/Documents/Genetic-Program-Frame/libGP.a -framework Python

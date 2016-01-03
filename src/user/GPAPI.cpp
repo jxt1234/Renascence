@@ -527,6 +527,7 @@ GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int typ
     info->nMaxADFDepth = depth;
     info->pMeta = (void*)pInput;
     info->nMaxRunTimes = maxtimes;
+    info->nOptimizeType = 0;
     switch (type)
     {
         case GP_OPTIMIZOR_VALUE:

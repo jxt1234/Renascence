@@ -1,0 +1,47 @@
+<libpics>
+
+<TrPackageCompse>
+	<output>TrBmp</output>
+    <shortName>C</shortName>
+	<input>TrBmp TrBmp</input>
+    <inputNeedComplete>False False</inputNeedComplete>
+	<status>float</status>
+</TrPackageCompse>
+
+<TrPackageSaturation>
+	<output>TrBmp</output>
+    <shortName>S</shortName>
+    <input>TrBmp</input>
+
+	<status>float</status>
+
+</TrPackageSaturation>
+
+<TrPackageFilterMatrix>
+	<output>TrBmp</output>
+    <shortName>F</shortName>
+    <input>TrBmp</input>
+	<status>TrFilterMatrix</status>
+</TrPackageFilterMatrix>
+
+<TrPackageFitCompute>
+    <shortName>FIT</shortName>
+    <output>double</output>
+	<input>TrBmp TrBmp</input>
+</TrPackageFitCompute>
+
+<TrPackageFilterMatrixRegress>
+    <shortName>FR</shortName>
+	<output>TrFilterMatrix</output>
+	<status>TrRegreeMode</status>
+    <input>TrBmp TrBmp</input>
+</TrPackageFilterMatrixRegress>
+
+
+<TrPackageFilterTransformFromRegress>
+    <shortName>TFR</shortName>
+	<output>TrBmp</output>
+    <input>TrBmp TrFilterMatrix</input>
+</TrPackageFilterTransformFromRegress>
+
+</libpics>
