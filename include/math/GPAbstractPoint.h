@@ -17,8 +17,6 @@
 #define ALGORITHM_ABSTRACTPOINT_H
 
 #include <vector>
-#include <list>
-#include <ostream>
 #include "utils/RefCount.h"
 #include "utils/GPDebug.h"
 class GPAbstractPoint:public RefCount
@@ -45,8 +43,10 @@ public:
     bool isChildOf(const GPAbstractPoint* parent) const;
     void clearChildren();
     bool replace(GPAbstractPoint* oldPoint, GPAbstractPoint* newPoint);
+    
 protected:
     std::vector<GPAbstractPoint*> mChildren;
+    void shallowCopyChildren(const GPAbstractPoint* src);
 private:
     int _posOfChild(GPAbstractPoint* p) const;
 };

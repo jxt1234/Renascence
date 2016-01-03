@@ -23,6 +23,14 @@ GPFunctionTreePoint::GPFunctionTreePoint(const GPFunctionDataBase::function* f, 
     mF = f;
     mInputNumber = inputNumber;
 }
+
+void GPFunctionTreePoint::copyFrom(const GPFunctionTreePoint* src)
+{
+    shallowCopyChildren(src);
+    mF = src->mF;
+    mInputNumber = src->mInputNumber;
+}
+
 GPFunctionTreePoint::~GPFunctionTreePoint()
 {
 }

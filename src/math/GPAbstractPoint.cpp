@@ -15,7 +15,7 @@
 ******************************************************************/
 #include "math/GPAbstractPoint.h"
 #include <stdlib.h>
-#include <utils/GPDebug.h>
+#include <list>
 #include "utils/GPDebug.h"
 using namespace std;
 
@@ -135,4 +135,18 @@ bool GPAbstractPoint::isChildOf(const GPAbstractPoint* parent) const
         }
     }
     return false;
+}
+
+void GPAbstractPoint::shallowCopyChildren(const GPAbstractPoint* src)
+{
+    for (int i=0; i<mChildren.size(); ++i)
+    {
+        mChildren[i]->decRef();
+    }
+    mChildren.clear();
+    for (int i=0; i<src->mChildren.size(); ++i)
+    {
+        mChildren.push_back(src->mChildren[i]);
+        src->mChildren[i]->addRef();
+    }
 }

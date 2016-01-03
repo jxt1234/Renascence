@@ -27,6 +27,7 @@ public:
     virtual ~GPFunctionTreePoint();
     inline const GPFunctionDataBase::function* function() const {return mF;}
     inline int inputNumber() const {return mInputNumber;}
+    void copyFrom(const GPFunctionTreePoint* src);
     
     std::map<int, const IStatusType*> getInputTypes() const;
     

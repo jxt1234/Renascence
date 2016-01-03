@@ -27,7 +27,7 @@
 class GPEvolutionGroup:public RefCount
 {
 public:
-    GPEvolutionGroup(GPProducer* sys, int time = 10, int size = 10);
+    GPEvolutionGroup(GPProducer* sys, int time = 10, int size = 10, int depth=1);
     virtual ~GPEvolutionGroup();
     virtual void vSetInput(const std::vector<const IStatusType*>& input){mInput = input;}
     virtual void vSetOutput(const std::vector<const IStatusType*>& output){mOutput = output;}
@@ -45,8 +45,8 @@ private:
     {
         GPPtr<GPParameter> pStructure;
         GPPtr<GPParameter> pParamter;
-        void init(IGPAutoDefFunction* function, GPFunctionTree* basic, const GPProducer* sys);
-        GPPtr<IGPAutoDefFunction> invalidate(GPPtr<IGPAutoDefFunction> function, const GPProducer* sys);
+        void init(IGPAutoDefFunction* function, const GPProducer* sys);
+        GPPtr<IGPAutoDefFunction> invalidate(GPPtr<IGPAutoDefFunction> function, const GPProducer* sys, int depth);
         void mutate();
     };
     void _best(std::function<double(IGPAutoDefFunction*)>& fitf);
@@ -63,5 +63,6 @@ private:
     std::vector<const IStatusType*> mOutput;
     int mTime;
     int mSize;
+    int mDepth;
 };
 #endif

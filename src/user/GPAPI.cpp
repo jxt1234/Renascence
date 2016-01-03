@@ -152,7 +152,7 @@ IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* 
     {
         return p->P->createFunction(outputs, inputs);
     }
-    GPPtr<GPEvolutionGroup> group = new GPEvolutionGroup(p->P, pInfo->nMaxRunTimes/20, 20);
+    GPPtr<GPEvolutionGroup> group = new GPEvolutionGroup(p->P, pInfo->nMaxRunTimes/20, 20, pInfo->nMaxADFDepth);
     group->vSetInput(inputs);
     group->vSetOutput(outputs);
     auto fit_func = [pInfo](IGPAutoDefFunction* f){
@@ -189,7 +189,7 @@ IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const cha
         }
         return result;
     }
-    GPPtr<GPEvolutionGroup> group = new GPEvolutionGroup(p->P, pInfo->nMaxRunTimes/20, 20);
+    GPPtr<GPEvolutionGroup> group = new GPEvolutionGroup(p->P, pInfo->nMaxRunTimes/20, 20, pInfo->nMaxADFDepth);
     auto fit_func = [pInfo](IGPAutoDefFunction* f){
         return pInfo->pFitComputeFunction(f, pInfo->pMeta);
     };

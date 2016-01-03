@@ -26,7 +26,7 @@ public:
     virtual std::vector<GPFunctionTree*> vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const = 0;
     virtual GPFunctionTree* vCreateFromFormula(const std::string& formula, const std::vector<const IStatusType*> inputTypes) const = 0;
     /*Parameters to determine neighbour structure, return the number of parameter needed, do nothing if para == null, after this API, the number of vMap returned may changed*/
-    virtual int vMapStructure(GPFunctionTree* tree, GPParameter* para, bool& changed) const = 0;
+    virtual int vMapStructure(GPFunctionTree* tree, GPParameter* para, int depth, bool& changed) const = 0;
     
 
     GPFrontEndProducer(){}

@@ -24,11 +24,12 @@
 #include "backend/GPBackEndProducer.h"
 using namespace std;
 
-void GPEvolutionGroup::func_para::init(IGPAutoDefFunction* function, GPFunctionTree* basic, const GPProducer* sys)
+void GPEvolutionGroup::func_para::init(IGPAutoDefFunction* function, const GPProducer* sys)
 {
-    GPASSERT(NULL!=basic);
+    GPASSERT(NULL!=function);
+    GPFunctionTree* basic = function->getBasicTree().get();
     bool changed;//Not used, just for api
-    auto sn = sys->getFront()->vMapStructure(basic, NULL, changed);
+    auto sn = sys->getFront()->vMapStructure(basic, NULL, 0, changed);
     pStructure = new GPParameter(sn);
     pStructure->clear(0.0f);
     auto pn = function->vMap(NULL);
@@ -56,11 +57,11 @@ void GPEvolutionGroup::func_para::mutate()
     pStructure->makeValid();
     pParamter->makeValid();
 }
-GPPtr<IGPAutoDefFunction> GPEvolutionGroup::func_para::invalidate(GPPtr<IGPAutoDefFunction> function, const GPProducer* sys)
+GPPtr<IGPAutoDefFunction> GPEvolutionGroup::func_para::invalidate(GPPtr<IGPAutoDefFunction> function, const GPProducer* sys, int depth)
 {
     bool changed;
     auto basic = function->getBasicTree();
-    sys->getFront()->vMapStructure(basic.get(), pStructure.get(), changed);
+    sys->getFront()->vMapStructure(basic.get(), pStructure.get(), depth, changed);
     if (changed)
     {
         /*Randomly initialize*/
@@ -84,11 +85,12 @@ GPPtr<IGPAutoDefFunction> GPEvolutionGroup::func_para::invalidate(GPPtr<IGPAutoD
 }
 
 
-GPEvolutionGroup::GPEvolutionGroup(GPProducer* sys, int time, int size):mSys(sys)
+GPEvolutionGroup::GPEvolutionGroup(GPProducer* sys, int time, int size, int depth):mSys(sys)
 {
     GPASSERT(NULL!=sys);
     mTime = time;
     mSize = size;
+    mDepth = depth;
     GPRandom::init();
 }
 
@@ -148,7 +150,7 @@ void GPEvolutionGroup::_best(std::function<double(IGPAutoDefFunction*)>& f)
     if (changed)
     {
         mPara = new func_para;
-        mPara->init(mBest.get(), mBest->getBasicTree().get(), mSys);
+        mPara->init(mBest.get(), mSys);
     }
 }
 
@@ -174,7 +176,7 @@ void GPEvolutionGroup::_mutate()
     for (auto& f:mGroup)
     {
         mPara->mutate();
-        f = mPara->invalidate(f, mSys);
+        f = mPara->invalidate(f, mSys, mDepth);
     }
 }
 
@@ -192,7 +194,7 @@ void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)>
         if (NULL == mPara.get())
         {
             mPara = new func_para;
-            mPara->init(mBest.get(), mBest->getBasicTree().get(), mSys);
+            mPara->init(mBest.get(), mSys);
         }
         mBestFit = fit_func(mBest.get());
     }

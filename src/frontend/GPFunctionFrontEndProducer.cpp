@@ -3,6 +3,7 @@
 #include "math/carryGroup2.h"
 #include "recurse_tree.h"
 #include <algorithm>
+#include <sstream>
 using namespace std;
 
 static int _loadXn(const string& s)
@@ -229,7 +230,7 @@ GPFunctionTree* GPFunctionFrontEndProducer::vCreateOneFunction(const std::vector
     return new GPFunctionTree(_createOnePoint(outputType, inputType, mUtils));
 }
 
-static std::vector<GPFunctionTreePoint*> _searchAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, const GPProducerUtils& utils)
+static std::vector<GPFunctionTreePoint*> _searchAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, const GPProducerUtils& utils, int depth)
 {
     vector<vector<const GPProducerUtils::func*> > warpOutput;
     _findMatchedFuncton(warpOutput, outputType, inputType, utils);
@@ -245,7 +246,7 @@ static std::vector<GPFunctionTreePoint*> _searchAllFunction(const std::vector<co
         avail.push_back(i);
     }
     /*Get All sequence*/
-    computePoint* start = new computePoint(warpOutput, avail, inputType, 0);
+    computePoint* start = new computePoint(warpOutput, avail, inputType, depth);
     computeSearchTree tree(start);
     auto contents = tree.searchAll();
     std::vector<GPFunctionTreePoint*> result;
@@ -281,7 +282,7 @@ static std::vector<GPFunctionTreePoint*> _searchAllFunction(const std::vector<co
 
 std::vector<GPFunctionTree*> GPFunctionFrontEndProducer::vCreateAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
 {
-    auto treepoints = _searchAllFunction(outputType, inputType, mUtils);
+    auto treepoints = _searchAllFunction(outputType, inputType, mUtils, 0);
     std::vector<GPFunctionTree*> result;
     for (auto c : treepoints)
     {
@@ -449,7 +450,7 @@ static std::map<GPFunctionTreePoint*, std::map<int, GPFunctionTreePoint*>> makeR
     }
     return result;
 }
-static void restore( std::map<GPFunctionTreePoint*, std::map<int, GPFunctionTreePoint*>>& result)
+static void restore(std::map<GPFunctionTreePoint*, std::map<int, GPFunctionTreePoint*>>& result)
 {
     for (auto iter : result)
     {
@@ -477,7 +478,7 @@ private:
 };
 
 
-int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter* para, bool& changed) const
+int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter* para, int depth, bool& changed) const
 {
     GPASSERT(NULL!=tree);
     changed = false;
@@ -508,8 +509,7 @@ int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter*
     {
         for (auto pp : p.first->display())
         {
-            /*Don't modified root*/
-            if (pp != p.first && pp->getChildrenNumber()>0)
+            if (pp->getChildrenNumber()>0)
             {
                 allpoints.push_back((GPFunctionTreePoint*)pp);
             }
@@ -536,7 +536,7 @@ int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter*
         inputMap.insert(std::make_pair(cur++, iter.first));
     }
     auto outputs = origin_point->function()->outputType;
-    auto treepoints = _searchAllFunction(outputs, inputs, mUtils);
+    auto treepoints = _searchAllFunction(outputs, inputs, mUtils, depth);
     if (treepoints.empty())
     {
         changed = false;
@@ -549,8 +549,19 @@ int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter*
     }
     auto replace_point = treepoints[n];
     replace_point->mapInput(inputMap);
-    tree->root()->replace(origin_point, replace_point);
+    {
+        std::ostringstream formula;
+        origin_point->render(formula);
+        FUNC_PRINT_ALL(formula.str().c_str(), s);
+    }
+    origin_point->copyFrom(replace_point);
+    {
+        std::ostringstream formula;
+        origin_point->render(formula);
+        FUNC_PRINT_ALL(formula.str().c_str(), s);
+    }
     
+    /*replace_point is in treepoints, don't need to deRef*/
     for (auto p : treepoints)
     {
         p->decRef();
