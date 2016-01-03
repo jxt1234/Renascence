@@ -211,4 +211,5 @@ GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int typ
 
 /*The info be freed must be come from GP_OptimzorInfo_CreateTemplate and can't be modified*/
 void GP_OptimzorInfo_FreeTemplate(GPOptimizorInfo* pInfo);
+AGPContents* GP_Contents_CreateDouble(double value);
 

@@ -50,6 +50,9 @@ GPContents* TrPackageOutput(GPContents* inputs)
 GPContents* TrPackageFitCompute(GPContents* inputs)
 {
     GPContents* result = new GPContents;
+    assert(inputs->size() == 2);
+    assert(inputs->contents[0].type == &gTrBmpType);
+    assert(inputs->contents[1].type == &gTrBmpType);
     TrBmp* output = (TrBmp*)inputs->get(0);
     TrBmp* target = (TrBmp*)inputs->get(1);
     double* fit = new double;

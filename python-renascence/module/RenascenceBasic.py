@@ -286,6 +286,10 @@ GP_OptimzorInfo_CreateTemplate = _RenascenceBasic.GP_OptimzorInfo_CreateTemplate
 def GP_OptimzorInfo_FreeTemplate(pInfo):
     return _RenascenceBasic.GP_OptimzorInfo_FreeTemplate(pInfo)
 GP_OptimzorInfo_FreeTemplate = _RenascenceBasic.GP_OptimzorInfo_FreeTemplate
+
+def GP_Contents_CreateDouble(value):
+    return _RenascenceBasic.GP_Contents_CreateDouble(value)
+GP_Contents_CreateDouble = _RenascenceBasic.GP_Contents_CreateDouble
 # This file is compatible with both classic and new-style classes.
 
 

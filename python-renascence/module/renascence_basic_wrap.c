@@ -4721,6 +4721,28 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_GP_Contents_CreateDouble(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  double arg1 ;
+  double val1 ;
+  int ecode1 = 0 ;
+  PyObject * obj0 = 0 ;
+  AGPContents *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GP_Contents_CreateDouble",&obj0)) SWIG_fail;
+  ecode1 = SWIG_AsVal_double(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "GP_Contents_CreateDouble" "', argument " "1"" of type '" "double""'");
+  } 
+  arg1 = (double)(val1);
+  result = (AGPContents *)GP_Contents_CreateDouble(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_AGPContents, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { (char *)"GP_Set_Lib_Path", _wrap_GP_Set_Lib_Path, METH_VARARGS, NULL},
@@ -4776,6 +4798,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"GP_OPTIMIZOR_TIME_swigconstant", GP_OPTIMIZOR_TIME_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"GP_OptimzorInfo_CreateTemplate", _wrap_GP_OptimzorInfo_CreateTemplate, METH_VARARGS, NULL},
 	 { (char *)"GP_OptimzorInfo_FreeTemplate", _wrap_GP_OptimzorInfo_FreeTemplate, METH_VARARGS, NULL},
+	 { (char *)"GP_Contents_CreateDouble", _wrap_GP_Contents_CreateDouble, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 
