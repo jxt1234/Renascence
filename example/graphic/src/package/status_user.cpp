@@ -6,7 +6,8 @@ TrFloatType gFloatType;
 TrFilterMatrixType gTrFilterMatrixType;
 TrRegreeModeType gTrRegreeModeType;
 TrBmpType gTrBmpType;
-TrDoubleType gTrDoubleType;
+GPDoubleType gDoubleType;
+
 IStatusType* GP_IStatusType_Create(const std::string& name)
 {
     if (name == "float")
@@ -24,10 +25,6 @@ IStatusType* GP_IStatusType_Create(const std::string& name)
     if (name == "TrBmp")
     {
         return &gTrBmpType;
-    }
-    if (name == "double")
-    {
-        return &gTrDoubleType;
     }
     return NULL;
 }

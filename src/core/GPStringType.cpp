@@ -13,19 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  ******************************************************************/
+#include "user/IStatusType.h"
+#include <string>
 
-#include "core/GPStreamFactory.h"
-
-class GPFileStream:public GPStreamWrap
-{
-public:
-    GPFileStream(const char* filename);
-    virtual ~GPFileStream();
-};
-
-class GPFileWStream:public GPWStreamWrap
-{
-public:
-    GPFileWStream(const char* filename);
-    virtual ~GPFileWStream();
-};
+IStatusType* gDefaultStringType = new GPStringType();

@@ -52,6 +52,8 @@ std::vector<const IStatusType*> GPFunctionDataBase::queryType(const std::string&
 GPFunctionDataBase::GPFunctionDataBase()
 {
     mHandle = new GPMultiTable;
+    mTypes.push_back(gDefaultDoubleType);
+    mTypes.push_back(gDefaultStringType);
 }
 
 void GPFunctionDataBase::loadXml(GPStream* is, IFunctionTable* table, std::ostream* print)

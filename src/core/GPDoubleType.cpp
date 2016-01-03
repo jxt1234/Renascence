@@ -14,18 +14,6 @@
  limitations under the License.
  ******************************************************************/
 
-#include "core/GPStreamFactory.h"
+#include "user/IStatusType.h"
 
-class GPFileStream:public GPStreamWrap
-{
-public:
-    GPFileStream(const char* filename);
-    virtual ~GPFileStream();
-};
-
-class GPFileWStream:public GPWStreamWrap
-{
-public:
-    GPFileWStream(const char* filename);
-    virtual ~GPFileWStream();
-};
+IStatusType* gDefaultDoubleType = new GPDoubleType();

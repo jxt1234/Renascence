@@ -592,3 +592,13 @@ AGPStrings* GP_Contents_Types(AGPContents* contents)
     s->a.push_back(types.str());
     return s;
 }
+
+AGPContents* GP_Contents_CreateDouble(double value)
+{
+    GPContents* content = new GPContents;
+    double* v = new double;
+    *v = value;
+    content->push(v, gDefaultDoubleType);
+    return new AGPContents(content);
+}
+

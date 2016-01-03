@@ -76,6 +76,9 @@ extern "C"{
     /*Set the double value of GP, must assert that the type is double*/
     void GP_Contents_SetDouble(AGPContents* contents, double value, int n);
     
+    /*Create a double value*/
+    AGPContents* GP_Contents_CreateDouble(double value);
+    
     /* Write Contents to appointed stream
      * content: the contents to be write, must not be null
      * outputs: the array of output stream, must not be null, all stream in this list should not be null, too

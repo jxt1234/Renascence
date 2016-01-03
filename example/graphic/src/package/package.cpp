@@ -54,7 +54,7 @@ GPContents* TrPackageFitCompute(GPContents* inputs)
     TrBmp* target = (TrBmp*)inputs->get(1);
     double* fit = new double;
     *fit = -TrCompareBmp(output, target);
-    result->push(fit, &gTrDoubleType);
+    result->push(fit, &gDoubleType);
     return result;
 }
 GPContents* TrPackageInput(GPContents* inputs)

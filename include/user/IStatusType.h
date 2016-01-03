@@ -53,6 +53,66 @@ private:
     std::string mName;
 };
 
+class GPDoubleType:public IStatusType
+{
+public:
+    GPDoubleType():IStatusType("double")
+    {
+    }
+    virtual ~GPDoubleType()
+    {
+    }
+    virtual void* vLoad(GPStream* input) const
+    {
+        return NULL;
+    }
+    virtual void vSave(void* contents, GPWStream* output) const
+    {
+        return;
+    }
+    virtual void vFree(void* contents) const
+    {
+        double* c = (double*)(contents);
+        delete c;
+    }
+    virtual int vMap(void** content, double* value) const
+    {
+        return 0;
+    }
+};
+extern IStatusType* gDefaultDoubleType;//For GP Self, Don't use it
+class GPStringType:public IStatusType
+{
+public:
+    GPStringType():IStatusType("String")
+    {
+    }
+    virtual ~GPStringType()
+    {
+        
+    }
+    virtual void* vLoad(GPStream* input) const
+    {
+        return NULL;
+    }
+    virtual void vSave(void* contents, GPWStream* output) const
+    {
+        return;
+    }
+    virtual void vFree(void* contents) const
+    {
+        std::string* c = (std::string*)(contents);
+        delete c;
+    }
+    virtual int vMap(void** content, double* value) const
+    {
+        return 0;
+    }
+};
+extern IStatusType* gDefaultStringType;//For GP Self, Don't use it
+
+
+
 typedef IStatusType*(*TYPECREATER)(const std::string& name);
 
 

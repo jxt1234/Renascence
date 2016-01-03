@@ -192,33 +192,12 @@ class TrBmpType:public IStatusType
         }
 };
 
-class TrDoubleType:public IStatusType
-{
-    public:
-        TrDoubleType():IStatusType("double"){}
-        virtual void* vLoad(GPStream* input) const
-        {
-            return NULL;
-        }
-        virtual void vSave(void* contents, GPWStream* output) const
-        {
-        }
-        virtual void vFree(void* contents) const
-        {
-            delete (double*)contents;
-        }
-        virtual int vMap(void** content, double* value) const
-        {
-            return 0;
-        }
-};
-
 
 extern TrFloatType gFloatType;
 extern TrFilterMatrixType gTrFilterMatrixType;
 extern TrRegreeModeType gTrRegreeModeType;
 extern TrBmpType gTrBmpType;
-extern TrDoubleType gTrDoubleType;
+extern GPDoubleType gDoubleType;
 extern "C"{
 IStatusType* GP_IStatusType_Create(const std::string& name);
 }

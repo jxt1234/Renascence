@@ -36,7 +36,6 @@ class GPStreamFactory
 public:
     typedef enum{
         FILE,
-        BUFFER,
         USER
     } MODE;
     static GPStreamWrap* NewStream(const char* meta, MODE m=FILE);

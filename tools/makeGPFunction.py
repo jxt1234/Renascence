@@ -2,6 +2,9 @@
 GPSIGN = "/*GP FUNCTION*/"
 GPSTATUSSIGN="/*S*/"
 GPCOMPLTESIGN="/*T*/"
+gSoName = 'NULL'
+
+gDefaultType = {'double':'GPDoubleType', 'String':'GPStringType'}
 import os
 def collectFiles(path):
     filelist = []
@@ -85,14 +88,20 @@ def constructFunction(function):
     inputnumbers = len(function.inputs) + len(function.status)
     cppline+="assert("+ '%d' %inputnumbers + " == inputs->size());\n"
     for [i, inp] in enumerate(function.inputs):
-        cppline+='assert(inputs->contents[%d].type == g' %i + inp.replace('*', '') + ');\n'
+        if (inp.find('*') == -1):
+            cppline+='assert(inputs->contents[%d].type->name() == g' %i + inp.replace('*', '') + '->name());\n'
+        else:
+            cppline+='assert(inputs->contents[%d].type == g' %i + inp.replace('*', '') + ');\n'
     for [i, inp] in enumerate(function.status):
         cppline+='assert(inputs->contents[%d].type == g' %(i+len(function.inputs)) + inp.replace('*', '') + ');\n'
     cppline+="GPContents* out =  new GPContents;\n"
     for [i, var] in enumerate(function.inputs):
         num = '%d' %(function.inputPos[i])
         select = '%d' %i
-        cppline+= var + " X" + num + " = (" + var + ")inputs->get(" + select + ');\n';
+        if var.find('*')==-1:
+            cppline+= var + " X" + num + " = *(" + var + "*)inputs->get(" + select + ');\n';
+        else:
+            cppline+= var + " X" + num + " = (" + var + ")inputs->get(" + select + ');\n';
     for [i, var] in enumerate(function.status):
         num = '%d' %(function.statusPos[i])
         select = '%d' %(i+len(function.inputs))
@@ -166,8 +175,15 @@ def generateTypeFiles(filelist, outputt, inputt):
     for f in filelist:
         cppfile+="#include \"" + f.replace("include/", "") + "\"\n"
     def turnType(n):
-        return n+"_GPType"
+        if gDefaultType.get(n) == None:
+            return n+"_GPType"
+        return gDefaultType[n]
     for t in totoaltype:
+        if gDefaultType.get(t)==None:
+            cppfile += '#include \"' + turnType(t) + '.h\"\n'
+        cppfile +="IStatusType* g" + t + " = new "+turnType(t) + "();\n"
+        if gDefaultType.get(t)!=None:
+            continue
         typecontents = ''
         typecontents+="class "+turnType(t) + ":public IStatusType\n{\n"
         typecontents+='public:\n'
@@ -185,8 +201,6 @@ def generateTypeFiles(filelist, outputt, inputt):
         typecontents+="};\n"
         typefile = 'src/package/'+turnType(t)+'.h'
 
-        cppfile += '#include \"' + turnType(t) + '.h\"\n'
-        cppfile +="IStatusType* g" + t + " = new "+turnType(t) + "();\n"
         import os
         if False == os.path.exists(typefile):
             with open(typefile, 'w') as f:
@@ -230,7 +244,7 @@ def getShortFuncs(functions):
     return shortFunctions
 
 def generateXML(functions):
-    xmlcontents = '<NULL>\n'
+    xmlcontents = '<'+gSoName +'>\n'
     shortFunctions = getShortFuncs(functions);
     for [i,func] in enumerate(functions):
         xmlcontents += '<'+renameFunction(func.name)+'>\n'
@@ -249,12 +263,14 @@ def generateXML(functions):
             xmlcontents += f + ' '
         xmlcontents += '</inputNeedComplete>\n'
         xmlcontents += '</'+renameFunction(func.name)+'>\n\n'
-    xmlcontents += '</NULL>\n'
+    xmlcontents += '</'+gSoName +'>\n'
     return xmlcontents
 
 
 import sys
 if __name__=='__main__':
+    if len(sys.argv)>=2:
+        gSoName = sys.argv[1].replace('.so', '')
     [filelist, allfunctions] = producelist()
     [outputtype, inputtype] = findAllType(allfunctions)
     if (not os.path.exists("src/package")):
@@ -287,5 +303,6 @@ if __name__=='__main__':
         f.write(cppcontent)
 
     xmlcontents = generateXML(allfunctions)
-    with open('DefaultFunctionTable.xml', 'w') as f:
+    outputXmlFile = gSoName + '.xml'
+    with open(outputXmlFile, 'w') as f:
         f.write(xmlcontents)
