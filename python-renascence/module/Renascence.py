@@ -12,6 +12,15 @@ class Content:
         RenascenceBasic.GP_Contents_Destroy(self.nativeContent)
     def get(self):
         return self.nativeContent
+    def type(self):
+        inputTypes = RenascenceBasic.GP_Contents_Types(inputs.get())
+        inputTypes_python = RenascenceBasic.GP_Strings_Get(inputTypes, 0)
+        RenascenceBasic.GP_Strings_Free(inputTypes)
+        return inputTypes_python
+    def save(self, filename):
+        output = RenascenceBasic.GP_WStream_Create(filename)
+        RenascenceBasic.GP_Contents_Save(self.nativeContent, output, 0)
+        RenascenceBasic.GP_WStream_Destroy(output)
 class AutoDefFunction:
     def __init__(self, nativeFunction, producer):
         self.nativeFunction = nativeFunction
@@ -97,27 +106,14 @@ class Producer:
         adf = RenascenceBasic.GP_Function_Create_ByFormula(self.nativeProducer, formula, "", None)
         result = AutoDefFunction(adf, self)
         return result
-    def type(self, name):
-        class GPTypes:
-            def __init__(self, name, producer):
-                self.producer = producer
-                self.name = name
-            def __del__(self):
-                return
-            def load(self, filename):
-                stream = RenascenceBasic.GP_Stream_Create(filename)
-                streams = RenascenceBasic.GP_Streams_Malloc(1)
-                RenascenceBasic.GP_Streams_Set(streams, stream, 0)
-                result = Content(RenascenceBasic.GP_Contents_Load(self.producer.get(), streams, self.name, 1), self.producer)
-                RenascenceBasic.GP_Stream_Destroy(stream)
-                RenascenceBasic.GP_Streams_Free(streams)
-                return result
-            def save(self, content, filename):
-                output = RenascenceBasic.GP_WStream_Create(filename)
-                RenascenceBasic.GP_Contents_Save(content.get(), output, 0)
-                RenascenceBasic.GP_WStream_Destroy(output)
-        result = GPTypes(name, self)
-        return result;
+    def load(self, name, filename):
+        stream = RenascenceBasic.GP_Stream_Create(filename)
+        streams = RenascenceBasic.GP_Streams_Malloc(1)
+        RenascenceBasic.GP_Streams_Set(streams, stream, 0)
+        result = Content(RenascenceBasic.GP_Contents_Load(self.nativeProducer, streams, name, 1), self)
+        RenascenceBasic.GP_Stream_Destroy(stream)
+        RenascenceBasic.GP_Streams_Free(streams)
+        return result
 def init(xmlFileList, producerType=0):
     return Producer(xmlFileList, producerType)
 def setStreamPath(path):
