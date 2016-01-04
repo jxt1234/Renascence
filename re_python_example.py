@@ -1,8 +1,8 @@
 import Renascence
 
 def main():
-    Renascence.setStreamPath("../../")
-    Renascence.setLibPath("../../")
+    Renascence.setStreamPath("./")
+    Renascence.setLibPath("./")
     producer = Renascence.init(["func.xml"])
     print producer.listAllFunctions()
     print producer.listAllTypes()
