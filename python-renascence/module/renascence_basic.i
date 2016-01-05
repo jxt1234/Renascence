@@ -213,3 +213,5 @@ GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int typ
 void GP_OptimzorInfo_FreeTemplate(GPOptimizorInfo* pInfo);
 AGPContents* GP_Contents_CreateDouble(double value);
 
+void GP_Function_MapParameters(IGPAutoDefFunction* f, const char* parameters);
+

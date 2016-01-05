@@ -18,6 +18,7 @@
 #ifdef __cplusplus
 extern "C"{
 #endif
+    typedef struct AGPStrings AGPStrings;
     typedef struct IGPAutoDefFunction IGPAutoDefFunction;
     typedef struct AGPProducer AGPProducer;
     typedef struct GPStream GPStream;
@@ -186,6 +187,7 @@ extern "C"{
     /*Save f to output, use xml format*/
     void GP_Function_Save(IGPAutoDefFunction* f, GPWStream* output);
     
+    
     /*Optimize IGPAutoDefFunction by adjust its parameters*/
     /*REMIND: the f's parameters will be changed after this api*/
     /*If fit_fun is not random, this api make sure that fit_fun(f) will at least not decrease*/
@@ -213,14 +215,22 @@ extern "C"{
     void GP_Streams_Set(GPStream** streams,GPStream* contents, int n);
     
     /*For Print*/
-    typedef struct AGPStrings AGPStrings;
     int GP_Strings_Number(AGPStrings* strings);
     const char* GP_Strings_Get(AGPStrings* strings, int n);
     void GP_Strings_Free(AGPStrings* strings);
     
     /*AGPStrings come from function must be free by GP_Strings_Free*/
     AGPStrings* GP_Function_GetFormula(IGPAutoDefFunction* f, const char* name);
+    /*Get Parameters like this: "0.1 0.5 0.3"*/
     AGPStrings* GP_Function_GetParameters(IGPAutoDefFunction* f);
+    
+    /*Map f by parameters, the parameters come from GP_Function_GetParameters or outsize file
+     *Example:
+     * const char* p = "0.5 0.3 0.77";
+     * GP_Function_MapParameters(f, p);
+     */
+    void GP_Function_MapParameters(IGPAutoDefFunction* f, const char* parameters);
+
     AGPStrings* GP_Producer_ListFunctions(AGPProducer* producer);
     AGPStrings* GP_Producer_ListTypes(AGPProducer* producer);
     

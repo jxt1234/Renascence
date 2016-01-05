@@ -189,7 +189,12 @@ IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const cha
         }
         return result;
     }
-    GPPtr<GPEvolutionGroup> group = new GPEvolutionGroup(p->P, pInfo->nMaxRunTimes/20, 20, pInfo->nMaxADFDepth);
+    int evolutiontime = pInfo->nMaxRunTimes/20;
+    if (evolutiontime < 1)
+    {
+        evolutiontime = 1;
+    }
+    GPPtr<GPEvolutionGroup> group = new GPEvolutionGroup(p->P, evolutiontime, 20, pInfo->nMaxADFDepth);
     auto fit_func = [pInfo](IGPAutoDefFunction* f){
         return pInfo->pFitComputeFunction(f, pInfo->pMeta);
     };
@@ -600,5 +605,34 @@ AGPContents* GP_Contents_CreateDouble(double value)
     *v = value;
     content->push(v, gDefaultDoubleType);
     return new AGPContents(content);
+}
+
+void GP_Function_MapParameters(IGPAutoDefFunction* f, const char* parameters)
+{
+    if (NULL == parameters)
+    {
+        FUNC_PRINT(1);
+        return;
+    }
+    std::vector<double> values;
+    double v;
+    std::istringstream input(parameters);
+    while (input >> v)
+    {
+        values.push_back(v);
+    }
+    if (values.empty())
+    {
+        FUNC_PRINT(1);
+        return;
+    }
+    GPPtr<GPParameter> param = new GPParameter((int)values.size());
+    auto p = param->attach();
+    for (int i=0; i<values.size(); ++i)
+    {
+        p[i] = values[i];
+    }
+    f->vMap(param.get());
+    f->setParameters(param);
 }
 

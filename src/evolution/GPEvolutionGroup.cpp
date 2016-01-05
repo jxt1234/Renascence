@@ -88,6 +88,8 @@ GPPtr<IGPAutoDefFunction> GPEvolutionGroup::func_para::invalidate(GPPtr<IGPAutoD
 GPEvolutionGroup::GPEvolutionGroup(GPProducer* sys, int time, int size, int depth):mSys(sys)
 {
     GPASSERT(NULL!=sys);
+    GPASSERT(time > 0);
+    GPASSERT(size > 0);
     mTime = time;
     mSize = size;
     mDepth = depth;

@@ -15,7 +15,7 @@ def main():
     print 'Formula: ', formula
     print 'Parameters: ', Trainner.parameters()
     print BestValue
-    predictor = producer.build(formula)
+    predictor = producer.build(formula, Trainner.parameters())
     x0x1 = producer.merge(x0, x1)
     y_p = predictor.run(x0x1)
     u = producer.content(9.0)

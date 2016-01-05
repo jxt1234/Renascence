@@ -102,8 +102,10 @@ class Producer:
         bestValue_python = RenascenceBasic.GP_Contents_GetDouble(bestValue, 0)
         RenascenceBasic.GP_Contents_Destroy(bestValue)
         return result, bestValue_python
-    def build(self, formula):
+    def build(self, formula, parameters=None):
         adf = RenascenceBasic.GP_Function_Create_ByFormula(self.nativeProducer, formula, "", None)
+        if None!=parameters:
+            RenascenceBasic.GP_Function_MapParameters(adf, parameters)
         result = AutoDefFunction(adf, self)
         return result
     def load(self, name, filename):
