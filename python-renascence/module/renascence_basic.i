@@ -124,6 +124,8 @@
 
     /*The max time for pFitComputeFunction to call in optimization*/
     int nMaxRunTimes;
+        double fTargetBestValue;
+        GPWStream* pBestInfo;
 }GPOptimizorInfo;
 
 /*Create a IGPAutoDefFunction by inputTypes and outputTypes, the types must be divided by space*/
@@ -207,7 +209,7 @@ enum
  *type: GP_OPTIMIZOR_VALUE/GP_OPTIMIZOR_TIME
  *depth, maxtimes: the value in GPOptimizorInfo
  */
-GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput);
+GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput, GPWStream* bestCache);
 
 /*The info be freed must be come from GP_OptimzorInfo_CreateTemplate and can't be modified*/
 void GP_OptimzorInfo_FreeTemplate(GPOptimizorInfo* pInfo);

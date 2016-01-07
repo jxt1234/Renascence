@@ -189,7 +189,7 @@ void GPEvolutionGroup::loadBest(const GPTreeNode* node)
     mBest = mSys->createFunction(node);
 }
 
-void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func)
+void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func, GPWStream* cache)
 {
     if (NULL!=mBest.get())
     {
@@ -217,6 +217,23 @@ void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)>
     /*Evolution*/
     for (int i=0; i<mTime; ++i)
     {
+        if (NULL!=cache && cache->isValid())
+        {
+            std::ostringstream total;
+            total << mBestFit <<",";
+            auto param = mBest->getParameters();
+            if (NULL!=param.get())
+            {
+                auto n = param->size();
+                for (int i=0; i<n; ++i)
+                {
+                    total << param->get(i) << " ";
+                }
+            }
+            auto formula = mBest->getBasicTree()->dump();
+            total << ", "<<formula<<"\n";
+            cache->write(total.str().c_str(), total.str().size());
+        }
         _mutate();
         _best(fit_func);
         _expand();

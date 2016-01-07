@@ -184,6 +184,14 @@ class GPOptimizorInfo(_object):
     __swig_getmethods__["nMaxRunTimes"] = _RenascenceBasic.GPOptimizorInfo_nMaxRunTimes_get
     if _newclass:
         nMaxRunTimes = _swig_property(_RenascenceBasic.GPOptimizorInfo_nMaxRunTimes_get, _RenascenceBasic.GPOptimizorInfo_nMaxRunTimes_set)
+    __swig_setmethods__["fTargetBestValue"] = _RenascenceBasic.GPOptimizorInfo_fTargetBestValue_set
+    __swig_getmethods__["fTargetBestValue"] = _RenascenceBasic.GPOptimizorInfo_fTargetBestValue_get
+    if _newclass:
+        fTargetBestValue = _swig_property(_RenascenceBasic.GPOptimizorInfo_fTargetBestValue_get, _RenascenceBasic.GPOptimizorInfo_fTargetBestValue_set)
+    __swig_setmethods__["pBestInfo"] = _RenascenceBasic.GPOptimizorInfo_pBestInfo_set
+    __swig_getmethods__["pBestInfo"] = _RenascenceBasic.GPOptimizorInfo_pBestInfo_get
+    if _newclass:
+        pBestInfo = _swig_property(_RenascenceBasic.GPOptimizorInfo_pBestInfo_get, _RenascenceBasic.GPOptimizorInfo_pBestInfo_set)
 
     def __init__(self):
         this = _RenascenceBasic.new_GPOptimizorInfo()
@@ -279,8 +287,8 @@ GP_OPTIMIZOR_VALUE = _RenascenceBasic.GP_OPTIMIZOR_VALUE
 _RenascenceBasic.GP_OPTIMIZOR_TIME_swigconstant(_RenascenceBasic)
 GP_OPTIMIZOR_TIME = _RenascenceBasic.GP_OPTIMIZOR_TIME
 
-def GP_OptimzorInfo_CreateTemplate(depth, maxtimes, type, pInput):
-    return _RenascenceBasic.GP_OptimzorInfo_CreateTemplate(depth, maxtimes, type, pInput)
+def GP_OptimzorInfo_CreateTemplate(depth, maxtimes, type, pInput, bestCache):
+    return _RenascenceBasic.GP_OptimzorInfo_CreateTemplate(depth, maxtimes, type, pInput, bestCache)
 GP_OptimzorInfo_CreateTemplate = _RenascenceBasic.GP_OptimzorInfo_CreateTemplate
 
 def GP_OptimzorInfo_FreeTemplate(pInfo):

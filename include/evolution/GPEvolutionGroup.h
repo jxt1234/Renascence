@@ -32,7 +32,7 @@ public:
     virtual void vSetInput(const std::vector<const IStatusType*>& input){mInput = input;}
     virtual void vSetOutput(const std::vector<const IStatusType*>& output){mOutput = output;}
     /*The fit function is assume to output only one double value*/
-    virtual void vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func);
+    virtual void vEvolutionFunc(std::function<double(IGPAutoDefFunction*)> fit_func, GPWStream* cache=NULL);
     inline GPPtr<IGPAutoDefFunction> getBest()
     {
         return mBest;

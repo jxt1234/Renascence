@@ -158,7 +158,7 @@ IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* 
     auto fit_func = [pInfo](IGPAutoDefFunction* f){
         return pInfo->pFitComputeFunction(f, pInfo->pMeta);
     };
-    group->vEvolutionFunc(fit_func);
+    group->vEvolutionFunc(fit_func, pInfo->pBestInfo);
     auto best = group->getBest();
     best->addRef();
     return best.get();
@@ -199,7 +199,7 @@ IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const cha
         return pInfo->pFitComputeFunction(f, pInfo->pMeta);
     };
     group->setBestTree(first);
-    group->vEvolutionFunc(fit_func);
+    group->vEvolutionFunc(fit_func, pInfo->pBestInfo);
     auto best = group->getBest();
     best->addRef();
     return best.get();
@@ -521,7 +521,7 @@ static double _FitTime(IGPAutoDefFunction* adf, void* pMeta)
     return 1.0/(fin - sta);
 }
 
-GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput)
+GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput, GPWStream* bestCache)
 {
     if (depth<0 || maxtimes < 1 || (type != GP_OPTIMIZOR_TIME && type !=GP_OPTIMIZOR_VALUE))
     {
@@ -542,6 +542,8 @@ GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int typ
             info->pFitComputeFunction = _FitTime;
             break;
     }
+    info->pBestInfo = bestCache;
+    info->fTargetBestValue = 0.0f;
     return info;
 }
 
@@ -634,5 +636,16 @@ void GP_Function_MapParameters(IGPAutoDefFunction* f, const char* parameters)
     }
     f->vMap(param.get());
     f->setParameters(param);
+}
+
+GPOptimizorInfo::GPOptimizorInfo()
+{
+    nMaxADFDepth = 0;
+    nOptimizeType = 0;
+    pFitComputeFunction = NULL;
+    pMeta = NULL;
+    nMaxRunTimes = 2000;
+    fTargetBestValue = 0.0f;
+    pBestInfo = NULL;
 }
 

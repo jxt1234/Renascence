@@ -156,6 +156,19 @@ extern "C"{
 
         /*The max time for pFitComputeFunction to call in optimization*/
         int nMaxRunTimes;
+        
+        /*If reached this value, the train of ADF will stop, if the value is zero, means run nMaxRunTimes*/
+        double fTargetBestValue;
+        
+        /*When trainning, it will write in pBestInfo for recording, can be NULL if no need*/
+        /*The info will be: formula, parameters, type and fitness*/
+        GPWStream* pBestInfo;
+#ifdef __cplusplus
+        GPOptimizorInfo();
+        GPOptimizorInfo(const GPOptimizorInfo& info) = default;
+        ~GPOptimizorInfo() = default;
+#endif
+
     }GPOptimizorInfo;
     
     /*Create a IGPAutoDefFunction by inputTypes and outputTypes, the types must be divided by space*/
@@ -247,8 +260,9 @@ extern "C"{
     /*Create standard OptimizorInfo, Used by Python/Go
      *type: GP_OPTIMIZOR_VALUE/GP_OPTIMIZOR_TIME
      *depth, maxtimes: the value in GPOptimizorInfo
+     *bestCache：pBestInfo in GPOptimizorInfo
      */
-    GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput);
+    GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput, GPWStream* bestCache);
     
     /*The info be freed must be come from GP_OptimzorInfo_CreateTemplate and can't be modified*/
     void GP_OptimzorInfo_FreeTemplate(GPOptimizorInfo* pInfo);
