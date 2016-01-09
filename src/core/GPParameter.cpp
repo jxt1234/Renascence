@@ -19,8 +19,13 @@
 #include <string.h>
 GPParameter::GPParameter(int n, const PFLOAT* c)
 {
-    GPASSERT(n>0);
+    GPASSERT(n>=0);
     mNum = n;
+    if (0 == n)
+    {
+        mContent = NULL;
+        return;
+    }
     mContent = new PFLOAT[n];
     if (NULL!=c)
     {
@@ -42,7 +47,10 @@ GPParameter::GPParameter(int n, const PFLOAT* c)
 
 GPParameter::~GPParameter()
 {
-    delete [] mContent;
+    if (NULL != mContent)
+    {
+        delete [] mContent;
+    }
 }
 
 void GPParameter::clear(PFLOAT f)

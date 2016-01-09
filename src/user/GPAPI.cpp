@@ -1,5 +1,6 @@
 #include <string>
 #include <sstream>
+#include <string.h>
 #include "platform/system_lib.h"
 #include "core/IGPAutoDefFunction.h"
 #include "core/GPProducer.h"
@@ -649,3 +650,10 @@ GPOptimizorInfo::GPOptimizorInfo()
     pBestInfo = NULL;
 }
 
+GPOptimizorInfo::GPOptimizorInfo(const GPOptimizorInfo& info)
+{
+    ::memcpy(this, &info, sizeof(GPOptimizorInfo));
+}
+GPOptimizorInfo::~GPOptimizorInfo()
+{
+}

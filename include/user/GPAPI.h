@@ -165,8 +165,8 @@ extern "C"{
         GPWStream* pBestInfo;
 #ifdef __cplusplus
         GPOptimizorInfo();
-        GPOptimizorInfo(const GPOptimizorInfo& info) = default;
-        ~GPOptimizorInfo() = default;
+        GPOptimizorInfo(const GPOptimizorInfo& info);
+        ~GPOptimizorInfo();
 #endif
 
     }GPOptimizorInfo;

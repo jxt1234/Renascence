@@ -38,4 +38,6 @@ MAP(f(g(x0), h(x1), x2), x0);
 REDUCE(f(x0), x0);
 COLLECT();
 
+1.8规划：
+Map-Reduce自动并行化框架由等价对方案实现
 
