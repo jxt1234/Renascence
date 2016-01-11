@@ -8,6 +8,7 @@ class Content:
             self.nativeContent = RenascenceBasic.GP_Contents_CreateDouble(nativeContent)
         else:
             self.nativeContent = nativeContent
+        self.referedContents = []
     def __del__(self):
         RenascenceBasic.GP_Contents_Destroy(self.nativeContent)
     def get(self):
@@ -60,13 +61,21 @@ class Producer:
         return Content(value, self)
     def merge(self, *contents):
         n = len(contents)
-        result = RenascenceBasic.GP_Contents_CreateCollector()
+        resultWrap = Content(None, self)
+        result = resultWrap.nativeContent
         for i in range(0, n):
-            c = contents[i].get()
+            c = None
+            if isinstance(contents[i], int) or isinstance(contents[i], float):
+                temp = Content(contents[i], self)
+                resultWrap.referedContents.append(temp)
+                c = temp.get()
+            else:
+                resultWrap.referedContents.append(contents[i])
+                c = contents[i].get()
             l = RenascenceBasic.GP_Contents_Size(c)
             for j in range(0, l):
                 RenascenceBasic.GP_Contents_Collect(result, c, j)
-        return Content(result, self)
+        return resultWrap
     def get(self):
         return self.nativeProducer
     def listAllFunctions(self):
