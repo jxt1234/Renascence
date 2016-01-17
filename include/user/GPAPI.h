@@ -18,7 +18,7 @@
 #ifdef __cplusplus
 extern "C"{
 #endif
-    typedef struct AGPStrings AGPStrings;
+    
     typedef struct IGPAutoDefFunction IGPAutoDefFunction;
     typedef struct AGPProducer AGPProducer;
     typedef struct GPStream GPStream;
@@ -220,20 +220,31 @@ extern "C"{
      */
     void GP_Function_Optimize(IGPAutoDefFunction* f, GPOptimizorInfo* pInfo);
     
-    
     /*For the convenience of Python/Go API*/
     GPStream** GP_Streams_Malloc(int n);
     void GP_Streams_Free(GPStream** streams);
     GPStream* GP_Streams_Get(GPStream** streams, int n);
     void GP_Streams_Set(GPStream** streams,GPStream* contents, int n);
     
+    
     /*For Print*/
+    /*AGPStrings come from function must be free by GP_Strings_Free*/
+    typedef struct AGPStrings AGPStrings;
     int GP_Strings_Number(AGPStrings* strings);
     const char* GP_Strings_Get(AGPStrings* strings, int n);
     void GP_Strings_Free(AGPStrings* strings);
     
-    /*AGPStrings come from function must be free by GP_Strings_Free*/
-    AGPStrings* GP_Function_GetFormula(IGPAutoDefFunction* f, const char* name);
+    /*Return the formula string of ADF with the name of adfName, if adfName == NULL, return the whole function name. The size of string is 1
+     *Example:
+     * IGPAutoDefFunction* adffunction = GP_Function_Create_ByFormula(p, "f(x0, ADF(filter, x1))", "Matrix Matrix", NULL);
+     * AGPStrings* formula = GP_Function_GetFormula(adffunction, NULL);
+     * printf("The whole function is: %s\n", GP_Strings_Get(formula, 0));
+     * GP_Strings_Free(formula);
+     * formula = GP_Function_GetFormula(adffunction, "filter");
+     * printf("The filter function is: %s\n", GP_Strings_Get(formula, 0));
+     * GP_Strings_Free(formula);
+     */
+    AGPStrings* GP_Function_GetFormula(IGPAutoDefFunction* f, const char* adfName);
     /*Get Parameters like this: "0.1 0.5 0.3"*/
     AGPStrings* GP_Function_GetParameters(IGPAutoDefFunction* f);
     
@@ -244,13 +255,24 @@ extern "C"{
      */
     void GP_Function_MapParameters(IGPAutoDefFunction* f, const char* parameters);
 
+    /*Return All functions as a list
+     *Example:
+     * AGPStrings* functions = GP_Producer_ListFunctions(producer);
+     * int n = GP_Strings_Number(functions);
+     * for (int i=0; i<n; ++i)
+     * {
+     *     printf("%s\n", GP_Strings_Get(functions, i));
+     * }
+     * GP_Strings_Free(functions);
+     */
     AGPStrings* GP_Producer_ListFunctions(AGPProducer* producer);
+    
+    /*Return All Types name as a list*/
     AGPStrings* GP_Producer_ListTypes(AGPProducer* producer);
     
     /*Return all type name of contents*/
     AGPStrings* GP_Contents_Types(AGPContents* contents);
 
-    
     /*Default GPOptimizorInfo*/
     enum
     {

@@ -65,6 +65,11 @@ static int test_main()
     /*Run*/
     {
         auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "TrBmp TrBmp", NULL);
+        auto formula = GP_Function_GetFormula(adf, "");
+        auto parameter = GP_Function_GetParameters(adf);
+        cout << "Run formual: " << GP_Strings_Get(formula, 0) << ". paramters: " << GP_Strings_Get(parameter, 0) << "\n";
+        GP_Strings_Free(formula);
+        GP_Strings_Free(parameter);
         GPStream* input[2];
         input[0] = GP_Stream_Create("input.jpg");
         input[1] = GP_Stream_Create("output.jpg");

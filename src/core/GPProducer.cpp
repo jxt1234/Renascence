@@ -38,7 +38,13 @@ GPProducer::~GPProducer()
 IGPAutoDefFunction* GPProducer::createFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs)
 {
     GPPtr<GPFunctionTree> ft = mFront->vCreateOneFunction(outputs,inputs);
-    return mBack->vCreateFromFuncTree(ft.get());
+    auto adf = mBack->vCreateFromFuncTree(ft.get());
+    adf->setBasicTree(ft);
+    auto n = adf->vMap(NULL);
+    GPPtr<GPParameter> parameter = new GPParameter(n);
+    parameter->clear(0.5f);
+    adf->setParameters(parameter);
+    return adf;
 }
 std::vector<GPPtr<IGPAutoDefFunction>> GPProducer::listAllFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth)
 {
