@@ -94,14 +94,17 @@ class Producer:
             result.append(RenascenceBasic.GP_Strings_Get(functionStrings, i))
         RenascenceBasic.GP_Strings_Free(functionStrings)
         return result
-    def train(self, formula, inputs, times=2000, optType=0, depth=0, cacheFile=None):
+    def train(self, formula, inputs, times=2000, optType=0, depth=0, postFormula=None, cacheFile=None):
         '''
         optType: 0 for Best Value and 1 for least Time
         '''
+        postADF = None
+        if None != postFormula:
+            postADF = RenascenceBasic.GP_Function_Create_ByFormula(self.nativeProducer, postFormula, None, None)
         streamscache = None
         if None != cacheFile:
             streamscache = RenascenceBasic.GP_WStream_Create(cacheFile)
-        optinfo = RenascenceBasic.GP_OptimzorInfo_CreateTemplate(depth, times, optType, inputs.get(), streamscache)
+        optinfo = RenascenceBasic.GP_OptimzorInfo_CreateTemplate(depth, times, optType, inputs.get(), streamscache, postADF)
         #TODO check formula before transmit to GP
         inputTypes = RenascenceBasic.GP_Contents_Types(inputs.get())
         inputTypes_python = RenascenceBasic.GP_Strings_Get(inputTypes, 0)
@@ -111,6 +114,8 @@ class Producer:
         RenascenceBasic.GP_OptimzorInfo_FreeTemplate(optinfo)
         if None != cacheFile:
             RenascenceBasic.GP_WStream_Destroy(streamscache)
+        if None != postADF:
+            RenascenceBasic.GP_Function_Destroy(postADF)
         result = AutoDefFunction(adf, self)
         bestValue = RenascenceBasic.GP_Function_Run(adf, inputs.get())
         bestValue_python = RenascenceBasic.GP_Contents_GetDouble(bestValue, 0)

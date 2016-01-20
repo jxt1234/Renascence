@@ -501,28 +501,57 @@ AGPStrings* GP_Producer_ListTypes(AGPProducer* producer)
     return result;
 }
 
+struct GPTemplateMeta
+{
+    AGPContents* pInput;
+    IGPAutoDefFunction* pPostFunction;
+};
+
+
 static double _FitValue(IGPAutoDefFunction* adf, void* pMeta)
 {
-    AGPContents* input = (AGPContents*)pMeta;
+    GPTemplateMeta* meta = (GPTemplateMeta*)pMeta;
+    AGPContents* input = meta->pInput;
     GPContents* output = adf->vRun(input->get());
-    GPASSERT(output->size() == 1);
-    GPASSERT(output->getContent(0).type->name() == "double");
-    double res = *((double*)output->get(0));
+    if (NULL == meta->pPostFunction)
+    {
+        GPASSERT(output->size() == 1);
+        GPASSERT(output->getContent(0).type->name() == "double");
+        double res = *((double*)output->get(0));
+        GPContents::destroy(output);
+        return res;
+    }
+    GPContents* postOutput = meta->pPostFunction->vRun(output);
     GPContents::destroy(output);
+    GPASSERT(postOutput->size() == 1);
+    GPASSERT(postOutput->getContent(0).type->name() == "double");
+    double res = *((double*)postOutput->get(0));
+    GPContents::destroy(postOutput);
     return res;
 }
 static double _FitTime(IGPAutoDefFunction* adf, void* pMeta)
 {
-    AGPContents* input = (AGPContents*)pMeta;
+    GPTemplateMeta* meta = (GPTemplateMeta*)pMeta;
+    AGPContents* input = meta->pInput;
+    GPContents* postOutput = NULL;
     /*TODO, find more accurate method*/
     clock_t sta = clock();
     GPContents* output = adf->vRun(input->get());
+    if (NULL != meta->pPostFunction)
+    {
+        postOutput = meta->pPostFunction->vRun(output);
+    }
     clock_t fin = clock();
     GPContents::destroy(output);
+    if (NULL != postOutput)
+    {
+        GPContents::destroy(postOutput);
+    }
     return 1.0/(fin - sta);
 }
 
-GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput, GPWStream* bestCache)
+
+GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput, GPWStream* bestCache, IGPAutoDefFunction* postFunction)
 {
     if (depth<0 || maxtimes < 1 || (type != GP_OPTIMIZOR_TIME && type !=GP_OPTIMIZOR_VALUE))
     {
@@ -530,8 +559,11 @@ GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int typ
         return NULL;
     }
     GPOptimizorInfo* info = new GPOptimizorInfo;
+    GPTemplateMeta* meta = new GPTemplateMeta;
+    meta->pPostFunction = postFunction;
+    meta->pInput = pInput;
     info->nMaxADFDepth = depth;
-    info->pMeta = (void*)pInput;
+    info->pMeta = (void*)meta;
     info->nMaxRunTimes = maxtimes;
     info->nOptimizeType = 0;
     switch (type)
@@ -551,6 +583,8 @@ GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int typ
 void GP_OptimzorInfo_FreeTemplate(GPOptimizorInfo* pInfo)
 {
     GPASSERT(NULL!=pInfo);//FIXME
+    GPTemplateMeta* meta = (GPTemplateMeta*)(pInfo->pMeta);
+    delete meta;
     delete pInfo;
 }
 

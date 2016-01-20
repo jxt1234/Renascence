@@ -4859,6 +4859,7 @@ SWIGINTERN PyObject *_wrap_GP_OptimzorInfo_CreateTemplate(PyObject *SWIGUNUSEDPA
   int arg3 ;
   AGPContents *arg4 = (AGPContents *) 0 ;
   GPWStream *arg5 = (GPWStream *) 0 ;
+  IGPAutoDefFunction *arg6 = (IGPAutoDefFunction *) 0 ;
   int val1 ;
   int ecode1 = 0 ;
   int val2 ;
@@ -4869,14 +4870,17 @@ SWIGINTERN PyObject *_wrap_GP_OptimzorInfo_CreateTemplate(PyObject *SWIGUNUSEDPA
   int res4 = 0 ;
   void *argp5 = 0 ;
   int res5 = 0 ;
+  void *argp6 = 0 ;
+  int res6 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
   GPOptimizorInfo *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOO:GP_OptimzorInfo_CreateTemplate",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:GP_OptimzorInfo_CreateTemplate",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
   ecode1 = SWIG_AsVal_int(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "GP_OptimzorInfo_CreateTemplate" "', argument " "1"" of type '" "int""'");
@@ -4902,7 +4906,12 @@ SWIGINTERN PyObject *_wrap_GP_OptimzorInfo_CreateTemplate(PyObject *SWIGUNUSEDPA
     SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "GP_OptimzorInfo_CreateTemplate" "', argument " "5"" of type '" "GPWStream *""'"); 
   }
   arg5 = reinterpret_cast< GPWStream * >(argp5);
-  result = (GPOptimizorInfo *)GP_OptimzorInfo_CreateTemplate(arg1,arg2,arg3,arg4,arg5);
+  res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p_IGPAutoDefFunction, 0 |  0 );
+  if (!SWIG_IsOK(res6)) {
+    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "GP_OptimzorInfo_CreateTemplate" "', argument " "6"" of type '" "IGPAutoDefFunction *""'"); 
+  }
+  arg6 = reinterpret_cast< IGPAutoDefFunction * >(argp6);
+  result = (GPOptimizorInfo *)GP_OptimzorInfo_CreateTemplate(arg1,arg2,arg3,arg4,arg5,arg6);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GPOptimizorInfo, 0 |  0 );
   return resultobj;
 fail:

@@ -287,8 +287,8 @@ GP_OPTIMIZOR_VALUE = _RenascenceBasic.GP_OPTIMIZOR_VALUE
 _RenascenceBasic.GP_OPTIMIZOR_TIME_swigconstant(_RenascenceBasic)
 GP_OPTIMIZOR_TIME = _RenascenceBasic.GP_OPTIMIZOR_TIME
 
-def GP_OptimzorInfo_CreateTemplate(depth, maxtimes, type, pInput, bestCache):
-    return _RenascenceBasic.GP_OptimzorInfo_CreateTemplate(depth, maxtimes, type, pInput, bestCache)
+def GP_OptimzorInfo_CreateTemplate(depth, maxtimes, type, pInput, bestCache, postFunction):
+    return _RenascenceBasic.GP_OptimzorInfo_CreateTemplate(depth, maxtimes, type, pInput, bestCache, postFunction)
 GP_OptimzorInfo_CreateTemplate = _RenascenceBasic.GP_OptimzorInfo_CreateTemplate
 
 def GP_OptimzorInfo_FreeTemplate(pInfo):

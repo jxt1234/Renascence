@@ -282,9 +282,10 @@ extern "C"{
     /*Create standard OptimizorInfo, Used by Python/Go
      *type: GP_OPTIMIZOR_VALUE/GP_OPTIMIZOR_TIME
      *depth, maxtimes: the value in GPOptimizorInfo
-     *bestCache：pBestInfo in GPOptimizorInfo
+     *bestCache:pBestInfo in GPOptimizorInfo
+     *postFunction: the post treat function that will act with the result of target function, can be NULL
      */
-    GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput, GPWStream* bestCache);
+    GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput, GPWStream* bestCache, IGPAutoDefFunction* postFunction);
     
     /*The info be freed must be come from GP_OptimzorInfo_CreateTemplate and can't be modified*/
     void GP_OptimzorInfo_FreeTemplate(GPOptimizorInfo* pInfo);
