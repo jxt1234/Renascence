@@ -209,11 +209,13 @@ enum
  *type: GP_OPTIMIZOR_VALUE/GP_OPTIMIZOR_TIME
  *depth, maxtimes: the value in GPOptimizorInfo
  */
-GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput, GPWStream* bestCache, IGPAutoDefFunction* postFunction);
+GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput, GPWStream* bestCache, IGPAutoDefFunction* pPostFunction, AGPContents* pPostExtraInput);
 
 /*The info be freed must be come from GP_OptimzorInfo_CreateTemplate and can't be modified*/
 void GP_OptimzorInfo_FreeTemplate(GPOptimizorInfo* pInfo);
 AGPContents* GP_Contents_CreateDouble(double value);
 
 void GP_Function_MapParameters(IGPAutoDefFunction* f, const char* parameters);
+
+double GP_OptimzorInfo_TemplateGetBestValue(GPOptimizorInfo* pInfo);
 

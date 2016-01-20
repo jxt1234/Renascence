@@ -124,11 +124,11 @@ void GP_Producer_Destroy(AGPProducer* p)
 
 static std::vector<const IStatusType*> _transform(const char* types, const AGPProducer* p)
 {
-    GPASSERT(NULL!=types);
     GPASSERT(NULL!=p);
+    GPASSERT(NULL!=types);
+    std::vector<const IStatusType*> res;
     std::istringstream is(types);
     std::string name;
-    std::vector<const IStatusType*> res;
     while(is >> name)
     {
         auto t = p->F->vQueryType(name);
@@ -162,6 +162,7 @@ IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* 
     group->vEvolutionFunc(fit_func, pInfo->pBestInfo);
     auto best = group->getBest();
     best->addRef();
+    pInfo->fOutputBest = group->getBestFit();
     return best.get();
 
 }
@@ -203,6 +204,7 @@ IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const cha
     group->vEvolutionFunc(fit_func, pInfo->pBestInfo);
     auto best = group->getBest();
     best->addRef();
+    pInfo->fOutputBest = group->getBestFit();
     return best.get();
 }
 
@@ -505,6 +507,7 @@ struct GPTemplateMeta
 {
     AGPContents* pInput;
     IGPAutoDefFunction* pPostFunction;
+    AGPContents* pPostExtraInput;
 };
 
 
@@ -521,7 +524,17 @@ static double _FitValue(IGPAutoDefFunction* adf, void* pMeta)
         GPContents::destroy(output);
         return res;
     }
-    GPContents* postOutput = meta->pPostFunction->vRun(output);
+    GPContents* secondInput = new GPContents;
+    secondInput->push(output->getContent(0));
+    if (NULL!=meta->pPostExtraInput)
+    {
+        for (int i=0; i<meta->pPostExtraInput->get()->size(); ++i)
+        {
+            secondInput->push(meta->pPostExtraInput->get()->getContent(i));
+        }
+    }
+    GPContents* postOutput = meta->pPostFunction->vRun(secondInput);
+    delete secondInput;
     GPContents::destroy(output);
     GPASSERT(postOutput->size() == 1);
     GPASSERT(postOutput->getContent(0).type->name() == "double");
@@ -539,7 +552,17 @@ static double _FitTime(IGPAutoDefFunction* adf, void* pMeta)
     GPContents* output = adf->vRun(input->get());
     if (NULL != meta->pPostFunction)
     {
-        postOutput = meta->pPostFunction->vRun(output);
+        GPContents* secondInput = new GPContents;
+        secondInput->push(output->getContent(0));
+        if (NULL!=meta->pPostExtraInput)
+        {
+            for (int i=0; i<meta->pPostExtraInput->get()->size(); ++i)
+            {
+                secondInput->push(meta->pPostExtraInput->get()->getContent(i));
+            }
+        }
+        postOutput = meta->pPostFunction->vRun(secondInput);
+        delete secondInput;
     }
     clock_t fin = clock();
     GPContents::destroy(output);
@@ -551,7 +574,7 @@ static double _FitTime(IGPAutoDefFunction* adf, void* pMeta)
 }
 
 
-GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput, GPWStream* bestCache, IGPAutoDefFunction* postFunction)
+GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput, GPWStream* bestCache, IGPAutoDefFunction* pPostFunction, AGPContents* pPostExtraInput)
 {
     if (depth<0 || maxtimes < 1 || (type != GP_OPTIMIZOR_TIME && type !=GP_OPTIMIZOR_VALUE))
     {
@@ -560,8 +583,9 @@ GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int typ
     }
     GPOptimizorInfo* info = new GPOptimizorInfo;
     GPTemplateMeta* meta = new GPTemplateMeta;
-    meta->pPostFunction = postFunction;
+    meta->pPostFunction = pPostFunction;
     meta->pInput = pInput;
+    meta->pPostExtraInput = pPostExtraInput;
     info->nMaxADFDepth = depth;
     info->pMeta = (void*)meta;
     info->nMaxRunTimes = maxtimes;
@@ -682,6 +706,7 @@ GPOptimizorInfo::GPOptimizorInfo()
     nMaxRunTimes = 2000;
     fTargetBestValue = 0.0f;
     pBestInfo = NULL;
+    fOutputBest = 0.0f;
 }
 
 GPOptimizorInfo::GPOptimizorInfo(const GPOptimizorInfo& info)
@@ -690,4 +715,9 @@ GPOptimizorInfo::GPOptimizorInfo(const GPOptimizorInfo& info)
 }
 GPOptimizorInfo::~GPOptimizorInfo()
 {
+}
+double GP_OptimzorInfo_TemplateGetBestValue(GPOptimizorInfo* pInfo)
+{
+    GPASSERT(NULL!=pInfo);//FIXME
+    return pInfo->fOutputBest;
 }

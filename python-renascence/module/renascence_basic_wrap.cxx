@@ -4860,6 +4860,7 @@ SWIGINTERN PyObject *_wrap_GP_OptimzorInfo_CreateTemplate(PyObject *SWIGUNUSEDPA
   AGPContents *arg4 = (AGPContents *) 0 ;
   GPWStream *arg5 = (GPWStream *) 0 ;
   IGPAutoDefFunction *arg6 = (IGPAutoDefFunction *) 0 ;
+  AGPContents *arg7 = (AGPContents *) 0 ;
   int val1 ;
   int ecode1 = 0 ;
   int val2 ;
@@ -4872,15 +4873,18 @@ SWIGINTERN PyObject *_wrap_GP_OptimzorInfo_CreateTemplate(PyObject *SWIGUNUSEDPA
   int res5 = 0 ;
   void *argp6 = 0 ;
   int res6 = 0 ;
+  void *argp7 = 0 ;
+  int res7 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
   PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
   GPOptimizorInfo *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:GP_OptimzorInfo_CreateTemplate",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOO:GP_OptimzorInfo_CreateTemplate",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6)) SWIG_fail;
   ecode1 = SWIG_AsVal_int(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "GP_OptimzorInfo_CreateTemplate" "', argument " "1"" of type '" "int""'");
@@ -4911,7 +4915,12 @@ SWIGINTERN PyObject *_wrap_GP_OptimzorInfo_CreateTemplate(PyObject *SWIGUNUSEDPA
     SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "GP_OptimzorInfo_CreateTemplate" "', argument " "6"" of type '" "IGPAutoDefFunction *""'"); 
   }
   arg6 = reinterpret_cast< IGPAutoDefFunction * >(argp6);
-  result = (GPOptimizorInfo *)GP_OptimzorInfo_CreateTemplate(arg1,arg2,arg3,arg4,arg5,arg6);
+  res7 = SWIG_ConvertPtr(obj6, &argp7,SWIGTYPE_p_AGPContents, 0 |  0 );
+  if (!SWIG_IsOK(res7)) {
+    SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "GP_OptimzorInfo_CreateTemplate" "', argument " "7"" of type '" "AGPContents *""'"); 
+  }
+  arg7 = reinterpret_cast< AGPContents * >(argp7);
+  result = (GPOptimizorInfo *)GP_OptimzorInfo_CreateTemplate(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GPOptimizorInfo, 0 |  0 );
   return resultobj;
 fail:
@@ -4995,6 +5004,28 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_GP_OptimzorInfo_TemplateGetBestValue(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GPOptimizorInfo *arg1 = (GPOptimizorInfo *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GP_OptimzorInfo_TemplateGetBestValue",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPOptimizorInfo, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_OptimzorInfo_TemplateGetBestValue" "', argument " "1"" of type '" "GPOptimizorInfo *""'"); 
+  }
+  arg1 = reinterpret_cast< GPOptimizorInfo * >(argp1);
+  result = (double)GP_OptimzorInfo_TemplateGetBestValue(arg1);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { (char *)"GP_Set_Lib_Path", _wrap_GP_Set_Lib_Path, METH_VARARGS, NULL},
@@ -5056,6 +5087,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"GP_OptimzorInfo_FreeTemplate", _wrap_GP_OptimzorInfo_FreeTemplate, METH_VARARGS, NULL},
 	 { (char *)"GP_Contents_CreateDouble", _wrap_GP_Contents_CreateDouble, METH_VARARGS, NULL},
 	 { (char *)"GP_Function_MapParameters", _wrap_GP_Function_MapParameters, METH_VARARGS, NULL},
+	 { (char *)"GP_OptimzorInfo_TemplateGetBestValue", _wrap_GP_OptimzorInfo_TemplateGetBestValue, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 

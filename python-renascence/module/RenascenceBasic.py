@@ -287,8 +287,8 @@ GP_OPTIMIZOR_VALUE = _RenascenceBasic.GP_OPTIMIZOR_VALUE
 _RenascenceBasic.GP_OPTIMIZOR_TIME_swigconstant(_RenascenceBasic)
 GP_OPTIMIZOR_TIME = _RenascenceBasic.GP_OPTIMIZOR_TIME
 
-def GP_OptimzorInfo_CreateTemplate(depth, maxtimes, type, pInput, bestCache, postFunction):
-    return _RenascenceBasic.GP_OptimzorInfo_CreateTemplate(depth, maxtimes, type, pInput, bestCache, postFunction)
+def GP_OptimzorInfo_CreateTemplate(depth, maxtimes, type, pInput, bestCache, pPostFunction, pPostExtraInput):
+    return _RenascenceBasic.GP_OptimzorInfo_CreateTemplate(depth, maxtimes, type, pInput, bestCache, pPostFunction, pPostExtraInput)
 GP_OptimzorInfo_CreateTemplate = _RenascenceBasic.GP_OptimzorInfo_CreateTemplate
 
 def GP_OptimzorInfo_FreeTemplate(pInfo):
@@ -302,6 +302,10 @@ GP_Contents_CreateDouble = _RenascenceBasic.GP_Contents_CreateDouble
 def GP_Function_MapParameters(f, parameters):
     return _RenascenceBasic.GP_Function_MapParameters(f, parameters)
 GP_Function_MapParameters = _RenascenceBasic.GP_Function_MapParameters
+
+def GP_OptimzorInfo_TemplateGetBestValue(pInfo):
+    return _RenascenceBasic.GP_OptimzorInfo_TemplateGetBestValue(pInfo)
+GP_OptimzorInfo_TemplateGetBestValue = _RenascenceBasic.GP_OptimzorInfo_TemplateGetBestValue
 # This file is compatible with both classic and new-style classes.
 
 

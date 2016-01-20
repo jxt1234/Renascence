@@ -163,12 +163,14 @@ extern "C"{
         /*When trainning, it will write in pBestInfo for recording, can be NULL if no need*/
         /*The info will be: formula, parameters, type and fitness*/
         GPWStream* pBestInfo;
+        /*Output Value, Filled by evolution*/
+        double fOutputBest;
 #ifdef __cplusplus
         GPOptimizorInfo();
         GPOptimizorInfo(const GPOptimizorInfo& info);
         ~GPOptimizorInfo();
 #endif
-
+        
     }GPOptimizorInfo;
     
     /*Create a IGPAutoDefFunction by inputTypes and outputTypes, the types must be divided by space*/
@@ -283,12 +285,15 @@ extern "C"{
      *type: GP_OPTIMIZOR_VALUE/GP_OPTIMIZOR_TIME
      *depth, maxtimes: the value in GPOptimizorInfo
      *bestCache:pBestInfo in GPOptimizorInfo
-     *postFunction: the post treat function that will act with the result of target function, can be NULL
+     *pPostFunction: the post treat function that will act with the result of target function, can be NULL
+     *pPostExtraInput: the extra input to run pPostFunction, For example, P(x0, x1, x2), extra inputs is x1, x2
      */
-    GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput, GPWStream* bestCache, IGPAutoDefFunction* postFunction);
+    GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput, GPWStream* bestCache, IGPAutoDefFunction* pPostFunction, AGPContents* pPostExtraInput);
     
     /*The info be freed must be come from GP_OptimzorInfo_CreateTemplate and can't be modified*/
     void GP_OptimzorInfo_FreeTemplate(GPOptimizorInfo* pInfo);
+    
+    double GP_OptimzorInfo_TemplateGetBestValue(GPOptimizorInfo* pInfo);
 #ifdef __cplusplus
 }
 #endif
