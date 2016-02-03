@@ -16,11 +16,11 @@
 #ifndef UTILS_GPCLOCK_H
 #define UTILS_GPCLOCK_H
 
-class GP_Clock
+class GPClock
 {
     public:
-        GP_Clock(int func, const char* name);
-        ~GP_Clock();
+        GPClock(int func, const char* name);
+        ~GPClock();
         int reset();
     protected:
         size_t mStart;
@@ -28,7 +28,7 @@ class GP_Clock
         char* mName;
 };
 
-#define GPCLOCK GP_Clock __clock(__LINE__, __func__)
+#define GPCLOCK GPClock __clock(__LINE__, __func__)
 
 
 #endif

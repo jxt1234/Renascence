@@ -18,14 +18,14 @@
 #include "utils/GPClock.h"
 #include "string.h"
 
-GP_Clock::GP_Clock(int func, const char* name)
+GPClock::GPClock(int func, const char* name)
 {
     mStart = clock();
     mId = func;
     mName = ::strdup(name);
 }
 
-GP_Clock::~GP_Clock()
+GPClock::~GPClock()
 {
     auto inter = clock()-mStart;
     GPPRINT("%s __ %d, times = %ldms+%ldus\n", mName, mId, inter/1000, inter%1000);

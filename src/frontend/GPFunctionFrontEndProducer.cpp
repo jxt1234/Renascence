@@ -25,12 +25,6 @@ static int _loadXn(const string& s)
     return sum;
 }
 
-/*Like This Format: (TrPackageCompse:1)[TrBmp:x5,TrBmp:x6]*/
-void _loadADF(const GPFormulaTreePoint* point, vector<pair<string, int>>& variables)
-{
-    GPASSERT(NULL!=point);
-}
-
 
 static vector<vector<const GPProducerUtils::func*> > _filterOutputType(const vector<vector<const GPProducerUtils::func*> >& origin, const std::vector<const IStatusType*>& inputType)
 {
