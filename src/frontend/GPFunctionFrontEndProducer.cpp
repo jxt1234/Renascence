@@ -1,6 +1,6 @@
 #include "frontend/GPFunctionFrontEndProducer.h"
 #include "frontend/GPFormulaTree.h"
-#include "math/carryGroup2.h"
+#include "math/carryGroup.h"
 #include "recurse_tree.h"
 #include <algorithm>
 #include <sstream>
@@ -51,7 +51,7 @@ static vector<vector<const GPProducerUtils::func*> > _filterOutputType(const vec
 
 static void _findMatchedFuncton(std::vector<std::vector<const GPProducerUtils::func*> >& warpOutput, const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, const GPProducerUtils& mUtils)
 {
-    carryGroup2<const GPProducerUtils::func*> group;
+    carryGroup<const GPProducerUtils::func*> group;
     for(int i=0; i<outputType.size(); ++i)
     {
         group.mBase.push_back(mUtils.getFunctionsForOutput(outputType[i]));

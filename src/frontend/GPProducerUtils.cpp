@@ -19,7 +19,7 @@
 #include <set>
 #include "frontend/GPProducerUtils.h"
 #include "math/carryArray.h"
-#include "math/carryGroup2.h"
+#include "math/carryGroup.h"
 using namespace std;
 
 
@@ -85,17 +85,28 @@ GPProducerUtils::GPProducerUtils(const GPFunctionDataBase* base)
             funcmap.insert(make_pair(f, list));
             continue;
         }
-        carryArray array((int)(f->inputType.size()), 2);
+        carryGroup<int> group;
+        for (int i=0; i<f->inputType.size(); ++i)
+        {
+            if (f->inputType[i]->name() != "double" && f->inputType[i]->name() != "String")
+            {
+                group.mBase.push_back(std::vector<int>{0,1});
+            }
+            else
+            {
+                group.mBase.push_back(std::vector<int>{0});
+            }
+        }
         vector<func*> list;
-        while (!array.reachEnd())
+        group.reset();
+        do
         {
             GPPtr<func> mapfunc = new func;
-            mapfunc->useChildrenInput = array.getCurrent();
+            mapfunc->useChildrenInput = group.current();
             _setUpBasicFunction(mapfunc.get(), f);
             allfunctions.push_back(mapfunc);
             list.push_back(mapfunc.get());
-            ++array;
-        }
+        }while (group.next());
         funcmap.insert(make_pair(f, list));
     }
     /*Assign Input, and filter invalid functions*/
@@ -110,7 +121,7 @@ GPProducerUtils::GPProducerUtils(const GPFunctionDataBase* base)
                 break;
             }
             GPASSERT(f->tables.empty());
-            carryGroup2<const func*> group;
+            carryGroup<const func*> group;
             for (int i=0; i<f->childrenInputs.size(); ++i)
             {
                 auto pairs = _getFunctionsForOutput(f->childrenInputs[i], allfunctions);

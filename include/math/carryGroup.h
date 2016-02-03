@@ -13,13 +13,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef MATH_CARRYGROUP2_H
-#define MATH_CARRYGROUP2_H
+#ifndef MATH_CARRYGROUP_H
+#define MATH_CARRYGROUP_H
 #include <vector>
 #include <assert.h>
 
 template<typename T>
-class carryGroup2
+class carryGroup
 {
     public:
         typedef std::vector<T> TEAM;
@@ -29,6 +29,7 @@ class carryGroup2
             mSize.clear();
             mIter.assign(mBase.size(), 0);
             mSize.reserve(mBase.size());
+            mCurrent.clear();
             for (int i=0; i<mBase.size(); ++i)
             {
                 TEAM& t = mBase.at(i);

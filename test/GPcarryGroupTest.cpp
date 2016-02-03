@@ -1,5 +1,5 @@
 #include "test/GPTest.h"
-#include "math/carryGroup2.h"
+#include "math/carryGroup.h"
 #include <fstream>
 using namespace std;
 class GPcarryGroupTest:public GPTest
@@ -11,7 +11,7 @@ class GPcarryGroupTest:public GPTest
 };
 void GPcarryGroupTest::run()
 {
-    carryGroup2<int> group;
+    carryGroup<int> group;
     ofstream out("output/GPcarryGroupTest.txt");
     out << "List\n";
     for (int i=0; i<4; ++i)
