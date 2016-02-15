@@ -59,9 +59,6 @@ class GPSinglePoint:public GPAbstractPoint
             public:
                 virtual GPAbstractPoint* copy(GPAbstractPoint* src, bool&);
         };
-    protected:
-        virtual void printBefore(std::ostream& out){}
-        virtual void printAfter(std::ostream& out){}
     private:
         GPFLOAT* mCache;
         GPIFloatFunction* mF;
@@ -75,7 +72,7 @@ class GPSingleTree:public RefCount
         void operator=(const GPSingleTree& tree);
         virtual ~GPSingleTree();
         inline GPFLOAT compute(){return mRoot->compute();}
-        int len();
+        int len() const;
     protected:
         GPSinglePoint* mRoot;
         const GPIFloatFunctionSet& mSet;
