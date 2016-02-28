@@ -17,18 +17,31 @@
 #include "core/GPFunctionTree.h"
 #include <algorithm>
 #include <sstream>
-GPFunctionTreePoint::GPFunctionTreePoint(const GPFunctionDataBase::function* f, int inputNumber)
+GPFunctionTreePoint::GPFunctionTreePoint(const GPFunctionDataBase::function* f)
 {
-    GPASSERT(NULL != f || inputNumber >=0);
-    mF = f;
-    mInputNumber = inputNumber;
+    GPASSERT(NULL != f);
+    mData.pFunc = f;
+    mType = FUNCTION;
 }
+GPFunctionTreePoint::GPFunctionTreePoint(int inputPos)
+{
+    GPASSERT(inputPos>=0);
+    mData.iInput = inputPos;
+    mType = INPUT;
+}
+
+GPFunctionTreePoint::GPFunctionTreePoint(const GPFunctionTreePoint& src)
+{
+    mData = src.mData;
+    mType = src.mType;
+}
+
 
 void GPFunctionTreePoint::copyFrom(const GPFunctionTreePoint* src)
 {
     shallowCopyChildren(src);
-    mF = src->mF;
-    mInputNumber = src->mInputNumber;
+    mData = src->mData;
+    mType = src->mType;
 }
 
 GPFunctionTreePoint::~GPFunctionTreePoint()
@@ -37,14 +50,14 @@ GPFunctionTreePoint::~GPFunctionTreePoint()
 
 void GPFunctionTreePoint::valid() const
 {
-    if (NULL!=mF)
+    if (FUNCTION == mType)
     {
         for (size_t i=0; i<mChildren.size(); ++i)
         {
             auto pp = GPCONVERT(GPFunctionTreePoint, mChildren[i]);
-            if (NULL!=pp->function())
+            if (FUNCTION == pp->type())
             {
-                GPASSERT(pp->function()->outputType[0] == mF->inputType[i]);
+                GPASSERT(pp->data().pFunc->outputType[0] == mData.pFunc->inputType[i]);
                 pp->valid();
             }
         }
@@ -53,9 +66,9 @@ void GPFunctionTreePoint::valid() const
 
 int GPFunctionTreePoint::maxInputPos() const
 {
-    if (NULL==mF)
+    if (INPUT==mType)
     {
-        return mInputNumber;
+        return mData.iInput;
     }
     int maxPos = -1;
     for (size_t i=0; i<mChildren.size(); ++i)
@@ -70,6 +83,24 @@ int GPFunctionTreePoint::maxInputPos() const
     return maxPos;
 }
 
+bool GPFunctionTreePoint::_theSame(DATA a, DATA b, TYPE t)
+{
+    bool res = true;
+    switch (t)
+    {
+        case FUNCTION:
+            res = a.pFunc == b.pFunc;
+            break;
+        case INPUT:
+            res = a.iInput == b.iInput;
+            break;
+        default:
+            break;
+    }
+    return res;
+}
+
+
 bool GPFunctionTreePoint::equal(const GPFunctionTreePoint* point) const
 {
     GPASSERT(NULL!=point);
@@ -77,7 +108,7 @@ bool GPFunctionTreePoint::equal(const GPFunctionTreePoint* point) const
     {
         return false;
     }
-    bool thesame = (mF == point->mF && mInputNumber == point->mInputNumber);
+    bool thesame = (mType == point->type() && _theSame(mData, point->data(), mType));
     if (thesame)
     {
         GPASSERT(mChildren.size() == point->mChildren.size());
@@ -97,11 +128,11 @@ bool GPFunctionTreePoint::equal(const GPFunctionTreePoint* point) const
 
 void GPFunctionTreePoint::mapInput(const std::map<int, int>& inputMap)
 {
-    if (mInputNumber>=0)
+    if (INPUT == mType)
     {
-        if (inputMap.find(mInputNumber)!=inputMap.end())
+        if (inputMap.find(mData.iInput)!=inputMap.end())
         {
-            mInputNumber = inputMap.find(mInputNumber)->second;
+            mData.iInput = inputMap.find(mData.iInput)->second;
         }
         return;
     }
@@ -117,11 +148,11 @@ void GPFunctionTreePoint::mapInput(const std::map<int, GPFunctionTreePoint*>& in
     for (size_t i=0; i<mChildren.size(); ++i)
     {
         auto pp = GPCONVERT(GPFunctionTreePoint, mChildren[i]);
-        if (NULL == pp->function())
+        if (INPUT == pp->type())
         {
-            if (inputMap.find(pp->mInputNumber)!=inputMap.end())
+            if (inputMap.find(pp->data().iInput)!=inputMap.end())
             {
-                mChildren[i] = inputMap.find(pp->mInputNumber)->second;
+                mChildren[i] = inputMap.find(pp->data().iInput)->second;
                 mChildren[i]->addRef();
                 pp->decRef();
             }
@@ -162,19 +193,19 @@ std::map<int, const IStatusType*> GPFunctionTreePoint::getInputTypes() const
 }
 void GPFunctionTreePoint::_getInputTypes(std::map<int, const IStatusType*>& types) const
 {
-    GPASSERT(NULL!=mF);
+    GPASSERT(FUNCTION == mType);
     for (size_t i=0; i<mChildren.size(); ++i)
     {
         auto p = GPCONVERT(GPFunctionTreePoint, mChildren[i]);
-        if (p->inputNumber()>=0)
+        if (INPUT == p->type())
         {
-            if (types.find(p->inputNumber())!=types.end())
+            if (types.find(p->data().iInput)!=types.end())
             {
-                GPASSERT(types.find(p->inputNumber())->second == mF->inputType[i]);
+                GPASSERT(types.find(p->data().iInput)->second == mData.pFunc->inputType[i]);
             }
             else
             {
-                types.insert(std::make_pair(p->inputNumber(), mF->inputType[i]));
+                types.insert(std::make_pair(p->data().iInput, mData.pFunc->inputType[i]));
             }
         }
         else
@@ -242,7 +273,7 @@ public:
     virtual GPAbstractPoint* copy(GPAbstractPoint* src, bool& needCopyChild)
     {
         GPFunctionTreePoint* _src = GPCONVERT(GPFunctionTreePoint, src);
-        GPFunctionTreePoint* res = new GPFunctionTreePoint(_src->function(), _src->inputNumber());
+        GPFunctionTreePoint* res = new GPFunctionTreePoint(*_src);
         if (NULL == mBasic)
         {
             return res;
@@ -312,33 +343,38 @@ GPFunctionTreePoint* GPFunctionTree::copy(const GPFunctionTreePoint* origin)
 
 void GPFunctionTreePoint::render(std::ostream& output) const
 {
-    if (NULL!=mF)
-    {
-        if (mF->shortname!="")
+    switch (mType) {
+        case FUNCTION:
         {
-            output <<mF->shortname;
+            auto mF = mData.pFunc;
+            if (mF->shortname!="")
+            {
+                output <<mF->shortname;
+            }
+            else
+            {
+                output << mF->name;
+            }
+            output << "(";
+            for (int i=0; i<(int)mChildren.size()-1; ++i)
+            {
+                auto pp = (GPFunctionTreePoint*)mChildren[i];
+                pp->render(output);
+                output << ", ";
+            }
+            if (mChildren.size()>0)
+            {
+                auto pp = (GPFunctionTreePoint*)mChildren[mChildren.size()-1];
+                pp->render(output);
+            }
+            output << ")";
+            break;
         }
-        else
-        {
-            output << mF->name;
-        }
-        output << "(";
-        for (int i=0; i<(int)mChildren.size()-1; ++i)
-        {
-            auto pp = (GPFunctionTreePoint*)mChildren[i];
-            pp->render(output);
-            output << ", ";
-        }
-        if (mChildren.size()>0)
-        {
-            auto pp = (GPFunctionTreePoint*)mChildren[mChildren.size()-1];
-            pp->render(output);
-        }
-        output << ")";
-    }
-    else
-    {
-        output << "x"<<mInputNumber;
+        case INPUT:
+            output << "x"<<mData.iInput;
+            break;
+        default:
+            break;
     }
 }
 

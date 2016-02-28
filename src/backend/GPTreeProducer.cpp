@@ -33,7 +33,17 @@ public:
     {
         GPFunctionTreePoint* point = (GPFunctionTreePoint*)(src);
         GPASSERT(NULL!=point);
-        return new GPTreeADFPoint( point->function(), point->inputNumber());
+        switch (point->type())
+        {
+            case GPFunctionTreePoint::FUNCTION:
+                return new GPTreeADFPoint(point->data().pFunc, -1);
+            case GPFunctionTreePoint::INPUT:
+                return new GPTreeADFPoint(NULL, point->data().iInput);
+            default:
+                GPASSERT(0);
+                break;
+        }
+        return NULL;
     }
 };
 

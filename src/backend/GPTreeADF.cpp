@@ -30,6 +30,7 @@ GPTreeADFPoint::GPTreeADFPoint(const GPFunctionDataBase::function* func, int inp
     GPASSERT(NULL != func || inputpos >= 0);
     mInputPos = inputpos;
     mFunc = func;
+    GPASSERT(inputpos < 1000);
     if (NULL == func)
     {
         return;
@@ -151,6 +152,7 @@ GPContents* GPTreeADFPoint::compute(GPContents* input)
         GPASSERT(NULL!=p);
         if (p->mFunc == NULL)
         {
+            GPASSERT(p->mInputPos < input->size());
             totalInputs.push(input->contents[p->mInputPos]);
             continue;
         }

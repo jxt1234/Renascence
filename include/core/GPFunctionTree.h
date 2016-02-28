@@ -23,10 +23,21 @@
 class GPFunctionTreePoint:public GPAbstractPoint
 {
 public:
-    GPFunctionTreePoint(const GPFunctionDataBase::function* f, int inputNumber);
+    typedef enum {
+        FUNCTION,
+        INPUT,
+    } TYPE;
+    GPFunctionTreePoint(const GPFunctionDataBase::function* f);
+    GPFunctionTreePoint(int inputPos);
+    GPFunctionTreePoint(const GPFunctionTreePoint& p);
     virtual ~GPFunctionTreePoint();
-    inline const GPFunctionDataBase::function* function() const {return mF;}
-    inline int inputNumber() const {return mInputNumber;}
+    
+    typedef union {
+        const GPFunctionDataBase::function* pFunc;
+        int iInput;
+    } DATA;
+    inline DATA data() const {return mData;}
+    inline TYPE type() const {return mType;}
     void copyFrom(const GPFunctionTreePoint* src);
     
     std::map<int, const IStatusType*> getInputTypes() const;
@@ -48,10 +59,10 @@ public:
     
     void valid() const;
 private:
+    static bool _theSame(DATA a, DATA b, TYPE t);
     void _getInputTypes(std::map<int, const IStatusType*>& types) const;
-    /*mF=NULL for input node, mInputNumber = -1 for function node*/
-    const GPFunctionDataBase::function* mF;
-    int mInputNumber;
+    DATA mData;
+    TYPE mType;
 };
 
 class GPFunctionTree:public RefCount

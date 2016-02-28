@@ -142,9 +142,9 @@ GPStreamADF::GPStreamADF(const GPMultiLayerTree* opttree)
         for (auto p : iter.second->display())
         {
             auto pp = (GPFunctionTreePoint*)p;
-            if (NULL != pp->function())
+            if (GPFunctionTreePoint::FUNCTION == pp->type())
             {
-                GPPtr<Point> cp = new CP(new GPComputePoint(pp->function()));
+                GPPtr<Point> cp = new CP(new GPComputePoint(pp->data().pFunc));
                 mFunctions.push_back((CP*)(cp.get()));
                 maplists.insert(std::make_pair(pp, cp));
             }
@@ -176,9 +176,9 @@ GPStreamADF::GPStreamADF(const GPMultiLayerTree* opttree)
         for (int i=0; i<n; ++i)
         {
             auto _p = GPCONVERT(const GPFunctionTreePoint, p->getChild(i));
-            if (_p->inputNumber()>=0)
+            if (GPFunctionTreePoint::INPUT == _p->type())
             {
-                int pos = _p->inputNumber();
+                int pos = _p->data().iInput;
                 if (inputLists.find(pos) == inputLists.end())
                 {
                     std::vector<std::pair<const GPFunctionTreePoint*, int>> t;
@@ -221,9 +221,10 @@ GPStreamADF::GPStreamADF(const GPMultiLayerTree* opttree)
         for (auto v : iter.second)
         {
             auto tree = v.first;
+            GPASSERT(GPFunctionTreePoint::FUNCTION == tree->type());
             auto pos = v.second;
             auto point = maplists.find(tree)->second;
-            GPPtr<Point> source_point = new SP(tree->function()->inputType[pos]);
+            GPPtr<Point> source_point = new SP(tree->data().pFunc->inputType[pos]);
             source_point->connectOutput(point, 0);
             point->connectInput(source_point.get(), pos);
             mSources.push_back(source_point);
@@ -237,9 +238,9 @@ GPStreamADF::GPStreamADF(const GPMultiLayerTree* opttree)
         if(iter.first < 0)
         {
             GPPtr<Point> input = maplists.find(iter.second.get())->second;
-            for (size_t i=0; i<iter.second->function()->outputType.size(); ++i)
+            for (size_t i=0; i<iter.second->data().pFunc->outputType.size(); ++i)
             {
-                GPPtr<Point> dst = new DP(iter.second->function()->outputType[i]);
+                GPPtr<Point> dst = new DP(iter.second->data().pFunc->outputType[i]);
                 mDest.push_back(dst);
                 dst->connectInput(input.get(), 0);
                 input->connectOutput(dst, 0);
@@ -251,7 +252,7 @@ GPStreamADF::GPStreamADF(const GPMultiLayerTree* opttree)
 GPStreamADF::GPStreamADF(const GPFunctionTree* tree)
 {
     auto root = tree->root();
-    auto rootfunc = root->function();
+    auto rootfunc = root->data().pFunc;
     GPASSERT(NULL!=rootfunc);
     auto lists = root->display();
     std::map<const GPAbstractPoint*, GPPtr<Point>> maplists;
@@ -259,16 +260,16 @@ GPStreamADF::GPStreamADF(const GPFunctionTree* tree)
     for (auto p : lists)
     {
         auto pp = (GPFunctionTreePoint*)p;
-        if (NULL == pp->function())
+        if (GPFunctionTreePoint::INPUT == pp->type())
         {
             GPPtr<Point> cp = new SP(NULL);
             mSources.push_back(cp);
-            mInputPos.push_back(pp->inputNumber());
+            mInputPos.push_back(pp->data().iInput);
             maplists.insert(std::make_pair(p, cp));
         }
         else
         {
-            GPPtr<Point> cp = new CP(new GPComputePoint(pp->function()));
+            GPPtr<Point> cp = new CP(new GPComputePoint(pp->data().pFunc));
             mFunctions.push_back((CP*)(cp.get()));
             maplists.insert(std::make_pair(p, cp));
         }
@@ -286,7 +287,7 @@ GPStreamADF::GPStreamADF(const GPFunctionTree* tree)
     for (auto p : lists)
     {
         auto PP = maplists.find(p)->second;
-        auto func = ((GPFunctionTreePoint*)p)->function();
+        auto func = ((GPFunctionTreePoint*)p)->data().pFunc;
         size_t n = p->getChildrenNumber();
         GPASSERT(!(NULL!=func && n==0));
         for (int i=0; i<n; ++i)

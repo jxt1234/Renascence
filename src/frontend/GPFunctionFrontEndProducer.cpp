@@ -370,7 +370,7 @@ public:
             {
                 std::string s = point->name();
                 needcopyChild = false;
-                return new GPFunctionTreePoint(NULL, _loadXn(s));
+                return new GPFunctionTreePoint(_loadXn(s));
             }
             case GPFormulaTreePoint::ADF:
             {
@@ -386,7 +386,7 @@ public:
                     f = mBase->vQueryFunction(point->name());
                 }
                 GPASSERT(NULL!=f);
-                return new GPFunctionTreePoint(f, -1);
+                return new GPFunctionTreePoint(f);
             }
             default:
                 GPASSERT(0);
@@ -435,7 +435,7 @@ static std::map<GPFunctionTreePoint*, std::map<int, GPFunctionTreePoint*>> makeR
         std::map<int, GPFunctionTreePoint*> temp_result;
         for (auto p : iter.second)
         {
-            GPPtr<GPFunctionTreePoint> replace = new GPFunctionTreePoint(0, replaceId);
+            GPPtr<GPFunctionTreePoint> replace = new GPFunctionTreePoint(replaceId);
             temp_result.insert(std::make_pair(replaceId, p));
             p->addRef();//Ref the point because replace wil deRef it
             root->replace(p, replace.get());
@@ -530,7 +530,7 @@ int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter*
         inputs.push_back(iter.second);
         inputMap.insert(std::make_pair(cur++, iter.first));
     }
-    auto outputs = origin_point->function()->outputType;
+    auto outputs = origin_point->data().pFunc->outputType;
     auto treepoints = _searchAllFunction(outputs, inputs, mUtils, depth);
     if (treepoints.empty())
     {

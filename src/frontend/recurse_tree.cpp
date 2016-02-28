@@ -75,7 +75,7 @@ vector<GPFunctionTreePoint*> computePoint::outputs(int& inputcur)
     for (int i=0; i<data.size(); ++i)
     {
         auto f = data[i];
-        GPFunctionTreePoint* p = new GPFunctionTreePoint(f->basic, -1);
+        GPFunctionTreePoint* p = new GPFunctionTreePoint(f->basic);
         result.push_back(p);
     }
     for (auto child : mChild)
@@ -96,7 +96,7 @@ vector<GPFunctionTreePoint*> computePoint::outputs(int& inputcur)
             }
             else
             {
-                parent->addPoint(new GPFunctionTreePoint(NULL, inputcur++));
+                parent->addPoint(new GPFunctionTreePoint(inputcur++));
             }
         }
         GPASSERT(cur == childrens.size());
@@ -109,7 +109,7 @@ vector<GPFunctionTreePoint*> computePoint::outputs(int& inputcur)
             auto pf = data[i];
             for (int j=0; j<pf->basic->inputType.size(); ++j)
             {
-                p->addPoint(new GPFunctionTreePoint(NULL, inputcur++));
+                p->addPoint(new GPFunctionTreePoint(inputcur++));
             }
         }
     }

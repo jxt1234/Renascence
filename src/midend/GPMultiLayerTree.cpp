@@ -9,9 +9,9 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
     for (auto p : root->display())
     {
         auto pp = GPCONVERT(const GPFunctionTreePoint, p);
-        if (pp->inputNumber()>maxInputNumber)
+        if (pp->data().iInput>maxInputNumber && pp->type() == GPFunctionTreePoint::INPUT)
         {
-            maxInputNumber = pp->inputNumber();
+            maxInputNumber = pp->data().iInput;
         }
     }
     int subtree_inputpos = maxInputNumber+1;
@@ -26,7 +26,7 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
             for (auto p : childrens)
             {
                 auto pp = GPCONVERT(const GPFunctionTreePoint, p);
-                if (pp->function()!=NULL)
+                if (GPFunctionTreePoint::FUNCTION == pp->type())
                 {
                     workLists.push_back((GPFunctionTreePoint*)pp);
                 }
@@ -109,7 +109,7 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
             {
                 if (iter.first->equal(l.second.get()))
                 {
-                    inputpoints = new GPFunctionTreePoint(NULL, l.first);
+                    inputpoints = new GPFunctionTreePoint(l.first);
                     inputCur = l.first;
                     break;
                 }
@@ -119,7 +119,7 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
             {
                 /*replace will decRef the iter.first, addRef to avoid free*/
                 iter.first->addRef();
-                inputpoints = new GPFunctionTreePoint(NULL, subtree_inputpos);
+                inputpoints = new GPFunctionTreePoint(subtree_inputpos);
                 GPPtr<GPFunctionTreePoint> match = (GPFunctionTreePoint*)iter.first;
                 mLayers.insert(std::make_pair(subtree_inputpos, match));
                 inputCur = subtree_inputpos;

@@ -23,7 +23,7 @@ MERGE：将指定分划合并到内存，由下层库内置函数实现
 
 三、分划运算符
 分划运算符，输出结果均为一个分划
-包括 MAP, REDUCE
+包括 MAP, REDUCE，KEYFUNC
 
 
 MAP：分划中的所有键值对，通过一个Key表达式计算新Key，新Key所对应的Value是经过函数计算后的Value。
@@ -51,6 +51,48 @@ REDUCE算符认为合并的先后顺序与最终计算结果无关，并基于�
 支持多个分划：
 如：REDUCE([SPLIT(x0), SPLIT(x1)], g(x0, x1, x2, x3), [[a0], [b0]]->1)
 
+注：MAP 和 REDUCE 的区别在于，MAP 是对Key不相同的键值对执行函数，REDUCE 是对Key相同的一系列键值对，两两执行函数。
+
+在 MAP 和 REDUCE 无法表示的情形下，使用 KEYFUNC，并编写Key值运算脚本：
+
+KEYFUNC：运行自定义的Key运算函数
+输入：
+1、分划集
+2、Key函数代码（类python脚本）
+
+示例表达式：
+Join(SPLIT(x0), SPLIT(x1));
+KEYFUNC([SPLIT(x0), SPLIT(x1)], functionKey);
+functionKey:{
+                target = Init([len(x0.key), len(x1.key)])
+                for a0 in x0.key:
+                    for b0 in x1.key:
+                        u0 = Call(Join, [x0.load(a0), x1.load(b0)])
+                        target.save([a0[0], b0[0]], u0)
+                return target
+            }
+这个表达式描述了sql语句中的join操作，
+
+归并排序的一个例子：
+MergeSort为GP函数，输入两个有序数组，返回两个有序数组，其中前一个数组的每个元素均比第二个数组的元素小
+KEYFUNC(SPLIT(x0), sortFunction);
+sortFunction:{
+                 target = Init([len(x0.key)])
+                 size = len(x0.key)
+                 i = 0
+                 u = x0.load([i])
+                 for j in range(1, size):
+                     v = x0.load([j])
+                     [u, v] = Call(MergeSort, [u, v])
+                     target.save([j], v)
+                 target.save([0], u)
+                 for i in range(1, size):
+                     for j in range(i+1, size):
+                         [u,v] = Call(MergeSort, [target.load([i]), target.load([j])])
+                         target.save([i], u)
+                         target.save([j], v)
+                 return target
+             }
 
 四、典型例子
 矩阵相乘的分划表示：
