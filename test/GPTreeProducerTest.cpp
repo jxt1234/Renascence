@@ -32,7 +32,7 @@ void GPTreeProducerTest::run()
         inputStream = GPStreamFactory::NewStream("input_test_simple.jpg");
         inp.push(bmp->vLoad(inputStream.get()), NULL);
         std::vector<const IStatusType*> temp_inputs(2, bmp);
-        IGPAutoDefFunction* fit = sys->createFunction(string("TrPackageFitCompute(x0, x1)"), temp_inputs);
+        IGPAutoDefFunction* fit = sys->createFunction("FIT(x0, x1)", temp_inputs);
         
         GPContents targetBitmap;
         inputStream = GPStreamFactory::NewStream("input_test_simple.jpg");

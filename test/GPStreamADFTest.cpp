@@ -57,7 +57,7 @@ void GPStreamADFTest::run()
             contents.clear();
         }
         std::vector<const IStatusType*> types;
-        gp = gen->createFunction("TrPackageSaturation(TrPackageFilterTransformFromRegress(TrPackageCompse(x0,x1), TrPackageFilterMatrixRegress(x2, x3)))", types);
+        gp = gen->createFunction("S(TFR(C(x0,x1), FR(x2, x3)))", types);
         {
             GPContents contents;
             GPPtr<GPStreamWrap> inputjpeg = GPStreamFactory::NewStream("input.jpg", GPStreamFactory::FILE);
@@ -78,8 +78,7 @@ void GPStreamADFTest::run()
             GPASSERT(out->size() == 1);
             GPPtr<GPWStreamWrap> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest2.jpg", GPStreamFactory::FILE);
             out->contents[0].type->vSave(out->get(0), outputjpeg.get());
-            out->clear();
-            delete out;
+            GPContents::destroy(out);
             contents.clear();
         }
     }

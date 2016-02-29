@@ -33,8 +33,7 @@ void GPFormulaADFTest::run()
             auto _fits = comp->vRun(&inputs);
             double* __fit = (double*)_fits->get(0);
             FUNC_PRINT_ALL(*__fit, f);
-            _fits->clear();
-            delete _fits;
+            GPContents::destroy(_fits);
             inputs.clear();
         }
     }

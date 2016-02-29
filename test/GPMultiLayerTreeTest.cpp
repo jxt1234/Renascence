@@ -22,7 +22,7 @@ static int test_main()
         GPProducer* sys = GPFactory::createProducer(base);
         AUTOCLEAN(sys);
         std::vector<const IStatusType*> inputs;
-        GPPtr<GPFunctionTree> tree = sys->getFront()->vCreateFromFormula("TrPackageSaturation(TrPackageFilterTransformFromRegress(TrPackageCompse(TrPackageCompse(x0,TrPackageSaturation(x1)),TrPackageSaturation(x1)), TrPackageFilterMatrixRegress(x2, TrPackageCompse(TrPackageCompse(x0,TrPackageSaturation(x1)),TrPackageSaturation(x1)))))", inputs);
+        GPPtr<GPFunctionTree> tree = sys->getFront()->vCreateFromFormula("S(TFR(C(C(x0,S(x1)),S(x1)), FR(x2, C(C(x0,S(x1)),S(x1)))))", inputs);
         GPPtr<GPMultiLayerTree> multiTree = new GPMultiLayerTree(tree.get());
         auto layers = multiTree->layers();
         for (auto iter : layers)

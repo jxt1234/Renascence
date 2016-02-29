@@ -26,6 +26,8 @@ public:
     typedef enum {
         FUNCTION,
         INPUT,
+        MAP,
+        REDUCE
     } TYPE;
     GPFunctionTreePoint(const GPFunctionDataBase::function* f);
     GPFunctionTreePoint(int inputPos);
