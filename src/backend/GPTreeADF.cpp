@@ -233,7 +233,7 @@ int GPTreeADF::vMap(GPParameter* para)
     if (NULL!=para)
     {
         GPASSERT(sum == para->size());
-        const PFLOAT* ps = para->get();
+        const GPFLOAT* ps = para->get();
         for (int i=0; i<allcontents.size(); ++i)
         {
             GPStatusContent* c = allcontents[i];

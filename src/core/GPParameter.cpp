@@ -17,7 +17,7 @@
 #include "utils/GPDebug.h"
 #include "core/GPParameter.h"
 #include <string.h>
-GPParameter::GPParameter(int n, const PFLOAT* c)
+GPParameter::GPParameter(int n, const GPFLOAT* c)
 {
     GPASSERT(n>=0);
     mNum = n;
@@ -26,15 +26,15 @@ GPParameter::GPParameter(int n, const PFLOAT* c)
         mContent = NULL;
         return;
     }
-    mContent = new PFLOAT[n];
+    mContent = new GPFLOAT[n];
     if (NULL!=c)
     {
         for (int i=0; i<n; ++i)
         {
-            PFLOAT _c = c[i];
+            GPFLOAT _c = c[i];
             GPASSERT(_c>=0.0 && _c<=1.0);
         }
-        ::memcpy(mContent, c, sizeof(PFLOAT)*n);
+        ::memcpy(mContent, c, sizeof(GPFLOAT)*n);
     }
     else
     {
@@ -53,7 +53,7 @@ GPParameter::~GPParameter()
     }
 }
 
-void GPParameter::clear(PFLOAT f)
+void GPParameter::clear(GPFLOAT f)
 {
     for (int i=0; i<mNum; ++i)
     {

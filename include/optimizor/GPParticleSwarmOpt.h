@@ -20,40 +20,40 @@
 class GPParticleSwarmOpt:public IGPOptimizor
 {
     public:
-        GPParticleSwarmOpt(PFLOAT Vmax, int groupsize = 20, int time = 1000, PFLOAT dis=0.0001, PFLOAT theta1=2.1, PFLOAT theta2=2.1);
+        GPParticleSwarmOpt(GPFLOAT Vmax, int groupsize = 20, int time = 1000, GPFLOAT dis=0.0001, GPFLOAT theta1=2.1, GPFLOAT theta2=2.1);
         virtual ~GPParticleSwarmOpt();
-        virtual GPPtr<GPParameter> vFindBest(int mN, IGPOptimizor::OPTFUNC computer, PFLOAT* target) const;
+        virtual GPPtr<GPParameter> vFindBest(int mN, IGPOptimizor::OPTFUNC computer, GPFLOAT* target) const;
     private:
         class Particle:public RefCount
         {
             public:
-                Particle(int n, PFLOAT limit, PFLOAT the1, PFLOAT the2);
+                Particle(int n, GPFLOAT limit, GPFLOAT the1, GPFLOAT the2);
                 virtual ~Particle();
-                inline PFLOAT fit() const {return mFit;}
-                inline void setFit(PFLOAT fit) {mFit = fit;}
+                inline GPFLOAT fit() const {return mFit;}
+                inline void setFit(GPFLOAT fit) {mFit = fit;}
                 void randomInit();
                 void fix();
-                PFLOAT distance(GPPtr<Particle> mP);
+                GPFLOAT distance(GPPtr<Particle> mP);
                 GPPtr<GPParameter> expand() const;
-                void updateFit(PFLOAT fit);
+                void updateFit(GPFLOAT fit);
                 void move(GPPtr<Particle> best);
             protected:
-                PFLOAT* mX;
-                PFLOAT* mP;
-                PFLOAT* mV;
+                GPFLOAT* mX;
+                GPFLOAT* mP;
+                GPFLOAT* mV;
                 int mN;
-                PFLOAT mFit;
+                GPFLOAT mFit;
                 /*Para*/
-                PFLOAT the1;
-                PFLOAT the2;
-                PFLOAT Max;
+                GPFLOAT the1;
+                GPFLOAT the2;
+                GPFLOAT Max;
         };
-        PFLOAT max_distance(const std::vector<GPPtr<Particle> >& group) const;
-        PFLOAT mVmax;
-        PFLOAT mThe1;
-        PFLOAT mThe2;
+        GPFLOAT max_distance(const std::vector<GPPtr<Particle> >& group) const;
+        GPFLOAT mVmax;
+        GPFLOAT mThe1;
+        GPFLOAT mThe2;
         int mSize;
         int mTimes;
-        PFLOAT mMinDistance;
+        GPFLOAT mMinDistance;
 };
 #endif

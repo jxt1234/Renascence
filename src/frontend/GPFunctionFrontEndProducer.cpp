@@ -482,9 +482,9 @@ int GPFunctionFrontEndProducer::vMapStructure(GPFunctionTree* tree, GPParameter*
     {
         return magic_number;
     }
-    PFLOAT p0 = para->get(0);
-    PFLOAT p1 = para->get(1);
-    PFLOAT p2 = para->get(2);
+    GPFLOAT p0 = para->get(0);
+    GPFLOAT p1 = para->get(1);
+    GPFLOAT p2 = para->get(2);
     
     if (p0 < 0.3)//TODO
     {

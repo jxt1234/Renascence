@@ -19,11 +19,11 @@
 class GPNetSearchOpt:public IGPOptimizor
 {
     public:
-        GPNetSearchOpt(PFLOAT inter);
+        GPNetSearchOpt(GPFLOAT inter);
         virtual ~GPNetSearchOpt();
-        virtual GPPtr<GPParameter> vFindBest(int n, IGPOptimizor::OPTFUNC computer, PFLOAT* target) const override;
+        virtual GPPtr<GPParameter> vFindBest(int n, IGPOptimizor::OPTFUNC computer, GPFLOAT* target) const override;
     private:
         int mPrecision;
-        PFLOAT mInter;
+        GPFLOAT mInter;
 };
 #endif

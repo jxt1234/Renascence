@@ -2,35 +2,35 @@
 #include "utils/GPDebug.h"
 #include <iostream>
 
-static inline PFLOAT getNextPoint(PFLOAT sta, PFLOAT fin)
+static inline GPFLOAT getNextPoint(GPFLOAT sta, GPFLOAT fin)
 {
     return 0.618*(fin-sta) + sta;
 }
 
-static inline PFLOAT runOnePass(int k, PFLOAT v, GPPtr<GPParameter> current, IGPOptimizor::OPTFUNC& computer)
+static inline GPFLOAT runOnePass(int k, GPFLOAT v, GPPtr<GPParameter> current, IGPOptimizor::OPTFUNC& computer)
 {
     GPASSERT(NULL!=current.get());
     GPASSERT(0<=k && k<current->size());
     GPPtr<GPParameter> p = new GPParameter(current->size(), current->get());
-    PFLOAT* _p = p->attach();
+    GPFLOAT* _p = p->attach();
     _p[k] = v;
     return computer(p);
 }
 
-GPPtr<GPParameter> GPGoldenDivideOpt::vFindBest(int n, IGPOptimizor::OPTFUNC computer, PFLOAT* target) const
+GPPtr<GPParameter> GPGoldenDivideOpt::vFindBest(int n, IGPOptimizor::OPTFUNC computer, GPFLOAT* target) const
 {
     GPASSERT(n>0);
     GPPtr<GPParameter> result = new GPParameter(n);
 
-    PFLOAT* result_pars = result->attach();
+    GPFLOAT* result_pars = result->attach();
     for (int i=0; i<n; ++i)
     {
-        PFLOAT fin = 1.0;
-        PFLOAT sta = 0.0;
-        PFLOAT t_fin = getNextPoint(sta,fin);
-        PFLOAT t_sta = getNextPoint(sta,t_fin);
-        PFLOAT fit_sta = runOnePass(i, t_sta, result, computer);
-        PFLOAT fit_fin = runOnePass(i, t_fin, result, computer);
+        GPFLOAT fin = 1.0;
+        GPFLOAT sta = 0.0;
+        GPFLOAT t_fin = getNextPoint(sta,fin);
+        GPFLOAT t_sta = getNextPoint(sta,t_fin);
+        GPFLOAT fit_sta = runOnePass(i, t_sta, result, computer);
+        GPFLOAT fit_fin = runOnePass(i, t_fin, result, computer);
         while(fin-sta>mInter)
         {
             if (fit_sta > fit_fin)

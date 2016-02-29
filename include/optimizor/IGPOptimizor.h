@@ -23,8 +23,8 @@
 class IGPOptimizor:public RefCount
 {
 public:
-    typedef std::function<PFLOAT(GPPtr<GPParameter>)> OPTFUNC;
-    virtual GPPtr<GPParameter> vFindBest(int n, OPTFUNC computer, PFLOAT* target=NULL) const = 0;
+    typedef std::function<GPFLOAT(GPPtr<GPParameter>)> OPTFUNC;
+    virtual GPPtr<GPParameter> vFindBest(int n, OPTFUNC computer, GPFLOAT* target=NULL) const = 0;
     IGPOptimizor(){}
     virtual ~IGPOptimizor(){}
 };

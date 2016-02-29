@@ -20,18 +20,18 @@
 class GPParameter:public RefCount
 {
 public:
-    GPParameter(int n, const PFLOAT* c = NULL);
+    GPParameter(int n, const GPFLOAT* c = NULL);
     virtual ~GPParameter();
     inline int size() const {return mNum;}
-    inline PFLOAT operator[](int n) const {return mContent[n];}
-    inline PFLOAT get(int n) const {return mContent[n];}
-    const PFLOAT* get() const {return mContent;}
-    inline PFLOAT* attach() {return mContent;}
-    void clear(PFLOAT f);
+    inline GPFLOAT operator[](int n) const {return mContent[n];}
+    inline GPFLOAT get(int n) const {return mContent[n];}
+    const GPFLOAT* get() const {return mContent;}
+    inline GPFLOAT* attach() {return mContent;}
+    void clear(GPFLOAT f);
     void makeValid();
     GPParameter* copy() const;
 private:
-    PFLOAT* mContent;
+    GPFLOAT* mContent;
     int mNum;
 };
 #endif

@@ -2,15 +2,15 @@
 #include "utils/GPRandom.h"
 #include <string.h>
 
-GPParticleSwarmOpt::Particle::Particle(int _n, PFLOAT limit, PFLOAT _the1, PFLOAT _the2)
+GPParticleSwarmOpt::Particle::Particle(int _n, GPFLOAT limit, GPFLOAT _the1, GPFLOAT _the2)
 {
     Max = limit;
     the1 = _the1;
     the2 = _the2;
     mN = _n;
-    mX = new PFLOAT[mN];
-    mP = new PFLOAT[mN];
-    mV = new PFLOAT[mN];
+    mX = new GPFLOAT[mN];
+    mP = new GPFLOAT[mN];
+    mV = new GPFLOAT[mN];
 }
 
 GPParticleSwarmOpt::Particle::~Particle()
@@ -22,19 +22,19 @@ GPParticleSwarmOpt::Particle::~Particle()
 GPPtr<GPParameter> GPParticleSwarmOpt::Particle::expand() const
 {
     GPPtr<GPParameter> mP = new GPParameter(mN);
-    PFLOAT* _p = mP->attach();
+    GPFLOAT* _p = mP->attach();
     for (int i=0; i<mN; ++i)
     {
         _p[i] = (mX[i]+Max)/2.0/Max;
     }
     return mP;
 }
-PFLOAT GPParticleSwarmOpt::Particle::distance(GPPtr<Particle> mP)
+GPFLOAT GPParticleSwarmOpt::Particle::distance(GPPtr<Particle> mP)
 {
     GPASSERT(mN == mP->mN);
-    PFLOAT* x1 = mX;
-    PFLOAT* x2 = mP->mX;
-    PFLOAT dis = 0;
+    GPFLOAT* x1 = mX;
+    GPFLOAT* x2 = mP->mX;
+    GPFLOAT dis = 0;
     for (int i=0; i<mN; ++i)
     {
         dis+= ((x1[i]-x2[i])*(x1[i]-x2[i]));
@@ -48,32 +48,32 @@ void GPParticleSwarmOpt::Particle::randomInit()
         mX[i] = Max*(GPRandom::rate()*2.0-1.0);
         mV[i] = Max*(GPRandom::rate()*2.0-1.0);
     }
-    ::memcpy(mP, mX, mN*sizeof(PFLOAT));
+    ::memcpy(mP, mX, mN*sizeof(GPFLOAT));
 }
 void GPParticleSwarmOpt::Particle::fix()
 {
     /*Invalidate mX as mP for output*/
-    ::memcpy(mX, mP, mN*sizeof(PFLOAT));
+    ::memcpy(mX, mP, mN*sizeof(GPFLOAT));
 }
-void GPParticleSwarmOpt::Particle::updateFit(PFLOAT fit)
+void GPParticleSwarmOpt::Particle::updateFit(GPFLOAT fit)
 {
     if (mFit < fit)
     {
         mFit = fit;
-        ::memcpy(mP, mX, mN*sizeof(PFLOAT));
+        ::memcpy(mP, mX, mN*sizeof(GPFLOAT));
     }
 }
 void GPParticleSwarmOpt::Particle::move(GPPtr<Particle> best)
 {
     GPASSERT(mN == best->mN);
-    PFLOAT* x = mX;
-    PFLOAT* p = mP;
-    PFLOAT* v = mV;
-    PFLOAT* pg = best->mP;
+    GPFLOAT* x = mX;
+    GPFLOAT* p = mP;
+    GPFLOAT* v = mV;
+    GPFLOAT* pg = best->mP;
     for (int i=0; i<mN; ++i)
     {
-        PFLOAT u1 = GPRandom::rate()*the1;
-        PFLOAT u2 = GPRandom::rate()*the2;
+        GPFLOAT u1 = GPRandom::rate()*the1;
+        GPFLOAT u2 = GPRandom::rate()*the2;
         v[i] = (v[i] + u1*(p[i]-x[i]) + u2*(pg[i]-x[i]))*0.718;
         x[i] = v[i] + x[i];
 
@@ -82,7 +82,7 @@ void GPParticleSwarmOpt::Particle::move(GPPtr<Particle> best)
     }
 }
 
-GPParticleSwarmOpt::GPParticleSwarmOpt(PFLOAT Vmax, int groupsize, int time, PFLOAT dis, PFLOAT theta1, PFLOAT theta2)
+GPParticleSwarmOpt::GPParticleSwarmOpt(GPFLOAT Vmax, int groupsize, int time, GPFLOAT dis, GPFLOAT theta1, GPFLOAT theta2)
 {
     mVmax = Vmax;
     mThe1 = theta1;
@@ -95,14 +95,14 @@ GPParticleSwarmOpt::~GPParticleSwarmOpt()
 {
 }
 
-PFLOAT GPParticleSwarmOpt::max_distance(const std::vector<GPPtr<Particle> >& group) const
+GPFLOAT GPParticleSwarmOpt::max_distance(const std::vector<GPPtr<Particle> >& group) const
 {
-    PFLOAT _max_distance = 0.0;
+    GPFLOAT _max_distance = 0.0;
     for (int i=0; i<group.size(); ++i)
     {
         for (int j=i+1; j<group.size(); ++j)
         {
-            PFLOAT dis = group[i]->distance(group[j]);
+            GPFLOAT dis = group[i]->distance(group[j]);
             if (dis > _max_distance)
             {
                 _max_distance = dis;
@@ -111,7 +111,7 @@ PFLOAT GPParticleSwarmOpt::max_distance(const std::vector<GPPtr<Particle> >& gro
     }
     return _max_distance;
 }
-GPPtr<GPParameter> GPParticleSwarmOpt::vFindBest(int n, IGPOptimizor::OPTFUNC computer, PFLOAT* target) const
+GPPtr<GPParameter> GPParticleSwarmOpt::vFindBest(int n, IGPOptimizor::OPTFUNC computer, GPFLOAT* target) const
 {
     GPASSERT(n>0);
     GPASSERT(mSize>=1);
@@ -124,7 +124,7 @@ GPPtr<GPParameter> GPParticleSwarmOpt::vFindBest(int n, IGPOptimizor::OPTFUNC co
     {
         GPPtr<Particle> p = (new Particle(n, mVmax, mThe1, mThe2));
         p->randomInit();
-        PFLOAT fit = computer(p->expand());
+        GPFLOAT fit = computer(p->expand());
         p->setFit(fit);
         group.push_back(p);
     }
@@ -134,7 +134,7 @@ GPPtr<GPParameter> GPParticleSwarmOpt::vFindBest(int n, IGPOptimizor::OPTFUNC co
         for (int j=0; j<mSize; ++j)
         {
             GPPtr<Particle> p = group[j];
-            PFLOAT fit = computer(p->expand());
+            GPFLOAT fit = computer(p->expand());
             p->updateFit(fit);
         }
         /*Find Best One*/
@@ -154,7 +154,7 @@ GPPtr<GPParameter> GPParticleSwarmOpt::vFindBest(int n, IGPOptimizor::OPTFUNC co
             }
         }
         /*Get the max distance before, Determin if we can break*/
-        PFLOAT maxDis_before = max_distance(group);
+        GPFLOAT maxDis_before = max_distance(group);
         /*Move all Particle*/
         for (int j=0; j<mSize; ++j)
         {
@@ -162,7 +162,7 @@ GPPtr<GPParameter> GPParticleSwarmOpt::vFindBest(int n, IGPOptimizor::OPTFUNC co
             p->move(bestP);
         }
         /*Get the max distance after, Determin if we can break*/
-        PFLOAT maxDis_after = max_distance(group);
+        GPFLOAT maxDis_after = max_distance(group);
         if (maxDis_before < mMinDistance*n && maxDis_after < mMinDistance*n)
         {
             break;

@@ -15,10 +15,10 @@ void GPNetSearchTest::run()
 {
     auto compute = [](GPPtr<GPParameter> p){
         GPASSERT(2 == p->size());
-        const PFLOAT* _p = p->get();
-        PFLOAT x = _p[0];
-        PFLOAT y = _p[1];
-        PFLOAT result = -sqrt((x-0.3)*(x-0.3) + (y-0.334)*(y-0.334));
+        const GPFLOAT* _p = p->get();
+        GPFLOAT x = _p[0];
+        GPFLOAT y = _p[1];
+        GPFLOAT result = -sqrt((x-0.3)*(x-0.3) + (y-0.334)*(y-0.334));
         return result;
     };
     GPPtr<IGPOptimizor> opt = GPOptimizorFactory::create(GPOptimizorFactory::NET_SEARCH);

@@ -47,7 +47,7 @@ protected:
         if (mCur >= mAvail.size())
         {
             res = false;
-            mCur = mAvail.size() - 1;
+            mCur = (int)(mAvail.size()) - 1;
         }
         return res;
     }
@@ -66,7 +66,7 @@ class computeSearchTree:public carryTree<std::vector<GPFunctionTreePoint*> >
 public:
     computeSearchTree(computePoint* point){mRoot = point;}
     virtual std::vector<GPFunctionTreePoint*> output() override;
-    virtual bool readyToOutput();
+    virtual bool readyToOutput() override;
 };
 
 #endif

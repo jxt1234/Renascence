@@ -12,7 +12,7 @@ using namespace std;
 GPPtr<IGPOptimizor> GPOptimizorFactory::create(TYPE t, int maxTimes)
 {
     GPPtr<IGPOptimizor> res;
-    PFLOAT inter = 0.01;
+    GPFLOAT inter = 0.01;
     switch (t)
     {
         case GOLDEN_DIVIDE:

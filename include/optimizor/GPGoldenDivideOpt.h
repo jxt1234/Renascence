@@ -19,10 +19,10 @@
 class GPGoldenDivideOpt:public IGPOptimizor
 {
     public:
-        GPGoldenDivideOpt(PFLOAT minInterval=0.01):mInter(minInterval){}
+        GPGoldenDivideOpt(GPFLOAT minInterval=0.01):mInter(minInterval){}
         virtual ~GPGoldenDivideOpt(){}
-        virtual GPPtr<GPParameter> vFindBest(int n, IGPOptimizor::OPTFUNC computer, PFLOAT* target) const override;
+        virtual GPPtr<GPParameter> vFindBest(int n, IGPOptimizor::OPTFUNC computer, GPFLOAT* target) const override;
     private:
-        PFLOAT mInter;
+        GPFLOAT mInter;
 };
 #endif

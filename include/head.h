@@ -20,5 +20,5 @@
 #include "utils/RefCount.h"
 #include "utils/AutoClean.h"
 #include "utils/AutoStorage.h"
-typedef double PFLOAT;
+typedef double GPFLOAT;
 #endif
