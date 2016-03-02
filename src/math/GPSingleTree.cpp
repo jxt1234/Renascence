@@ -40,15 +40,15 @@ GPSinglePoint* GPSinglePoint::_createFromFormula(const vector<pair<TYPE, int>>& 
         return new GPSinglePoint(INPUT, words[sta].second);
     }
     /*Function with bracket*/
-    if (words[sta].first == FUNCTION)
+    if (words[sta].first == FUNCTION && words[fin].first == RIGHT_BRACKET)
     {
         int func = words[sta].second;
-        GPASSERT(words[fin].first == RIGHT_BRACKET);
+//        GPASSERT(words[fin].first == RIGHT_BRACKET);
         GPASSERT(words[sta+1].first == LEFT_BRACKET);
         sta = sta + 1;//Move to LEFT_BRACKET
         GPSinglePoint* root = new GPSinglePoint(FUNCTION, func);
         int depth = 0;
-        int substa = sta+1;
+        int substa = sta;
         int subfin = -1;
         for (int i=sta+1; i<fin; ++i)
         {
@@ -62,15 +62,18 @@ GPSinglePoint* GPSinglePoint::_createFromFormula(const vector<pair<TYPE, int>>& 
                 case DIVIDE:
                     if (depth == 0)
                     {
+                        subfin = i-1;
                         root->addPoint(_createFromFormula(words, substa, subfin));
+                        substa = i+1;
                     }
                     break;
                 default:
                     break;
             }
         }
-        GPASSERT(root->getChildrenNumber() == GPSingleTreeFunction::inputNumber(func));
         GPASSERT(depth == 0);
+        root->addPoint(_createFromFormula(words, substa, fin));
+        GPASSERT(root->getChildrenNumber() == GPSingleTreeFunction::inputNumber(func));
         return root;
     }
     /*formula like a+b */
@@ -208,8 +211,6 @@ int GPSingleTree::len() const
 GPPtr<GPSingleTree> GPSingleTree::createFromFormula(const std::string& formula, const std::map<std::string, int>& variableMap)
 {
     vector<pair<GPSinglePoint::TYPE, int>> words;
-    /*Clean Space, tab and \n*/
-    
     /*Divide words*/
     int sta = 0;
     int fin = 0;
@@ -224,9 +225,21 @@ std::string _str;\
 _str.assign(formula, sta, fin-sta);\
 results.push_back(_str);\
 }
-    
-    for (int i=0;i<formula.size(); ++i)
+
+    for (int i=0;i<formula.size();)
     {
+        int len = GPSingleTreeFunction::searchFunction(i, formula);
+        if (len > 0)
+        {
+            FINISHWORDS(i);
+            {
+                std::string _str;
+                _str.assign(formula, i, len);
+                results.push_back(_str);
+            }
+            i += len;
+            continue;
+        }
         char c = formula.at(i);
         if ('['==c||'{'==c) c='(';
         if (']'==c||'}'==c) c=')';
@@ -238,16 +251,11 @@ results.push_back(_str);\
             case ',':
                 FINISHWORDS(i);
                 break;
-            case '*':
-            case '+':
-            case '-':
-            case '/':
             case '(':
             case ')':
                 FINISHWORDS(i);
             {
-                std::string _str;
-                _str.push_back(c);
+                std::string _str(1, c);
                 results.push_back(_str);
             }
                 break;
@@ -259,6 +267,7 @@ results.push_back(_str);\
                 }
                 break;
         }
+        ++i;
     }
     FINISHWORDS((formula.size()));
 #undef FINISHWORDS

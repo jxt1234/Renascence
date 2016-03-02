@@ -25,6 +25,7 @@ public:
     static int inputNumber(int func);
     static int priority(int func);
     static std::string query(int func);
+    static int searchFunction(int sta, const std::string& formula);
 };
 
 #endif

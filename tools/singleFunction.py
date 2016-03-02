@@ -54,6 +54,16 @@ for i in range(0, len(functions)):
     priorityContents += 'return ' + functions[i][2] + ';\n'
 priorityContents += 'return 0;\n}\n'
 
+searchContents = "int GPSingleTreeFunction::searchFunction(int sta, const std::string& formula)\n{\n"
+searchContents += 'int len = (int)(formula.size()) - sta;\n'
+for func in functions:
+    length = len(func[0])
+    searchContents += 'if ((len >= %d)' %length
+    for i in range(0, length):
+        searchContents += ' && (formula[sta+%d])' %i + ' == \'' + func[0][i] + '\''
+    searchContents += ') return %d;\n' %length
+searchContents += 'return 0;\n}\n'
+
 with open(gOutput, 'w') as fw:
     fw.write(headContents)
     fw.write(funcContents)
@@ -61,3 +71,4 @@ with open(gOutput, 'w') as fw:
     fw.write(inputNumberContents)
     fw.write(computeContents)
     fw.write(priorityContents)
+    fw.write(searchContents)

@@ -3,17 +3,22 @@
 #include <fstream>
 #include "math/GPSingleTree.h"
 
-static const char* gFormula = "TrPackageSaturation(TrPackageFilterTransformFromRegress(TrPackageCompse(TrPackageCompse(x0,TrPackageSaturation(x1)),TrPackageSaturation(x3)), TrPackageFilterMatrixRegress(x2, TrPackageCompse(TrPackageCompse(x0,TrPackageSaturation(x1)),ADF[Input, x5]))))";
-
-static const char* gFormulaNew =
-"REDUCE(MAP([SPLIT(A), SPLIT(B)], Product(x0, x1), [[a0, a1], [b0, b1]]->[a0,b1,a1], a1==b0), Add(x0, x1), [a0, a1, a2]->[a0, a1])";
+static const char* gFormulas[] = {
+    "x*y+z",
+    "ln((x*z+y))",
+    "cos(sin(x+y)*z)",
+    "x==y&&y==z"
+};
 int main()
 {
-    GPPtr<GPSingleTree> tree = GPSingleTree::createFromFormula("x1*y1+z2/y1*x1", "x1 y1 z2");
     GPFLOAT v[3];
     v[0] = 0.5;
     v[1] = 0.8;
-    v[2] = 2;
-    FUNC_PRINT_ALL(tree->compute(v), f);
+    v[2] = 1;
+    for (int i=0; i<sizeof(gFormulas)/sizeof(const char*); ++i)
+    {
+        GPPtr<GPSingleTree> tree = GPSingleTree::createFromFormula(gFormulas[i], "x y z");
+        FUNC_PRINT_ALL(tree->compute(v), f);
+    }
     return 1;
 }
