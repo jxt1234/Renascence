@@ -159,6 +159,9 @@ void GPFormulaTreePoint::render(std::ostream& output) const
         case ADF:
             type = "ADF";
             break;
+        default:
+            GPASSERT(0);
+            break;
     }
     output << "<"<<type << ": " << mName<<">";
     if (!mChildren.empty())

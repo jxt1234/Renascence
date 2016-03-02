@@ -13,7 +13,7 @@ static const char* gFormulas[] = {
     "x*y+z",
     "ln((x*z+y))",
     "cos(sin(x+y)*z)",
-    "x==y&&y==z"
+    "x!=y&&y!=z"
 };
 void GPSingleTreeTest::run()
 {

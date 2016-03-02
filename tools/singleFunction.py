@@ -7,6 +7,7 @@ if len(sys.argv)>=3:
     gOutput = sys.argv[2]
 functions = filter(lambda x:len(x)>0, open(gInput).read().split('\n'))
 functions = map(lambda f:filter(lambda x:len(x)>0, f.split(' ')), functions)
+functions.sort(lambda x,y: cmp(len(x[0]),len(y[0])), reverse=True)
 print functions
 
 headContents = '#include \"math/GPSingleTreeFunction.h\"\n'
