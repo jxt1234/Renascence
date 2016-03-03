@@ -75,6 +75,12 @@ GPFormulaTreePoint::~GPFormulaTreePoint()
 {
 }
 
+GPFormulaTreePoint* _create(const std::vector<std::string>& words, int sta, int fin)
+{
+    return NULL;
+}
+
+
 
 GPFormulaTree::GPFormulaTree()
 {
@@ -163,7 +169,7 @@ void GPFormulaTreePoint::render(std::ostream& output) const
             GPASSERT(0);
             break;
     }
-    output << "<"<<type << ": " << mName<<">";
+    output << "<"<<type << ">" << mName;
     if (!mChildren.empty())
     {
         output <<"\n";

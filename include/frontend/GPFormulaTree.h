@@ -38,7 +38,9 @@ public:
     void mergeForStatement(GPFormulaTreePoint* parent, size_t n);
     const GPFormulaTreePoint* father() const {return mFather;}
     void valid() const;
+    static GPFormulaTreePoint* create(const std::vector<std::string>& words);
 private:
+    static GPFormulaTreePoint* _create(const std::vector<std::string>& words, int sta, int fin);
     TYPE mT;
     std::string mName;
     
