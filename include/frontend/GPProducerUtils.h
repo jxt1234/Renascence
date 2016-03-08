@@ -21,7 +21,7 @@
 class GPProducerUtils:public RefCount
 {
 public:
-    typedef const GPFunctionDataBase::function* FUNC;
+    typedef const GPFunction* FUNC;
     typedef const IStatusType* TYPE;
     struct func:public RefCount
     {

@@ -26,9 +26,9 @@
 
 using namespace std;
 
-std::vector<const GPFunctionDataBase::function*> GPFunctionDataBase::getAllFunctions() const
+std::vector<const GPFunction*> GPFunctionDataBase::getAllFunctions() const
 {
-    std::vector<const GPFunctionDataBase::function*> result;
+    std::vector<const GPFunction*> result;
     for (int i=0; i<mFunctionTable.size(); ++i)
     {
         result.push_back(mFunctionTable[i]);
@@ -89,7 +89,7 @@ void GPFunctionDataBase::_addInfo(const GPTreeNode* root, IFunctionTable* table,
             FUNC_PRINT_ALL((func->name()).c_str(), s);
             GPASSERT(NULL!=f);//TODO throw error when no function in the table
         }
-        function* warpf = new function;
+        GPFunction* warpf = new GPFunction;
         warpf->name = func->name();
         warpf->shortname = func->name();//Default
         warpf->basic = f;
@@ -106,7 +106,7 @@ void GPFunctionDataBase::_addInfo(const GPTreeNode* root, IFunctionTable* table,
     }
 }
 
-void GPFunctionDataBase::_addFunction(GPFunctionDataBase::function* warpf, const GPTreeNode* func)
+void GPFunctionDataBase::_addFunction(GPFunction* warpf, const GPTreeNode* func)
 {
     for (auto cur : func->getChildren())
     {
@@ -180,9 +180,9 @@ int GPFunctionDataBase::_findFunction(const std::string& name)
     return res;
 }
 
-std::vector<const GPFunctionDataBase::function*> GPFunctionDataBase::vSearchFunction(const IStatusType* t) const
+std::vector<const GPFunction*> GPFunctionDataBase::vSearchFunction(const IStatusType* t) const
 {
-    vector<const GPFunctionDataBase::function*> res;
+    vector<const GPFunction*> res;
     for (int i=0; i<mFunctionTable.size(); ++i)
     {
         const vector<const IStatusType*>& output = mFunctionTable[i]->outputType;
@@ -247,7 +247,7 @@ void GPFunctionDataBase::print(ostream& os)
 {
     for (int i=0; i<mFunctionTable.size(); ++i)
     {
-        GPFunctionDataBase::function* fc = mFunctionTable[i];
+        GPFunction* fc = mFunctionTable[i];
         os << i << ": "<<fc->name<<" : "<<fc->shortname<<endl;
         os << "Required inputType is ";
         for (int j=0; j<fc->inputType.size(); ++j)
@@ -288,7 +288,7 @@ const IStatusType* GPFunctionDataBase::vQueryType(const std::string& name) const
     }
     return res;
 }
-const GPFunctionDataBase::function* GPFunctionDataBase::vQueryFunctionByShortName(const std::string& name) const
+const GPFunction* GPFunctionDataBase::vQueryFunctionByShortName(const std::string& name) const
 {
     for (int i=0; i<mFunctionTable.size(); ++i)
     {
@@ -300,7 +300,7 @@ const GPFunctionDataBase::function* GPFunctionDataBase::vQueryFunctionByShortNam
     return NULL;
 }
 
-const GPFunctionDataBase::function* GPFunctionDataBase::vQueryFunction (const string& name) const
+const GPFunction* GPFunctionDataBase::vQueryFunction (const string& name) const
 {
     for (int i=0; i<mFunctionTable.size(); ++i)
     {

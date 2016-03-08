@@ -13,24 +13,23 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef CORE_GPPARALLELTYPE_H
-#define CORE_GPPARALLELTYPE_H
-#include <map>
+#ifndef USER_GPFUNCTION_H
+#define USER_GPFUNCTION_H
+#include <string>
 #include <vector>
-#include "utils/RefCount.h"
-#include "GPFunctionDataBase.h"
-#include "math/GPSingleTree.h"
-class GPParallelType:public RefCount
+#include "IStatusType.h"
+#include "GPContents.h"
+struct GPFunction
 {
-public:
-    struct Parallel
-    {
-        const GPFunctionDataBase::function* pFunc;
-        GPPtr<GPSingleTree> pKeyFunc;
-        std::map<int, std::vector<int>> mSplitInfo;
-        std::map<int, GPPtr<GPSingleTree>> mOutputKey;
-    };
+    //For print
+    std::string name;
+    std::string shortname;
+    //For compute
+    computeFunction basic;
+    std::vector<const IStatusType*> inputType;
+    std::vector<bool> inputNeedComplete;
+    std::vector<const IStatusType*> outputType;
+    std::vector<const IStatusType*> statusType;
 };
-
 
 #endif

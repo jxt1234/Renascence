@@ -7,7 +7,7 @@
 //
 
 #include "backend/GPComputePoint.h"
-GPComputePoint::GPComputePoint(const GPFunctionDataBase::function* f)
+GPComputePoint::GPComputePoint(const GPFunction* f)
 {
     mF = f;
     mFlags = f->inputNeedComplete;

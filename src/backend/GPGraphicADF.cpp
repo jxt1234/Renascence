@@ -36,7 +36,7 @@ int _POINT::numberOfInstance()
     return gNumber;
 }
 
-_POINT::Point(const GPFunctionDataBase::function* f, const IStatusType* type):mFunc(f), mType(type)
+_POINT::Point(const GPFunction* f, const IStatusType* type):mFunc(f), mType(type)
 {
     /*For input and output point, we needn't init status*/
     gNumber++;//FIXME For debug
@@ -305,7 +305,7 @@ void GPGraphicADF::_loadMain(const GPTreeNode* root, std::map<std::string, Point
         Point* p = NULL;
         if (first->name() == GP_XmlString::func)
         {
-            const GPFunctionDataBase::function* _f = base->vQueryFunction(first->attr());
+            const GPFunction* _f = base->vQueryFunction(first->attr());
             GPASSERT(NULL!=_f);
             p = new Point(_f, NULL);
         }

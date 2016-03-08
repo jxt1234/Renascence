@@ -26,16 +26,16 @@
 class GPTreeADFPoint:public GPAbstractPoint
 {
 public:
-    GPTreeADFPoint(const GPFunctionDataBase::function* func, int inputpos);
+    GPTreeADFPoint(const GPFunction* func, int inputpos);
     void initStatus(const std::vector<std::istream*>& is);
     virtual ~GPTreeADFPoint();
-    inline const GPFunctionDataBase::function* func() const {return mFunc;}
+    inline const GPFunction* func() const {return mFunc;}
     inline const std::vector<GPPtr<GPStatusContent>>& status() {return mStatus;}
     GPTreeNode* xmlPrint() const;
     static GPTreeADFPoint* xmlLoad(const GPTreeNode* node, const GPFunctionDataBase* base);
 private:
     /*Attributes*/
-    const GPFunctionDataBase::function* mFunc;
+    const GPFunction* mFunc;
     int mInputPos;
     std::vector<GPPtr<GPStatusContent>> mStatus;
     /*Function needed*/

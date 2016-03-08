@@ -380,7 +380,7 @@ public:
             case GPFormulaTreePoint::OPERATOR:
             {
                 needcopyChild = true;
-                const GPFunctionDataBase::function* f = mBase->vQueryFunctionByShortName(point->name());
+                const GPFunction* f = mBase->vQueryFunctionByShortName(point->name());
                 if (NULL == f)
                 {
                     f = mBase->vQueryFunction(point->name());

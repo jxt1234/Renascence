@@ -17,7 +17,7 @@
 #include "core/GPFunctionTree.h"
 #include <algorithm>
 #include <sstream>
-GPFunctionTreePoint::GPFunctionTreePoint(const GPFunctionDataBase::function* f)
+GPFunctionTreePoint::GPFunctionTreePoint(const GPFunction* f)
 {
     GPASSERT(NULL != f);
     mData.pFunc = f;

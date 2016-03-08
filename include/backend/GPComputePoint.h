@@ -53,18 +53,18 @@ public:
         bool mOwn;
     };
 
-    GPComputePoint(const GPFunctionDataBase::function* f);
+    GPComputePoint(const GPFunction* f);
     virtual ~GPComputePoint();
     /*inputs can only has one content*/
     bool receive(GPPtr<ContentWrap> inputs, int n);
-    inline const GPFunctionDataBase::function* get() const {return mF;}
+    inline const GPFunction* get() const {return mF;}
     const std::vector<bool>& flags() const {return mFlags;}
     int map(double* value, int n);
     inline bool completed() const {return mComplte;}
     std::vector<GPPtr<ContentWrap>> compute();
 private:
     bool _computeCompleteStatus() const;
-    const GPFunctionDataBase::function* mF;
+    const GPFunction* mF;
     std::vector<bool> mFlags;
     std::vector<GPPtr<ContentWrap>> mCache;
     bool mComplte;

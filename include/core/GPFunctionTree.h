@@ -15,6 +15,7 @@
 ******************************************************************/
 #ifndef CORE_GPFUNCTIONTREE_H
 #define CORE_GPFUNCTIONTREE_H
+#include "user/GPParallelType.h"
 #include "math/GPAbstractPoint.h"
 #include "GPFunctionDataBase.h"
 #include "GPParameter.h"
@@ -29,14 +30,15 @@ public:
         MAP,
         REDUCE
     } TYPE;
-    GPFunctionTreePoint(const GPFunctionDataBase::function* f);
+    GPFunctionTreePoint(const GPFunction* f);
     GPFunctionTreePoint(int inputPos);
     GPFunctionTreePoint(const GPFunctionTreePoint& p);
     virtual ~GPFunctionTreePoint();
     
     typedef union {
-        const GPFunctionDataBase::function* pFunc;
+        const GPFunction* pFunc;
         int iInput;
+        GPParallelType* pParellel;
     } DATA;
     inline DATA data() const {return mData;}
     inline TYPE type() const {return mType;}

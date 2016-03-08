@@ -13,14 +13,12 @@ static const char* gFormulas[] = {
     "x*y+z",
     "ln((x*z+y))",
     "cos(sin(x+y)*z)",
-    "x!=y&&y!=z"
+    "x!=y&&y!=z",
+    "x+z*sin(y/x)+z*cos(y/x)"
 };
 void GPSingleTreeTest::run()
 {
-    GPFLOAT v[3];
-    v[0] = 0.5;
-    v[1] = 0.8;
-    v[2] = 1;
+    GPFLOAT v[] = {0.5, 0.8, 1};
     for (int i=0; i<sizeof(gFormulas)/sizeof(const char*); ++i)
     {
         GPPtr<GPSingleTree> tree = GPSingleTree::createFromFormula(gFormulas[i], "x y z");

@@ -25,7 +25,7 @@
 
 using namespace std;
 typedef const IStatusType* TYPEP;
-GPTreeADFPoint::GPTreeADFPoint(const GPFunctionDataBase::function* func, int inputpos)
+GPTreeADFPoint::GPTreeADFPoint(const GPFunction* func, int inputpos)
 {
     GPASSERT(NULL != func || inputpos >= 0);
     mInputPos = inputpos;

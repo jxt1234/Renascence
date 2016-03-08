@@ -73,7 +73,7 @@ public:
     {
     public:
         static int numberOfInstance();
-        Point(const GPFunctionDataBase::function* f, const IStatusType* t);
+        Point(const GPFunction* f, const IStatusType* t);
         void initStatus(const std::vector<std::istream*>& statusInput);
         virtual ~Point();
         void connectInput(Point* in);
@@ -93,7 +93,7 @@ public:
         void _clean();
         /*Data Begin*/
         const IStatusType* mType;//For Input/output point, mType and mFunc should only one be not null
-        const GPFunctionDataBase::function* mFunc;
+        const GPFunction* mFunc;
         /*The inputs must not be reference for avoiding recursive reference*/
         std::vector<std::pair<Point*, GPPtr<Unit> > > mInputs;
         /*reference the outputs, when clear, they will be released*/

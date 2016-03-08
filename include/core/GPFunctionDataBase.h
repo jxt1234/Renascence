@@ -16,40 +16,28 @@
 #ifndef GP_COMPUTE_SYSTEM_H
 #define GP_COMPUTE_SYSTEM_H
 #include "user/GPContents.h"
-#include "GPMultiTable.h"
-#include <string>
+#include "user/GPFunction.h"
 #include "user/GPStream.h"
 #include "user/IFunctionTable.h"
+#include "GPMultiTable.h"
 #include "xml/xmlReader.h"
 #include "head.h"
 
 class GPFunctionDataBase:public RefCount
 {
 public:
-    struct function
-    {
-        //For print
-        std::string name;
-        std::string shortname;
-        //For compute
-        computeFunction basic;
-        std::vector<const IStatusType*> inputType;
-        std::vector<bool> inputNeedComplete;
-        std::vector<const IStatusType*> outputType;
-        std::vector<const IStatusType*> statusType;
-    };
     std::vector<const IStatusType*> queryType(const std::string& typelist);
     //Basic Api
     std::vector<const IStatusType*> getAllType() const {return mTypes;}
-    std::vector<const function*> getAllFunctions() const;
-    virtual const function* vQueryFunction(const std::string& name) const;
-    virtual const function* vQueryFunctionByShortName(const std::string& name) const;
+    std::vector<const GPFunction*> getAllFunctions() const;
+    virtual const GPFunction* vQueryFunction(const std::string& name) const;
+    virtual const GPFunction* vQueryFunctionByShortName(const std::string& name) const;
     virtual const IStatusType* vQueryType(const std::string& name) const;
     //TODO Find better way to organnize it
     void loadXml(GPStream* is, IFunctionTable* table=NULL, std::ostream* print = NULL);
     
-    //Find Function that has outputType of t
-    virtual std::vector<const function*> vSearchFunction(const IStatusType* t) const;
+    //Find GPFunction that has outputType of t
+    virtual std::vector<const GPFunction*> vSearchFunction(const IStatusType* t) const;
     
     /*For debug*/
     void print(std::ostream& os);
@@ -57,11 +45,11 @@ public:
     virtual ~GPFunctionDataBase();
 private:
     void _addInfo(const GPTreeNode* node, IFunctionTable* table, std::ostream* print);
-    void _addFunction(GPFunctionDataBase::function* warpf, const GPTreeNode* func);
+    void _addFunction(GPFunction* warpf, const GPTreeNode* func);
     int _findFunction(const std::string& name);
     const IStatusType* _findAndLoadStatus(const std::string& name);
     void _clear();
-    std::vector<function*> mFunctionTable;
+    std::vector<GPFunction*> mFunctionTable;
     GPPtr<GPMultiTable> mHandle;
     std::vector<TYPECREATER> mTypeCreateFuncs;
     std::vector<const IStatusType*> mTypes;

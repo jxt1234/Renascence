@@ -23,7 +23,7 @@
 using namespace std;
 
 
-static void _setUpBasicFunction(GPProducerUtils::func* dst, const GPFunctionDataBase::function* src)
+static void _setUpBasicFunction(GPProducerUtils::func* dst, const GPFunction* src)
 {
     GPASSERT(dst->useChildrenInput.size() == src->inputType.size());
     dst->inputs.clear();
@@ -43,7 +43,7 @@ static void _setUpBasicFunction(GPProducerUtils::func* dst, const GPFunctionData
     dst->basic = src;
 }
 
-static bool _validFunctions(const vector<const GPFunctionDataBase::function*>& functionList)
+static bool _validFunctions(const vector<const GPFunction*>& functionList)
 {
     bool res = true;
     return res;
