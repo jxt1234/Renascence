@@ -9,7 +9,7 @@
 
 #ifndef SkJpegUtility_DEFINED
 #define SkJpegUtility_DEFINED
-#include "user/IStatusType.h"
+#include "lowlevelAPI/IStatusType.h"
 
 extern "C" {
 #include "../third_party/libjpeg/jpeglib.h"

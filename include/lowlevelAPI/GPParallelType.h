@@ -13,7 +13,16 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  ******************************************************************/
-#include "lowlevelAPI/IStatusType.h"
-#include <string>
+#ifndef USER_GPPARALLELTYPE_H
+#define USER_GPPARALLELTYPE_H
+#include "GPFunction.h"
+struct GPParallelType
+{
+    const GPFunction* pFunc;
+    std::string sCondition;
+    std::vector<std::vector<int>> mSplitInfo;
+    std::vector<std::vector<int>> mOutputKey;
+};
 
-IStatusType* gDefaultStringType = new GPStringType();
+
+#endif

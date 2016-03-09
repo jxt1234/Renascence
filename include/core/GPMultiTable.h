@@ -16,7 +16,7 @@
 #ifndef CORE_GPMULTITABLE_H
 #define CORE_GPMULTITABLE_H
 #include <vector>
-#include "user/IFunctionTable.h"
+#include "lowlevelAPI/IFunctionTable.h"
 #include "utils/RefCount.h"
 class GPMultiTable:public IFunctionTable, public RefCount
 {

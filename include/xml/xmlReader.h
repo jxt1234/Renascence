@@ -15,7 +15,7 @@
  ******************************************************************/
 #ifndef XML_READER_H
 #define XML_READER_H
-#include "user/GPStream.h"
+#include "lowlevelAPI/GPStream.h"
 #include <string>
 #include <vector>
 #include <istream>

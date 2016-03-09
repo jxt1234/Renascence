@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef CORE_GPSTREAMUTILS_H
 #define CORE_GPSTREAMUTILS_H
-#include "user/GPStream.h"
+#include "lowlevelAPI/GPStream.h"
 #include "utils/GPBlock.h"
 class GPStreamUtils
 {

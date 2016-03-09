@@ -144,7 +144,7 @@ TYPECPPFILE = "src/package/GPTypes.cpp"
 def generateFunctionfiles(filelist, functions):
     hfile = "#ifndef SRC_PACKAGE_GPFUNCTIONS_H\n"
     hfile += "#define SRC_PACKAGE_GPFUNCTIONS_H\n"
-    hfile += "#include \"user/GPContents.h\"\n"
+    hfile += "#include \"lowlevelAPI/GPContents.h\"\n"
     hfile += "extern \"C\"{\n"
     cppfile = "#include \"GPPackage.h\"\n"
     cppfile += "#include \"GPTypes.h\"\n"
@@ -164,7 +164,7 @@ def generateTypeFiles(filelist, outputt, inputt):
     #Output is to make free callback function, input is to make status class
     hfile = "#ifndef SRC_PACKAGE_GPTYPES_H\n"
     hfile += "#define SRC_PACKAGE_GPTYPES_H\n"
-    hfile +="#include \"user/IStatusType.h\"\n"
+    hfile +="#include \"lowlevelAPI/IStatusType.h\"\n"
     totoaltype = set(outputt + inputt)
     for t in totoaltype:
         hfile += "extern IStatusType* g"+t+";\n"
@@ -283,7 +283,7 @@ if __name__=='__main__':
     classname = 'DefaultFunctionTable'
     #Generate head contents
     headcontent = ''
-    headcontent += '#include \"user/IFunctionTable.h\"\n'
+    headcontent += '#include \"lowlevelAPI/IFunctionTable.h\"\n'
     headcontent += 'class ' + classname + ': public IFunctionTable\n'
     headcontent += '{\n' + 'public:\n' + 'virtual void* vGetFunction(const std::string& name);\n' + '};\n'
     with open('include/package/'+classname+'.h', 'w') as f:

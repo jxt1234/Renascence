@@ -14,6 +14,6 @@
  limitations under the License.
  ******************************************************************/
 
-#include "user/IStatusType.h"
+#include "lowlevelAPI/IStatusType.h"
 
 IStatusType* gDefaultDoubleType = new GPDoubleType();

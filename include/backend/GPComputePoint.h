@@ -17,7 +17,7 @@
 #define CORE_GPCOMPUTEPOINT_H
 #include "head.h"
 #include "core/GPFunctionDataBase.h"
-#include "user/GPContents.h"
+#include "lowlevelAPI/GPContents.h"
 #include <vector>
 #include "core/GPStatusContent.h"
 class GPComputePoint:public RefCount

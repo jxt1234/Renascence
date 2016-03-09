@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef CORE_GPSTATUSCONTENT_H
 #define CORE_GPSTATUSCONTENT_H
-#include "user/IStatusType.h"
+#include "lowlevelAPI/IStatusType.h"
 #include "head.h"
 
 class GPStatusContent:public RefCount

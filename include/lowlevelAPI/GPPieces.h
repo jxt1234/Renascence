@@ -13,16 +13,16 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  ******************************************************************/
-#ifndef CORE_GPPARALLELTYPE_H
-#define CORE_GPPARALLELTYPE_H
-#include "GPFunction.h"
-struct GPParallelType
+#ifndef USER_GPPIECES_H
+#define USER_GPPIECES_H
+#include "GPContents.h"
+struct GPPieces
 {
-    const GPFunction* pFunc;
-    std::string sCondition;
-    std::vector<std::vector<int>> mSplitInfo;
-    std::vector<std::vector<int>> mOutputKey;
+    unsigned int[10] pMaxKey;
+    unsigned int nDimension;
+
+    void* pMeta;
+    (void)(*pFree)(void* pMeta);
+    GPContents*(*pLoad)(void* pMeta, unsigned int* pKey);
 };
-
-
 #endif

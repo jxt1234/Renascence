@@ -16,7 +16,7 @@
 #ifndef FRONTEND_GPFRONTENDPRODUCER_H
 #define FRONTEND_GPFRONTENDPRODUCER_H
 #include "utils/RefCount.h"
-#include "user/IStatusType.h"
+#include "lowlevelAPI/IStatusType.h"
 #include "core/GPFunctionTree.h"
 #include <vector>
 class GPFrontEndProducer:public RefCount

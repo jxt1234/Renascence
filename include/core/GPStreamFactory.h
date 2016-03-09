@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef CORE_GPSTREAMFACTORY_H
 #define CORE_GPSTREAMFACTORY_H
-#include "user/GPStream.h"
+#include "lowlevelAPI/GPStream.h"
 #include "utils/RefCount.h"
 #include <string>
 class GPStreamWrap:public GPStream, public RefCount

@@ -15,10 +15,10 @@
  ******************************************************************/
 #ifndef GP_COMPUTE_SYSTEM_H
 #define GP_COMPUTE_SYSTEM_H
-#include "user/GPContents.h"
-#include "user/GPFunction.h"
-#include "user/GPStream.h"
-#include "user/IFunctionTable.h"
+#include "lowlevelAPI/GPContents.h"
+#include "lowlevelAPI/GPFunction.h"
+#include "lowlevelAPI/GPStream.h"
+#include "lowlevelAPI/IFunctionTable.h"
 #include "GPMultiTable.h"
 #include "xml/xmlReader.h"
 #include "head.h"

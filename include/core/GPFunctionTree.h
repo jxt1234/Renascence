@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef CORE_GPFUNCTIONTREE_H
 #define CORE_GPFUNCTIONTREE_H
-#include "user/GPParallelType.h"
+#include "lowlevelAPI/GPParallelType.h"
 #include "math/GPAbstractPoint.h"
 #include "GPFunctionDataBase.h"
 #include "GPParameter.h"
