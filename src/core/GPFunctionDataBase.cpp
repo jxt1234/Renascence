@@ -21,7 +21,6 @@
 #include "utils/GPDebug.h"
 #include <algorithm>
 #include "platform/system_lib.h"
-#include "core/GP_XmlString.h"
 #include "utils/GPStringHelper.h"
 
 using namespace std;

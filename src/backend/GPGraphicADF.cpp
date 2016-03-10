@@ -16,7 +16,7 @@
 #include <list>
 #include <sstream>
 #include <map>
-#include "core/GP_XmlString.h"
+#include "GP_XmlString.h"
 #include "backend/GPGraphicADF.h"
 #include "utils/GPStringHelper.h"
 

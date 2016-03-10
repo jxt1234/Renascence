@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "core/GP_XmlString.h"
+#include "GP_XmlString.h"
 using namespace std;
 const string GP_XmlString::node("Node");
 const string GP_XmlString::func("function");

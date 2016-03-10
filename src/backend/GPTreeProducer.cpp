@@ -18,7 +18,6 @@
 #include <sstream>
 #include <stdlib.h>
 #include "utils/GPDebug.h"
-#include "core/GP_XmlString.h"
 #include "utils/GPRandom.h"
 #include "backend/GPTreeProducer.h"
 #include "backend/GPTreeADF.h"
