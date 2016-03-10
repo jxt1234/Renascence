@@ -13,6 +13,11 @@
 #include "user/GPAPI.h"
 #include "xml/xmlReader.h"
 #include "core/GPStreamFactory.h"
+
+
+#include "lowlevelAPI/GPParallelType.h"
+#include "lowlevelAPI/IParallelMachine.h"
+
 class AGPContents
 {
 public:
