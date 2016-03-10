@@ -18,11 +18,11 @@
 #include "GPContents.h"
 struct GPPieces
 {
-    unsigned int[10] pMaxKey;
+    unsigned int pMaxKey[10];
     unsigned int nDimension;
 
     void* pMeta;
-    (void)(*pFree)(void* pMeta);
+    void (*pFree)(void* pMeta);
     GPContents*(*pLoad)(void* pMeta, unsigned int* pKey);
 };
 #endif

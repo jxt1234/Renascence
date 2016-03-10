@@ -90,7 +90,7 @@ static int test_main()
         meta.pFit = fitf;
         GPStream* input[2];
         input[0] = GP_Stream_Create("input.jpg");
-        input[1] = GP_Stream_Create("input_test_simple.jpg");
+        input[1] = GP_Stream_Create("./input_sharp.jpg");
         meta.pInput = GP_Contents_Load(producer, input, "TrBmp TrBmp", 2);
         GP_Stream_Destroy(input[0]);
         GP_Stream_Destroy(input[1]);
