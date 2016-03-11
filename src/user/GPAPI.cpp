@@ -17,6 +17,7 @@
 
 #include "lowlevelAPI/GPParallelType.h"
 #include "lowlevelAPI/IParallelMachine.h"
+#include "lowlevelAPI/GPPieces.h"
 
 class AGPContents
 {

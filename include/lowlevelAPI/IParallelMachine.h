@@ -27,7 +27,7 @@ public:
     class IParallelExcutor
     {
     public:
-        virtual void vPrepare(std::vector<GPPieces*> inputs) = 0;
+        virtual bool vPrepare(std::vector<GPPieces*> inputs) = 0;
         virtual GPPieces* vRun(std::vector<GPPieces*> inputs) const = 0;
     };
     virtual IParallelExcutor* vGenerate(const GPParallelType* data, PARALLELTYPE type) const = 0;

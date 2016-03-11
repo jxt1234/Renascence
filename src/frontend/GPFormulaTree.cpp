@@ -44,9 +44,9 @@ static void divideFormula(std::vector<std::string>& results, const std::string& 
             case ' ':
             case '\t':
             case '\n':
-            case ',':
                 FINISHWORDS;
                 break;
+            case ',':
             case '(':
             case ')':
                 FINISHWORDS;
@@ -67,17 +67,99 @@ static void divideFormula(std::vector<std::string>& results, const std::string& 
     }
 #undef FINISHWORDS
 }
-GPFormulaTreePoint::GPFormulaTreePoint()
+GPFormulaTreePoint::GPFormulaTreePoint(TYPE t, const std::string& name, GPFormulaTreePoint* father)
 {
-    mFather = NULL;
+    mFather = father;
+    mT = t;
+    mName = name;
 }
+
+
 GPFormulaTreePoint::~GPFormulaTreePoint()
 {
 }
 
-GPFormulaTreePoint* _create(const std::vector<std::string>& words, int sta, int fin)
+GPFormulaTreePoint* GPFormulaTreePoint::create(const std::vector<std::string>& words)
 {
-    return NULL;
+    return _create(words, 0, (int)words.size()-1, NULL);
+}
+
+
+static GPFormulaTreePoint* _mergeStringForPoint(const std::vector<std::string>& words, int sta, int fin, GPFormulaTreePoint* father)
+{
+    std::ostringstream output;
+    for (int i=sta; i<=fin; ++i)
+    {
+        output << words[i];
+    }
+    GPFormulaTreePoint* child = new GPFormulaTreePoint(GPFormulaTreePoint::NUM, output.str(), father);
+    return child;
+
+}
+
+GPFormulaTreePoint* GPFormulaTreePoint::_create(const std::vector<std::string>& words, int sta, int fin, GPFormulaTreePoint* father)
+{
+    GPASSERT(sta<=fin);
+    GPASSERT(words[sta]!="(" && words[sta]!=")");
+    if (sta == fin)
+    {
+        return new GPFormulaTreePoint(NUM, words[sta], father);
+    }
+    GPASSERT(words[fin]==")" && words[sta+1]=="(");
+    GPFormulaTreePoint* root = NULL;
+    if ("MAP" == words[sta] || "REDUCE" == words[sta])
+    {
+        root = new GPFormulaTreePoint(PARALLEL, words[sta], father);
+    }
+    else if ("ADF" == words[sta])
+    {
+        root = new GPFormulaTreePoint(ADF, words[sta], father);
+    }
+    else
+    {
+        root = new GPFormulaTreePoint(OPERATOR, words[sta], father);
+    }
+    int depth = 0;
+    for (sta=sta+2, fin=fin-1; sta<fin && words[sta]=="(" && words[fin]==")";sta++,fin--);
+    int pos = sta;
+    int part_sta = pos;
+    for (; pos<=fin; ++pos)
+    {
+        auto w = words[pos];
+        if (w == "(")
+        {
+            depth++;
+        }
+        else if (w == ")")
+        {
+            depth--;
+        }
+        else if (w == "," && depth == 0)
+        {
+            if (root->mT == PARALLEL)
+            {
+                root->addPoint(_mergeStringForPoint(words, part_sta, pos-1, root));
+            }
+            else
+            {
+                root->addPoint(_create(words, part_sta, pos-1, root));
+            }
+            part_sta = pos+1;
+        }
+    }
+    if (part_sta < pos)
+    {
+        if (root->mT == PARALLEL)
+        {
+            root->addPoint(_mergeStringForPoint(words, part_sta, pos-1, root));
+        }
+        else
+        {
+            root->addPoint(_create(words, part_sta, pos-1, root));
+        }
+    }
+    GPASSERT(depth == 0);
+    return root;
 }
 
 
@@ -97,51 +179,7 @@ void GPFormulaTree::setFormula(const std::string& formula)
     std::vector<std::string> words;
     divideFormula(words, formula);
     GPASSERT(!words.empty());
-
-    /*Frist word is root*/
-    mRoot = new GPFormulaTreePoint;
-    mRoot->mT = GPFormulaTreePoint::NUM;
-    mRoot->mName = words[0];
-
-    GPFormulaTreePoint* current = mRoot;
-    GPFormulaTreePoint* parent = NULL;
-    std::list<GPFormulaTreePoint*> parentstack;
-    for (int i=1; i<words.size(); ++i)
-    {
-        if ("(" == words[i])
-        {
-            if (current->mName == "ADF")
-            {
-                current->mT = GPFormulaTreePoint::ADF;
-            }
-            else
-            {
-                current->mT = GPFormulaTreePoint::OPERATOR;
-            }
-            parentstack.push_front(current);
-            parent = parentstack.front();
-        }
-        else if (")" == words[i])
-        {
-            parentstack.pop_front();
-            parent = NULL;
-            if (!parentstack.empty())
-            {
-                parent = parentstack.front();
-            }
-        }
-        else
-        {
-            current = new GPFormulaTreePoint;
-            current->mName = words[i];
-            current->mT = GPFormulaTreePoint::NUM;
-            if (parent)
-            {
-                parent->addPoint(current);
-                current->mFather = parent;
-            }
-        }
-    }
+    mRoot = GPFormulaTreePoint::create(words);
 }
 
 GPFormulaTreePoint::TYPE GPFormulaTreePoint::getChildType(size_t i) const
@@ -164,6 +202,9 @@ void GPFormulaTreePoint::render(std::ostream& output) const
             break;
         case ADF:
             type = "ADF";
+            break;
+        case PARALLEL:
+            type = "PARALLEL";
             break;
         default:
             GPASSERT(0);

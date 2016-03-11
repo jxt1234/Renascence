@@ -26,24 +26,24 @@ public:
     {
         NUM,
         OPERATOR,
-        ADF
+        ADF,
+        PARALLEL
     }TYPE;
-    GPFormulaTreePoint();
+    GPFormulaTreePoint(TYPE t, const std::string& name, GPFormulaTreePoint* father = NULL);
     virtual ~GPFormulaTreePoint();
     friend class GPFormulaTree;
     inline const std::string& name() const {return mName;}
     inline TYPE type() const {return mT;}
     TYPE getChildType(size_t i) const;
     void render(std::ostream& output) const;
-    void mergeForStatement(GPFormulaTreePoint* parent, size_t n);
     const GPFormulaTreePoint* father() const {return mFather;}
     void valid() const;
     static GPFormulaTreePoint* create(const std::vector<std::string>& words);
 private:
-    static GPFormulaTreePoint* _create(const std::vector<std::string>& words, int sta, int fin);
+    static GPFormulaTreePoint* _create(const std::vector<std::string>& words, int sta, int fin, GPFormulaTreePoint* father);
     TYPE mT;
     std::string mName;
-    
+
     GPFormulaTreePoint* mFather;
 };
 class GPFormulaTree:public RefCount
