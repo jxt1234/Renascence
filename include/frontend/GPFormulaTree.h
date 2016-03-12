@@ -40,6 +40,11 @@ public:
     void valid() const;
     static GPFormulaTreePoint* create(const std::vector<std::string>& words);
 private:
+    GPFormulaTreePoint* _ParallelExpand(const std::vector<std::string>& words, int sta, int fin);
+    void _createSubPoints(const std::vector<std::string>& words, int sta, int fin);
+
+    void _createSubPoint(const std::vector<std::string>& words, int sta, int fin);
+    void _expand();
     static GPFormulaTreePoint* _create(const std::vector<std::string>& words, int sta, int fin, GPFormulaTreePoint* father);
     TYPE mT;
     std::string mName;

@@ -15,11 +15,11 @@
 ******************************************************************/
 #ifndef CORE_GPFUNCTIONTREE_H
 #define CORE_GPFUNCTIONTREE_H
-#include "lowlevelAPI/GPParallelType.h"
 #include "math/GPAbstractPoint.h"
 #include "GPFunctionDataBase.h"
 #include "GPParameter.h"
 #include <map>
+#include <string>
 #include <ostream>
 class GPFunctionTreePoint:public GPAbstractPoint
 {
@@ -27,33 +27,27 @@ public:
     typedef enum {
         FUNCTION,
         INPUT,
-        MAP,
-        REDUCE
+        PARALLEL,
+        STRING
     } TYPE;
     GPFunctionTreePoint(const GPFunction* f);
-    GPFunctionTreePoint(int inputPos);
+    GPFunctionTreePoint(TYPE t, int iData);
     GPFunctionTreePoint(const GPFunctionTreePoint& p);
+    GPFunctionTreePoint(const std::string& extra);
     virtual ~GPFunctionTreePoint();
     
     typedef union {
         const GPFunction* pFunc;
         int iInput;
-        GPParallelType* pParellel;
+        int iParallelType;//0: MAP, 1: REDUCE
     } DATA;
-    inline DATA data() const {return mData;}
+    inline const DATA data() const {return mData;}
     inline TYPE type() const {return mType;}
+    inline const std::string& extra() const {return mExtraString;}
     void copyFrom(const GPFunctionTreePoint* src);
     
     std::map<int, const IStatusType*> getInputTypes() const;
     
-    class Iter :public RefCount
-    {
-    public:
-        Iter(){}
-        virtual ~Iter(){}
-        virtual GPFunctionTreePoint* vCurrent() const= 0;
-        virtual bool vNext() = 0;
-    };
     void mapInput(const std::map<int, int>& inputMap);
     void mapInput(const std::map<int, GPFunctionTreePoint*>& inputMap);
     bool equal(const GPFunctionTreePoint* point) const;
@@ -63,9 +57,11 @@ public:
     
     void valid() const;
 private:
-    static bool _theSame(DATA a, DATA b, TYPE t);
+    bool _equal(const GPFunctionTreePoint* p) const;
     void _getInputTypes(std::map<int, const IStatusType*>& types) const;
+    void _renderChildren(std::ostream& output) const;
     DATA mData;
+    std::string mExtraString;
     TYPE mType;
 };
 

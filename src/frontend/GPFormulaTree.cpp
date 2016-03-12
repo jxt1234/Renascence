@@ -67,6 +67,42 @@ static void divideFormula(std::vector<std::string>& results, const std::string& 
     }
 #undef FINISHWORDS
 }
+
+static void _removeUnusefulBracket(const std::vector<std::string>& words, int& sta, int& fin)
+{
+    int possible = 0;
+    while (words[possible+sta] == "(" && words[fin-possible] == ")" && sta+possible < fin-possible) possible++;
+    /*Determine if the bracket is matched*/
+    while (possible > 0)
+    {
+        int depth = 0;
+        bool valid = true;
+        for (int i=sta+possible; i<fin-possible; ++i)
+        {
+            if (words[i] == "(")
+            {
+                depth++;
+            }
+            else if (words[i] == ")")
+            {
+                if (depth == 0)
+                {
+                    valid = false;
+                    break;
+                }
+                depth--;
+            }
+        }
+        if (valid)
+        {
+            break;
+        }
+        possible--;
+    }
+    sta = sta + possible;
+    fin = fin - possible;
+}
+
 GPFormulaTreePoint::GPFormulaTreePoint(TYPE t, const std::string& name, GPFormulaTreePoint* father)
 {
     mFather = father;
@@ -94,12 +130,133 @@ static GPFormulaTreePoint* _mergeStringForPoint(const std::vector<std::string>& 
     }
     GPFormulaTreePoint* child = new GPFormulaTreePoint(GPFormulaTreePoint::NUM, output.str(), father);
     return child;
-
 }
+GPFormulaTreePoint* GPFormulaTreePoint::_ParallelExpand(const std::vector<std::string>& words, int sta, int fin)
+{
+    _removeUnusefulBracket(words, sta, fin);
+    switch (mChildren.size())
+    {
+        case 0://INPUT
+        {
+            GPFormulaTreePoint* p = new GPFormulaTreePoint(OPERATOR, "INPUT", this);
+            p->_createSubPoints(words, sta, fin);
+            return p;
+        }
+        case 1://Formula
+        {
+            return _create(words, sta, fin, this);
+        }
+        case 2://KeyMap
+        {
+            GPFormulaTreePoint* p= new GPFormulaTreePoint(OPERATOR, "KEYMAP", this);
+            /*Find -> */
+            for (int i=sta+1; i<fin; ++i)
+            {
+                if (words[i] == "->")
+                {
+                    GPFormulaTreePoint* input = new GPFormulaTreePoint(OPERATOR, "INPUTKEY", p);
+                    input->_createSubPoints(words, sta, i-1);
+                    GPFormulaTreePoint* output = new GPFormulaTreePoint(OPERATOR, "OUTPUTKEY", p);
+                    output->_createSubPoints(words, i+1, fin);
+                    p->addPoint(input);
+                    p->addPoint(output);
+                    break;
+                }
+            }
+            GPASSERT(p->getChildrenNumber() > 0);
+            return p;
+        }
+        case 3://Condition
+        {
+            return _mergeStringForPoint(words, sta, fin, this);
+        }
+        default:
+            GPASSERT(0);
+            break;
+    }
+    return NULL;
+}
+
+void GPFormulaTreePoint::_createSubPoint(const std::vector<std::string>& words, int sta, int fin)
+{
+    _removeUnusefulBracket(words, sta, fin);
+    switch (mT) {
+        case OPERATOR:
+        case ADF:
+            addPoint(_create(words, sta, fin, this));
+            break;
+        case PARALLEL:
+            addPoint(_ParallelExpand(words, sta, fin));
+            break;
+        case NUM:
+            addPoint(_mergeStringForPoint(words, sta, fin, this));
+            break;
+        default:
+            GPASSERT(0);
+            break;
+    }
+}
+
+void GPFormulaTreePoint::_createSubPoints(const std::vector<std::string>& words, int sta, int fin)
+{
+    _removeUnusefulBracket(words, sta, fin);
+    int pos = sta;
+    int part_sta = pos;
+    int depth = 0;
+    for (; pos<=fin; ++pos)
+    {
+        auto w = words[pos];
+        if (w == "(")
+        {
+            depth++;
+        }
+        else if (w == ")")
+        {
+            depth--;
+        }
+        else if (w == "," && depth == 0)
+        {
+            _createSubPoint(words, part_sta, pos-1);
+            part_sta = pos+1;
+        }
+    }
+    if (part_sta < pos)
+    {
+        _createSubPoint(words, part_sta, pos-1);
+    }
+    GPASSERT(depth == 0);
+}
+
 
 GPFormulaTreePoint* GPFormulaTreePoint::_create(const std::vector<std::string>& words, int sta, int fin, GPFormulaTreePoint* father)
 {
     GPASSERT(sta<=fin);
+    int depth = 0;
+    bool multi = false;
+    for (int i=sta; i<=fin; ++i)
+    {
+        auto w = words[i];
+        if (w == "(")
+        {
+            depth++;
+        }
+        else if (w == ")")
+        {
+            depth--;
+        }
+        else if (w == "," && depth == 0)
+        {
+            multi = true;
+            break;
+        }
+    }
+    if (multi)
+    {
+        GPFormulaTreePoint* p = new GPFormulaTreePoint(OPERATOR, "SUB", father);
+        p->_createSubPoints(words, sta, fin);
+        return p;
+    }
+    
     GPASSERT(words[sta]!="(" && words[sta]!=")");
     if (sta == fin)
     {
@@ -119,46 +276,9 @@ GPFormulaTreePoint* GPFormulaTreePoint::_create(const std::vector<std::string>& 
     {
         root = new GPFormulaTreePoint(OPERATOR, words[sta], father);
     }
-    int depth = 0;
-    for (sta=sta+2, fin=fin-1; sta<fin && words[sta]=="(" && words[fin]==")";sta++,fin--);
-    int pos = sta;
-    int part_sta = pos;
-    for (; pos<=fin; ++pos)
-    {
-        auto w = words[pos];
-        if (w == "(")
-        {
-            depth++;
-        }
-        else if (w == ")")
-        {
-            depth--;
-        }
-        else if (w == "," && depth == 0)
-        {
-            if (root->mT == PARALLEL)
-            {
-                root->addPoint(_mergeStringForPoint(words, part_sta, pos-1, root));
-            }
-            else
-            {
-                root->addPoint(_create(words, part_sta, pos-1, root));
-            }
-            part_sta = pos+1;
-        }
-    }
-    if (part_sta < pos)
-    {
-        if (root->mT == PARALLEL)
-        {
-            root->addPoint(_mergeStringForPoint(words, part_sta, pos-1, root));
-        }
-        else
-        {
-            root->addPoint(_create(words, part_sta, pos-1, root));
-        }
-    }
-    GPASSERT(depth == 0);
+    sta = sta+2;
+    fin = fin-1;
+    root->_createSubPoints(words, sta, fin);
     return root;
 }
 

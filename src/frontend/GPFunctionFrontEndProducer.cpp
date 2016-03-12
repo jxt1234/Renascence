@@ -360,6 +360,68 @@ public:
         originpoint->valid();
         return originpoint;
     }
+    GPFunctionTreePoint* newParallel(GPFormulaTreePoint* point)
+    {
+        GPASSERT(point->getChildrenNumber() >= 2);
+        GPFunctionTreePoint* result = NULL;
+        int type = 0;
+        if (point->name() == "REDUCE")
+        {
+            type = 1;
+        }
+        else if (point->name() == "MAP")
+        {
+            type = 0;
+        }
+        else
+        {
+            GPASSERT(0);
+        }
+        result = new GPFunctionTreePoint(GPFunctionTreePoint::PARALLEL, type);
+        {
+            GPFunctionTreePoint* input_f = new GPFunctionTreePoint("INPUT");
+            result->addPoint(input_f);
+            GPFormulaTreePoint* input = (GPFormulaTreePoint*)(point->getChild(0));
+            for (int i=0; i<input->getChildrenNumber(); ++i)
+            {
+                input_f->addPoint(GPAbstractPoint::deepCopy((GPAbstractPoint*)(input->getChild(i)), this));
+            }
+        }
+        {
+            result->addPoint(GPAbstractPoint::deepCopy((GPAbstractPoint*)(point->getChild(1)), this));
+        }
+        if (point->getChildrenNumber()>2)
+        {
+            GPFunctionTreePoint* keymap = new GPFunctionTreePoint("KEYMAP");
+            result->addPoint(keymap);
+            GPFormulaTreePoint* keymap_origin = (GPFormulaTreePoint*)(point->getChild(2));
+            GPASSERT(keymap_origin->getChildrenNumber() == 2);
+            //TODO: consider input key
+            {
+                GPFormulaTreePoint* outputkey = (GPFormulaTreePoint*)keymap_origin->getChild(1);
+                auto nodes = outputkey->display();
+                for (auto p : nodes)
+                {
+                    auto pp = (GPFormulaTreePoint*)p;
+                    if (pp->type() == GPFormulaTreePoint::NUM)
+                    {
+                        GPFunctionTreePoint* par = new GPFunctionTreePoint(pp->name());
+                        keymap->addPoint(par);
+                    }
+                }
+                
+            }
+        }
+        if (point->getChildrenNumber()>3)
+        {
+            GPFormulaTreePoint* condition = (GPFormulaTreePoint*)(point->getChild(3));
+            result->addPoint(new GPFunctionTreePoint(condition->name()));
+        }
+        
+        
+        return result;
+    }
+
     virtual GPAbstractPoint* copy(GPAbstractPoint* src, bool& needcopyChild)
     {
         GPFormulaTreePoint* point = (GPFormulaTreePoint*)(src);
@@ -370,7 +432,7 @@ public:
             {
                 std::string s = point->name();
                 needcopyChild = false;
-                return new GPFunctionTreePoint(_loadXn(s));
+                return new GPFunctionTreePoint(GPFunctionTreePoint::INPUT, _loadXn(s));
             }
             case GPFormulaTreePoint::ADF:
             {
@@ -388,6 +450,9 @@ public:
                 GPASSERT(NULL!=f);
                 return new GPFunctionTreePoint(f);
             }
+            case GPFormulaTreePoint::PARALLEL:
+                needcopyChild = false;
+                return newParallel(point);
             default:
                 GPASSERT(0);
                 break;
@@ -435,7 +500,7 @@ static std::map<GPFunctionTreePoint*, std::map<int, GPFunctionTreePoint*>> makeR
         std::map<int, GPFunctionTreePoint*> temp_result;
         for (auto p : iter.second)
         {
-            GPPtr<GPFunctionTreePoint> replace = new GPFunctionTreePoint(replaceId);
+            GPPtr<GPFunctionTreePoint> replace = new GPFunctionTreePoint(GPFunctionTreePoint::INPUT, replaceId);
             temp_result.insert(std::make_pair(replaceId, p));
             p->addRef();//Ref the point because replace wil deRef it
             root->replace(p, replace.get());

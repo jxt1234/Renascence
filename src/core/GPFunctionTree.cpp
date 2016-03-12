@@ -23,17 +23,36 @@ GPFunctionTreePoint::GPFunctionTreePoint(const GPFunction* f)
     mData.pFunc = f;
     mType = FUNCTION;
 }
-GPFunctionTreePoint::GPFunctionTreePoint(int inputPos)
+GPFunctionTreePoint::GPFunctionTreePoint(TYPE t, int iData)
 {
-    GPASSERT(inputPos>=0);
-    mData.iInput = inputPos;
-    mType = INPUT;
+    GPASSERT(iData>=0);
+    mType = t;
+    switch (t)
+    {
+        case INPUT:
+            mData.iInput = iData;
+            break;
+        case PARALLEL:
+            mData.iParallelType = iData;
+            break;
+        default:
+            GPASSERT(0);
+            break;
+    }
 }
+
+GPFunctionTreePoint::GPFunctionTreePoint(const std::string& extra)
+{
+    mType = STRING;
+    mExtraString = extra;
+}
+
 
 GPFunctionTreePoint::GPFunctionTreePoint(const GPFunctionTreePoint& src)
 {
     mData = src.mData;
     mType = src.mType;
+    mExtraString = src.mExtraString;
 }
 
 
@@ -42,6 +61,7 @@ void GPFunctionTreePoint::copyFrom(const GPFunctionTreePoint* src)
     shallowCopyChildren(src);
     mData = src->mData;
     mType = src->mType;
+    mExtraString = src->mExtraString;
 }
 
 GPFunctionTreePoint::~GPFunctionTreePoint()
@@ -83,10 +103,16 @@ int GPFunctionTreePoint::maxInputPos() const
     return maxPos;
 }
 
-bool GPFunctionTreePoint::_theSame(DATA a, DATA b, TYPE t)
+bool GPFunctionTreePoint::_equal(const GPFunctionTreePoint* point) const
 {
-    bool res = true;
-    switch (t)
+    if (mType != point->type())
+    {
+        return false;
+    }
+    DATA a = mData;
+    DATA b = point->mData;
+    bool res = false;
+    switch (mType)
     {
         case FUNCTION:
             res = a.pFunc == b.pFunc;
@@ -94,6 +120,11 @@ bool GPFunctionTreePoint::_theSame(DATA a, DATA b, TYPE t)
         case INPUT:
             res = a.iInput == b.iInput;
             break;
+        case PARALLEL:
+            res = a.iParallelType == b.iParallelType;
+            break;
+        case STRING:
+            res = mExtraString == point->mExtraString;
         default:
             break;
     }
@@ -108,7 +139,7 @@ bool GPFunctionTreePoint::equal(const GPFunctionTreePoint* point) const
     {
         return false;
     }
-    bool thesame = (mType == point->type() && _theSame(mData, point->data(), mType));
+    bool thesame = _equal(point);
     if (thesame)
     {
         GPASSERT(mChildren.size() == point->mChildren.size());
@@ -341,6 +372,29 @@ GPFunctionTreePoint* GPFunctionTree::copy(const GPFunctionTreePoint* origin)
     return p;
 }
 
+void GPFunctionTreePoint::_renderChildren(std::ostream& output) const
+{
+    if (mChildren.empty())
+    {
+        return;
+    }
+    output << "(";
+    for (int i=0; i<(int)mChildren.size()-1; ++i)
+    {
+        auto pp = (GPFunctionTreePoint*)mChildren[i];
+        pp->render(output);
+        output << ", ";
+    }
+    if (mChildren.size()>0)
+    {
+        auto pp = (GPFunctionTreePoint*)mChildren[mChildren.size()-1];
+        pp->render(output);
+    }
+    output << ")";
+    
+}
+
+
 void GPFunctionTreePoint::render(std::ostream& output) const
 {
     switch (mType) {
@@ -355,23 +409,37 @@ void GPFunctionTreePoint::render(std::ostream& output) const
             {
                 output << mF->name;
             }
-            output << "(";
-            for (int i=0; i<(int)mChildren.size()-1; ++i)
+            _renderChildren(output);
+            if (mChildren.empty())
             {
-                auto pp = (GPFunctionTreePoint*)mChildren[i];
-                pp->render(output);
-                output << ", ";
+                output << "()";
             }
-            if (mChildren.size()>0)
-            {
-                auto pp = (GPFunctionTreePoint*)mChildren[mChildren.size()-1];
-                pp->render(output);
-            }
-            output << ")";
             break;
         }
         case INPUT:
             output << "x"<<mData.iInput;
+            break;
+        case PARALLEL:
+        {
+            switch (mData.iParallelType)
+            {
+                case 0:
+                    output << "MAP";
+                    break;
+                case 1:
+                    output<<"REDUCE";
+                    break;
+                default:
+                    GPASSERT(0);
+                    break;
+            }
+            _renderChildren(output);
+        }
+            
+            break;
+        case STRING:
+            output << mExtraString;
+            _renderChildren(output);
             break;
         default:
             break;
