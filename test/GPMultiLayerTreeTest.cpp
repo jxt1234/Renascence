@@ -8,7 +8,6 @@
 #include "core/GPFactory.h"
 #include "core/GPStreamFactory.h"
 #include "core/GPProducer.h"
-#include "backend/GPGraphicADF.h"
 #include "frontend/GPFrontEndProducer.h"
 #include "midend/GPMultiLayerTree.h"
 #include "core/GPStreamFactory.h"

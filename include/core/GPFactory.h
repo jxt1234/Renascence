@@ -25,7 +25,6 @@ public:
     typedef enum
     {
         TREE,
-        GRAPHIC,
         STREAM,
         UNKNOWN
     }TYPE;

@@ -99,9 +99,6 @@ AGPProducer* GP_Producer_Create(GPStream** metaStream, IFunctionTable** table, i
         case GP_PRODUCER_TREE:
             p = GPFactory::createProducer(f, GPFactory::TREE);
             break;
-        case GP_PRODUCER_GRAPHIC:
-            p = GPFactory::createProducer(f, GPFactory::GRAPHIC);
-            break;
         case GP_PRODUCER_STREAM:
             p = GPFactory::createProducer(f, GPFactory::STREAM);
             break;

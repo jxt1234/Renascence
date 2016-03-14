@@ -17,7 +17,6 @@
 #include "core/GPProducer.h"
 #include "frontend/GPFunctionFrontEndProducer.h"
 #include "backend/GPTreeProducer.h"
-#include "backend/GPGraphicProducer.h"
 #include "backend/GPStreamADFProducer.h"
 #include "core/GPStreamFactory.h"
 #include <fstream>
@@ -30,9 +29,6 @@ GPProducer* GPFactory::createProducer(const GPFunctionDataBase* base, GPFactory:
     {
         case TREE:
             back = new GPTreeProducer();
-            break;
-        case GRAPHIC:
-            back = new GPGraphicProducer();
             break;
         case STREAM:
             back = new GPStreamADFProducer();
