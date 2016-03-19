@@ -18,11 +18,27 @@
 #include "GPContents.h"
 struct GPPieces
 {
-    unsigned int pMaxKey[10];
-    unsigned int nDimension;
+    unsigned int pKeySize[10];
+    unsigned int nKeyNumber;
 
     void* pMeta;
     void (*pFree)(void* pMeta);
-    GPContents*(*pLoad)(void* pMeta, unsigned int* pKey);
+    
+    /*This Function will create a new GPContent, and the caller should destroy it self*/
+    GPContents*(*pLoad)(void* pMeta, unsigned int* pKey, unsigned int keynum);
+
+    /*This Function will both destroy or own the memory of GPContent, after calling this function, should not use GPContent*/
+    void(*pSave)(void* pMeta, unsigned int* pKey, unsigned int keynum, GPContents* c);
+    
+    
+    GPContents* load(unsigned int* pKey, unsigned int keynum)
+    {
+        return pLoad(pMeta, pKey, keynum);
+    }
+    
+    void save(unsigned int* pKey, unsigned int keynum, GPContents* c)
+    {
+        pSave(pMeta, pKey, keynum, c);
+    }
 };
 #endif

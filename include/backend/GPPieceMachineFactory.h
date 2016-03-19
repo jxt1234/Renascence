@@ -13,13 +13,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef BACKEND_GPSINGLEPARALLELMACHINE_H
-#define BACKEND_GPSINGLEPARALLELMACHINE_H
-#include "lowlevelAPI/IParallelMachine.h"
-class GPSingleParallelMachine:public IParallelMachine
-{
-public:
-    virtual std::pair<Creator*, Executor*> vGenerate(const GPParallelType* data, PARALLELTYPE type) const override;
-};
-
+#ifndef BACKEND_GPPIECEMACHINEFACTORY_H
+#define BACKEND_GPPIECEMACHINEFACTORY_H
 #endif

@@ -31,4 +31,7 @@ class AutoStorage
     private:
         T* mT;
 };
+#define AUTOSTORAGE(x, type, size)\
+    AutoStorage<type> __##x(size);\
+    type * x = __##x.get();
 #endif

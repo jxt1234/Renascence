@@ -25,15 +25,22 @@ struct GPParallelType
     IGPAutoDefFunction* pFunc;
     GPContents* (*pFuncRunProc)(IGPAutoDefFunction* pFunc, GPContents* inputs);
     void (*pFuncFree)(IGPAutoDefFunction*);
+    /*For Reconstruct*/
+    std::string sFuncFormula;
+    std::string sFuncParameter;
+    std::string sFuncType;
 
     GPSingleTree* pCondition;
     void (*pConditionFree)(GPSingleTree*);
     bool (*pConditionRunProc)(GPSingleTree* tree, double* values, unsigned int valueNumber);
     //If low level lib user thought the GPSingleTree is too slow, can extract formula instead
-    std::string sFormula;
+    std::string sConditionFormula;
 
+    //Currently Not used
     std::vector<std::vector<unsigned int>> mSplitInfo;
-    std::vector<std::vector<unsigned int>> mOutputKey;
+    
+    //a0: 0,0  b2: 1,2  d2: 3,2  and so on
+    std::vector<std::pair<unsigned int, unsigned int>> mOutputKey;
 
     void clear()
     {

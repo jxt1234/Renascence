@@ -13,13 +13,17 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef BACKEND_GPSINGLEPARALLELMACHINE_H
-#define BACKEND_GPSINGLEPARALLELMACHINE_H
-#include "lowlevelAPI/IParallelMachine.h"
-class GPSingleParallelMachine:public IParallelMachine
+#ifndef MATH_GPCARRYVARYGROUP_H
+#define MATH_GPCARRYVARYGROUP_H
+class GPCarryVaryGroup
 {
 public:
-    virtual std::pair<Creator*, Executor*> vGenerate(const GPParallelType* data, PARALLELTYPE type) const override;
+    GPCarryVaryGroup(unsigned int* dimesions, unsigned int number);
+    ~GPCarryVaryGroup();
+    bool next(unsigned int* enums, unsigned int number);
+    void start(unsigned int* enums, unsigned int number);
+private:
+    unsigned int mNumber;
+    unsigned int* mDimesions;
 };
-
 #endif

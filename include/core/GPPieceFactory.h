@@ -13,13 +13,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef BACKEND_GPSINGLEPARALLELMACHINE_H
-#define BACKEND_GPSINGLEPARALLELMACHINE_H
-#include "lowlevelAPI/IParallelMachine.h"
-class GPSingleParallelMachine:public IParallelMachine
+#ifndef CORE_GPPIECEFACTORY_H
+#define CORE_GPPIECEFACTORY_H
+#include "lowlevelAPI/GPPieces.h"
+class GPPieceFactory
 {
 public:
-    virtual std::pair<Creator*, Executor*> vGenerate(const GPParallelType* data, PARALLELTYPE type) const override;
+    static GPPieces* createMemoryPiece(const std::vector<unsigned int> &keydimesions);
+    static GPPieces* createFilePiece(const std::vector<unsigned int> &keydimesions, const char* cacheDirpath, size_t maxMemoryCacheSize/*MB*/);
 };
-
 #endif

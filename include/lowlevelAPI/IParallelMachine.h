@@ -24,12 +24,17 @@ public:
         MAP,
         REDUCE
     }PARALLELTYPE;
-    class IParallelExcutor
+
+    class Creator
     {
     public:
-        virtual bool vPrepare(GPPieces** inputs, int inputNumber) = 0;
-        virtual GPPieces* vRun(GPPieces** inputs, int inputNumber) const = 0;
+        virtual GPPieces* vPrepare(GPPieces** inputs, int inputNumber) const = 0;
     };
-    virtual IParallelExcutor* vGenerate(const GPParallelType* data, PARALLELTYPE type) const = 0;
+    class Executor
+    {
+    public:
+        virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber) const = 0;
+    };
+    virtual std::pair<Creator*, Executor*> vGenerate(const GPParallelType* data, PARALLELTYPE type) const = 0;
 };
 #endif
