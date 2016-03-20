@@ -19,6 +19,7 @@
 #include "core/IGPAutoDefFunction.h"
 #include "math/GPSingleTree.h"
 #include "math/GPCarryVaryGroup.h"
+#include <string.h>
 
 class PieceInMemoryCreator:public IParallelMachine::Creator
 {

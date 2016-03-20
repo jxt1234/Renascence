@@ -47,7 +47,7 @@ public:
     GPContents* get(unsigned int* key, int keynum)
     {
         auto sum = _computePos(key, keynum);
-        GPASSERT(mPieces[sum]!=NULL);
+        //GPASSERT(mPieces[sum]!=NULL);
         GPContents* res = mPieces[sum];
         mPieces[sum] = NULL;
         return res;

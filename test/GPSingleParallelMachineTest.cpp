@@ -1,11 +1,19 @@
+#include "test/GPTest.h"
 #include "backend/GPSingleParallelMachine.h"
 #include "core/GPFactory.h"
 #include "core/GPProducer.h"
 #include "core/GPPieceFactory.h"
 #include "core/GPStreamFactory.h"
-#include "platform/system_lib.h"
 #include <string.h>
 #include <sstream>
+
+class GPSingleParallelMachineTest:public GPTest
+{
+    public:
+        virtual void run();
+        GPSingleParallelMachineTest(){}
+        virtual ~GPSingleParallelMachineTest(){}
+};
 
 static GPPieces* _createInputPieces(const IStatusType* s)
 {
@@ -58,7 +66,7 @@ static void __run()
         {
             data.mOutputKey.clear();
             data.mOutputKey.push_back(std::make_pair(0, 0));
-            data.pFunc = sys->createFunction("F(F((S(x0))))", std::vector<const IStatusType*>());
+            data.pFunc = sys->createFunction("S(x0)", std::vector<const IStatusType*>());
             auto p = machine.vGenerate(&data, IParallelMachine::MAP);
             GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
             GPPieces* outputs = p.first->vPrepare(&inputs, 1);
@@ -95,13 +103,10 @@ static void __run()
     }
 }
 
-
-static const char* gPath = "/Users/jiangxiaotang/Documents/Renascence/";
-
-int main()
+void GPSingleParallelMachineTest::run()
 {
-    GPStreamFactory::setParentPath(gPath);
-    system_set_path(gPath);
     __run();
-    return 1;
 }
+
+
+static GPTestRegister<GPSingleParallelMachineTest> a("GPSingleParallelMachineTest");

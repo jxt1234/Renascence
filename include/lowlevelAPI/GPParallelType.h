@@ -45,7 +45,10 @@ struct GPParallelType
     void clear()
     {
         pFuncFree(pFunc);
-        pConditionFree(pCondition);
+        if (NULL!=pCondition)
+        {
+            pConditionFree(pCondition);
+        }
     }
 };
 

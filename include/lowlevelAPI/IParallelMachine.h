@@ -28,12 +28,18 @@ public:
     class Creator
     {
     public:
+        virtual ~Creator(){}
         virtual GPPieces* vPrepare(GPPieces** inputs, int inputNumber) const = 0;
+    protected:
+        Creator(){}
     };
     class Executor
     {
     public:
+        virtual ~Executor(){}
         virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber) const = 0;
+    protected:
+        Executor(){}
     };
     virtual std::pair<Creator*, Executor*> vGenerate(const GPParallelType* data, PARALLELTYPE type) const = 0;
 };
