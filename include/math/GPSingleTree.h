@@ -19,7 +19,7 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "utils/RefCount.h"
+#include "lowlevelAPI/GPRefCount.h"
 #include "GPAbstractPoint.h"
 #include "GPSingleTreeFunction.h"
 #include "head.h"
@@ -58,7 +58,7 @@ private:
     TYPE mType;
 };
 
-class GPSingleTree:public RefCount
+class GPSingleTree:public GPRefCount
 {
 public:
     GPSingleTree(GPPtr<GPSinglePoint> root);

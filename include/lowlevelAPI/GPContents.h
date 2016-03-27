@@ -17,71 +17,78 @@
 #define USER_PACKAGE_H
 #include <vector>
 #include "IStatusType.h"
+#include "GPRefCount.h"
 
 /*We can not define a destructor function for GPContents, because it's handlered by system*/
-struct GPContents
+class GPContents
 {
-    struct GP_Unit
+public:
+    class GP_Unit :public GPRefCount
     {
-        void* content;
-        const IStatusType* type;
-    };
-    std::vector<GP_Unit> contents;
-    
-    void set(void* content, const IStatusType* type, int pos)
-    {
-        if (pos <= 0 || pos >= contents.size())
+    public:
+        GP_Unit(void* content, const IStatusType* type, bool own=true)
         {
-            return;
+            mContent = content;
+            mType = type;
+            mOwn = own;
         }
-        contents[pos].content = content;
-        contents[pos].type = type;
-    }
-
-    //Function for convinent
-    void push(void* content, const IStatusType* type)
-    {
-        GP_Unit p;
-        p.content = content;
-        p.type = type;
-        contents.push_back(p);
-    }
-    void push(const GP_Unit unit)
-    {
-        contents.push_back(unit);
-    }
-    void releaseForFree()
-    {
-        for (int i=0; i<contents.size(); ++i)
+        ~GP_Unit()
         {
-            contents[i].content = NULL;
-        }
-    }
-    void clearContents()
-    {
-        for (auto unit : contents)
-        {
-            if (unit.content && unit.type)
+            if (mOwn)
             {
-                unit.type->vFree(unit.content);
+                mType->vFree(mContent);
             }
         }
-        releaseForFree();
-    }
-    void clear()
+        
+        void* content() const {return mContent;}
+        const IStatusType* type() const {return mType;}
+    private:
+        void* mContent;
+        const IStatusType* mType;
+        bool mOwn;
+    };
+
+    GPContents()
     {
-        clearContents();
-        contents.clear();
     }
-    inline void* get(size_t i) const {return contents[i].content;}
-    inline const GP_Unit& getContent(size_t i) const {return contents[i];}
-    inline const GP_Unit& operator[](size_t i) const {return contents[i];}
-    inline size_t size() const {return contents.size();}
-    static void destroy(GPContents* c)
+    ~GPContents()
     {
-        c->clear();
-        delete c;
     }
+    void push(void* content, const IStatusType* type, bool own=true)
+    {
+        mContents.push_back(new GP_Unit(content, type, own));
+    }
+    inline void* get(size_t i) const
+    {
+        return mContents[i]->content();
+    }
+    inline const IStatusType* getType(size_t i) const
+    {
+        return mContents[i]->type();
+    }
+    inline size_t size() const
+    {
+        return mContents.size();
+    }
+    inline GPPtr<GP_Unit> getContent(size_t i) const
+    {
+        return mContents[i];
+    }
+    void pushContent(GPPtr<GP_Unit> unit)
+    {
+        mContents.push_back(unit);
+    }
+    
+    void merge(const GPContents& other)
+    {
+        for (auto c : other.mContents)
+        {
+            mContents.push_back(c);
+        }
+    }
+
+private:
+    std::vector<GPPtr<GP_Unit>> mContents;
 };
 
 typedef GPContents*(*computeFunction)(GPContents* inputs);

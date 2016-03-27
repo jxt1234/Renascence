@@ -24,7 +24,7 @@
 #include <functional>
 
 /*ES strategy*/
-class GPEvolutionGroup:public RefCount
+class GPEvolutionGroup:public GPRefCount
 {
 public:
     GPEvolutionGroup(GPProducer* sys, int time = 10, int size = 10, int depth=0);
@@ -41,7 +41,7 @@ public:
     void setBestTree(GPPtr<GPFunctionTree> tree);
     void loadBest(const GPTreeNode* node);
 private:
-    struct func_para:public RefCount
+    struct func_para:public GPRefCount
     {
         GPPtr<GPParameter> pStructure;
         GPPtr<GPParameter> pParamter;

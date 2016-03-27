@@ -29,8 +29,6 @@ static GPPieces* _createInputPieces(const IStatusType* s)
         c->push(s->vLoad(input.get()), s);
         inputs->save(&key, 1, c);
     }
-    
-    
     return inputs;
 }
 
@@ -50,8 +48,8 @@ static void _saveOutputPieces(GPPieces* output, const char* prefix)
         std::stringstream os;
         os << "output/GPSingleParallelMachineTest"<<prefix << "_"<<i+1<<".jpg";
         GPPtr<GPWStreamWrap> outputStream = GPStreamFactory::NewWStream(os.str().c_str());
-        c->getContent(0).type->vSave(c->get(0), outputStream.get());
-        GPContents::destroy(c);
+        c->getType(0)->vSave(c->get(0), outputStream.get());
+        delete c;
     }
 }
 
@@ -61,7 +59,7 @@ static void __run()
     GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
     {
         GPParallelType data;
-        data.pCondition = NULL;
+        data.initialize();
         GPPtr<GPProducer> sys = GPFactory::createProducer(base.get());
         {
             data.mOutputKey.clear();

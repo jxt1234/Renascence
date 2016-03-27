@@ -15,17 +15,17 @@
 ******************************************************************/
 #ifndef UTILS_AUTOCLEAN_H
 #define UTILS_AUTOCLEAN_H
-#include "RefCount.h"
+#include "lowlevelAPI/GPRefCount.h"
 class AutoClean
 {
     public:
-        AutoClean(RefCount* t):mT(t){}
+        AutoClean(GPRefCount* t):mT(t){}
         ~AutoClean()
         {
             mT->decRef();
         }
     private:
-        RefCount* mT;
+        GPRefCount* mT;
 };
 
 #define AUTOCLEAN(t) AutoClean __##t(t);

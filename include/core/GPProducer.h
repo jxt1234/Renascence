@@ -15,13 +15,13 @@
 ******************************************************************/
 #ifndef CORE_GPPRODUCER_H
 #define CORE_GPPRODUCER_H
-#include "utils/RefCount.h"
+#include "lowlevelAPI/GPRefCount.h"
 #include "IGPAutoDefFunction.h"
 #include "GPFunctionTree.h"
 #include <vector>
 class GPFrontEndProducer;
 class GPBackEndProducer;
-class GPProducer:public RefCount
+class GPProducer:public GPRefCount
 {
 public:
     GPProducer(GPFrontEndProducer* front, GPBackEndProducer* back, const GPFunctionDataBase* base);

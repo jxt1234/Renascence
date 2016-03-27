@@ -17,8 +17,8 @@
 #define CORE_GPMULTITABLE_H
 #include <vector>
 #include "lowlevelAPI/IFunctionTable.h"
-#include "utils/RefCount.h"
-class GPMultiTable:public IFunctionTable, public RefCount
+#include "lowlevelAPI/GPRefCount.h"
+class GPMultiTable:public IFunctionTable, public GPRefCount
 {
 public:
     void addTable(IFunctionTable* table, bool need_delete);

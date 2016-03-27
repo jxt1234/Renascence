@@ -15,11 +15,11 @@
 ******************************************************************/
 #ifndef FRONTEND_GPFRONTENDPRODUCER_H
 #define FRONTEND_GPFRONTENDPRODUCER_H
-#include "utils/RefCount.h"
+#include "lowlevelAPI/GPRefCount.h"
 #include "lowlevelAPI/IStatusType.h"
 #include "core/GPFunctionTree.h"
 #include <vector>
-class GPFrontEndProducer:public RefCount
+class GPFrontEndProducer:public GPRefCount
 {
 public:
     virtual GPFunctionTree* vCreateOneFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const = 0;

@@ -17,7 +17,7 @@
 #define HEAD_H
 #include "utils/GPDebug.h"
 #include "utils/GPClock.h"
-#include "utils/RefCount.h"
+#include "lowlevelAPI/GPRefCount.h"
 #include "utils/AutoClean.h"
 #include "utils/AutoStorage.h"
 typedef double GPFLOAT;

@@ -16,15 +16,15 @@
 #ifndef CORE_GPSTREAMFACTORY_H
 #define CORE_GPSTREAMFACTORY_H
 #include "lowlevelAPI/GPStream.h"
-#include "utils/RefCount.h"
+#include "lowlevelAPI/GPRefCount.h"
 #include <string>
-class GPStreamWrap:public GPStream, public RefCount
+class GPStreamWrap:public GPStream, public GPRefCount
 {
 public:
     GPStreamWrap();
     virtual ~GPStreamWrap();
 };
-class GPWStreamWrap:public GPWStream, public RefCount
+class GPWStreamWrap:public GPWStream, public GPRefCount
 {
 public:
     GPWStreamWrap();

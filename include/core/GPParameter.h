@@ -17,7 +17,7 @@
 #define CORE_GPPARAMETERS_H
 #include "head.h"
 /*A Seriers of numbers that in [0, 1]*/
-class GPParameter:public RefCount
+class GPParameter:public GPRefCount
 {
 public:
     GPParameter(int n, const GPFLOAT* c = NULL);

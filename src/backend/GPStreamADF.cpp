@@ -40,11 +40,12 @@ bool GPStreamADF::CP::vReceive(CONTENT c, const Point* source)
             if (mPoint->receive(c, i) && mOpen)
             {
                 auto comp = mPoint->compute();
-                GPASSERT(comp.size() == mOutputs.size());
+                GPASSERT(comp->size() == mOutputs.size());
                 for (int j=0; j<mOutputs.size(); ++j)
                 {
-                    mOutputs[j]->vReceive(comp[j], this);
+                    mOutputs[j]->vReceive(comp->getContent(j), this);
                 }
+                delete comp;
                 mOpen = false;
             }
             return true;
@@ -87,7 +88,7 @@ bool GPStreamADF::DP::vReceive(CONTENT c, const Point* source)
     GPASSERT(1 == mInputs.size());
     if (NULL!=mContents.get())
     {
-        GPASSERT(mContents->getType() == c->getType());
+        GPASSERT(mContents->type() == c->type());
     }
     mContents = c;
     return false;
@@ -438,11 +439,9 @@ GPContents* GPStreamADF::vRun(GPContents* inputs)
         auto pos = mInputPos[i];
         GPASSERT(pos < inputs->size());
         //FUNC_PRINT_ALL(inputs->getContent(mInputPos[i]).content, p);
-        if (NULL!=inputs->getContent(pos).content)
+        if (NULL!=inputs->get(pos))
         {
-            CONTENT c = new GPComputePoint::ContentWrap(inputs->getContent(pos).content, inputs->getContent(pos).type);
-            mSources[i]->vReceive(c, NULL);
-            c->releaseForFree();
+            mSources[i]->vReceive(inputs->getContent(i), NULL);
         }
     }
     bool res_valid = true;
@@ -465,8 +464,7 @@ GPContents* GPStreamADF::vRun(GPContents* inputs)
     {
         DP* d = (DP*)dv.get();
         auto unit = d->get();
-        res->push(unit->getContent(), unit->getType());
-        unit->releaseForFree();
+        res->pushContent(unit);
     }
     return res;
 }

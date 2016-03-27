@@ -17,8 +17,8 @@
 #define CARRY_POINT_H
 #include <vector>
 #include <stdlib.h>
-#include "utils/RefCount.h"
-class carryPoint:public RefCount
+#include "lowlevelAPI/GPRefCount.h"
+class carryPoint:public GPRefCount
 {
 public:
     carryPoint():mDepend(NULL), mGrow(false){}

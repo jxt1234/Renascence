@@ -23,7 +23,7 @@
 #include "xml/xmlReader.h"
 #include "head.h"
 
-class GPFunctionDataBase:public RefCount
+class GPFunctionDataBase:public GPRefCount
 {
 public:
     std::vector<const IStatusType*> queryType(const std::string& typelist);

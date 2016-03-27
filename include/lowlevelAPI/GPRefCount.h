@@ -1,7 +1,7 @@
-#ifndef INCLUDE_UTILS_REFCOUNT_H
-#define INCLUDE_UTILS_REFCOUNT_H
+#ifndef INCLUDE_LOWLEVELAPI_GPREFCOUNT_H
+#define INCLUDE_LOWLEVELAPI_GPREFCOUNT_H
 #include <stdlib.h>
-class RefCount
+class GPRefCount
 {
 public:
     void addRef()
@@ -18,16 +18,16 @@ public:
     }
 protected:
     inline int count() const{return mNum;}
-    RefCount():mNum(1){}
-    RefCount(const RefCount& f):mNum(f.mNum){}
-    void operator=(const RefCount& f)
+    GPRefCount():mNum(1){}
+    GPRefCount(const GPRefCount& f):mNum(f.mNum){}
+    void operator=(const GPRefCount& f)
     {
         if (this != &f)
         {
             mNum = f.mNum;
         }
     }
-    virtual ~RefCount(){}
+    virtual ~GPRefCount(){}
 private:
     int mNum;
 };
@@ -48,6 +48,7 @@ dst->decRef();\
 }\
 dst = src;\
 }
+
 template <typename T>
 class GPPtr {
 public:
@@ -73,4 +74,6 @@ public:
 private:
     T* mT;
 };
+
+
 #endif

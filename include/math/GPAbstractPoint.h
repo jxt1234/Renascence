@@ -17,9 +17,9 @@
 #define ALGORITHM_ABSTRACTPOINT_H
 
 #include <vector>
-#include "utils/RefCount.h"
+#include "lowlevelAPI/GPRefCount.h"
 #include "utils/GPDebug.h"
-class GPAbstractPoint:public RefCount
+class GPAbstractPoint:public GPRefCount
 {
 public:
     /*This class will alloc a new GPAbstractPoint and copy the contents from src*/

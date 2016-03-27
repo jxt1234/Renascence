@@ -523,7 +523,7 @@ static void restore(std::map<GPFunctionTreePoint*, std::map<int, GPFunctionTreeP
     }
 }
 
-class AutoRestore:public RefCount
+class AutoRestore:public GPRefCount
 {
 public:
     AutoRestore(std::map<GPFunctionTreePoint*, std::map<int, GPFunctionTreePoint*>>& map):mMap(map)

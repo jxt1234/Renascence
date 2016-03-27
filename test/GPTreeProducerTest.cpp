@@ -42,22 +42,17 @@ void GPTreeProducerTest::run()
         for (auto f : fs)
         {
             auto bmpoutput = f->vRun(&inp);
-            GPContents fitinput;
-            fitinput.push(bmpoutput->getContent(0));
-            fitinput.push(targetBitmap.getContent(0));
-            auto fitoutput = fit->vRun(&fitinput);
+            bmpoutput->merge(targetBitmap);
+            auto fitoutput = fit->vRun(bmpoutput);
             double* __fit = (double*)fitoutput->get(0);
             FUNC_PRINT_ALL(*__fit, f);
-            GPContents::destroy(bmpoutput);
-            GPContents::destroy(fitoutput);
+            delete bmpoutput;
             sum++;
             if (sum >=10)
             {
                 break;
             }
         }
-        targetBitmap.clear();
-        inp.clear();
     }
 }
 

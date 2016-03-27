@@ -153,22 +153,18 @@ GPContents* GPTreeADFPoint::compute(GPContents* input)
         if (p->mFunc == NULL)
         {
             GPASSERT(p->mInputPos < input->size());
-            totalInputs.push(input->contents[p->mInputPos]);
+            totalInputs.pushContent(input->getContent(p->mInputPos));
             continue;
         }
         GPContents* out = p->compute(input);
-        const auto& output_unit = out->contents;
-        for (int j=0; j<output_unit.size(); ++j)
-        {
-            childreninputs.push(output_unit[j]);
-            totalInputs.push(output_unit[j]);
-        }
+        childreninputs.merge(*out);
+        totalInputs.merge(*out);
         delete out;
     }
     //Get status
     for (int i=0; i<mStatus.size(); ++i)
     {
-        totalInputs.push(mStatus[i]->content(), mStatus[i]->type());
+        totalInputs.push(mStatus[i]->content(), mStatus[i]->type(), false);
     }
     GPContents* result;
     {
@@ -177,8 +173,6 @@ GPContents* GPTreeADFPoint::compute(GPContents* input)
 #endif
         result = mFunc->basic(&totalInputs);
     }
-    //Free All children' memory
-    childreninputs.clear();
     return result;
 }
 

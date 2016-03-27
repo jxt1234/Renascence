@@ -24,7 +24,7 @@
 #include "head.h"
 #include "optimizor/IGPOptimizor.h"
 
-class IGPAutoDefFunction:public RefCount
+class IGPAutoDefFunction:public GPRefCount
 {
 public:
     virtual GPContents* vRun(GPContents* inputs) = 0;
@@ -41,7 +41,6 @@ public:
     GPPtr<GPFunctionTree> getBasicTree() const {return mBasic;}
     void setParameters(GPPtr<GPParameter> para) {mPara = para;}
     GPPtr<GPParameter> getParameters() const {return mPara;}
-    
 private:
     GPPtr<GPFunctionTree> mBasic;
     GPPtr<GPParameter> mPara;

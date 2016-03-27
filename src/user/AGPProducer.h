@@ -16,7 +16,7 @@
 #ifndef USER_AGPPRODUCER_H
 #define USER_AGPPRODUCER_H
 /*Warp for GPFunctionDataBase and GPProducer*/
-class AGPProducer:public RefCount
+class AGPProducer:public GPRefCount
 {
     public:
         AGPProducer(GPFunctionDataBase* f, GPProducer* p)

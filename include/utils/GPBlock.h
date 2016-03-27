@@ -15,9 +15,9 @@
 ******************************************************************/
 #ifndef UTILS_GPBLOCK_H
 #define UTILS_GPBLOCK_H
-#include "RefCount.h"
+#include "lowlevelAPI/GPRefCount.h"
 #include <stdlib.h>
-class GPBlock:public RefCount
+class GPBlock:public GPRefCount
 {
 public:
     GPBlock(size_t size);

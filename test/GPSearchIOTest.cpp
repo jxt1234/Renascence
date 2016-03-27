@@ -38,7 +38,6 @@ class GPSearchIOTest:public GPTest
                 GPASSERT(_output->size()==1);
                 ist->vSave(_output->get(0), screen.get());
                 cout <<endl;
-                _output->clear();
                 delete _output;
                 f->decRef();
                 /*Multi*/
@@ -53,13 +52,11 @@ class GPSearchIOTest:public GPTest
                     GPASSERT(_output2->size()==1);
                     ist->vSave(_output2->get(0), screen.get());
                     cout << endl;
-                    _output2->clear();
                     delete _output2;
                     GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream(fileName.str().c_str());
                     GPPtr<GPTreeNode> n = f_mul[i]->vSave();
                     xmlReader::dumpNodes(n.get(), output.get());
                 }
-                GPinp.clear();
             }
         }
         GPSearchIOTest(){}

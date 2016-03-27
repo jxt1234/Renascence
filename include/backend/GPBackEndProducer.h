@@ -15,11 +15,11 @@
 ******************************************************************/
 #ifndef BACKEND_GPBACKENDPRODUCER_H
 #define BACKEND_GPBACKENDPRODUCER_H
-#include "utils/RefCount.h"
+#include "lowlevelAPI/GPRefCount.h"
 #include "core/GPFunctionDataBase.h"
 #include "core/GPFunctionTree.h"
 #include "core/IGPAutoDefFunction.h"
-class GPBackEndProducer:public RefCount
+class GPBackEndProducer:public GPRefCount
 {
 public:
     GPBackEndProducer(){}

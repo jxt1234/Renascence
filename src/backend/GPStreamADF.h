@@ -43,7 +43,7 @@ public:
     
 private:
     static void _addPoint();
-    class Point:public RefCount
+    class Point:public GPRefCount
     {
     public:
         Point(int inputNumber, int outputNumber):mOutputs(outputNumber, NULL), mInputs(inputNumber, NULL){}

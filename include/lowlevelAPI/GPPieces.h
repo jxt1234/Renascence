@@ -40,5 +40,10 @@ struct GPPieces
     {
         pSave(pMeta, pKey, keynum, c);
     }
+    
+    void clear()
+    {
+        pFree(pMeta);
+    }
 };
 #endif

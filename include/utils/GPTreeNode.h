@@ -18,8 +18,8 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "RefCount.h"
-class GPTreeNode:public RefCount
+#include "lowlevelAPI/GPRefCount.h"
+class GPTreeNode:public GPRefCount
 {
 public:
     GPTreeNode(const std::string& name, const std::string& attr);

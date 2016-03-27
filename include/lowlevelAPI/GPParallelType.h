@@ -41,6 +41,14 @@ struct GPParallelType
     
     //a0: 0,0  b2: 1,2  d2: 3,2  and so on
     std::vector<std::pair<unsigned int, unsigned int>> mOutputKey;
+    
+    void initialize()
+    {
+        pFunc = NULL;
+        pFuncFree = NULL;
+        pCondition = NULL;
+        pConditionFree = NULL;
+    }
 
     void clear()
     {

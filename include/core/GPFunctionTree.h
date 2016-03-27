@@ -65,7 +65,7 @@ private:
     TYPE mType;
 };
 
-class GPFunctionTree:public RefCount
+class GPFunctionTree:public GPRefCount
 {
 public:
     GPFunctionTree(GPPtr<GPFunctionTreePoint> root, bool total=true);

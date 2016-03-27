@@ -1,7 +1,6 @@
 #include "test/GPTest.h"
 #include "user/GPAPI.h"
 #include "core/GPStreamFactory.h"
-#include "utils/RefCount.h"
 #include <assert.h>
 #include <fstream>
 #include <iostream>

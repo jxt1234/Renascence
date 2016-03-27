@@ -17,13 +17,13 @@
 #ifndef __GP__GPProducerUtils__H
 #define __GP__GPProducerUtils__H
 #include "core/GPFunctionDataBase.h"
-#include "utils/RefCount.h"
-class GPProducerUtils:public RefCount
+#include "lowlevelAPI/GPRefCount.h"
+class GPProducerUtils:public GPRefCount
 {
 public:
     typedef const GPFunction* FUNC;
     typedef const IStatusType* TYPE;
-    struct func:public RefCount
+    struct func:public GPRefCount
     {
         FUNC basic;
         std::vector<TYPE> inputs;

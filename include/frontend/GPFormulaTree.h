@@ -15,7 +15,7 @@
  ******************************************************************/
 #ifndef MATH_GPFORMULATREE_H
 #define MATH_GPFORMULATREE_H
-#include "utils/RefCount.h"
+#include "lowlevelAPI/GPRefCount.h"
 #include "math/GPAbstractPoint.h"
 #include <string>
 #include <ostream>
@@ -51,7 +51,7 @@ private:
 
     GPFormulaTreePoint* mFather;
 };
-class GPFormulaTree:public RefCount
+class GPFormulaTree:public GPRefCount
 {
 public:
     GPFormulaTree();

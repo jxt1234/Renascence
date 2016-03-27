@@ -46,14 +46,10 @@ public:
             
             auto fitfunc = [&](IGPAutoDefFunction* f){
                 GPContents* result = f->vRun(&inp);
-                GPContents temp;
-                temp.push(result->getContent(0));
-                temp.push(target.getContent(0));
-                GPContents* fits = fit->vRun(&temp);
+                result->merge(target);
+                GPContents* fits = fit->vRun(result);
                 double fitresult = *(double*)fits->get(0);
-                result->clear();
                 delete result;
-                fits->clear();
                 delete fits;
                 return fitresult;
             };
@@ -67,8 +63,6 @@ public:
             GPPtr<GPWStreamWrap> outputF = GPStreamFactory::NewWStream("output/tree_result.xml");
             GPPtr<GPTreeNode> n = result->vSave();
             xmlReader::dumpNodes(n.get(), outputF.get());
-            inp.clear();
-            target.clear();
         }
     }
     GPXmlEvolutionTest(){}

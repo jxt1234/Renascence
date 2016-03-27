@@ -17,7 +17,7 @@
 #define MIDEND_GPMULTILAYERTREE_H
 #include "core/GPFunctionTree.h"
 #include <map>
-class GPMultiLayerTree:public RefCount
+class GPMultiLayerTree:public GPRefCount
 {
 public:
     typedef std::map<int, GPPtr<GPFunctionTreePoint>> POINTS;

@@ -50,7 +50,7 @@ private:
 class SingleExecutor:public IParallelMachine::Executor
 {
 public:
-    class Handle:public RefCount
+    class Handle:public GPRefCount
     {
     public:
         /*Should Clear input*/
@@ -127,10 +127,7 @@ public:
             {
                 GPContents* ci = inputs[i]->load(keyCurrent+pos, inputs[i]->nKeyNumber);
                 pos += inputs[i]->nKeyNumber;
-                for (int j=0; j<ci->size(); ++j)
-                {
-                    currentGPInputs->push(ci->contents[j]);
-                }
+                currentGPInputs->merge(*ci);
                 delete ci;//Don't delete content
             }
             mHandle->vHandle(mFunction, output, currentGPInputs, keyOutput, (unsigned int)mOutputKey.size());
@@ -152,7 +149,7 @@ public:
     {
         GPContents* currentGPOutput = function->vRun(input);
         output->save(outputKey, keyNumber, currentGPOutput);
-        GPContents::destroy(input);
+        delete input;
     }
 };
 
@@ -166,20 +163,10 @@ class ReduceHandle:public SingleExecutor::Handle
             output->save(outputKey, keyNumber, input);
             return;
         }
-        GPContents mergeInput;
         /*Merge, the oldOutput should be before the input*/
-        for (int i=0; i<oldOutput->size(); ++i)
-        {
-            mergeInput.push(oldOutput->contents[i]);
-        }
-        for (int i=0; i<input->size(); ++i)
-        {
-            mergeInput.push(input->contents[i]);
-        }
-        delete oldOutput;
+        oldOutput->merge(*input);
         delete input;
-        GPContents* currentGPOutput = function->vRun(&mergeInput);
-        mergeInput.clear();
+        GPContents* currentGPOutput = function->vRun(oldOutput);
         output->save(outputKey, keyNumber, currentGPOutput);
     }
 };

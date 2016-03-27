@@ -18,7 +18,7 @@
 #include "lowlevelAPI/IStatusType.h"
 #include "head.h"
 
-class GPStatusContent:public RefCount
+class GPStatusContent:public GPRefCount
 {
     public:
         GPStatusContent(const IStatusType* t, double defaultratio=0.5);

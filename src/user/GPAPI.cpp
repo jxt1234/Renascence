@@ -22,26 +22,19 @@
 class AGPContents
 {
 public:
-    AGPContents(bool own = false)
+    AGPContents()
     {
-        mOwn = own;
         mContent = new GPContents;
         GPASSERT(NULL!=mContent);
     }
     AGPContents(GPContents* content)
     {
-        mOwn = true;
         mContent = content;
     }
     ~AGPContents()
     {
-        if (mOwn)
-        {
-            mContent->clearContents();
-        }
         delete mContent;
     }
-    bool own() const {return mOwn;}
     GPContents* get() const
     {
         return mContent;
@@ -49,7 +42,6 @@ public:
     
 private:
     GPContents* mContent;
-    bool mOwn;
 };
 
 
@@ -344,7 +336,7 @@ AGPContents* GP_Contents_Load(AGPProducer* p, GPStream** inputs, const char* typ
         }
     }
     
-    AGPContents* c = new AGPContents(true);
+    AGPContents* c = new AGPContents;
     for (int i=0; i<n; ++i)
     {
         c->get()->push(types[i]->vLoad(inputs[i]), types[i]);
@@ -369,8 +361,9 @@ void GP_Contents_Save(AGPContents* content, GPWStream* outputs, int n)
         FUNC_PRINT(0);
         return;
     }
-    auto c = content->get()->contents[n];
-    c.type->vSave(c.content, outputs);
+    auto type = content->get()->getType(n);
+    auto content_ = content->get()->get(n);
+    type->vSave(content_, outputs);
 }
 
 
@@ -522,27 +515,24 @@ static double _FitValue(IGPAutoDefFunction* adf, void* pMeta)
     if (NULL == meta->pPostFunction)
     {
         GPASSERT(output->size() == 1);
-        GPASSERT(output->getContent(0).type->name() == "double");
+        GPASSERT(output->getType(0)->name() == "double");
         double res = *((double*)output->get(0));
-        GPContents::destroy(output);
+        delete output;
         return res;
     }
     GPContents* secondInput = new GPContents;
-    secondInput->push(output->getContent(0));
+    secondInput->pushContent(output->getContent(0));
     if (NULL!=meta->pPostExtraInput)
     {
-        for (int i=0; i<meta->pPostExtraInput->get()->size(); ++i)
-        {
-            secondInput->push(meta->pPostExtraInput->get()->getContent(i));
-        }
+        secondInput->merge(*(meta->pPostExtraInput->get()));
     }
     GPContents* postOutput = meta->pPostFunction->vRun(secondInput);
     delete secondInput;
-    GPContents::destroy(output);
+    delete output;
     GPASSERT(postOutput->size() == 1);
-    GPASSERT(postOutput->getContent(0).type->name() == "double");
+    GPASSERT(postOutput->getType(0)->name() == "double");
     double res = *((double*)postOutput->get(0));
-    GPContents::destroy(postOutput);
+    delete postOutput;
     return res;
 }
 static double _FitTime(IGPAutoDefFunction* adf, void* pMeta)
@@ -556,22 +546,19 @@ static double _FitTime(IGPAutoDefFunction* adf, void* pMeta)
     if (NULL != meta->pPostFunction)
     {
         GPContents* secondInput = new GPContents;
-        secondInput->push(output->getContent(0));
+        secondInput->pushContent(output->getContent(0));
         if (NULL!=meta->pPostExtraInput)
         {
-            for (int i=0; i<meta->pPostExtraInput->get()->size(); ++i)
-            {
-                secondInput->push(meta->pPostExtraInput->get()->getContent(i));
-            }
+            secondInput->merge(*(meta->pPostExtraInput->get()));
         }
         postOutput = meta->pPostFunction->vRun(secondInput);
         delete secondInput;
     }
     clock_t fin = clock();
-    GPContents::destroy(output);
+    delete output;
     if (NULL != postOutput)
     {
-        GPContents::destroy(postOutput);
+        delete postOutput;
     }
     return 1.0/(fin - sta);
 }
@@ -628,13 +615,13 @@ void* GP_Contents_Get(AGPContents* contents, int n)
 
 AGPContents* GP_Contents_CreateCollector()
 {
-    return new AGPContents(false);
+    return new AGPContents;
 }
 
 void GP_Contents_Collect(AGPContents* Collector, AGPContents* B, int n)
 {
     GPASSERT(NULL!=B && NULL!=Collector && n>=0 && n<B->get()->size());//FIXME
-    Collector->get()->push(B->get()->getContent(n));
+    Collector->get()->pushContent(B->get()->getContent(n));
 }
 
 double GP_Contents_GetDouble(AGPContents* contents, int n)
@@ -655,7 +642,7 @@ AGPStrings* GP_Contents_Types(AGPContents* contents)
     std::ostringstream types;
     for (int i=0; i<contents->get()->size(); ++i)
     {
-        types << contents->get()->getContent(i).type->name() << " ";
+        types << contents->get()->getType(i)->name() << " ";
     }
     AGPStrings* s = new AGPStrings;
     s->a.push_back(types.str());

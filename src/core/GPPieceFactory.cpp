@@ -38,7 +38,7 @@ public:
         {
             if (NULL!=mPieces[i])
             {
-                GPContents::destroy(mPieces[i]);
+                delete mPieces[i];
             }
         }
         delete [] mPieces;

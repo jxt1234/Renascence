@@ -24,7 +24,7 @@ class GPParticleSwarmOpt:public IGPOptimizor
         virtual ~GPParticleSwarmOpt();
         virtual GPPtr<GPParameter> vFindBest(int mN, IGPOptimizor::OPTFUNC computer, GPFLOAT* target) const;
     private:
-        class Particle:public RefCount
+        class Particle:public GPRefCount
         {
             public:
                 Particle(int n, GPFLOAT limit, GPFLOAT the1, GPFLOAT the2);

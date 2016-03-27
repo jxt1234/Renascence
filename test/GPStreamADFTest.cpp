@@ -50,10 +50,8 @@ void GPStreamADFTest::run()
             GPASSERT(NULL!=out);
             GPASSERT(out->size() == 1);
             GPPtr<GPWStreamWrap> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest.jpg", GPStreamFactory::FILE);
-            out->contents[0].type->vSave(out->get(0), outputjpeg.get());
-            out->clear();
+            out->getType(0)->vSave(out->get(0), outputjpeg.get());
             delete out;
-            contents.clear();
         }
         std::vector<const IStatusType*> types;
         gp = gen->createFunction("S(TFR(C(x0,x1), FR(x2, x3)))", types);
@@ -76,9 +74,8 @@ void GPStreamADFTest::run()
             GPASSERT(NULL!=out);
             GPASSERT(out->size() == 1);
             GPPtr<GPWStreamWrap> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest2.jpg", GPStreamFactory::FILE);
-            out->contents[0].type->vSave(out->get(0), outputjpeg.get());
-            GPContents::destroy(out);
-            contents.clear();
+            out->getType(0)->vSave(out->get(0), outputjpeg.get());
+            delete out;
         }
     }
 }

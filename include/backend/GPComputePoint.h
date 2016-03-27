@@ -20,39 +20,10 @@
 #include "lowlevelAPI/GPContents.h"
 #include <vector>
 #include "core/GPStatusContent.h"
-class GPComputePoint:public RefCount
+class GPComputePoint:public GPRefCount
 {
 public:
-    class ContentWrap:public RefCount
-    {
-    public:
-        ContentWrap(void* content, const IStatusType* t)
-        {
-            GPASSERT(NULL!=content && NULL!=t);
-            mT = t;
-            mContent = content;
-            mOwn = true;
-        }
-        virtual ~ContentWrap()
-        {
-            if (mOwn)
-            {
-                mT->vFree(mContent);
-            }
-        }
-        bool needFree() const {return mOwn;}
-        void releaseForFree()
-        {
-            mOwn = false;
-        }
-        void* getContent() const {return mContent;}
-        const IStatusType* getType() const {return mT;}
-    private:
-        void* mContent;
-        const IStatusType* mT;
-        bool mOwn;
-    };
-
+    typedef GPContents::GP_Unit ContentWrap;
     GPComputePoint(const GPFunction* f);
     virtual ~GPComputePoint();
     /*inputs can only has one content*/
@@ -61,7 +32,7 @@ public:
     const std::vector<bool>& flags() const {return mFlags;}
     int map(double* value, int n);
     inline bool completed() const {return mComplte;}
-    std::vector<GPPtr<ContentWrap>> compute();
+    GPContents* compute();
 private:
     bool _computeCompleteStatus() const;
     const GPFunction* mF;

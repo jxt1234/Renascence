@@ -17,10 +17,10 @@
 #define OPTIMIZOR_IGPOPTIMIZOR_H
 #include <stdlib.h>
 #include <functional>
-#include "utils/RefCount.h"
+#include "lowlevelAPI/GPRefCount.h"
 #include "core/GPParameter.h"
 /*TODO Support time limit set*/
-class IGPOptimizor:public RefCount
+class IGPOptimizor:public GPRefCount
 {
 public:
     typedef std::function<GPFLOAT(GPPtr<GPParameter>)> OPTFUNC;
