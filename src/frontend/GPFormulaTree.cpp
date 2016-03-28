@@ -290,12 +290,12 @@ GPFormulaTree::GPFormulaTree()
 }
 GPFormulaTree::~GPFormulaTree()
 {
-    SAFE_UNREF(mRoot);
+    GP_SAFE_UNREF(mRoot);
 }
 
 void GPFormulaTree::setFormula(const std::string& formula)
 {
-    SAFE_UNREF(mRoot);
+    GP_SAFE_UNREF(mRoot);
     std::vector<std::string> words;
     divideFormula(words, formula);
     GPASSERT(!words.empty());

@@ -31,12 +31,12 @@ protected:
 private:
     int mNum;
 };
-#define SAFE_UNREF(x)\
+#define GP_SAFE_UNREF(x)\
 if (NULL!=(x)) {(x)->decRef();}
-#define SAFE_REF(x)\
+#define GP_SAFE_REF(x)\
 if (NULL!=(x)) (x)->addRef();
 
-#define SAFE_ASSIGN(dst, src) \
+#define GP_SAFE_ASSIGN(dst, src) \
 {\
 if (src!=NULL)\
 {\
@@ -54,15 +54,15 @@ class GPPtr {
 public:
     GPPtr() : mT(NULL) {}
     GPPtr(T* obj) : mT(obj) {}
-    GPPtr(const GPPtr& o) : mT(o.mT) { SAFE_REF(mT); }
-    ~GPPtr() { SAFE_UNREF(mT); }
+    GPPtr(const GPPtr& o) : mT(o.mT) { GP_SAFE_REF(mT); }
+    ~GPPtr() { GP_SAFE_UNREF(mT); }
     
     GPPtr& operator=(const GPPtr& rp) {
-        SAFE_ASSIGN(mT, rp.mT);
+        GP_SAFE_ASSIGN(mT, rp.mT);
         return *this;
     }
     GPPtr& operator=(T* obj) {
-        SAFE_UNREF(mT);
+        GP_SAFE_UNREF(mT);
         mT = obj;
         return *this;
     }

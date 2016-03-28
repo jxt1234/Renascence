@@ -17,7 +17,8 @@ public:
         GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
         AUTOCLEAN(base);
         {
-            GPProducer* sys = GPFactory::createProducer(base);
+            GPProducer* sys = GPFactory::createProducer(base, GPFactory::STREAM);
+            //GPProducer* sys = GPFactory::createProducer(base);
             GPProducer& gen = *sys;
             AUTOCLEAN(sys);
             const IStatusType* bmp = base->vQueryType(string("TrBmp"));

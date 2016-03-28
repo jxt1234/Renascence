@@ -89,11 +89,11 @@ def constructFunction(function):
     cppline+="assert("+ '%d' %inputnumbers + " == inputs->size());\n"
     for [i, inp] in enumerate(function.inputs):
         if (inp.find('*') == -1):
-            cppline+='assert(inputs->contents[%d].type->name() == g' %i + inp.replace('*', '') + '->name());\n'
+            cppline+='assert(inputs->getType(%d)->name() == g' %i + inp.replace('*', '') + '->name());\n'
         else:
-            cppline+='assert(inputs->contents[%d].type == g' %i + inp.replace('*', '') + ');\n'
+            cppline+='assert(inputs->getType(%d) == g' %i + inp.replace('*', '') + ');\n'
     for [i, inp] in enumerate(function.status):
-        cppline+='assert(inputs->contents[%d].type == g' %(i+len(function.inputs)) + inp.replace('*', '') + ');\n'
+        cppline+='assert(inputs->getType(%d) == g' %(i+len(function.inputs)) + inp.replace('*', '') + ');\n'
     cppline+="GPContents* out =  new GPContents;\n"
     for [i, var] in enumerate(function.inputs):
         num = '%d' %(function.inputPos[i])
