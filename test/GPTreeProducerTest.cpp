@@ -26,11 +26,11 @@ void GPTreeProducerTest::run()
         GPASSERT(fs.size()>0);
         GPContents inp;
         GPPtr<GPStreamWrap> inputStream = GPStreamFactory::NewStream("input.jpg");
-        inp.push(bmp->vLoad(inputStream.get()), NULL);
+        inp.push(bmp->vLoad(inputStream.get()), bmp);
         inputStream = GPStreamFactory::NewStream("input_sharp.jpg");
-        inp.push(bmp->vLoad(inputStream.get()), NULL);
+        inp.push(bmp->vLoad(inputStream.get()), bmp);
         inputStream = GPStreamFactory::NewStream("input_test_simple.jpg");
-        inp.push(bmp->vLoad(inputStream.get()), NULL);
+        inp.push(bmp->vLoad(inputStream.get()), bmp);
         std::vector<const IStatusType*> temp_inputs(2, bmp);
         IGPAutoDefFunction* fit = sys->createFunction("FIT(x0, x1)", temp_inputs);
         

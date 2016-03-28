@@ -6,6 +6,7 @@
 #include "platform/system_lib.h"
 #include <string.h>
 #include <sstream>
+using namespace std;
 
 static GPPieces* _createInputPieces(const IStatusType* s)
 {
@@ -51,48 +52,46 @@ static void _saveOutputPieces(GPPieces* output, const char* prefix)
 
 static void __run()
 {
-    GPSingleParallelMachine machine;
     GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
     {
-        GPParallelType data;
-        data.pCondition = NULL;
-        GPPtr<GPProducer> sys = GPFactory::createProducer(base.get());
+        GPProducer* sys = GPFactory::createProducer(base.get());
+        AUTOCLEAN(sys);
+        const IStatusType* bmp = base->vQueryType(string("TrBmp"));
+        /*Construct compose function*/
+        vector<IGPAutoDefFunction*> funcs;
+        vector<const IStatusType*> input(3, bmp);
+        vector<const IStatusType*> output(1, bmp);
+        auto fs = sys->listAllFunction(output, input);
+        GPASSERT(fs.size()>0);
+        GPContents inp;
+        GPPtr<GPStreamWrap> inputStream = GPStreamFactory::NewStream("input.jpg");
+        inp.push(bmp->vLoad(inputStream.get()), bmp);
+        inputStream = GPStreamFactory::NewStream("input_sharp.jpg");
+        inp.push(bmp->vLoad(inputStream.get()), bmp);
+        inputStream = GPStreamFactory::NewStream("input_test_simple.jpg");
+        inp.push(bmp->vLoad(inputStream.get()), bmp);
+        std::vector<const IStatusType*> temp_inputs(2, bmp);
+        IGPAutoDefFunction* fit = sys->createFunction("FIT(x0, x1)", temp_inputs);
+        
+        GPContents targetBitmap;
+        inputStream = GPStreamFactory::NewStream("input_test_simple.jpg");
+        targetBitmap.push(bmp->vLoad(inputStream.get()), bmp);
+        inputStream = NULL;
+        int sum = 0;
+        for (auto f : fs)
         {
-            data.mOutputKey.clear();
-            data.mOutputKey.push_back(std::make_pair(0, 0));
-            data.pFunc = sys->createFunction("F(F((S(x0))))", std::vector<const IStatusType*>());
-            auto p = machine.vGenerate(&data, IParallelMachine::MAP);
-            GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
-            GPPieces* outputs = p.first->vPrepare(&inputs, 1);
-            p.second->vRun(outputs, &inputs, 1);
-            _saveOutputPieces(outputs, "Map");
-            
-            outputs->pFree(outputs->pMeta);
-            delete outputs;
-            inputs->pFree(inputs->pMeta);
-            delete inputs;
-            
-            delete p.first;
-            delete p.second;
-            delete data.pFunc;
-        }
-        {
-            data.mOutputKey.clear();
-            data.pFunc = sys->createFunction("C(x0, x1)", std::vector<const IStatusType*>());
-            auto p = machine.vGenerate(&data, IParallelMachine::REDUCE);
-            GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
-            GPPieces* outputs = p.first->vPrepare(&inputs, 1);
-            p.second->vRun(outputs, &inputs, 1);
-            _saveOutputPieces(outputs, "Reduce");
-            
-            outputs->pFree(outputs->pMeta);
-            delete outputs;
-            
-            inputs->pFree(inputs->pMeta);
-            delete inputs;
-            delete p.first;
-            delete p.second;
-            delete data.pFunc;
+            auto bmpoutput = f->vRun(&inp);
+            bmpoutput->merge(targetBitmap);
+            auto fitoutput = fit->vRun(bmpoutput);
+            double* __fit = (double*)fitoutput->get(0);
+            FUNC_PRINT_ALL(*__fit, f);
+            delete bmpoutput;
+            delete fitoutput;
+            sum++;
+            if (sum >=10)
+            {
+                break;
+            }
         }
     }
 }
