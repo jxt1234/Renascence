@@ -15,12 +15,16 @@
  ******************************************************************/
 
 #include "core/GPStreamFactory.h"
+#include <stdio.h>
+
 
 class GPFileStream:public GPStreamWrap
 {
 public:
     GPFileStream(const char* filename);
     virtual ~GPFileStream();
+private:
+    FILE* mF;
 };
 
 class GPFileWStream:public GPWStreamWrap
@@ -28,4 +32,6 @@ class GPFileWStream:public GPWStreamWrap
 public:
     GPFileWStream(const char* filename);
     virtual ~GPFileWStream();
+private:
+    FILE* mF;
 };

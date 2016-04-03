@@ -67,7 +67,7 @@ public:
     void operator=(const GPSingleTree& tree);
     virtual ~GPSingleTree();
     
-    virtual GPFLOAT vRun(GPFLOAT* values, size_t n) {return compute(values);}
+    virtual GPFLOAT vRun(GPFLOAT* values, unsigned int n) {return compute(values);}
 
     inline GPFLOAT compute(GPFLOAT* inputs){return mRoot->compute(inputs);}
     int len() const;

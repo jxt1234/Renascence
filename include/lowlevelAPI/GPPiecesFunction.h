@@ -13,34 +13,17 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef LOWLEVELAPI_IPARALLELMACHINE_H
-#define LOWLEVELAPI_IPARALLELMACHINE_H
+#ifndef LOWLEVELAPI_GPPIECESFUNCTION_H
+#define LOWLEVELAPI_GPPIECESFUNCTION_H
 #include "GPPieces.h"
-#include "GPParallelType.h"
-class IParallelMachine
+#include "IParallelMachine.h"
+class GPPiecesFunction
 {
 public:
-    typedef enum{
-        MAP,
-        REDUCE
-    }PARALLELTYPE;
+    virtual GPPieces* vRun(GPPieces** inputs, int n) = 0;
 
-    class Creator : public GPRefCount
-    {
-    public:
-        virtual ~Creator(){}
-        virtual GPPieces* vPrepare(GPPieces** inputs, int inputNumber) const = 0;
-    protected:
-        Creator(){}
-    };
-    class Executor : public GPRefCount
-    {
-    public:
-        virtual ~Executor(){}
-        virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber) const = 0;
-    protected:
-        Executor(){}
-    };
-    virtual std::pair<Creator*, Executor*> vGenerate(const GPParallelType* data, PARALLELTYPE type) const = 0;
+    virtual ~GPPiecesFunction() {}
+protected:
+    GPPiecesFunction() {}
 };
 #endif

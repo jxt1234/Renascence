@@ -20,7 +20,7 @@ static GPPieces* _createInputPieces(const IStatusType* s)
         GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream(os.str().c_str());
         GPContents* c = new GPContents;
         c->push(s->vLoad(input.get()), s, true);
-        inputs->save(&key, 1, c);
+        inputs->vSave(&key, 1, c);
     }
     
     
@@ -38,7 +38,7 @@ static void _saveOutputPieces(GPPieces* output, const char* prefix)
     for (int i=0; i<n; ++i)
     {
         unsigned int key = i;
-        GPContents* c = output->load(&key, output->nKeyNumber);
+        GPContents* c = output->vLoad(&key, output->nKeyNumber);
         GPASSERT(c->size() == 1);
         std::stringstream os;
         os << "output/GPSingleParallelMachineTest"<<prefix << "_"<<i+1<<".jpg";

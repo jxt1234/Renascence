@@ -13,8 +13,21 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef LOWLEVELAPI_GPTYPES_H
-#define LOWLEVELAPI_GPTYPES_H
-typedef double GPFLOAT;
-typedef int GPINT;
+#ifndef BACKEND_GPPIECESFUNCTIONCREATOR_H
+#define BACKEND_GPPIECESFUNCTIONCREATOR_H
+#include "lowlevelAPI/GPRefCount.h"
+#include "lowlevelAPI/GPPiecesFunction.h"
+#include "lowlevelAPI/IParallelMachine.h"
+#include "core/GPFunctionTree.h"
+
+class GPPiecesFunctionCreator:public GPRefCount
+{
+public:
+    
+    virtual GPPiecesFunction* vCreateFromFuncTree(const GPFunctionTree* tree, const IParallelMachine* machine) const = 0;
+
+    virtual ~GPPiecesFunctionCreator(){}
+protected:
+    GPPiecesFunctionCreator() {}
+};
 #endif

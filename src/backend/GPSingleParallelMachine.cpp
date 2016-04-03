@@ -57,7 +57,7 @@ public:
         virtual void vHandle(IGPFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const = 0;
     };
     
-    SingleExecutor(IGPFunction* f, IGPFloatFunction* c, const std::vector<std::pair<unsigned int, unsigned int>>& outputKey, GPPtr<Handle> h):mFunction(f), mCondition(c), mOutputKey(outputKey), mHandle(h)
+    SingleExecutor(GPPtr<IGPFunction> f, GPPtr<IGPFloatFunction> c, const std::vector<std::pair<unsigned int, unsigned int>>& outputKey, GPPtr<Handle> h):mFunction(f), mCondition(c), mOutputKey(outputKey), mHandle(h)
     {
     }
     
@@ -102,7 +102,7 @@ public:
         group.start(keyCurrent, sumDim);
         do
         {
-            if (NULL!=mCondition)
+            if (NULL!=mCondition.get())
             {
                 for (int i=0; i<sumDim; ++i)
                 {
@@ -125,19 +125,19 @@ public:
             GPContents* currentGPInputs = new GPContents;
             for (int i=0; i<inputNumber; ++i)
             {
-                GPContents* ci = inputs[i]->load(keyCurrent+pos, inputs[i]->nKeyNumber);
+                GPContents* ci = inputs[i]->vLoad(keyCurrent+pos, inputs[i]->nKeyNumber);
                 pos += inputs[i]->nKeyNumber;
                 currentGPInputs->merge(*ci);
                 delete ci;//Don't delete content
             }
-            mHandle->vHandle(mFunction, output, currentGPInputs, keyOutput, (unsigned int)mOutputKey.size());
+            mHandle->vHandle(mFunction.get(), output, currentGPInputs, keyOutput, (unsigned int)mOutputKey.size());
         } while (group.next(keyCurrent, sumDim));
         
         return true;
     }
 private:
-    IGPFunction* mFunction;
-    IGPFloatFunction* mCondition;
+    GPPtr<IGPFunction> mFunction;
+    GPPtr<IGPFloatFunction> mCondition;
     std::vector<std::pair<unsigned int, unsigned int>> mOutputKey;
     GPPtr<Handle> mHandle;
 };
@@ -148,7 +148,7 @@ public:
     virtual void vHandle(IGPFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const override
     {
         GPContents* currentGPOutput = function->vRun(input);
-        output->save(outputKey, keyNumber, currentGPOutput);
+        output->vSave(outputKey, keyNumber, currentGPOutput);
         delete input;
     }
 };
@@ -157,17 +157,17 @@ class ReduceHandle:public SingleExecutor::Handle
 {
     virtual void vHandle(IGPFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const override
     {
-        GPContents* oldOutput = output->load(outputKey, keyNumber);
+        GPContents* oldOutput = output->vLoad(outputKey, keyNumber);
         if (NULL == oldOutput)
         {
-            output->save(outputKey, keyNumber, input);
+            output->vSave(outputKey, keyNumber, input);
             return;
         }
         /*Merge, the oldOutput should be before the input*/
         oldOutput->merge(*input);
         delete input;
         GPContents* currentGPOutput = function->vRun(oldOutput);
-        output->save(outputKey, keyNumber, currentGPOutput);
+        output->vSave(outputKey, keyNumber, currentGPOutput);
     }
 };
 
@@ -176,6 +176,7 @@ class ReduceHandle:public SingleExecutor::Handle
 std::pair<IParallelMachine::Creator*, IParallelMachine::Executor*> GPSingleParallelMachine::vGenerate(const GPParallelType* data, PARALLELTYPE type) const
 {
     GPASSERT(NULL!=data);
+    GPASSERT(NULL!=data->pContext);
     Creator* creator = new PieceInMemoryCreator(data->mOutputKey);
     GPPtr<SingleExecutor::Handle> handle;
     switch (type)
@@ -189,7 +190,14 @@ std::pair<IParallelMachine::Creator*, IParallelMachine::Executor*> GPSingleParal
         default:
             GPASSERT(0);
     }
-    Executor* executor = new SingleExecutor(data->pFunc, data->pCondition, data->mOutputKey, handle);
+    GPPtr<IGPFunction> func = data->pContext->vCreateContentFunction(data->sFuncInfo.formula, data->sFuncInfo.parameter, data->sFuncInfo.inputs);
+    GPPtr<IGPFloatFunction> condition;
+    if (!data->sConditionInfo.sConditionFormula.empty())
+    {
+        condition = data->pContext->vCreateFloatFunction(data->sConditionInfo.sConditionFormula, data->sConditionInfo.sVariableInfo);
+    }
+    
+    Executor* executor = new SingleExecutor(func, condition, data->mOutputKey, handle);
     return std::make_pair(creator, executor);
 }
 

@@ -19,7 +19,6 @@
 #include "IStatusType.h"
 #include "GPRefCount.h"
 
-/*We can not define a destructor function for GPContents, because it's handlered by system*/
 class GPContents
 {
 public:

@@ -35,7 +35,7 @@ protected:
 class IGPFloatFunction : public GPRefCount
 {
 public:
-    virtual GPFLOAT vRun(GPFLOAT* values, size_t n) = 0;
+    virtual GPFLOAT vRun(GPFLOAT* values, unsigned int n) = 0;
     virtual ~IGPFloatFunction() {}
 protected:
     IGPFloatFunction() {}

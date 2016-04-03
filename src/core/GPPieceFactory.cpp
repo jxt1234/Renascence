@@ -18,16 +18,18 @@
 #include "head.h"
 #include "core/GPPieceFactory.h"
 
-class GPPieceInMemory
+class GPPieceInMemory : public GPPieces
 {
 public:
     GPPieceInMemory(const std::vector<unsigned int>& keydimesions):mKeyDimesions(keydimesions)
     {
         mMaxSize = 1;
+        nKeyNumber = (unsigned int)keydimesions.size();
         for (int i=0; i<keydimesions.size(); ++i)
         {
             GPASSERT(keydimesions[i]>0);
             mMaxSize *= keydimesions[i];
+            pKeySize[i] = keydimesions[i];
         }
         mPieces = new GPContents*[mMaxSize];
         ::memset(mPieces, 0, mMaxSize*sizeof(GPContents*));
@@ -44,21 +46,22 @@ public:
         delete [] mPieces;
     }
     
-    GPContents* get(unsigned int* key, int keynum)
+    virtual GPContents* vLoad(unsigned int* pKey, unsigned int keynum)
     {
-        auto sum = _computePos(key, keynum);
+        auto sum = _computePos(pKey, keynum);
         //GPASSERT(mPieces[sum]!=NULL);
         GPContents* res = mPieces[sum];
         mPieces[sum] = NULL;
         return res;
     }
-    void set(GPContents* c, unsigned int* key, int keynum)
+    
+    virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents* c)
     {
-        auto sum = _computePos(key, keynum);
+        auto sum = _computePos(pKey, keynum);
         GPASSERT(mPieces[sum] == NULL);//TODO
         mPieces[sum] = c;
     }
-    
+
 private:
     size_t _computePos(unsigned int* key, int keynum)
     {
@@ -82,43 +85,15 @@ static void _freeMemoryPiece(void* meta)
     delete _meta;
 }
 
-static GPContents* _load(void* meta, unsigned int* key, unsigned int keynum)
-{
-    GPPieceInMemory* _meta = (GPPieceInMemory*)meta;
-    return _meta->get(key, keynum);
-}
-
-static void _save(void* meta, unsigned int* key, unsigned int keynum, GPContents* c)
-{
-    GPPieceInMemory* _meta = (GPPieceInMemory*)meta;
-    _meta->set(c, key, keynum);
-}
-
-static void _createMemoryPieces(GPPieces& target, const std::vector<unsigned int>& keydimesions)
+static GPPieces* _createMemoryPieces(const std::vector<unsigned int>& keydimesions)
 {
     GPASSERT(keydimesions.size() < 10);
-    GPPieces* result = &target;
-    ::memset(result, 0, sizeof(GPPieces));
-    GPPieceInMemory* meta = new GPPieceInMemory(keydimesions);
-    result->pMeta = (void*)meta;
-    
-    result->pFree = _freeMemoryPiece;
-    result->pLoad = _load;
-    result->pSave = _save;
-    
-    /*Set Up Keys*/
-    result->nKeyNumber = (unsigned int)(keydimesions.size());
-    for (int i=0; i<keydimesions.size(); ++i)
-    {
-        result->pKeySize[i] = keydimesions[i];
-    }
+    return new GPPieceInMemory(keydimesions);
 }
 
 GPPieces* GPPieceFactory::createMemoryPiece(const std::vector<unsigned int> &keydimesions)
 {
-    GPPieces* pieces = new GPPieces;
-    _createMemoryPieces(*pieces, keydimesions);
-    return pieces;
+    return _createMemoryPieces(keydimesions);
 }
 GPPieces* GPPieceFactory::createFilePiece(const std::vector<unsigned int> &keydimesions, const char* cacheDirpath, size_t maxMemoryCacheSize/*MB*/)
 {

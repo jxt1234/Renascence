@@ -17,21 +17,26 @@
 #define USER_GPPARALLELTYPE_H
 #include "GPContents.h"
 #include "IGPFunction.h"
-class GPSingleTree;
 
 /*Create By Renascence, Used by low level lib*/
 struct GPParallelType
 {
-    IGPFunction* pFunc;
-    
-    /*For Reconstruct*/
-    std::string sFuncFormula;
-    std::string sFuncParameter;
+    /*For GPFunction Reconstruct*/
+    struct FuncInfo
+    {
+        std::string formula;
+        std::string parameter;
+        std::vector<const IStatusType*> inputs;
+    };
+    FuncInfo sFuncInfo;
 
-    GPSingleTree* pCondition;
-    bool (*pConditionRunProc)(GPSingleTree* tree, double* values, unsigned int valueNumber);
-    /*For Reconstruct*/
-    std::string sConditionFormula;
+    /*For Condition Reconstruct*/
+    struct FormulaInfo
+    {
+        std::string sConditionFormula;
+        std::string sVariableInfo;
+    };
+    FormulaInfo sConditionInfo;
 
     //Currently Not used
     std::vector<std::vector<unsigned int>> mSplitInfo;
@@ -39,20 +44,15 @@ struct GPParallelType
     //a0: 0,0  b2: 1,2  d2: 3,2  and so on
     std::vector<std::pair<unsigned int, unsigned int>> mOutputKey;
     
+    const IGPFunctionContext* pContext;
     
     GPParallelType()
     {
-        initialize();
+        pContext = NULL;
     }
-    
+
     ~GPParallelType()
     {
-    }
-    
-    void initialize()
-    {
-        pFunc = NULL;
-        pCondition = NULL;
     }
 
 };

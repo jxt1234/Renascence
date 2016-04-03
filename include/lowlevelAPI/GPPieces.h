@@ -16,34 +16,18 @@
 #ifndef USER_GPPIECES_H
 #define USER_GPPIECES_H
 #include "GPContents.h"
-struct GPPieces
+class GPPieces : public GPRefCount
 {
+public:
     unsigned int pKeySize[10];
     unsigned int nKeyNumber;
 
-    void* pMeta;
-    void (*pFree)(void* pMeta);
+    virtual GPContents* vLoad(unsigned int* pKey, unsigned int keynum) = 0;
     
-    /*This Function will create a new GPContent, and the caller should destroy it self*/
-    GPContents*(*pLoad)(void* pMeta, unsigned int* pKey, unsigned int keynum);
-
-    /*This Function will both destroy or own the memory of GPContent, after calling this function, should not use GPContent*/
-    void(*pSave)(void* pMeta, unsigned int* pKey, unsigned int keynum, GPContents* c);
+    virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents* c) = 0;
     
-    
-    GPContents* load(unsigned int* pKey, unsigned int keynum)
-    {
-        return pLoad(pMeta, pKey, keynum);
-    }
-    
-    void save(unsigned int* pKey, unsigned int keynum, GPContents* c)
-    {
-        pSave(pMeta, pKey, keynum, c);
-    }
-    
-    void clear()
-    {
-        pFree(pMeta);
-    }
+    virtual ~GPPieces(){}
+protected:
+    GPPieces() {}
 };
 #endif
