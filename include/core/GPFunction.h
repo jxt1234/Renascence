@@ -1,5 +1,5 @@
 /******************************************************************
-   Copyright 2014, Jiang Xiao-tang
+   Copyright 2016, Jiang Xiao-tang
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,12 +13,22 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef HEAD_H
-#define HEAD_H
-#include "utils/GPDebug.h"
-#include "utils/GPClock.h"
-#include "lowlevelAPI/GPRefCount.h"
-#include "lowlevelAPI/GPTypes.h"
-#include "utils/AutoClean.h"
-#include "utils/AutoStorage.h"
+#ifndef CORE_GPFUNCTION_H
+#define CORE_GPFUNCTION_H
+#include <string>
+#include <vector>
+#include "lowlevelAPI/IStatusType.h"
+struct GPFunction
+{
+public:
+    //For print
+    std::string name;
+    std::string shortname;
+    //For compute
+    computeFunction basic;
+    std::vector<const IStatusType*> inputType;
+    std::vector<bool> inputNeedComplete;
+    std::vector<const IStatusType*> outputType;
+    std::vector<const IStatusType*> statusType;
+};
 #endif

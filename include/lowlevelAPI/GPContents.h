@@ -92,4 +92,7 @@ private:
 };
 
 typedef GPContents*(*computeFunction)(GPContents* inputs);
+
+
+
 #endif

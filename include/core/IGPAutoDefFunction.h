@@ -16,6 +16,7 @@
 #ifndef CORE_IGPAUTODEFFUNCTION_H
 #define CORE_IGPAUTODEFFUNCTION_H
 #include "lowlevelAPI/GPContents.h"
+#include "lowlevelAPI/IGPFunction.h"
 #include "utils/GPTreeNode.h"
 #include "GPFunctionDataBase.h"
 #include "GPFunctionTree.h"
@@ -24,10 +25,9 @@
 #include "head.h"
 #include "optimizor/IGPOptimizor.h"
 
-class IGPAutoDefFunction:public GPRefCount
+class IGPAutoDefFunction:public IGPFunction
 {
 public:
-    virtual GPContents* vRun(GPContents* inputs) = 0;
     virtual GPTreeNode* vSave() const = 0;
 
     /*Set self Parameters without change the structure, Return the number of parameter needed, do nothing if para==null, the number of vMap will not change*/

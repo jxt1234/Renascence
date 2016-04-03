@@ -16,26 +16,31 @@
 #ifndef CORE_GPPRODUCER_H
 #define CORE_GPPRODUCER_H
 #include "lowlevelAPI/GPRefCount.h"
+#include "lowlevelAPI/IGPFunction.h"
 #include "IGPAutoDefFunction.h"
 #include "GPFunctionTree.h"
 #include <vector>
 class GPFrontEndProducer;
 class GPBackEndProducer;
-class GPProducer:public GPRefCount
+class GPProducer:public IGPFunctionContext
 {
 public:
     GPProducer(GPFrontEndProducer* front, GPBackEndProducer* back, const GPFunctionDataBase* base);
     virtual ~GPProducer();
     
-    IGPAutoDefFunction* createFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs);
-    std::vector<GPPtr<IGPAutoDefFunction>> listAllFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth=0);
-    IGPAutoDefFunction* createFunction(const std::string& formula, const std::vector<const IStatusType*>& inputs);
-    IGPAutoDefFunction* createFunction(const GPTreeNode* node);
+    IGPAutoDefFunction* createFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs) const;
+    std::vector<GPPtr<IGPAutoDefFunction>> listAllFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth=0) const;
+    IGPAutoDefFunction* createFunction(const std::string& formula, const std::vector<const IStatusType*>& inputs) const;
+    IGPAutoDefFunction* createFunction(const GPTreeNode* node) const;
     
-    std::vector<GPPtr<IGPAutoDefFunction>> listAllFunctionWithBackUp(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth=0);
+    std::vector<GPPtr<IGPAutoDefFunction>> listAllFunctionWithBackUp(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth=0) const;
     
     inline const GPBackEndProducer* getBack() const {return mBack;}
     inline const GPFrontEndProducer* getFront() const {return mFront;}
+    
+    virtual IGPFunction* vCreateContentFunction(const std::string& formula, const std::string& parameters, const std::vector<const IStatusType*>& inputs) const override;
+    virtual IGPFloatFunction* vCreateFloatFunction(const std::string& formula, const std::string& variable) const override;
+
 private:
     GPBackEndProducer* mBack;
     GPFrontEndProducer* mFront;

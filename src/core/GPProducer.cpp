@@ -17,6 +17,8 @@
 #include "core/GPProducer.h"
 #include "backend/GPBackEndProducer.h"
 #include "frontend/GPFrontEndProducer.h"
+#include <sstream>
+#include "math/GPSingleTree.h"
 
 GPProducer::GPProducer(GPFrontEndProducer* front, GPBackEndProducer* back, const GPFunctionDataBase* base)
 {
@@ -35,7 +37,7 @@ GPProducer::~GPProducer()
     mBack->decRef();
 }
 
-IGPAutoDefFunction* GPProducer::createFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs)
+IGPAutoDefFunction* GPProducer::createFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs) const
 {
     GPPtr<GPFunctionTree> ft = mFront->vCreateOneFunction(outputs,inputs);
     auto adf = mBack->vCreateFromFuncTree(ft.get());
@@ -46,7 +48,7 @@ IGPAutoDefFunction* GPProducer::createFunction(const std::vector<const IStatusTy
     adf->setParameters(parameter);
     return adf;
 }
-std::vector<GPPtr<IGPAutoDefFunction>> GPProducer::listAllFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth)
+std::vector<GPPtr<IGPAutoDefFunction>> GPProducer::listAllFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth) const
 {
     auto fts = mFront->vCreateAllFunction(outputs, inputs, depth);
     std::vector<GPPtr<IGPAutoDefFunction> > result;
@@ -57,17 +59,17 @@ std::vector<GPPtr<IGPAutoDefFunction>> GPProducer::listAllFunction(const std::ve
     }
     return result;
 }
-IGPAutoDefFunction* GPProducer::createFunction(const std::string& formula, const std::vector<const IStatusType*>& inputs)
+IGPAutoDefFunction* GPProducer::createFunction(const std::string& formula, const std::vector<const IStatusType*>& inputs) const
 {
     GPPtr<GPFunctionTree> ft = mFront->vCreateFromFormula(formula, inputs);
     return mBack->vCreateFromFuncTree(ft.get());
 }
-IGPAutoDefFunction* GPProducer::createFunction(const GPTreeNode* node)
+IGPAutoDefFunction* GPProducer::createFunction(const GPTreeNode* node) const
 {
     return mBack->vCreateFromNode(node, mBase);
 }
 
-std::vector<GPPtr<IGPAutoDefFunction>> GPProducer::listAllFunctionWithBackUp(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth)
+std::vector<GPPtr<IGPAutoDefFunction>> GPProducer::listAllFunctionWithBackUp(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth) const
 {
     std::vector<GPPtr<IGPAutoDefFunction>> result;
     auto fts = mFront->vCreateAllFunction(outputs, inputs, depth);
@@ -86,5 +88,35 @@ std::vector<GPPtr<IGPAutoDefFunction>> GPProducer::listAllFunctionWithBackUp(con
         result.push_back(adf);
     }
     return result;
+}
+
+IGPFunction* GPProducer::vCreateContentFunction(const std::string& formula, const std::string& parameters, const std::vector<const IStatusType*>& inputs) const
+{
+    IGPAutoDefFunction* function = this->createFunction(formula, inputs);
+    std::vector<double> values;
+    double v;
+    std::istringstream input(parameters);
+    while (input >> v)
+    {
+        values.push_back(v);
+    }
+    if (values.empty())
+    {
+        return function;
+    }
+    GPPtr<GPParameter> param = new GPParameter((int)values.size());
+    auto p = param->attach();
+    for (int i=0; i<values.size(); ++i)
+    {
+        p[i] = values[i];
+    }
+    function->vMap(param.get());
+    function->setParameters(param);
+
+    return function;
+}
+IGPFloatFunction* GPProducer::vCreateFloatFunction(const std::string& formula, const std::string& variable) const
+{
+    return GPSingleTree::createFromFormula(formula, variable);
 }
 

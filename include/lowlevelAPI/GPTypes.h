@@ -13,23 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef USER_GPFUNCTION_H
-#define USER_GPFUNCTION_H
-#include <string>
-#include <vector>
-#include "IStatusType.h"
-#include "GPContents.h"
-struct GPFunction
-{
-    //For print
-    std::string name;
-    std::string shortname;
-    //For compute
-    computeFunction basic;
-    std::vector<const IStatusType*> inputType;
-    std::vector<bool> inputNeedComplete;
-    std::vector<const IStatusType*> outputType;
-    std::vector<const IStatusType*> statusType;
-};
-
+#ifndef LOWLEVELAPI_GPTYPES_H
+#define LOWLEVELAPI_GPTYPES_H
+typedef double GPFLOAT;
 #endif

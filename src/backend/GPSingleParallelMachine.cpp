@@ -54,10 +54,10 @@ public:
     {
     public:
         /*Should Clear input*/
-        virtual void vHandle(IGPAutoDefFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const = 0;
+        virtual void vHandle(IGPFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const = 0;
     };
     
-    SingleExecutor(IGPAutoDefFunction* f, GPSingleTree* c, const std::vector<std::pair<unsigned int, unsigned int>>& outputKey, GPPtr<Handle> h):mFunction(f), mCondition(c), mOutputKey(outputKey), mHandle(h)
+    SingleExecutor(IGPFunction* f, IGPFloatFunction* c, const std::vector<std::pair<unsigned int, unsigned int>>& outputKey, GPPtr<Handle> h):mFunction(f), mCondition(c), mOutputKey(outputKey), mHandle(h)
     {
     }
     
@@ -108,7 +108,7 @@ public:
                 {
                     keyCurrentFloat[i] = keyCurrent[i];
                 }
-                GPFLOAT c = mCondition->compute(keyCurrentFloat);
+                GPFLOAT c = mCondition->vRun(keyCurrentFloat, sumDim);
                 if (c <= 0)
                 {
                     continue;
@@ -136,8 +136,8 @@ public:
         return true;
     }
 private:
-    IGPAutoDefFunction* mFunction;
-    GPSingleTree* mCondition;
+    IGPFunction* mFunction;
+    IGPFloatFunction* mCondition;
     std::vector<std::pair<unsigned int, unsigned int>> mOutputKey;
     GPPtr<Handle> mHandle;
 };
@@ -145,7 +145,7 @@ private:
 class MapHandle:public SingleExecutor::Handle
 {
 public:
-    virtual void vHandle(IGPAutoDefFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const override
+    virtual void vHandle(IGPFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const override
     {
         GPContents* currentGPOutput = function->vRun(input);
         output->save(outputKey, keyNumber, currentGPOutput);
@@ -155,7 +155,7 @@ public:
 
 class ReduceHandle:public SingleExecutor::Handle
 {
-    virtual void vHandle(IGPAutoDefFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const override
+    virtual void vHandle(IGPFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const override
     {
         GPContents* oldOutput = output->load(outputKey, keyNumber);
         if (NULL == oldOutput)

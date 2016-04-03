@@ -20,6 +20,7 @@
 #include <map>
 #include <vector>
 #include "lowlevelAPI/GPRefCount.h"
+#include "lowlevelAPI/IGPFunction.h"
 #include "GPAbstractPoint.h"
 #include "GPSingleTreeFunction.h"
 #include "head.h"
@@ -58,18 +59,21 @@ private:
     TYPE mType;
 };
 
-class GPSingleTree:public GPRefCount
+class GPSingleTree:public IGPFloatFunction
 {
 public:
     GPSingleTree(GPPtr<GPSinglePoint> root);
     GPSingleTree(const GPSingleTree& tree);
     void operator=(const GPSingleTree& tree);
     virtual ~GPSingleTree();
+    
+    virtual GPFLOAT vRun(GPFLOAT* values, size_t n) {return compute(values);}
+
     inline GPFLOAT compute(GPFLOAT* inputs){return mRoot->compute(inputs);}
     int len() const;
-    static GPPtr<GPSingleTree> createFromFormula(const std::string& formula, const std::string& variable);
+    static GPSingleTree* createFromFormula(const std::string& formula, const std::string& variable);
 
-    static GPPtr<GPSingleTree> createFromFormula(const std::string& formula, const std::map<std::string, int>& variableMap);
+    static GPSingleTree* createFromFormula(const std::string& formula, const std::map<std::string, int>& variableMap);
 private:
     GPPtr<GPSinglePoint> mRoot;
 };

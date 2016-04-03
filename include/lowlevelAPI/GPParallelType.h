@@ -16,24 +16,21 @@
 #ifndef USER_GPPARALLELTYPE_H
 #define USER_GPPARALLELTYPE_H
 #include "GPContents.h"
-class IGPAutoDefFunction;
+#include "IGPFunction.h"
 class GPSingleTree;
 
 /*Create By Renascence, Used by low level lib*/
 struct GPParallelType
 {
-    IGPAutoDefFunction* pFunc;
-    GPContents* (*pFuncRunProc)(IGPAutoDefFunction* pFunc, GPContents* inputs);
-    void (*pFuncFree)(IGPAutoDefFunction*);
+    IGPFunction* pFunc;
+    
     /*For Reconstruct*/
     std::string sFuncFormula;
     std::string sFuncParameter;
-    std::string sFuncType;
 
     GPSingleTree* pCondition;
-    void (*pConditionFree)(GPSingleTree*);
     bool (*pConditionRunProc)(GPSingleTree* tree, double* values, unsigned int valueNumber);
-    //If low level lib user thought the GPSingleTree is too slow, can extract formula instead
+    /*For Reconstruct*/
     std::string sConditionFormula;
 
     //Currently Not used
@@ -42,22 +39,22 @@ struct GPParallelType
     //a0: 0,0  b2: 1,2  d2: 3,2  and so on
     std::vector<std::pair<unsigned int, unsigned int>> mOutputKey;
     
+    
+    GPParallelType()
+    {
+        initialize();
+    }
+    
+    ~GPParallelType()
+    {
+    }
+    
     void initialize()
     {
         pFunc = NULL;
-        pFuncFree = NULL;
         pCondition = NULL;
-        pConditionFree = NULL;
     }
 
-    void clear()
-    {
-        pFuncFree(pFunc);
-        if (NULL!=pCondition)
-        {
-            pConditionFree(pCondition);
-        }
-    }
 };
 
 #endif

@@ -16,12 +16,12 @@
 #ifndef GP_COMPUTE_SYSTEM_H
 #define GP_COMPUTE_SYSTEM_H
 #include "lowlevelAPI/GPContents.h"
-#include "lowlevelAPI/GPFunction.h"
 #include "lowlevelAPI/GPStream.h"
 #include "lowlevelAPI/IFunctionTable.h"
 #include "GPMultiTable.h"
 #include "xml/xmlReader.h"
 #include "head.h"
+#include "GPFunction.h"
 
 class GPFunctionDataBase:public GPRefCount
 {

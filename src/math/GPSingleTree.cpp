@@ -208,7 +208,7 @@ int GPSingleTree::len() const
 }
 
 
-GPPtr<GPSingleTree> GPSingleTree::createFromFormula(const std::string& formula, const std::map<std::string, int>& variableMap)
+GPSingleTree* GPSingleTree::createFromFormula(const std::string& formula, const std::map<std::string, int>& variableMap)
 {
     vector<pair<GPSinglePoint::TYPE, int>> words;
     /*Divide words*/
@@ -297,7 +297,7 @@ results.push_back(_str);\
     return new GPSingleTree(GPSinglePoint::createFromFormula(words));
 }
 
-GPPtr<GPSingleTree> GPSingleTree::createFromFormula(const std::string& formula, const std::string& variable)
+GPSingleTree* GPSingleTree::createFromFormula(const std::string& formula, const std::string& variable)
 {
     istringstream input(variable);
     std::map<std::string, int> variableMap;
