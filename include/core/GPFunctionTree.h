@@ -15,6 +15,7 @@
 ******************************************************************/
 #ifndef CORE_GPFUNCTIONTREE_H
 #define CORE_GPFUNCTIONTREE_H
+#include "lowlevelAPI/IParallelMachine.h"
 #include "math/GPAbstractPoint.h"
 #include "GPFunctionDataBase.h"
 #include "GPParameter.h"
@@ -39,7 +40,7 @@ public:
     typedef union {
         const GPFunction* pFunc;
         int iInput;
-        int iParallelType;//0: MAP, 1: REDUCE
+        IParallelMachine::PARALLELTYPE iParallelType;//0: MAP, 1: REDUCE
     } DATA;
     inline const DATA data() const {return mData;}
     inline TYPE type() const {return mType;}

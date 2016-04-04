@@ -36,6 +36,7 @@ public:
     inline TYPE type() const {return mT;}
     TYPE getChildType(size_t i) const;
     void render(std::ostream& output) const;
+    void renderAsFormula(std::ostream& output) const;
     const GPFormulaTreePoint* father() const {return mFather;}
     void valid() const;
     static GPFormulaTreePoint* create(const std::vector<std::string>& words);

@@ -1,3 +1,4 @@
+#include "test/GPTest.h"
 #include "frontend/GPFormulaTree.h"
 #include "frontend/GPFunctionFrontEndProducer.h"
 #include "backend/GPBasicPiecesFunctionCreator.h"
@@ -72,18 +73,22 @@ static void __run()
         _saveOutputPieces(outputs, "Compose");
         delete inputs;
         delete outputs;
-
+        
         delete function;
     }
 }
 
 
-static const char* gPath = "/Users/jiangxiaotang/Documents/Renascence/";
-
-int main()
+class GPBasicPiecesFunctionCreatorTest:public GPTest
 {
-    GPStreamFactory::setParentPath(gPath);
-    system_set_path(gPath);
+    public:
+        virtual void run();
+        GPBasicPiecesFunctionCreatorTest(){}
+        virtual ~GPBasicPiecesFunctionCreatorTest(){}
+};
+void GPBasicPiecesFunctionCreatorTest::run()
+{
     __run();
-    return 1;
 }
+
+static GPTestRegister<GPBasicPiecesFunctionCreatorTest> a("GPBasicPiecesFunctionCreatorTest");

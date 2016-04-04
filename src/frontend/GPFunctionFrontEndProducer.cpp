@@ -13,6 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
+#include "lowlevelAPI/IParallelMachine.h"
 #include "frontend/GPFunctionFrontEndProducer.h"
 #include "frontend/GPFormulaTree.h"
 #include "math/carryGroup.h"
@@ -382,18 +383,20 @@ public:
         int type = 0;
         if (point->name() == "REDUCE")
         {
-            type = 1;
+            type = IParallelMachine::REDUCE;
         }
         else if (point->name() == "MAP")
         {
-            type = 0;
+            type = IParallelMachine::MAP;
         }
         else
         {
+            /*TODO*/
             GPASSERT(0);
         }
         result = new GPFunctionTreePoint(GPFunctionTreePoint::PARALLEL, type);
         {
+            /*INPUT*/
             GPFunctionTreePoint* input_f = new GPFunctionTreePoint("INPUT");
             result->addPoint(input_f);
             GPFormulaTreePoint* input = (GPFormulaTreePoint*)(point->getChild(0));
@@ -403,10 +406,15 @@ public:
             }
         }
         {
-            result->addPoint(GPAbstractPoint::deepCopy((GPAbstractPoint*)(point->getChild(1)), this));
+            /*GP Function*/
+            std::ostringstream expression;
+            auto funcp = GPCONVERT(const GPFormulaTreePoint, point->getChild(1));
+            funcp->renderAsFormula(expression);
+            result->addPoint(new GPFunctionTreePoint(expression.str()));
         }
         if (point->getChildrenNumber()>2)
         {
+            /*KEYMAP*/
             GPFunctionTreePoint* keymap = new GPFunctionTreePoint("KEYMAP");
             result->addPoint(keymap);
             GPFormulaTreePoint* keymap_origin = (GPFormulaTreePoint*)(point->getChild(2));
@@ -429,6 +437,7 @@ public:
         }
         if (point->getChildrenNumber()>3)
         {
+            /*Condition*/
             GPFormulaTreePoint* condition = (GPFormulaTreePoint*)(point->getChild(3));
             result->addPoint(new GPFunctionTreePoint(condition->name()));
         }

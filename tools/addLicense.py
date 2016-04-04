@@ -13,6 +13,7 @@ if __name__ == '__main__':
             contents = _f.read()
         if (contents.find('Licensed under the Apache License, Version 2.0')!=-1):
             continue
+        print f
         with open(f, 'w') as _f:
             _f.write(licensecontent)
             _f.write(contents)

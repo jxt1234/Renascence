@@ -309,6 +309,30 @@ GPFormulaTreePoint::TYPE GPFormulaTreePoint::getChildType(size_t i) const
     return p->type();
 }
 
+void GPFormulaTreePoint::renderAsFormula(std::ostream& output) const
+{
+    output << mName;
+    if (NUM == mT)
+    {
+        return;
+    }
+    output << "(";
+    if (mChildren.size() > 0)
+    {
+        GPFormulaTreePoint* p = GPCONVERT(GPFormulaTreePoint, mChildren[0]);
+        p->renderAsFormula(output);
+    }
+    for (int i=1; i<mChildren.size(); ++i)
+    {
+        output  << ",";
+        GPFormulaTreePoint* p = GPCONVERT(GPFormulaTreePoint, mChildren[i]);
+        p->renderAsFormula(output);
+    }
+    
+    output << ")";
+}
+
+
 void GPFormulaTreePoint::render(std::ostream& output) const
 {
     std::string type;

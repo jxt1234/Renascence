@@ -13,6 +13,15 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef BACKEND_GPPIECEMACHINEFACTORY_H
-#define BACKEND_GPPIECEMACHINEFACTORY_H
+#ifndef BACKEND_GPPIECESMACHINEFACTORY_H
+#define BACKEND_GPPIECESMACHINEFACTORY_H
+#include "GPPiecesFunctionCreator.h"
+#include "lowlevelAPI/IParallelMachine.h"
+
+class GPPiecesMachineFactory
+{
+public:
+    GPPiecesFunctionCreator* create(const IGPFunctionContext* context);
+};
+
 #endif
