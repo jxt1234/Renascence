@@ -13,15 +13,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef USER_GPFUNCTION_H
-#define USER_GPFUNCTION_H
+#ifndef LOWLEVELAPI_IGPFUNCTION_H
+#define LOWLEVELAPI_IGPFUNCTION_H
 #include <string>
 #include <vector>
 #include "IStatusType.h"
 #include "GPContents.h"
 #include "GPTypes.h"
-
-
 class IGPFunction : public GPRefCount
 {
 public:
@@ -31,7 +29,6 @@ public:
 protected:
     IGPFunction() {}
 };
-
 class IGPFloatFunction : public GPRefCount
 {
 public:
@@ -40,8 +37,6 @@ public:
 protected:
     IGPFloatFunction() {}
 };
-
-
 class IGPFunctionContext : public GPRefCount
 {
 public:
@@ -49,10 +44,7 @@ public:
     virtual IGPFloatFunction* vCreateFloatFunction(const std::string& formula, const std::string& variable) const = 0;
     
     virtual ~IGPFunctionContext() {}
-
 protected:
     IGPFunctionContext() {}
 };
-
-
 #endif

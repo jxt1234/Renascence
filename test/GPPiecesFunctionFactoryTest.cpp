@@ -1,3 +1,4 @@
+#include "test/GPTest.h"
 #include "frontend/GPFormulaTree.h"
 #include "frontend/GPFunctionFrontEndProducer.h"
 #include "backend/GPBasicPiecesFunctionCreator.h"
@@ -12,6 +13,14 @@
 #include "core/GPStreamFactory.h"
 #include "platform/system_lib.h"
 using namespace std;
+
+class GPPiecesFunctionFactoryTest:public GPTest
+{
+    public:
+        virtual void run();
+        GPPiecesFunctionFactoryTest(){}
+        virtual ~GPPiecesFunctionFactoryTest(){}
+};
 
 
 static const char* gFormula = "C(S(x0), S(x0))";
@@ -70,18 +79,13 @@ static void __run()
         _saveOutputPieces(outputs, "Compose");
         delete inputs;
         delete outputs;
-
+        
         delete function;
     }
 }
-
-
-static const char* gPath = "/Users/jiangxiaotang/Documents/Renascence/";
-
-int main()
+void GPPiecesFunctionFactoryTest::run()
 {
-    GPStreamFactory::setParentPath(gPath);
-    system_set_path(gPath);
     __run();
-    return 1;
 }
+
+static GPTestRegister<GPPiecesFunctionFactoryTest> a("GPPiecesFunctionFactoryTest");

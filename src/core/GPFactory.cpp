@@ -18,8 +18,9 @@
 #include "frontend/GPFunctionFrontEndProducer.h"
 #include "backend/GPTreeProducer.h"
 #include "backend/GPStreamADFProducer.h"
+#include "backend/GPBasicPiecesFunctionCreator.h"
+#include "backend/GPTreePiecesFunctionCreator.h"
 #include "core/GPStreamFactory.h"
-#include <fstream>
 
 GPProducer* GPFactory::createProducer(const GPFunctionDataBase* base, GPFactory::TYPE t)
 {
@@ -54,3 +55,8 @@ GPFunctionDataBase* GPFactory::createDataBase(GPStream* file, IFunctionTable* t)
     base->loadXml(file, t);
     return base;
 }
+GPPiecesFunctionCreator* GPFactory::createPieceFunctionProducer(const GPProducer* producer, const GPFunctionDataBase* base, GPStream* metafile)
+{
+    return new GPTreePiecesFunctionCreator(base, producer, producer->getFront(), metafile);
+}
+

@@ -48,5 +48,6 @@
 #else
 #define GPCONVERT(t, c) (dynamic_cast<t*>(c))
 #endif
+#define GPFORCECONVERT(t, c) ((t*)(c))
 
 #endif

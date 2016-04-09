@@ -49,7 +49,7 @@ static void _saveOutputPieces(GPPieces* output, const char* prefix)
         os << "output/GPSingleParallelMachineTest"<<prefix << "_"<<i+1<<".jpg";
         GPPtr<GPWStreamWrap> outputStream = GPStreamFactory::NewWStream(os.str().c_str());
         c->getType(0)->vSave(c->get(0), outputStream.get());
-        delete c;
+        c->decRef();
     }
 }
 

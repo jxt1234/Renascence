@@ -25,7 +25,6 @@ static std::pair<int, int> _translate(const std::string& name)
         b*=10;
         b+=name[i]-'0';
     }
-    
     return std::make_pair(a, b);
 }
 
@@ -125,6 +124,12 @@ public:
                     data.mOutputKey.push_back(_translate(p->extra()));
                 }
             }
+        }
+        if (root->getChildrenNumber()>3)
+        {
+            auto condition = GPCONVERT(const GPFunctionTreePoint, root->getChild(3));
+            data.sConditionInfo.sConditionFormula = condition->extra();
+            data.sConditionInfo.sVariableInfo = "a0 b0";//TODO
         }
         
         auto creator_executor = machine->vGenerate(&data, root->data().iParallelType);

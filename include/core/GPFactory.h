@@ -16,9 +16,8 @@
 #ifndef CORE_GPFACTORY_H
 #define CORE_GPFACTORY_H
 #include "GPFunctionDataBase.h"
-#include <istream>
 class GPProducer;
-class IFunctionTable;
+class GPPiecesFunctionCreator;
 class GPFactory
 {
 public:
@@ -31,5 +30,6 @@ public:
     static GPProducer* createProducer(const GPFunctionDataBase* base, TYPE t = TREE);
     static GPFunctionDataBase* createDataBase(const char* metafile, IFunctionTable* t);
     static GPFunctionDataBase* createDataBase(GPStream* metafile, IFunctionTable* t);
+    static GPPiecesFunctionCreator* createPieceFunctionProducer(const GPProducer* producer, const GPFunctionDataBase* base, GPStream* metafile);
 };
 #endif

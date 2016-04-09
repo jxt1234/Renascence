@@ -19,7 +19,7 @@
 #include "IStatusType.h"
 #include "GPRefCount.h"
 
-class GPContents
+class GPContents : public GPRefCount
 {
 public:
     class GP_Unit :public GPRefCount

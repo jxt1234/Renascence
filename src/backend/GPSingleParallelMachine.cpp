@@ -128,7 +128,7 @@ public:
                 GPContents* ci = inputs[i]->vLoad(keyCurrent+pos, inputs[i]->nKeyNumber);
                 pos += inputs[i]->nKeyNumber;
                 currentGPInputs->merge(*ci);
-                delete ci;//Don't delete content
+                ci->decRef();//Don't delete content
             }
             mHandle->vHandle(mFunction.get(), output, currentGPInputs, keyOutput, (unsigned int)mOutputKey.size());
         } while (group.next(keyCurrent, sumDim));

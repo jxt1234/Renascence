@@ -40,7 +40,7 @@ public:
         {
             if (NULL!=mPieces[i])
             {
-                delete mPieces[i];
+                mPieces[i]->decRef();
             }
         }
         delete [] mPieces;
@@ -49,17 +49,20 @@ public:
     virtual GPContents* vLoad(unsigned int* pKey, unsigned int keynum)
     {
         auto sum = _computePos(pKey, keynum);
-        //GPASSERT(mPieces[sum]!=NULL);
         GPContents* res = mPieces[sum];
-        mPieces[sum] = NULL;
+        res->addRef();
         return res;
     }
     
     virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents* c)
     {
         auto sum = _computePos(pKey, keynum);
-        GPASSERT(mPieces[sum] == NULL);//TODO
+        if (NULL != mPieces[sum])
+        {
+            mPieces[sum]->decRef();
+        }
         mPieces[sum] = c;
+        c->addRef();
     }
 
 private:
