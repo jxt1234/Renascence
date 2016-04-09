@@ -38,6 +38,7 @@ static GPPieces* _createInputPieces(const IStatusType* s)
         GPContents* c = new GPContents;
         c->push(s->vLoad(input.get()), s);
         inputs->vSave(&key, 1, c);
+        c->decRef();
     }
     return inputs;
 }

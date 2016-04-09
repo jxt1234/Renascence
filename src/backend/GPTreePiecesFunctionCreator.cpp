@@ -15,21 +15,15 @@
 ******************************************************************/
 #include <sstream>
 #include "backend/GPTreePiecesFunctionCreator.h"
-#include "xml/xmlReader.h"
 
-GPTreePiecesFunctionCreator::GPTreePiecesFunctionCreator(const GPFunctionDataBase* base, const IGPFunctionContext* context, const GPFrontEndProducer* front, GPStream* meta)
+GPTreePiecesFunctionCreator::GPTreePiecesFunctionCreator(const GPFunctionDataBase* base, const IGPFunctionContext* context, const GPFrontEndProducer* front, const std::map<std::string, std::string>& map_reduce_formula)
 {
     GPASSERT(NULL!=base);
-    GPASSERT(NULL!=meta);
     GPASSERT(NULL!=front);
-    xmlReader reader;
-    const GPTreeNode* root = reader.loadStream(meta);
-    GPASSERT(NULL!=root);
-    for (auto p : root->getChildren())
+    for (auto iter : map_reduce_formula)
     {
-        GPASSERT(p->getChildren().size() == 0);
-        auto funcName = p->name();
-        auto formula = p->attr();
+        auto funcName = iter.first;
+        auto formula = iter.second;
         auto func = base->vQueryFunction(funcName);
         GPASSERT(NULL!=func);
         GPPtr<GPFunctionTree> tree = front->vCreateFromFormula(formula, std::vector<const IStatusType*>());
@@ -48,11 +42,11 @@ bool GPTreePiecesFunctionCreator::_checkValidTree(const GPFunctionTree* tree) co
     for (auto p : allPoints)
     {
         const GPFunctionTreePoint* _p = GPCONVERT(const GPFunctionTreePoint, p);
-        if (_p->type() == GPFunctionTreePoint::PARALLEL)
+        if (GPFunctionTreePoint::PARALLEL == _p->type())
         {
             return false;
         }
-        if (_p->type() == GPFunctionTreePoint::FUNCTION)
+        if (GPFunctionTreePoint::FUNCTION == _p->type())
         {
             if (mPieces.find(_p->data().pFunc) == mPieces.end())
             {

@@ -34,7 +34,7 @@ public:
         mPieces = new GPContents*[mMaxSize];
         ::memset(mPieces, 0, mMaxSize*sizeof(GPContents*));
     }
-    ~GPPieceInMemory()
+    virtual ~GPPieceInMemory()
     {
         for (size_t i=0; i<mMaxSize; ++i)
         {
@@ -85,11 +85,6 @@ private:
     size_t mMaxSize;
 };
 
-static void _freeMemoryPiece(void* meta)
-{
-    GPPieceInMemory* _meta = (GPPieceInMemory*)meta;
-    delete _meta;
-}
 
 static GPPieces* _createMemoryPieces(const std::vector<unsigned int>& keydimesions)
 {

@@ -16,6 +16,8 @@
 #ifndef CORE_GPFACTORY_H
 #define CORE_GPFACTORY_H
 #include "GPFunctionDataBase.h"
+#include <map>
+#include <string>
 class GPProducer;
 class GPPiecesFunctionCreator;
 class GPFactory
@@ -31,5 +33,6 @@ public:
     static GPFunctionDataBase* createDataBase(const char* metafile, IFunctionTable* t);
     static GPFunctionDataBase* createDataBase(GPStream* metafile, IFunctionTable* t);
     static GPPiecesFunctionCreator* createPieceFunctionProducer(const GPProducer* producer, const GPFunctionDataBase* base, GPStream* metafile);
+    static GPPiecesFunctionCreator* createPieceFunctionProducer(const GPProducer* producer, const GPFunctionDataBase* base, const std::map<std::string, std::string>& map_reduce_formula);
 };
 #endif

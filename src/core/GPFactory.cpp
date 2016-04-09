@@ -21,6 +21,7 @@
 #include "backend/GPBasicPiecesFunctionCreator.h"
 #include "backend/GPTreePiecesFunctionCreator.h"
 #include "core/GPStreamFactory.h"
+#include "xml/xmlReader.h"
 
 GPProducer* GPFactory::createProducer(const GPFunctionDataBase* base, GPFactory::TYPE t)
 {
@@ -55,8 +56,22 @@ GPFunctionDataBase* GPFactory::createDataBase(GPStream* file, IFunctionTable* t)
     base->loadXml(file, t);
     return base;
 }
+
+GPPiecesFunctionCreator* GPFactory::createPieceFunctionProducer(const GPProducer* producer, const GPFunctionDataBase* base, const std::map<std::string, std::string>& map_reduce_formula)
+{
+    return new GPTreePiecesFunctionCreator(base, producer, producer->getFront(), map_reduce_formula);
+}
+
 GPPiecesFunctionCreator* GPFactory::createPieceFunctionProducer(const GPProducer* producer, const GPFunctionDataBase* base, GPStream* metafile)
 {
-    return new GPTreePiecesFunctionCreator(base, producer, producer->getFront(), metafile);
+    xmlReader r;
+    auto root = r.loadStream(metafile);
+    GPASSERT(NULL!=root);
+    std::map<std::string, std::string> rules;
+    for (auto p : root->getChildren())
+    {
+        rules.insert(std::make_pair(p->name(), p->attr()));
+    }
+    return new GPTreePiecesFunctionCreator(base, producer, producer->getFront(), rules);
 }
 

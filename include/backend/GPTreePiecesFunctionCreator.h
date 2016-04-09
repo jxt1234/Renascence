@@ -24,7 +24,7 @@ class GPTreePiecesFunctionCreator : public GPPiecesFunctionCreator
 public:
     virtual GPPiecesFunction* vCreateFromFuncTree(const GPFunctionTree* tree, const IParallelMachine* machine) const override;
     
-    GPTreePiecesFunctionCreator(const GPFunctionDataBase* base, const IGPFunctionContext* context, const GPFrontEndProducer* front, GPStream* meta);
+    GPTreePiecesFunctionCreator(const GPFunctionDataBase* base, const IGPFunctionContext* context, const GPFrontEndProducer* front, const std::map<std::string, std::string>& map_reduce_formula);
     virtual ~GPTreePiecesFunctionCreator();
 private:
     bool _checkValidTree(const GPFunctionTree* tree) const;

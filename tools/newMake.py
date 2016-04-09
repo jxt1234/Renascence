@@ -116,6 +116,7 @@ def Generate_Output(outName, srcDirs, srcFiles, CLINK, depend):
     if (main.find('.so')>-1):
         target = ' --shared '
     if (main.find('.a')!=-1):
+        fileContents+=('\t' + 'rm -f '  + main+'\n')
         fileContents+=('\t' + 'ar rcs '  + main+' '+main_files)
     else:
         fileContents+=('\t' + CPP + " " + main_files + " " + CFLAGS + ' ' + target  + ' ' + CLINK  + ' -o ' + main)
