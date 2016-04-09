@@ -50,7 +50,10 @@ public:
     {
         auto sum = _computePos(pKey, keynum);
         GPContents* res = mPieces[sum];
-        res->addRef();
+        if (NULL != res)
+        {
+            res->addRef();
+        }
         return res;
     }
     

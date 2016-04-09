@@ -31,6 +31,7 @@ static GPPieces* _createInputPieces(const IStatusType* s)
         GPContents* c = new GPContents;
         c->push(s->vLoad(input.get()), s);
         inputs->vSave(&key, 1, c);
+        c->decRef();
     }
     return inputs;
 }
@@ -71,8 +72,8 @@ static void __run()
         GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
         GPPieces* outputs = function->vRun(&inputs, 1);
         _saveOutputPieces(outputs, "Compose");
-        delete inputs;
-        delete outputs;
+        inputs->decRef();
+        outputs->decRef();
         
         delete function;
     }
