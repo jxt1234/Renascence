@@ -1,0 +1,17 @@
+INCLUDE:include ../../include/
+**********
+
+TARGET:libmthpGP.so
+DEPENDS:
+DIRS:src
+SRCS:
+LINKS:-lpthread -ldl
+
+##########
+
+TARGET:example.out
+DEPENDS:libmthpGP.so
+DIRS:
+SRCS:simple_main.cpp
+LINKS: ./libmthpGP.so -ldl -lpthread
+
