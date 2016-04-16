@@ -419,8 +419,19 @@ public:
             result->addPoint(keymap);
             GPFormulaTreePoint* keymap_origin = (GPFormulaTreePoint*)(point->getChild(2));
             GPASSERT(keymap_origin->getChildrenNumber() == 2);
-            //TODO: consider input key
             {
+                GPFunctionTreePoint* input = new GPFunctionTreePoint("Input");
+                keymap->addPoint(input);
+                GPFormulaTreePoint* inputKey = (GPFormulaTreePoint*)keymap_origin->getChild(0);
+                for (int i=0; i<inputKey->getChildrenNumber(); ++i)
+                {
+                    auto pp = GPCONVERT(const GPFormulaTreePoint, inputKey->getChild(i));
+                    input->addPoint(new GPFunctionTreePoint(pp->name()));
+                }
+            }
+            {
+                GPFunctionTreePoint* output = new GPFunctionTreePoint("Output");
+                keymap->addPoint(output);
                 GPFormulaTreePoint* outputkey = (GPFormulaTreePoint*)keymap_origin->getChild(1);
                 auto nodes = outputkey->display();
                 for (auto p : nodes)
@@ -429,7 +440,7 @@ public:
                     if (pp->type() == GPFormulaTreePoint::NUM)
                     {
                         GPFunctionTreePoint* par = new GPFunctionTreePoint(pp->name());
-                        keymap->addPoint(par);
+                        output->addPoint(par);
                     }
                 }
                 

@@ -1,19 +1,20 @@
 /******************************************************************
-   Copyright 2016, Jiang Xiao-tang
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-******************************************************************/
+ Copyright 2016, Jiang Xiao-tang
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ******************************************************************/
 #include "backend/GPBasicPiecesFunctionCreator.h"
+#include <sstream>
 
 static std::pair<int, int> _translate(const std::string& name)
 {
@@ -111,17 +112,33 @@ public:
         data.sFuncInfo.parameter = "";
         data.sFuncInfo.inputs.clear();
         
+        std::ostringstream inputVariables;
         if (root->getChildrenNumber()>2)
         {
             auto keymap_point = root->getChild(2);
-            for (int i=0; i<keymap_point->getChildrenNumber(); ++i)
+            GPASSERT(keymap_point->getChildrenNumber() == 2);
             {
-                auto p = GPCONVERT(const GPFunctionTreePoint, keymap_point->getChild(i));
-                GPASSERT(p->type() == GPFunctionTreePoint::STRING);
-                //TODO
-                if (_isValid(p->extra()))
+                //Output
+                auto output = keymap_point->getChild(1);
+                for (int i=0; i<output->getChildrenNumber(); ++i)
                 {
-                    data.mOutputKey.push_back(_translate(p->extra()));
+                    auto p = GPCONVERT(const GPFunctionTreePoint, output->getChild(i));
+                    GPASSERT(p->type() == GPFunctionTreePoint::STRING);
+                    //TODO
+                    if (_isValid(p->extra()))
+                    {
+                        data.mOutputKey.push_back(_translate(p->extra()));
+                    }
+                }
+                
+            }
+            {
+                auto input = keymap_point->getChild(0);
+                for (int i=0; i<input->getChildrenNumber(); ++i)
+                {
+                    auto p = GPCONVERT(const GPFunctionTreePoint, input->getChild(i));
+                    GPASSERT(p->type() == GPFunctionTreePoint::STRING);
+                    inputVariables << p->extra() << " ";
                 }
             }
         }
@@ -129,7 +146,7 @@ public:
         {
             auto condition = GPCONVERT(const GPFunctionTreePoint, root->getChild(3));
             data.sConditionInfo.sConditionFormula = condition->extra();
-            data.sConditionInfo.sVariableInfo = "a0 b0";//TODO
+            data.sConditionInfo.sVariableInfo = inputVariables.str();
         }
         
         auto creator_executor = machine->vGenerate(&data, root->data().iParallelType);
@@ -144,9 +161,9 @@ public:
             }
         }
         return result;
-
+        
     }
-
+    
 private:
     GPPtr<IParallelMachine::Creator> mCreator;
     GPPtr<IParallelMachine::Executor> mExecutor;
