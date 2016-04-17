@@ -30,7 +30,7 @@ void GPStreamADFTest::run()
         GPPtr<GPWStreamWrap> outp = GPStreamFactory::NewWStream("output/GPStreamTest.xml");
         xmlReader::dumpNodes(node.get(), outp.get());
         auto bmptype = base->vQueryType("TrBmp");
-        outp->flush();
+        outp->vFlush();
         {
             GPContents contents;
             GPPtr<GPStreamWrap> inputjpeg = GPStreamFactory::NewStream("input.jpg", GPStreamFactory::FILE);

@@ -48,15 +48,25 @@ static bool _IsEnd(void* meta)
 GPFileStream::GPFileStream(const char* filename)
 {
     FILE* f = fopen(filename, "rb");
-    GPASSERT(NULL!=f);
-    mMetaData = (void*)f;
-    mRead = _Read;
-    mIsEnd = _IsEnd;
+    GPASSERT(NULL!=f);//TODO
+    mF = f;
 }
 
 GPFileStream::~GPFileStream()
 {
-    fclose((FILE*)mMetaData);
+    fclose(mF);
+}
+size_t GPFileStream::vRead(void* buffer, size_t size)
+{
+    return _Read(mF, buffer, size);
+}
+bool GPFileStream::vIsEnd() const
+{
+    return _IsEnd(mF);
+}
+bool GPFileStream::vRewind()
+{
+    return 0 == fseek(mF, 0L, SEEK_SET);
 }
 
 static size_t _Write(void* meta, const void* buffer, size_t size)
@@ -75,12 +85,21 @@ GPFileWStream::GPFileWStream(const char* name)
 {
     FILE* f = fopen(name, "wb");
     GPASSERT(NULL!=f);
-    mMetaData = (void*)f;
-    mWrite = _Write;
-    mFlush = _Flush;
+    mF = f;
 }
+
+size_t GPFileWStream::vWrite(const void* buffer, size_t size)
+{
+    return _Write(mF, buffer, size);
+}
+
+bool GPFileWStream::vFlush()
+{
+    return _Flush(mF);
+}
+
 
 GPFileWStream::~GPFileWStream()
 {
-    fclose((FILE*)mMetaData);
+    fclose(mF);
 }

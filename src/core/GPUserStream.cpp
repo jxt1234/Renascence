@@ -19,33 +19,34 @@
 #include <iostream>
 using namespace std;
 static size_t gMagic = 0;
-static size_t _Read(void* meta, void* buffer, size_t size)
+size_t GPUserStream::vRead(void* buffer, size_t size)
 {
-    return 0;//TODO
+    //TODO
+    return 0;
 }
-
-static bool _IsEnd(void* meta)
+bool GPUserStream::vIsEnd() const
 {
     return true;
+}
+bool GPUserStream::vRewind()
+{
+    return false;
 }
 
 GPUserStream::GPUserStream(const char* filename)
 {
-    mMetaData = (void*)(&gMagic);
-    mRead = _Read;
-    mIsEnd = _IsEnd;
 }
 
 GPUserStream::~GPUserStream()
 {
 }
 
-static size_t _Write(void* meta, const void* buffer, size_t size)
+size_t GPUserWStream::vWrite(const void* buffer, size_t size)
 {
     cout.write((char*)buffer, size);
-    return 0;
+    return size;
 }
-static bool _Flush(void* meta)
+bool GPUserWStream::vFlush()
 {
     cout.flush();
     return true;
@@ -54,10 +55,6 @@ static bool _Flush(void* meta)
 
 GPUserWStream::GPUserWStream(const char* name)
 {
-    /*Avoid invalid*/
-    mMetaData = (void*)(&gMagic);
-    mWrite = _Write;
-    mFlush = _Flush;
 }
 
 GPUserWStream::~GPUserWStream()

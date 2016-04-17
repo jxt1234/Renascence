@@ -27,14 +27,12 @@ static void _nofree(void*)
 }
 GPStreamWrap::GPStreamWrap()
 {
-    mFree = _nofree;
 }
 GPStreamWrap::~GPStreamWrap()
 {
 }
 GPWStreamWrap::GPWStreamWrap()
 {
-    mFree = _nofree;
 }
 GPWStreamWrap::~GPWStreamWrap()
 {

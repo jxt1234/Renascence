@@ -22,6 +22,9 @@ class GPFileStream:public GPStreamWrap
 {
 public:
     GPFileStream(const char* filename);
+    virtual size_t vRead(void* buffer, size_t size);
+    virtual bool vIsEnd() const;
+    virtual bool vRewind();
     virtual ~GPFileStream();
 private:
     FILE* mF;
@@ -32,6 +35,8 @@ class GPFileWStream:public GPWStreamWrap
 public:
     GPFileWStream(const char* filename);
     virtual ~GPFileWStream();
+    virtual size_t vWrite(const void* buffer, size_t size);
+    virtual bool vFlush();
 private:
     FILE* mF;
 };

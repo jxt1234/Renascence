@@ -39,7 +39,7 @@ class TrFilterMatrixType:public IStatusType
             {
                 res << m->data[i]<<" ";
             }
-            output->write(res.str().c_str(), res.str().size());
+            output->vWrite(res.str().c_str(), res.str().size());
         }
         virtual void vFree(void* content) const
         {
@@ -87,7 +87,7 @@ class TrFloatType:public IStatusType
             {
                 output << f[i] <<" ";
             }
-            out->write(output.str().c_str(), output.str().size());
+            out->vWrite(output.str().c_str(), output.str().size());
         }
         virtual void vFree(void* contents) const
         {
@@ -133,7 +133,7 @@ class TrRegreeModeType:public IStatusType
             {
                 out << m->mode[i]<<" ";
             }
-            output->write(out.str().c_str(), out.str().size());
+            output->vWrite(out.str().c_str(), out.str().size());
         }
         virtual void vFree(void* contents) const
         {

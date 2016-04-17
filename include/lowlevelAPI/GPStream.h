@@ -16,67 +16,40 @@
 #ifndef USER_GPSTREAM_H
 #define USER_GPSTREAM_H
 #include <stdlib.h>
-struct GPStream
+class GPStream
 {
+public:
     virtual ~GPStream() = default;
     /*If the buffer is NULL, it means skip size bytes, return the fact bytes it read*/
-    size_t(*mRead)(void* meta, void* buffer, size_t size);
+    virtual size_t vRead(void* buffer, size_t size) = 0;
     /*Return true if the stream has moved to end*/
-    bool(*mIsEnd)(void* meta);
-    void* mMetaData;
-    void(*mFree)(void*);
+    virtual bool vIsEnd() const = 0;
+    /*Reset the stream, return false if the stream can't be rewind*/
+    virtual bool vRewind() = 0;
 
-    size_t read(void* buffer, size_t size) const
-    {
-        return mRead(mMetaData, buffer, size);
-    }
-    bool isEnd() const
-    {
-        return mIsEnd(mMetaData);
-    }
     template <typename T>
     T readUnit()
     {
         T buffer;
-        this->mRead(mMetaData, &buffer, sizeof(T));
+        this->vRead(&buffer, sizeof(T));
         return buffer;
     }
-    bool isValid() const
-    {
-        return NULL!=mMetaData && NULL!=mRead && NULL!=mIsEnd && NULL!=mFree;
-    }
-    void release()
-    {
-        mFree(mMetaData);
-    }
+protected:
+    GPStream() = default;
+
 };
-struct GPWStream
+class GPWStream
 {
+public:
     virtual ~GPWStream() = default;
-    size_t(*mWrite)(void* meta, const void* buffer, size_t size);
-    bool(*mFlush)(void* meta);
-    void* mMetaData;
-    void(*mFree)(void*);
-    size_t write(const void* buffer, size_t size)
-    {
-        return mWrite(mMetaData, buffer, size);
-    }
-    bool flush()
-    {
-        return mFlush(mMetaData);
-    }
+    virtual size_t vWrite(const void* buffer, size_t size) = 0;
+    virtual bool vFlush() = 0;
     template<typename T>
     bool writeUnit(T v)
     {
-        return this->mWrite(mMetaData, &v, sizeof(T));
+        return this->vWrite(&v, sizeof(T));
     }
-    bool isValid() const
-    {
-        return NULL!=mWrite && NULL!=mFlush && NULL!=mMetaData && NULL!=mFree;
-    }
-    void release()
-    {
-        mFree(mMetaData);
-    }
+protected:
+    GPWStream() = default;
 };
 #endif

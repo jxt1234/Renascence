@@ -24,6 +24,13 @@ class GPUserStream:public GPStreamWrap
 {
 public:
     GPUserStream(const char* filename);
+    /*If the buffer is NULL, it means skip size bytes, return the fact bytes it read*/
+    virtual size_t vRead(void* buffer, size_t size);
+    /*Return true if the stream has moved to end*/
+    virtual bool vIsEnd() const;
+    /*Reset the stream, return false if the stream can't be rewind*/
+    virtual bool vRewind();
+
     virtual ~GPUserStream();
 };
 
@@ -31,6 +38,9 @@ class GPUserWStream:public GPWStreamWrap
 {
 public:
     GPUserWStream(const char* filename);
+    virtual size_t vWrite(const void* buffer, size_t size);
+    virtual bool vFlush();
+
     virtual ~GPUserWStream();
 };
 #endif /* defined(__GP__GPUserStream__) */

@@ -217,7 +217,7 @@ void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)>
     /*Evolution*/
     for (int i=0; i<mTime; ++i)
     {
-        if (NULL!=cache && cache->isValid())
+        if (NULL!=cache)
         {
             std::ostringstream total;
             total << mBestFit <<",";
@@ -232,7 +232,7 @@ void GPEvolutionGroup::vEvolutionFunc(std::function<double(IGPAutoDefFunction*)>
             }
             auto formula = mBest->getBasicTree()->dump();
             total << ", "<<formula<<"\n";
-            cache->write(total.str().c_str(), total.str().size());
+            cache->vWrite(total.str().c_str(), total.str().size());
         }
         _mutate();
         _best(fit_func);

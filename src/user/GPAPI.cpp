@@ -310,7 +310,6 @@ GPStream* GP_Stream_Create(const char* file)
 }
 void GP_Stream_Destroy(GPStream* s)
 {
-    s->release();
     delete s;
 }
 
@@ -320,7 +319,6 @@ GPWStream* GP_WStream_Create(const char* file)
 }
 void GP_WStream_Destroy(GPWStream* s)
 {
-    s->release();
     delete s;
 }
 

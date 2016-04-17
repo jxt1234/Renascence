@@ -205,14 +205,14 @@ void xmlReader::dumpNodes(const GPTreeNode* node, GPWStream* output)
     ostringstream os;
     os << "<"<<node->name()<<">\n";
     os <<node->attr()<<"\n";
-    output->write(os.str().c_str(), os.str().size());
+    output->vWrite(os.str().c_str(), os.str().size());
     for (auto c : node->getChildren())
     {
         dumpNodes(c.get(), output);
     }
     os.str("");
     os << "</"<<node->name()<<">\n";
-    output->write(os.str().c_str(), os.str().size());
+    output->vWrite(os.str().c_str(), os.str().size());
 }
 
 

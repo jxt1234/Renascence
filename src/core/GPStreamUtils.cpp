@@ -19,16 +19,15 @@
 GPPtr<GPBlock> GPStreamUtils::read(GPStream* input, bool merge)
 {
     GPASSERT(NULL!=input);
-    GPASSERT(input->isValid());
     static const size_t size = 2 << 12;
     GPPtr<GPBlock> head = new GPBlock(size);
     GPPtr<GPBlock> currentnode = head;
     while(1)
     {
         auto c = currentnode->contents();
-        auto real_size = input->read(c, size);
+        auto real_size = input->vRead(c, size);
         currentnode->resize(real_size);
-        if (input->isEnd())
+        if (input->vIsEnd())
         {
             break;
         }
@@ -45,12 +44,11 @@ GPPtr<GPBlock> GPStreamUtils::read(GPStream* input, bool merge)
 void GPStreamUtils::write(GPWStream* output, GPPtr<GPBlock> content)
 {
     GPASSERT(NULL!=output);
-    GPASSERT(output->isValid());
     GPASSERT(content.get()!=NULL);
     const GPBlock* cur = content.get();
     while (NULL!=cur)
     {
-        output->write(cur->contents(), cur->size());
+        output->vWrite(cur->contents(), cur->size());
         cur = cur->getNext();
     }
 }

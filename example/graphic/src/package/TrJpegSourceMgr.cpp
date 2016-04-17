@@ -9,7 +9,7 @@ static void sk_init_source(j_decompress_ptr cinfo) {
 
 static boolean sk_fill_input_buffer(j_decompress_ptr cinfo) {
     skjpeg_source_mgr* src = (skjpeg_source_mgr*)cinfo->src;
-    size_t bytes = src->fStream->read(src->fBuffer, skjpeg_source_mgr::kBufferSize);
+    size_t bytes = src->fStream->vRead(src->fBuffer, skjpeg_source_mgr::kBufferSize);
     // note that JPEG is happy with less than the full read,
     // as long as the result is non-zero
     if (bytes == 0) {
@@ -27,7 +27,7 @@ static void sk_skip_input_data(j_decompress_ptr cinfo, long num_bytes) {
     if (num_bytes > (long)src->bytes_in_buffer) {
         size_t bytesToSkip = num_bytes - src->bytes_in_buffer;
         while (bytesToSkip > 0) {
-            size_t bytes = src->fStream->read(NULL, bytesToSkip);
+            size_t bytes = src->fStream->vRead(NULL, bytesToSkip);
             if (bytes <= 0 || bytes > bytesToSkip) {
 //              SkDebugf("xxxxxxxxxxxxxx failure to skip request %d returned %d\n", bytesToSkip, bytes);
                 cinfo->err->error_exit((j_common_ptr)cinfo);
@@ -73,8 +73,7 @@ static void sk_init_destination(j_compress_ptr cinfo) {
 static boolean sk_empty_output_buffer(j_compress_ptr cinfo) {
     skjpeg_destination_mgr* dest = (skjpeg_destination_mgr*)cinfo->dest;
 
-//  if (!dest->fStream->write(dest->fBuffer, skjpeg_destination_mgr::kBufferSize - dest->free_in_buffer))
-    if (!dest->fStream->write(dest->fBuffer,
+    if (!dest->fStream->vWrite(dest->fBuffer,
             skjpeg_destination_mgr::kBufferSize)) {
         ERREXIT(cinfo, JERR_FILE_WRITE);
         return false;
@@ -90,12 +89,12 @@ static void sk_term_destination (j_compress_ptr cinfo) {
 
     size_t size = skjpeg_destination_mgr::kBufferSize - dest->free_in_buffer;
     if (size > 0) {
-        if (!dest->fStream->write(dest->fBuffer, size)) {
+        if (!dest->fStream->vWrite(dest->fBuffer, size)) {
             ERREXIT(cinfo, JERR_FILE_WRITE);
             return;
         }
     }
-    dest->fStream->flush();
+    dest->fStream->vFlush();
 }
 
 skjpeg_destination_mgr::skjpeg_destination_mgr(GPWStream* stream)

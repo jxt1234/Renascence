@@ -130,9 +130,9 @@ public:
                         data.mOutputKey.push_back(_translate(p->extra()));
                     }
                 }
-                
             }
             {
+                //Input
                 auto input = keymap_point->getChild(0);
                 for (int i=0; i<input->getChildrenNumber(); ++i)
                 {
