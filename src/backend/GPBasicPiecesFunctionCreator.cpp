@@ -140,13 +140,13 @@ public:
                     GPASSERT(p->type() == GPFunctionTreePoint::STRING);
                     inputVariables << p->extra() << " ";
                 }
+                data.sVariableInfo = inputVariables.str();
             }
         }
         if (root->getChildrenNumber()>3)
         {
             auto condition = GPCONVERT(const GPFunctionTreePoint, root->getChild(3));
             data.sConditionInfo.sConditionFormula = condition->extra();
-            data.sConditionInfo.sVariableInfo = inputVariables.str();
         }
         
         auto creator_executor = machine->vGenerate(&data, root->data().iParallelType);

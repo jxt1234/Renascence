@@ -22,9 +22,6 @@
 
 std::string GPStreamFactory::gPath = "";
 
-static void _nofree(void*)
-{
-}
 GPStreamWrap::GPStreamWrap()
 {
 }

@@ -18,7 +18,6 @@
 #include "utils/GPDebug.h"
 #include <iostream>
 using namespace std;
-static size_t gMagic = 0;
 size_t GPUserStream::vRead(void* buffer, size_t size)
 {
     //TODO

@@ -310,5 +310,3 @@ GPSingleTree* GPSingleTree::createFromFormula(const std::string& formula, const 
     }
     return createFromFormula(formula, variableMap);
 }
-
-

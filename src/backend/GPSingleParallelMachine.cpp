@@ -194,7 +194,7 @@ std::pair<IParallelMachine::Creator*, IParallelMachine::Executor*> GPSingleParal
     GPPtr<IGPFloatFunction> condition;
     if (!data->sConditionInfo.sConditionFormula.empty())
     {
-        condition = data->pContext->vCreateFloatFunction(data->sConditionInfo.sConditionFormula, data->sConditionInfo.sVariableInfo);
+        condition = data->pContext->vCreateFloatFunction(data->sConditionInfo.sConditionFormula, data->sVariableInfo);
     }
     
     Executor* executor = new SingleExecutor(func, condition, data->mOutputKey, handle);

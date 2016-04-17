@@ -34,12 +34,11 @@ struct GPParallelType
     struct FormulaInfo
     {
         std::string sConditionFormula;
-        std::string sVariableInfo;
     };
     FormulaInfo sConditionInfo;
 
-    //Currently Not used
-    std::vector<std::vector<unsigned int>> mSplitInfo;
+    /*All Input Key Variable*/
+    std::string sVariableInfo;
     
     //a0: 0,0  b2: 1,2  d2: 3,2  and so on
     std::vector<std::pair<unsigned int, unsigned int>> mOutputKey;
