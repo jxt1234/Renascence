@@ -13,12 +13,16 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef MGPPIECESFACTORY_H
-#define MGPPIECESFACTORY_H
-#include "lowlevelAPI/GPPieces.h"
-class MGPPiecesFactory
-{
-public:
-    static GPPieces* create(const std::vector<unsigned int>& keydimesions);
-};
+#ifndef MGPUTILS_H
+#define MGPUTILS_H
+#include <assert.h>
+#define MGPASSERT(x) assert(x)
+#ifdef BUILD_FOR_ANDROID
+#include <android/log.h>
+#define MGPPRINT(format, ...) __android_log_print(ANDROID_LOG_INFO, "GP", format,##__VA_ARGS__)
+#else
+#define MGPPRINT(format, ...) printf(format,##__VA_ARGS__)
+#endif
+#define FUNC_PRINT(x) MGPPRINT(#x"=%d in %s, %d \n",x,  __func__, __LINE__);
+#define FUNC_PRINT_ALL(x, type) MGPPRINT(#x"= "#type" %"#type" in %s, %d \n",x,  __func__, __LINE__);
 #endif

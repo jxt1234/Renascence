@@ -1,9 +1,12 @@
 all:libmthpGP.so example.out 
 
-ALL_INCLUESlibmthpGP.so= include//MGPCreator.h include//MGPExecutor.h include//MGPMachine.h include//MGPPiecesFactory.h
+ALL_INCLUESlibmthpGP.so= include//MGPCreator.h include//MGPExecutor.h include//MGPMachine.h include//MGPPiecesFactory.h include//MGPThread.h include//MGPThreadPool.h include//MGPUtils.h
 
-libmthpGP.so:  build/src_MGPExecutor.o build/src_MGPMachine.o build/src_MGPPiecesFactory.o 
-	g++ -std=c++11   build/src_MGPExecutor.o build/src_MGPMachine.o build/src_MGPPiecesFactory.o -O3 -g -fPIC  --shared  -lpthread -ldl -o libmthpGP.so ${SELF_VARIABLES}
+libmthpGP.so:  build/src_MGPCreator.o build/src_MGPExecutor.o build/src_MGPMachine.o build/src_MGPPiecesFactory.o build/src_MGPThread.o build/src_MGPThread_Linux.o build/src_MGPThreadPool.o 
+	g++ -std=c++11   build/src_MGPCreator.o build/src_MGPExecutor.o build/src_MGPMachine.o build/src_MGPPiecesFactory.o build/src_MGPThread.o build/src_MGPThread_Linux.o build/src_MGPThreadPool.o -O3 -g -fPIC  --shared  -lpthread -ldl -o libmthpGP.so ${SELF_VARIABLES}
+build/src_MGPCreator.o : src/MGPCreator.cpp   ${ALL_INCLUESlibmthpGP.so}
+	g++ -std=c++11 -O3 -g -fPIC -o build/src_MGPCreator.o -c src/MGPCreator.cpp -Iinclude -I../../include/
+  
 build/src_MGPExecutor.o : src/MGPExecutor.cpp   ${ALL_INCLUESlibmthpGP.so}
 	g++ -std=c++11 -O3 -g -fPIC -o build/src_MGPExecutor.o -c src/MGPExecutor.cpp -Iinclude -I../../include/
   
@@ -12,6 +15,15 @@ build/src_MGPMachine.o : src/MGPMachine.cpp   ${ALL_INCLUESlibmthpGP.so}
   
 build/src_MGPPiecesFactory.o : src/MGPPiecesFactory.cpp   ${ALL_INCLUESlibmthpGP.so}
 	g++ -std=c++11 -O3 -g -fPIC -o build/src_MGPPiecesFactory.o -c src/MGPPiecesFactory.cpp -Iinclude -I../../include/
+  
+build/src_MGPThread.o : src/MGPThread.cpp   ${ALL_INCLUESlibmthpGP.so}
+	g++ -std=c++11 -O3 -g -fPIC -o build/src_MGPThread.o -c src/MGPThread.cpp -Iinclude -I../../include/
+  
+build/src_MGPThread_Linux.o : src/MGPThread_Linux.cpp   ${ALL_INCLUESlibmthpGP.so}
+	g++ -std=c++11 -O3 -g -fPIC -o build/src_MGPThread_Linux.o -c src/MGPThread_Linux.cpp -Iinclude -I../../include/
+  
+build/src_MGPThreadPool.o : src/MGPThreadPool.cpp   ${ALL_INCLUESlibmthpGP.so}
+	g++ -std=c++11 -O3 -g -fPIC -o build/src_MGPThreadPool.o -c src/MGPThreadPool.cpp -Iinclude -I../../include/
   
 
 ALL_INCLUESexample.out=

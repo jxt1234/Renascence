@@ -13,19 +13,38 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef MGPEXECUTOR_H
-#define MGPEXECUTOR_H
-#include "lowlevelAPI/IParallelMachine.h"
+#ifndef MGPTHREADPOOL_H
+#define MGPTHREADPOOL_H
+#include "lowlevelAPI/GPRefCount.h"
+#include "MGPThread.h"
 #include <queue>
-#include "MGPThreadPool.h"
-class MGPExecutor:public IParallelMachine::Executor
+#include <map>
+class MGPThreadPool:public GPRefCount
 {
 public:
-    MGPExecutor(int threadNum);
-    virtual ~MGPExecutor();
-    virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber) const;
+    MGPThreadPool(int threadNumber);
+    void start();
+    virtual ~MGPThreadPool();
+    
+    class Runnable:public GPRefCount
+    {
+    public:
+        Runnable(){}
+        virtual ~Runnable(){}
+        virtual void vRun() = 0;
+    };
+    
+    MGPSema* pushTask(GPPtr<Runnable> runnables);
+    GPPtr<Runnable> queueTask();
+    void completeTask(const Runnable* runnable);
+    
 private:
-    GPPtr<IGPFloatFunction> mCondition;
-    MGPThreadPool* mPool;
+    class ThreadWorker;
+    friend class ThreadWorker;
+    MGPMutex mQueueMutex;
+    std::queue<GPPtr<Runnable>> mQueues;
+    std::map<const Runnable*, MGPSema*> mSemaMap;
+    
+    std::vector<MGPThread*> mThreads;
 };
 #endif
