@@ -131,6 +131,7 @@ public:
                 ci->decRef();//Don't delete content
             }
             mHandle->vHandle(mFunction.get(), output, currentGPInputs, keyOutput, (unsigned int)mOutputKey.size());
+            currentGPInputs->decRef();
         } while (group.next(keyCurrent, sumDim));
         
         return true;
@@ -149,7 +150,7 @@ public:
     {
         GPContents* currentGPOutput = function->vRun(input);
         output->vSave(outputKey, keyNumber, currentGPOutput);
-        delete input;
+        currentGPOutput->decRef();
     }
 };
 
@@ -165,9 +166,9 @@ class ReduceHandle:public SingleExecutor::Handle
         }
         /*Merge, the oldOutput should be before the input*/
         oldOutput->merge(*input);
-        delete input;
         GPContents* currentGPOutput = function->vRun(oldOutput);
         output->vSave(outputKey, keyNumber, currentGPOutput);
+        currentGPOutput->decRef();
     }
 };
 
@@ -189,6 +190,7 @@ std::pair<IParallelMachine::Creator*, IParallelMachine::Executor*> GPSingleParal
             break;
         default:
             GPASSERT(0);
+            break;
     }
     GPPtr<IGPFunction> func = data->pContext->vCreateContentFunction(data->sFuncInfo.formula, data->sFuncInfo.parameter, data->sFuncInfo.inputs);
     GPPtr<IGPFloatFunction> condition;

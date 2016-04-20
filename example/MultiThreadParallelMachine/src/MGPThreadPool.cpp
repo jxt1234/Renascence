@@ -4,8 +4,16 @@
 class MGPThreadPool::ThreadWorker:public MGPThread
 {
 public:
-    ThreadWorker(MGPThreadPool* pool, MGPSema* oksema):mPool(pool), mReady(oksema), MGPThread(true){}
+    ThreadWorker(MGPThreadPool* pool, MGPSema* oksema, void* userData):mPool(pool), mReady(oksema), MGPThread(true)
+    {
+        mUserData = userData;
+    }
     virtual ~ThreadWorker(){}
+    
+    void setUserData(void* data)
+    {
+        mUserData = data;
+    }
     
     virtual void run() override
     {
@@ -16,7 +24,7 @@ public:
             {
                 break;
             }
-            runable->vRun();
+            runable->vRun(mUserData);
             mPool->completeTask(runable.get());
         }
     }
@@ -30,10 +38,13 @@ public:
 private:
     MGPThreadPool* mPool;
     MGPSema* mReady;
+    void* mUserData;
 };
 
-MGPThreadPool::MGPThreadPool(int threadNumber)
+MGPThreadPool::MGPThreadPool(std::vector<void*> userdata)
 {
+    auto threadNumber = userdata.size();
+    mThreadNumber = threadNumber;
     //TODO
     MGPASSERT(threadNumber>1 && threadNumber < 100);
     std::vector<MGPSema*> threadOpenSeam;
@@ -41,7 +52,7 @@ MGPThreadPool::MGPThreadPool(int threadNumber)
     {
         MGPSema* threadSema = new MGPSema;
         threadOpenSeam.push_back(threadSema);
-        mThreads.push_back(new ThreadWorker(this, threadSema));
+        mThreads.push_back(new ThreadWorker(this, threadSema, userdata[i]));
     }
     for (int i=0; i<threadNumber; ++i)
     {
@@ -67,18 +78,20 @@ void MGPThreadPool::completeTask(const Runnable* runnable)
 {
     MGPAutoMutex __l(mQueueMutex);
     auto iter = mSemaMap.find(runnable);
-    MGPASSERT(iter!=mSemaMap.end());
-    iter->second->post();
-    mSemaMap.erase(runnable);
+    if (iter!=mSemaMap.end())
+    {
+        iter->second->post();
+        mSemaMap.erase(runnable);
+    }
 }
 
 
-MGPSema* MGPThreadPool::pushTask(GPPtr<Runnable> runnable)
+MGPSema* MGPThreadPool::pushTask(Runnable* runnable)
 {
-    MGPASSERT(NULL!=runnable.get());
+    MGPASSERT(NULL!=runnable);
     MGPAutoMutex __l(mQueueMutex);
     MGPSema* sema = new MGPSema;
-    const Runnable* run = runnable.get();
+    const Runnable* run = runnable;
     mQueues.push(runnable);
     mSemaMap.insert(std::make_pair(run, sema));
     for (auto t : mThreads)
@@ -87,14 +100,14 @@ MGPSema* MGPThreadPool::pushTask(GPPtr<Runnable> runnable)
     }
     return sema;
 }
-GPPtr<MGPThreadPool::Runnable> MGPThreadPool::queueTask()
+MGPThreadPool::Runnable* MGPThreadPool::queueTask()
 {
     MGPAutoMutex __l(mQueueMutex);
     if (mQueues.empty())
     {
         return NULL;
     }
-    GPPtr<Runnable> res = mQueues.front();
+    Runnable* res = mQueues.front();
     mQueues.pop();
     return res;
 }

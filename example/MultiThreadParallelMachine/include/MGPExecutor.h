@@ -21,11 +21,19 @@
 class MGPExecutor:public IParallelMachine::Executor
 {
 public:
-    MGPExecutor(int threadNum);
+    MGPExecutor(const IGPFunctionContext* context, const std::string& formula, const std::string& condition, int threadNum, IParallelMachine::PARALLELTYPE type, const std::vector<std::pair<unsigned int, unsigned int>>& outputKeys);
     virtual ~MGPExecutor();
     virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber) const;
+    class ThreadData;
 private:
+    bool _mapRun(GPPieces* output, GPPieces** inputs, int inputNumber) const;
+    bool _reduceRun(GPPieces* output, GPPieces** inputs, int inputNumber) const;
+    
     GPPtr<IGPFloatFunction> mCondition;
     MGPThreadPool* mPool;
+    std::vector<ThreadData*> mUserData;
+    IParallelMachine::PARALLELTYPE mType;
+    MGPThreadPool* mLoadPool;
+    std::vector<std::pair<unsigned int, unsigned int>> mOutputKey;
 };
 #endif

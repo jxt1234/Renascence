@@ -1,8 +1,10 @@
 #ifndef UTILS_THREAD_H
 #define UTILS_THREAD_H
 #include <stdlib.h>
+#include "lowlevelAPI/GPRefCount.h"
 
-class MGPSema
+
+class MGPSema:public GPRefCount
 {
 public:
     MGPSema();

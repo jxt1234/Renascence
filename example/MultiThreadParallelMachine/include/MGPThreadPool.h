@@ -22,7 +22,7 @@
 class MGPThreadPool:public GPRefCount
 {
 public:
-    MGPThreadPool(int threadNumber);
+    MGPThreadPool(std::vector<void*> userdata);
     void start();
     virtual ~MGPThreadPool();
     
@@ -31,20 +31,31 @@ public:
     public:
         Runnable(){}
         virtual ~Runnable(){}
-        virtual void vRun() = 0;
+        virtual void vRun(void*) = 0;
     };
     
-    MGPSema* pushTask(GPPtr<Runnable> runnables);
-    GPPtr<Runnable> queueTask();
+    /*API
+     * The Runnable will be free by pool, don't delete it any more
+     */
+    MGPSema* pushTask(Runnable* runnables);
+    
+    /*For child thread*/
+    Runnable* queueTask();
     void completeTask(const Runnable* runnable);
+    
+    inline size_t getThreadNumber() const
+    {
+        return mThreadNumber;
+    }
     
 private:
     class ThreadWorker;
     friend class ThreadWorker;
     MGPMutex mQueueMutex;
-    std::queue<GPPtr<Runnable>> mQueues;
+    std::queue<Runnable*> mQueues;
     std::map<const Runnable*, MGPSema*> mSemaMap;
     
     std::vector<MGPThread*> mThreads;
+    size_t mThreadNumber;
 };
 #endif
