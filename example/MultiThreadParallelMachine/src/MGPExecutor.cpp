@@ -1,8 +1,25 @@
+/******************************************************************
+   Copyright 2016, Jiang Xiao-tang
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+******************************************************************/
 #include "MGPExecutor.h"
 #include "MGPUtils.h"
 #include "AutoStorage.h"
 #include "GPCarryVaryGroup.h"
 #include <string.h>
+#include "MGPKeyMatcher.h"
+#include "MGPThread.h"
 
 class MGPExecutor::ThreadData
 {
@@ -173,61 +190,15 @@ bool MGPExecutor::_mapRun(GPPieces* output, GPPieces** inputs, int inputNumber) 
     MGPASSERT(NULL!=output);
     MGPASSERT(NULL!=inputs);
     MGPASSERT(inputNumber>0);
-    /*Compute all dimesions*/
-    unsigned int sumDim = 0;
-    for (int i=0; i<inputNumber; ++i)
-    {
-        sumDim += inputs[i]->nKeyNumber;
-    }
-    AUTOSTORAGE(keyOutput, unsigned int, (int)mOutputKey.size());
-    AUTOSTORAGE(keyOutputPos, unsigned int, (int)mOutputKey.size());
-    for (int pos=0; pos < mOutputKey.size(); ++pos)
-    {
-        keyOutputPos[pos] = 0;
-        auto p = mOutputKey[pos];
-        for (int i=0; i<p.first; ++i)
-        {
-            keyOutputPos[pos] = keyOutputPos[pos] + inputs[i]->nKeyNumber;
-        }
-    }
     
-    AUTOSTORAGE(keyDimesions, unsigned int, sumDim);
-    AUTOSTORAGE(keyCurrent, unsigned int, sumDim);
-    AUTOSTORAGE(keyCurrentFloat, GPFLOAT, sumDim);
-    unsigned int pos = 0;
-    for (int i=0; i<inputNumber; ++i)
-    {
-        ::memcpy(keyDimesions+pos, inputs[i]->pKeySize, sizeof(unsigned int)*inputs[i]->nKeyNumber);
-        pos += inputs[i]->nKeyNumber;
-    }
-    
-    GPCarryVaryGroup group(keyDimesions, sumDim);
-    group.start(keyCurrent, sumDim);
-    std::vector<GPPtr<MGPSema>> waitSemas;
-    //TODO
+    MGPKeyMatcher matcher(inputs, inputNumber, output, mOutputKey, mCondition.get());
+    auto keymaps = matcher.get();
     const size_t semaMaxNumber = mPool->getThreadNumber()*2;
-    do
+    std::vector<GPPtr<MGPSema>> waitSemas;
+
+    for (auto& k : keymaps)
     {
-        if (NULL!=mCondition.get())
-        {
-            for (int i=0; i<sumDim; ++i)
-            {
-                keyCurrentFloat[i] = keyCurrent[i];
-            }
-            GPFLOAT c = mCondition->vRun(keyCurrentFloat, sumDim);
-            if (c <= 0)
-            {
-                continue;
-            }
-        }
-        /*Compute Target Key*/
-        for (int i=0; i<mOutputKey.size(); ++i)
-        {
-            keyOutput[i] = keyCurrent[keyOutputPos[i]];
-        }
-        
-        /*Get Current Input*/
-        GPPtr<MGPSema> sema = mPool->pushTask(new MapRunnable(mLoadPool, inputs, inputNumber, keyCurrent, sumDim, output, keyOutput, (unsigned int)mOutputKey.size()));
+        GPPtr<MGPSema> sema = mPool->pushTask(new MapRunnable(mLoadPool, inputs, inputNumber, k.second[0]->getKey(), k.second[0]->getKeyNumber(), output, k.first->getKey(), k.first->getKeyNumber()));
         MGPASSERT(NULL!=sema.get());
         waitSemas.push_back(sema);
         if (waitSemas.size() > semaMaxNumber)
@@ -238,14 +209,189 @@ bool MGPExecutor::_mapRun(GPPieces* output, GPPieces** inputs, int inputNumber) 
             }
             waitSemas.clear();
         }
-    } while (group.next(keyCurrent, sumDim));
+    }
+    for (auto s : waitSemas)
+    {
+        s->wait();
+    }
     return true;
 }
+
+class Collector
+{
+public:
+    Collector(GPContents* content)
+    {
+        mContents = content;
+    }
+
+    ~Collector()
+    {
+        if (NULL!=mContents)
+        {
+            mContents->decRef();
+        }
+    }
+    GPContents* lock()
+    {
+        mMutex.lock();
+        return mContents;
+    }
+    void unlock(GPContents* newContent)
+    {
+        MGPASSERT(newContent != mContents);
+        mContents->decRef();
+        mContents = newContent;
+        mMutex.unlock();
+    }
+private:
+    GPContents* mContents;
+    MGPMutex mMutex;
+};
+
+class ReduceRunnable:public MGPThreadPool::Runnable
+{
+public:
+    ReduceRunnable(MGPThreadPool* loadPool, Collector* collector, GPPieces** inputs, unsigned int inputNum, unsigned int* inputKeys)
+    {
+        mLoadPool = loadPool;
+        mInput = inputs;
+        mInputNum = inputNum;
+        mInputKeys = inputKeys;
+        mCollector = collector;
+    }
+    
+    virtual ~ReduceRunnable()
+    {
+    }
+    
+    
+    virtual void vRun(void* threadData) override
+    {
+        MGPExecutor::ThreadData* data = (MGPExecutor::ThreadData*)threadData;
+        auto function = data->get();
+        GPContents* oldContent = mCollector->lock();
+        GPContents* input = NULL;
+        Runnable* loadRunnable = new LoadRunnable(&input, mInput, mInputNum, mInputKeys);
+        GPPtr<MGPSema> sema = mLoadPool->pushTask(loadRunnable);
+        sema->wait();
+        input->merge(*oldContent);
+        auto newContent = function->vRun(input);
+        input->decRef();
+        mCollector->unlock(newContent);
+    }
+private:
+    Collector* mCollector;
+    MGPThreadPool* mLoadPool;
+    GPPieces** mInput;
+    unsigned int mInputNum;
+    unsigned int* mInputKeys;
+    
+};
+
+
+class CollectRunnable:public MGPThreadPool::Runnable
+{
+public:
+    CollectRunnable(const std::vector<Collector*>& collectors):mCollectors(collectors){}
+    virtual ~CollectRunnable(){}
+    virtual void vRun(void* threadData) override
+    {
+        MGPExecutor::ThreadData* data = (MGPExecutor::ThreadData*)threadData;
+        auto function = data->get();
+        MGPASSERT(!mCollectors.empty());
+        GPContents* target = mCollectors[0]->lock();
+        for (int i=1; i<mCollectors.size(); ++i)
+        {
+            GPContents* input = mCollectors[i]->lock();
+            target->merge(*input);
+            mCollectors[i]->unlock(NULL);
+            target = function->vRun(target);
+            mCollectors[0]->unlock(target);
+        }
+    }
+private:
+    const std::vector<Collector*>& mCollectors;
+};
+
 
 
 bool MGPExecutor::_reduceRun(GPPieces* output, GPPieces** inputs, int inputNumber) const
 {
     /*Collect Keys*/
+    MGPKeyMatcher matcher(inputs, inputNumber, output, mOutputKey, mCondition.get());
+    auto keymaps = matcher.get();
+    size_t threadNumber = mPool->getThreadNumber();
+    std::map<MGPKeyMatcher::Key*, std::vector<Collector*>> collectorMaps;
+    
+    const size_t semaMaxNumber = mPool->getThreadNumber()*2;
+    std::vector<GPPtr<MGPSema>> waitSemas;
+
+    for (auto& k : keymaps)
+    {
+        auto& outputKey = k.first;
+        auto& inputKeys = k.second;
+        /*Generate Collectors*/
+        std::vector<Collector*> collectors;
+        collectorMaps.insert(std::make_pair(outputKey.get(), collectors));
+        
+        auto eachCollectSize = threadNumber;
+        if (inputKeys.size() < threadNumber)
+        {
+            eachCollectSize = 1;
+        }
+        for (int i=0; i<eachCollectSize; ++i)
+        {
+            GPContents* target = NULL;
+            MGPThreadPool::Runnable* loadRunnable = new LoadRunnable(&target, inputs, inputNumber, inputKeys[0]->getKey());
+            GPPtr<MGPSema> sema = mLoadPool->pushTask(loadRunnable);
+            sema->wait();
+            collectors.push_back(new Collector(target));
+        }
+        /*For Remain outputKey, Parralelly to reduce*/
+        for (size_t i=eachCollectSize; i<inputKeys.size(); ++i)
+        {
+            GPPtr<MGPSema> sema = mPool->pushTask(new ReduceRunnable(mLoadPool, collectors[i%collectors.size()], inputs, inputNumber, inputKeys[i]->getKey()));
+            waitSemas.push_back(sema);
+            if (waitSemas.size() > semaMaxNumber)
+            {
+                for (auto s : waitSemas)
+                {
+                    s->wait();
+                }
+                waitSemas.clear();
+            }
+        }
+    }
+    for (auto s : waitSemas)
+    {
+        s->wait();
+    }
+    waitSemas.clear();
+
+    /*Collect All Collector*/
+    for (auto& kv : collectorMaps)
+    {
+        auto& collectors = kv.second;
+        waitSemas.push_back(mPool->pushTask(new CollectRunnable(collectors)));
+    }
+    for (auto s : waitSemas)
+    {
+        s->wait();
+    }
+    waitSemas.clear();
+
+    /*Write to output*/
+    for (auto& kv : collectorMaps)
+    {
+        GPContents* result = kv.second[0]->lock();
+        output->vSave(kv.first->getKey(), kv.first->getKeyNumber(), result);
+        kv.second[0]->unlock(NULL);
+        for (auto c : kv.second)
+        {
+            delete c;
+        }
+    }
     return true;
 }
 

@@ -1,12 +1,16 @@
 #!/usr/bin/python
 import os
+import sys
 if __name__ == '__main__':
     cmd = 'find include src -name \"*.h\"'
     hFiles = set(filter(lambda x:len(x)>1, os.popen(cmd).read().split('\n')))
     cmd = 'find include src -name \"*.cpp\"'
     cFiles = set(filter(lambda x:len(x)>1, os.popen(cmd).read().split('\n')))
     files = hFiles | cFiles
-    licensecontent = open('res/license').read()
+    licenseFile = 'res/license'
+    if len(sys.argv)>=2:
+        licenseFile = sys.argv[1]
+    licensecontent = open(licenseFile).read()
     for f in files:
         contents = ''
         with open(f) as _f:
