@@ -1,0 +1,23 @@
+IParallelMachine 的实现库规范：
+1、实现函数 IParallelMachine* XXX_PARALLELMACHINE_CREATE_FUNC(const std::string& name);
+XXX为库名，
+2、编写相应xml，指定名称即可
+3、示例：
+xml：
+<libmgp>
+    <thread>
+    <single>
+</libmgp>
+实现函数 
+
+IParallelMachine* libmgp_PARALLELMACHINE_CREATE_FUNC(const std::string& name)
+{
+    if (name == "thread")
+    {
+        return new ThreadMachine;
+    }
+    if (name == "single")
+    {
+        return new SingleMachine;
+    }
+}

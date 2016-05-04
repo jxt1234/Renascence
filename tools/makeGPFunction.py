@@ -169,7 +169,7 @@ def generateTypeFiles(filelist, outputt, inputt):
     for t in totoaltype:
         hfile += "extern IStatusType* g"+t+";\n"
     hfile += "extern \"C\"{\n"
-    hfile +="IStatusType* GP_IStatusType_Create(const std::string& name);\n"
+    hfile +="IStatusType* "+gSoName+"_GP_IStatusType_Create(const std::string& name);\n"
     hfile+="}\n#endif\n"
     cppfile = "#include \"GPTypes.h\"\n"
     for f in filelist:
@@ -296,7 +296,7 @@ if __name__=='__main__':
     for f in allfunctions:
         fname = renameFunction(f.name)
         cppcontent += 'if (name == \"' + fname + '\")\n{\n' + 'return (void*)' + fname + ';\n}\n'
-    fname = 'GP_IStatusType_Create' 
+    fname = gSoName +'_GP_IStatusType_Create' 
     cppcontent += 'if (name == \"' + fname + '\")\n{\n' + 'return (void*)' + fname + ';\n}\n'
     cppcontent += 'return NULL;\n}\n'
     with open('src/package/'+ classname + '.cpp', 'w') as f:

@@ -199,5 +199,5 @@ extern TrRegreeModeType gTrRegreeModeType;
 extern TrBmpType gTrBmpType;
 extern GPDoubleType gDoubleType;
 extern "C"{
-IStatusType* GP_IStatusType_Create(const std::string& name);
+IStatusType* libpics_GP_IStatusType_Create(const std::string& name);
 }

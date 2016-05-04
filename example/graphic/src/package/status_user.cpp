@@ -8,7 +8,7 @@ TrRegreeModeType gTrRegreeModeType;
 TrBmpType gTrBmpType;
 GPDoubleType gDoubleType;
 
-IStatusType* GP_IStatusType_Create(const std::string& name)
+IStatusType* libpics_GP_IStatusType_Create(const std::string& name)
 {
     if (name == "float")
     {

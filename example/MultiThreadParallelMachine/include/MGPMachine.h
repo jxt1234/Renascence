@@ -15,4 +15,17 @@
 ******************************************************************/
 #ifndef MGPMACHINE_H
 #define MGPMACHINE_H
+#include "lowlevelAPI/IParallelMachine.h"
+
+class MGPMachine:public IParallelMachine
+{
+public:
+    virtual std::pair<Creator*, Executor*> vGenerate(const GPParallelType* data, PARALLELTYPE type) const override;
+
+};
+
+extern "C"{
+    IParallelMachine* libmthpGP_PARALLELMACHINE_CREATE_FUNC(const std::string& name);
+};
+
 #endif

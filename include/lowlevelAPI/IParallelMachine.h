@@ -41,6 +41,14 @@ public:
     protected:
         Executor(){}
     };
+    
+    /*Basic API*/
     virtual std::pair<Creator*, Executor*> vGenerate(const GPParallelType* data, PARALLELTYPE type) const = 0;
+
+    /*For Parameter adjust*/
+    virtual int vMap(GPFLOAT* values) {return 0;}
 };
+
+typedef IParallelMachine*(*PARALLELMACHINE_CREATE_FUNC)(const std::string& name);
+
 #endif
