@@ -16,6 +16,7 @@
 #include "GPStrings.h"
 namespace GPStrings{
 const char* FunctionDataBase_STATUS = "status";
+const char* FunctionDataBase_PARALLELMACHINE_CREATE_FUNC = "PARALLELMACHINE_CREATE_FUNC";
 const char* FunctionDataBase_STATUS_CREATOR = "GP_IStatusType_Create";
 const char* FunctionDataBase_COMPLETE_FLAG = "inputNeedComplete";
 const char* FunctionDataBase_OUTPUT = "output";

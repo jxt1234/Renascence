@@ -66,11 +66,12 @@ void GPFunctionDataBase::_addInfo(const GPTreeNode* root, IFunctionTable* table,
     if (NULL==table)
     {
         table = new system_lib(root->name());
-        mHandle->addTable(table, true);
+        mHandle->addTable(table);
+        table->decRef();
     }
     else
     {
-        mHandle->addTable(table, false);
+        mHandle->addTable(table);
     }
     TYPECREATER create = mHandle->get<TYPECREATER>(root->name() + "_"+GPStrings::FunctionDataBase_STATUS_CREATOR);
     GPASSERT(NULL!=create);

@@ -75,3 +75,14 @@ GPPiecesFunctionCreator* GPFactory::createPieceFunctionProducer(const GPProducer
     return new GPTreePiecesFunctionCreator(base, producer, producer->getFront(), rules);
 }
 
+GPParallelMachineSet* GPFactory::createParallelSet(const char* metafile, IFunctionTable* t)
+{
+    GPParallelMachineSet* set = new GPParallelMachineSet;
+    xmlReader r;
+    GPPtr<GPStreamWrap> s = GPStreamFactory::NewStream(metafile, GPStreamFactory::FILE);
+    auto root = r.loadStream(s.get());
+    GPASSERT(NULL!=root);
+    set->addFunction(root, t);
+    return set;
+}
+

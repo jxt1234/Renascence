@@ -34,20 +34,16 @@ GPMultiTable::GPMultiTable()
 }
 GPMultiTable::~GPMultiTable()
 {
-    GPASSERT(mTables.size() == mNeedDelete.size());
     int n = (int)(mTables.size());
     for (int i=0; i<n; ++i)
     {
-        if (mNeedDelete[i])
-        {
-            delete mTables[i];
-        }
+        mTables[i]->decRef();
     }
 }
 
-void GPMultiTable::addTable(IFunctionTable* table, bool need_delete)
+void GPMultiTable::addTable(IFunctionTable* table)
 {
     GPASSERT(NULL!=table);
     mTables.push_back(table);
-    mNeedDelete.push_back(need_delete);
+    table->addRef();
 }

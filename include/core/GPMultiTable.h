@@ -18,15 +18,14 @@
 #include <vector>
 #include "lowlevelAPI/IFunctionTable.h"
 #include "lowlevelAPI/GPRefCount.h"
-class GPMultiTable:public IFunctionTable, public GPRefCount
+class GPMultiTable:public IFunctionTable
 {
 public:
-    void addTable(IFunctionTable* table, bool need_delete);
+    void addTable(IFunctionTable* table);
     virtual void* vGetFunction(const std::string& name);
     GPMultiTable();
     virtual ~GPMultiTable();
 private:
     std::vector<IFunctionTable*> mTables;
-    std::vector<bool> mNeedDelete;
 };
 #endif

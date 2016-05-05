@@ -16,9 +16,10 @@
 #ifndef USER_FUNCTIONTABLE_H
 #define USER_FUNCTIONTABLE_H
 #include <string>
+#include "GPRefCount.h"
 
 
-class IFunctionTable
+class IFunctionTable:public GPRefCount
 {
     public:
         template <typename T>

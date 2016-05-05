@@ -118,7 +118,8 @@ MGPKeyMatcher::MGPKeyMatcher(GPPieces** inputs, unsigned int inputNumber, GPPiec
         }
         if (!match)
         {
-            mKeyMatches.insert(std::make_pair(outputKey, std::vector<GPPtr<Key>>{inputKey}));
+            mKeyMatches.insert(std::make_pair(outputKey.get(), std::vector<GPPtr<Key>>{inputKey}));
+            mOutputKeys.push_back(outputKey);
         }
     } while (group.next(keyCurrent, sumDim));
 }

@@ -38,9 +38,10 @@ public:
     MGPKeyMatcher(GPPieces** inputs, unsigned int inputNumber, GPPieces* output, const std::vector<std::pair<unsigned int, unsigned int>>& outputKey, IGPFloatFunction* condition);
     virtual ~MGPKeyMatcher();
     
-    const std::map<GPPtr<Key>, std::vector<GPPtr<Key>>>& get() const {return mKeyMatches;}
+    const std::map<Key*, std::vector<GPPtr<Key>>>& get() const {return mKeyMatches;}
     
 private:
-    std::map<GPPtr<Key>, std::vector<GPPtr<Key>>> mKeyMatches;
+    std::map<Key*, std::vector<GPPtr<Key>>> mKeyMatches;
+    std::vector<GPPtr<Key>> mOutputKeys;
 };
 #endif

@@ -47,6 +47,10 @@ public:
 
     /*For Parameter adjust*/
     virtual int vMap(GPFLOAT* values) {return 0;}
+    
+    virtual ~IParallelMachine(){}
+protected:
+    IParallelMachine(){}
 };
 
 typedef IParallelMachine*(*PARALLELMACHINE_CREATE_FUNC)(const std::string& name);

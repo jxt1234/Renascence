@@ -1,14 +1,20 @@
 all:libmthpGP.so example.out 
 
-ALL_INCLUESlibmthpGP.so= include//MGPCreator.h include//MGPExecutor.h include//MGPMachine.h include//MGPPiecesFactory.h include//MGPThread.h include//MGPThreadPool.h include//MGPUtils.h
+ALL_INCLUESlibmthpGP.so= include//AutoStorage.h include//GPCarryVaryGroup.h include//MGPCreator.h include//MGPExecutor.h include//MGPMachine.h include//MGPPiecesFactory.h include//MGPThread.h include//MGPThreadPool.h include//MGPUtils.h
 
-libmthpGP.so:  build/src_MGPCreator.o build/src_MGPExecutor.o build/src_MGPMachine.o build/src_MGPPiecesFactory.o build/src_MGPThread.o build/src_MGPThread_Linux.o build/src_MGPThreadPool.o 
-	g++ -std=c++11   build/src_MGPCreator.o build/src_MGPExecutor.o build/src_MGPMachine.o build/src_MGPPiecesFactory.o build/src_MGPThread.o build/src_MGPThread_Linux.o build/src_MGPThreadPool.o -O3 -g -fPIC  --shared  -lpthread -ldl -o libmthpGP.so ${SELF_VARIABLES}
+libmthpGP.so:  build/src_GPCarryVaryGroup.o build/src_MGPCreator.o build/src_MGPExecutor.o build/src_MGPKeyMatcher.o build/src_MGPMachine.o build/src_MGPPiecesFactory.o build/src_MGPThread.o build/src_MGPThread_Linux.o build/src_MGPThreadPool.o 
+	g++ -std=c++11   build/src_GPCarryVaryGroup.o build/src_MGPCreator.o build/src_MGPExecutor.o build/src_MGPKeyMatcher.o build/src_MGPMachine.o build/src_MGPPiecesFactory.o build/src_MGPThread.o build/src_MGPThread_Linux.o build/src_MGPThreadPool.o -O3 -g -fPIC  --shared  -lpthread -ldl -o libmthpGP.so ${SELF_VARIABLES}
+build/src_GPCarryVaryGroup.o : src/GPCarryVaryGroup.cpp   ${ALL_INCLUESlibmthpGP.so}
+	g++ -std=c++11 -O3 -g -fPIC -o build/src_GPCarryVaryGroup.o -c src/GPCarryVaryGroup.cpp -Iinclude -I../../include/
+  
 build/src_MGPCreator.o : src/MGPCreator.cpp   ${ALL_INCLUESlibmthpGP.so}
 	g++ -std=c++11 -O3 -g -fPIC -o build/src_MGPCreator.o -c src/MGPCreator.cpp -Iinclude -I../../include/
   
 build/src_MGPExecutor.o : src/MGPExecutor.cpp   ${ALL_INCLUESlibmthpGP.so}
 	g++ -std=c++11 -O3 -g -fPIC -o build/src_MGPExecutor.o -c src/MGPExecutor.cpp -Iinclude -I../../include/
+  
+build/src_MGPKeyMatcher.o : src/MGPKeyMatcher.cpp   ${ALL_INCLUESlibmthpGP.so}
+	g++ -std=c++11 -O3 -g -fPIC -o build/src_MGPKeyMatcher.o -c src/MGPKeyMatcher.cpp -Iinclude -I../../include/
   
 build/src_MGPMachine.o : src/MGPMachine.cpp   ${ALL_INCLUESlibmthpGP.so}
 	g++ -std=c++11 -O3 -g -fPIC -o build/src_MGPMachine.o -c src/MGPMachine.cpp -Iinclude -I../../include/

@@ -17,6 +17,7 @@
 #define INCLUDE_GPSTRING_H
 namespace GPStrings{
 extern const char* FunctionDataBase_STATUS;
+extern const char* FunctionDataBase_PARALLELMACHINE_CREATE_FUNC;
 extern const char* FunctionDataBase_STATUS_CREATOR;
 extern const char* FunctionDataBase_COMPLETE_FLAG;
 extern const char* FunctionDataBase_OUTPUT;

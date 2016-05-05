@@ -5,8 +5,8 @@ XXX为库名，
 3、示例：
 xml：
 <libmgp>
-    <thread>
-    <single>
+    <thread></thread>
+    <single></single>
 </libmgp>
 实现函数 
 

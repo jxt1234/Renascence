@@ -61,7 +61,7 @@ MGPThreadPool::MGPThreadPool(std::vector<void*> userdata)
     auto threadNumber = userdata.size();
     mThreadNumber = threadNumber;
     //TODO
-    MGPASSERT(threadNumber>1 && threadNumber < 100);
+    MGPASSERT(threadNumber>=1 && threadNumber < 100);
     std::vector<MGPSema*> threadOpenSeam;
     for (int i=0; i<threadNumber; ++i)
     {

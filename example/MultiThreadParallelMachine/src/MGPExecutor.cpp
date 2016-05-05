@@ -333,7 +333,7 @@ bool MGPExecutor::_reduceRun(GPPieces* output, GPPieces** inputs, int inputNumbe
         auto& inputKeys = k.second;
         /*Generate Collectors*/
         std::vector<Collector*> collectors;
-        collectorMaps.insert(std::make_pair(outputKey.get(), collectors));
+        collectorMaps.insert(std::make_pair(outputKey, collectors));
         
         auto eachCollectSize = threadNumber;
         if (inputKeys.size() < threadNumber)
