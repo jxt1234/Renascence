@@ -91,6 +91,31 @@ private:
     GPContents* mTarget;
 };
 
+class SaveRunnable:public MGPThreadPool::Runnable
+{
+public:
+    SaveRunnable(unsigned int* outputKeys, GPPieces* output, GPContents* target)
+    {
+        mOutputKeys = outputKeys;
+        mOutput = output;
+        mTarget = target;
+    }
+    virtual ~SaveRunnable()
+    {
+        
+    }
+    virtual void vRun(void* threadData) override
+    {
+        mOutput->vSave(mOutputKeys, mOutput->nKeyNumber, mTarget);
+        mTarget->decRef();
+    }
+private:
+    GPContents* mTarget;
+    GPPieces* mOutput;
+    unsigned int* mOutputKeys;
+};
+
+
 class LoadRunnable:public MGPThreadPool::Runnable
 {
 public:
@@ -162,9 +187,9 @@ public:
         sema->wait();
         MGPASSERT(NULL!=totalInput);
         GPContents* output = function->vRun(totalInput);
+        sema = mLoadPool->pushTask(new SaveRunnable(mOutputKeys, mOutput, output));
+        sema->wait();
         sema = mLoadPool->pushTask(new FreeRunnalbe(totalInput));
-        mOutput->vSave(mOutputKeys, mOutput->nKeyNumber, output);
-        output->decRef();
         sema->wait();
     }
 private:

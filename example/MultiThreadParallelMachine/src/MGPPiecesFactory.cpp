@@ -53,6 +53,7 @@ public:
         auto sum = _computePos(pKey, keynum);
         MGPAutoMutex __lock(mMutexes[sum]);
         GPContents* res = mPieces[sum];
+        MGPASSERT(NULL!=res);
         if (NULL != res)
         {
             res->addRef();
@@ -64,12 +65,12 @@ public:
     {
         auto sum = _computePos(pKey, keynum);
         MGPAutoMutex __lock(mMutexes[sum]);
+        c->addRef();
         if (NULL != mPieces[sum])
         {
             mPieces[sum]->decRef();
         }
         mPieces[sum] = c;
-        c->addRef();
     }
     
 private:
