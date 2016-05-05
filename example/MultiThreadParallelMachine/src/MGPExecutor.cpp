@@ -100,6 +100,7 @@ public:
         mInputNum = inputNum;
         mInputKeys = inputKeys;
         mTarget = target;
+        mInput = inputs;
     }
 
     virtual ~LoadRunnable()
@@ -108,6 +109,7 @@ public:
     }
     virtual void vRun(void* threadData) override
     {
+        MGPASSERT(mInputNum>=1);
         GPContents* totalInput = new GPContents;
         int pos = 0;
         for (int i=0; i<mInputNum; ++i)
@@ -138,6 +140,7 @@ public:
         MGPASSERT(outputKeyNum>0);
         mLoadPool = loadpool;
         mInput = input;
+        mInputNum = inputNum;
         mOutput = output;
         mInputKeys = new unsigned int[inputKeyNum];
         ::memcpy(mInputKeys, inputKeys, sizeof(unsigned int)*inputKeyNum);

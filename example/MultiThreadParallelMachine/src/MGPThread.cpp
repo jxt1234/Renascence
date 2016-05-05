@@ -38,6 +38,7 @@ bool MGPThread::stop()
 {
     mLoop = false;
     wake();
+    platform_join();
     return platform_destroy();
 }
 
