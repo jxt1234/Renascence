@@ -18,7 +18,9 @@
 #ifdef __cplusplus
 extern "C"{
 #endif
-    
+    typedef struct GPPieces GPPieces;
+    typedef struct GPPiecesFunction GPPiecesFunction;
+    typedef struct AGPPiecesProducer AGPPiecesProducer;
     typedef struct IGPAutoDefFunction IGPAutoDefFunction;
     typedef struct AGPProducer AGPProducer;
     typedef struct GPStream GPStream;
@@ -293,6 +295,44 @@ extern "C"{
     void GP_OptimzorInfo_FreeTemplate(GPOptimizorInfo* pInfo);
     
     double GP_OptimzorInfo_TemplateGetBestValue(GPOptimizorInfo* pInfo);
+    
+    
+    /*Get a GPPieces Function Producer
+     *
+     */
+    AGPPiecesProducer* GP_PiecesProducer_Create(AGPProducer* producer, GPStream** piecesLibMeta, IFunctionTable** piecesLibTable, int libNumber, GPStream** mapReduceMeta, int mapReduceMetaNumber);
+    
+    void GP_PiecesProducer_Destroy(AGPPiecesProducer* producer);
+    
+    /*
+     
+     */
+    AGPStrings* GP_PiecesProducer_ListType(AGPPiecesProducer* producer);
+    
+    
+    /*Pieces Function*/
+    
+    /*Create GPPieces Function
+     
+     */
+    GPPiecesFunction* GP_PiecesFunction_Create(AGPPiecesProducer* producer, const char* formula, const char* inputType, const char* type);
+    
+    GPPieces* GP_PiecesFunction_Run(GPPiecesFunction* piecesFunction, GPPieces** inputs, int inputNumber);
+    
+    void GP_PiecesFunction_Destroy(GPPiecesFunction* pieceFunction);
+    
+    GPPieces* GP_Pieces_Load(AGPPiecesProducer* producer, const char* type, const char* path, const char* description);
+    
+    
+    /*
+     */
+    void GP_Pieces_Save(GPPieces* pieces, const char* path, const char* description);
+    
+    void GP_Pieces_Destroy(GPPieces* pieces);
+
+    
+    
+    
 #ifdef __cplusplus
 }
 #endif

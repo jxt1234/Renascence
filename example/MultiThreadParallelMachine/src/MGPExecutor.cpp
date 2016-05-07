@@ -44,7 +44,7 @@ private:
     MGPThreadPool* mPieceHandlerPool;
 };
 
-MGPExecutor::MGPExecutor(const IGPFunctionContext* context, const std::string& formula, const std::string& condition, int threadNum, IParallelMachine::PARALLELTYPE type, const std::vector<std::pair<unsigned int, unsigned int>>& outputKeys)
+MGPExecutor::MGPExecutor(const IGPFunctionContext* context, const std::string& formula, const std::string& condition, const std::string& variable, int threadNum, IParallelMachine::PARALLELTYPE type, const std::vector<std::pair<unsigned int, unsigned int>>& outputKeys)
 {
     MGPASSERT(NULL!=context);
     MGPASSERT(threadNum>1);
@@ -63,6 +63,10 @@ MGPExecutor::MGPExecutor(const IGPFunctionContext* context, const std::string& f
     mLoadPool = new MGPThreadPool(std::vector<void*>{NULL});
     mType = type;
     mOutputKey = outputKeys;
+    if (!condition.empty())
+    {
+        mCondition = context->vCreateFloatFunction(condition, variable);
+    }
 }
 
 MGPExecutor::~MGPExecutor()

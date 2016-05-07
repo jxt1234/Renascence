@@ -85,4 +85,13 @@ GPParallelMachineSet* GPFactory::createParallelSet(const char* metafile, IFuncti
     set->addFunction(root, t);
     return set;
 }
+GPParallelMachineSet* GPFactory::createParallelSet(GPStream* metafile, IFunctionTable* t)
+{
+    GPParallelMachineSet* set = new GPParallelMachineSet;
+    xmlReader r;
+    auto root = r.loadStream(metafile);
+    GPASSERT(NULL!=root);
+    set->addFunction(root, t);
+    return set;
+}
 
