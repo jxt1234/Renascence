@@ -23,8 +23,9 @@ extern "C"{
     typedef struct AGPPiecesProducer AGPPiecesProducer;
     typedef struct IGPAutoDefFunction IGPAutoDefFunction;
     typedef struct AGPProducer AGPProducer;
-    typedef struct GPStream GPStream;
     typedef struct AGPContents AGPContents;
+    typedef struct GPStreamFactory GPStreamFactory;
+    typedef struct GPStream GPStream;
     typedef struct GPWStream GPWStream;
     typedef struct IFunctionTable IFunctionTable;
     enum
@@ -297,8 +298,15 @@ extern "C"{
     double GP_OptimzorInfo_TemplateGetBestValue(GPOptimizorInfo* pInfo);
     
     
-    /*Get a GPPieces Function Producer
-     *
+    /*Get a total GPPieces Function Producer
+     * producer:
+     * piecesLibMeta: libNumber's xml file
+     * piecesLibTable: libNumber's IFunctionTable, can be NULL
+     * libNumber: the number of piecesLibMeta and piecesLibTable
+     * mapReduceMeta: mapReduceMetaNumber's xmlFile, which tell GP how to build Parallel Function
+     * mapReduceMetaNumber: the number of mapReduceMeta
+     
+     
      */
     AGPPiecesProducer* GP_PiecesProducer_Create(AGPProducer* producer, GPStream** piecesLibMeta, IFunctionTable** piecesLibTable, int libNumber, GPStream** mapReduceMeta, int mapReduceMetaNumber);
     
@@ -321,11 +329,11 @@ extern "C"{
     
     void GP_PiecesFunction_Destroy(GPPiecesFunction* pieceFunction);
     
+    
+    
+    /*GPPieces API, TODO*/
     GPPieces* GP_Pieces_Load(AGPPiecesProducer* producer, const char* type, const char* path, const char* description);
     
-    
-    /*
-     */
     void GP_Pieces_Save(GPPieces* pieces, const char* path, const char* description);
     
     void GP_Pieces_Destroy(GPPieces* pieces);

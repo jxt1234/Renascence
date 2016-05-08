@@ -1,5 +1,5 @@
 /******************************************************************
-   Copyright 2013, Jiang Xiao-tang
+   Copyright 2016, Jiang Xiao-tang
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,33 +13,15 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef SYSTEM_LIB_H
-#define SYSTEM_LIB_H
-#include <assert.h>
-#include <map>
+#ifndef PLATFORM_GPSYSTEM_H
+#define PLATFORM_GPSYSTEM_H
+#include <string>
 #include <vector>
-#include "GPSystem.h"
-#include "lowlevelAPI/IFunctionTable.h"
+void system_set_path(const char* path);
+void* system_load_lib(const char* libName);
+void* system_find_func(void* handle, const char* funcName);
+void system_unload_lib(void* handle);
 
 
-class system_lib:public IFunctionTable
-{
-    public:
-        system_lib(const std::string& libName)
-        {
-            mHandle = system_load_lib(libName.c_str());
-            assert(NULL!=mHandle);
-        }
-        virtual ~system_lib()
-        {
-            system_unload_lib(mHandle);
-        }
-        virtual void* vGetFunction(const std::string& name)
-        {
-            return system_find_func(mHandle, name.c_str());
-        }
-    private:
-        void* mHandle;
-};
-
+std::vector<std::string> system_list_dir_files(const char* dir_name);
 #endif

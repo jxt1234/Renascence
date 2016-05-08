@@ -16,11 +16,15 @@
 /*TODO Add windows version*/
 #include <dlfcn.h>
 #include <unistd.h>
-
+#include <unistd.h>
+#include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+#include <sys/stat.h>
 #include <string>
 #include <sstream>
 #include "utils/GPDebug.h"
-#include "platform/system_lib.h"
+#include "platform/GPSystem.h"
 using namespace std;
 
 static std::string gPath("");
@@ -59,4 +63,25 @@ void system_unload_lib(void* handle)
     dlclose(handle);
 }
 
+
+
+std::vector<std::string> system_list_dir_files(const char* dir_name)
+{
+    GPASSERT(NULL!=dir_name);
+    std::vector<std::string> result;
+    auto dp = opendir(dir_name);
+    GPASSERT(NULL!=dp);
+    auto direntp = readdir(dp);
+    while (NULL!=direntp)
+    {
+        /*Omit director*/
+        if (direntp->d_type != DT_DIR)
+        {
+            result.push_back(std::string(direntp->d_name));
+        }
+        direntp = readdir(dp);
+    }
+    closedir(dp);
+    return result;
+}
 

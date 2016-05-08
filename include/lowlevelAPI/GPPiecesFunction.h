@@ -17,7 +17,7 @@
 #define LOWLEVELAPI_GPPIECESFUNCTION_H
 #include "GPPieces.h"
 #include "IParallelMachine.h"
-class GPPiecesFunction
+class GPPiecesFunction : public GPRefCount
 {
 public:
     virtual GPPieces* vRun(GPPieces** inputs, int n) = 0;

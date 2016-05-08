@@ -25,6 +25,7 @@
 #include "evolution/GPEvolutionGroup.h"
 #include "optimizor/GPOptimizorFactory.h"
 #include "AGPProducer.h"
+#include "AGPPiecesProducer.h"
 #include "user/GPAPI.h"
 #include "xml/xmlReader.h"
 #include "core/GPStreamFactory.h"
@@ -723,4 +724,99 @@ double GP_OptimzorInfo_TemplateGetBestValue(GPOptimizorInfo* pInfo)
 {
     GPASSERT(NULL!=pInfo);//FIXME
     return pInfo->fOutputBest;
+}
+AGPPiecesProducer* GP_PiecesProducer_Create(AGPProducer* producer, GPStream** piecesLibMeta, IFunctionTable** piecesLibTable, int libNumber, GPStream** mapReduceMeta, int mapReduceMetaNumber)
+{
+    if (NULL == producer)
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    if (NULL == piecesLibMeta || libNumber <= 0)
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    if (NULL == mapReduceMeta || mapReduceMetaNumber <= 0)
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    GPParallelMachineSet* set = new GPParallelMachineSet();
+    for (int i=0; i<libNumber; ++i)
+    {
+        xmlReader reader;
+        auto root = reader.loadStream(piecesLibMeta[i]);
+        if (NULL == piecesLibTable)
+        {
+            set->addFunction(root, NULL);
+        }
+        else
+        {
+            set->addFunction(root, piecesLibTable[i]);
+        }
+    }
+    std::map<std::string, std::string> rules;
+    for (int i=0; i<mapReduceMetaNumber; ++i)
+    {
+        xmlReader r;
+        auto root = r.loadStream(mapReduceMeta[i]);
+        GPASSERT(NULL!=root);
+        for (auto p : root->getChildren())
+        {
+            rules.insert(std::make_pair(p->name(), p->attr()));
+        }
+    }
+    GPPiecesFunctionCreator* creator = GPFactory::createPieceFunctionProducer(producer->P, producer->F, rules);
+    
+    AGPPiecesProducer* pproducer = new AGPPiecesProducer(set, producer, creator);
+    set->decRef();
+    creator->decRef();
+    return pproducer;
+}
+
+void GP_PiecesProducer_Destroy(AGPPiecesProducer* producer)
+{
+    GPASSERT(NULL!=producer);
+    producer->decRef();
+}
+
+AGPStrings* GP_PiecesProducer_ListType(AGPPiecesProducer* producer)
+{
+    AGPStrings* result = new AGPStrings;
+    auto names = producer->get()->listAllMachines();
+    for (auto s : names)
+    {
+        result->a.push_back(s);
+    }
+    return result;
+}
+
+GPPiecesFunction* GP_PiecesFunction_Create(AGPPiecesProducer* producer, const char* formula, const char* inputType, const char* type)
+{
+    if (NULL == producer || NULL == formula || NULL == inputType || NULL == type)
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    IParallelMachine* machine = producer->get()->newMachine(type);
+    GPPtr<GPFunctionTree> tree = producer->getProducer()->P->getFront()->vCreateFromFormula(formula, _transform(inputType, producer->getProducer()));
+    GPPiecesFunction* function = producer->getCreator()->vCreateFromFuncTree(tree.get(), machine);
+    delete machine;
+    return function;
+}
+
+void GP_PiecesFunction_Destroy(GPPiecesFunction* pieceFunction)
+{
+    GPASSERT(NULL!=pieceFunction);
+    pieceFunction->decRef();
+}
+GPPieces* GP_PiecesFunction_Run(GPPiecesFunction* piecesFunction, GPPieces** inputs, int inputNumber)
+{
+    if (NULL == piecesFunction || NULL == inputs || 0>= inputNumber)
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    return piecesFunction->vRun(inputs, inputNumber);
 }
