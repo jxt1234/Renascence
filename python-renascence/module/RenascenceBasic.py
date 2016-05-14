@@ -135,6 +135,10 @@ def GP_Contents_SetDouble(contents, value, n):
     return _RenascenceBasic.GP_Contents_SetDouble(contents, value, n)
 GP_Contents_SetDouble = _RenascenceBasic.GP_Contents_SetDouble
 
+def GP_Contents_CreateDouble(value):
+    return _RenascenceBasic.GP_Contents_CreateDouble(value)
+GP_Contents_CreateDouble = _RenascenceBasic.GP_Contents_CreateDouble
+
 def GP_Contents_Save(content, outputs, n):
     return _RenascenceBasic.GP_Contents_Save(content, outputs, n)
 GP_Contents_Save = _RenascenceBasic.GP_Contents_Save
@@ -192,9 +196,13 @@ class GPOptimizorInfo(_object):
     __swig_getmethods__["pBestInfo"] = _RenascenceBasic.GPOptimizorInfo_pBestInfo_get
     if _newclass:
         pBestInfo = _swig_property(_RenascenceBasic.GPOptimizorInfo_pBestInfo_get, _RenascenceBasic.GPOptimizorInfo_pBestInfo_set)
+    __swig_setmethods__["fOutputBest"] = _RenascenceBasic.GPOptimizorInfo_fOutputBest_set
+    __swig_getmethods__["fOutputBest"] = _RenascenceBasic.GPOptimizorInfo_fOutputBest_get
+    if _newclass:
+        fOutputBest = _swig_property(_RenascenceBasic.GPOptimizorInfo_fOutputBest_get, _RenascenceBasic.GPOptimizorInfo_fOutputBest_set)
 
-    def __init__(self):
-        this = _RenascenceBasic.new_GPOptimizorInfo()
+    def __init__(self, *args):
+        this = _RenascenceBasic.new_GPOptimizorInfo(*args)
         try:
             self.this.append(this)
         except:
@@ -261,13 +269,17 @@ def GP_Strings_Free(strings):
     return _RenascenceBasic.GP_Strings_Free(strings)
 GP_Strings_Free = _RenascenceBasic.GP_Strings_Free
 
-def GP_Function_GetFormula(f, name):
-    return _RenascenceBasic.GP_Function_GetFormula(f, name)
+def GP_Function_GetFormula(f, adfName):
+    return _RenascenceBasic.GP_Function_GetFormula(f, adfName)
 GP_Function_GetFormula = _RenascenceBasic.GP_Function_GetFormula
 
 def GP_Function_GetParameters(f):
     return _RenascenceBasic.GP_Function_GetParameters(f)
 GP_Function_GetParameters = _RenascenceBasic.GP_Function_GetParameters
+
+def GP_Function_MapParameters(f, parameters):
+    return _RenascenceBasic.GP_Function_MapParameters(f, parameters)
+GP_Function_MapParameters = _RenascenceBasic.GP_Function_MapParameters
 
 def GP_Producer_ListFunctions(producer):
     return _RenascenceBasic.GP_Producer_ListFunctions(producer)
@@ -295,17 +307,45 @@ def GP_OptimzorInfo_FreeTemplate(pInfo):
     return _RenascenceBasic.GP_OptimzorInfo_FreeTemplate(pInfo)
 GP_OptimzorInfo_FreeTemplate = _RenascenceBasic.GP_OptimzorInfo_FreeTemplate
 
-def GP_Contents_CreateDouble(value):
-    return _RenascenceBasic.GP_Contents_CreateDouble(value)
-GP_Contents_CreateDouble = _RenascenceBasic.GP_Contents_CreateDouble
-
-def GP_Function_MapParameters(f, parameters):
-    return _RenascenceBasic.GP_Function_MapParameters(f, parameters)
-GP_Function_MapParameters = _RenascenceBasic.GP_Function_MapParameters
-
 def GP_OptimzorInfo_TemplateGetBestValue(pInfo):
     return _RenascenceBasic.GP_OptimzorInfo_TemplateGetBestValue(pInfo)
 GP_OptimzorInfo_TemplateGetBestValue = _RenascenceBasic.GP_OptimzorInfo_TemplateGetBestValue
+
+def GP_PiecesProducer_Create(producer, piecesLibMeta, piecesLibTable, libNumber, mapReduceMeta, mapReduceMetaNumber):
+    return _RenascenceBasic.GP_PiecesProducer_Create(producer, piecesLibMeta, piecesLibTable, libNumber, mapReduceMeta, mapReduceMetaNumber)
+GP_PiecesProducer_Create = _RenascenceBasic.GP_PiecesProducer_Create
+
+def GP_PiecesProducer_Destroy(producer):
+    return _RenascenceBasic.GP_PiecesProducer_Destroy(producer)
+GP_PiecesProducer_Destroy = _RenascenceBasic.GP_PiecesProducer_Destroy
+
+def GP_PiecesProducer_ListType(producer):
+    return _RenascenceBasic.GP_PiecesProducer_ListType(producer)
+GP_PiecesProducer_ListType = _RenascenceBasic.GP_PiecesProducer_ListType
+
+def GP_PiecesFunction_Create(producer, formula, inputType, type):
+    return _RenascenceBasic.GP_PiecesFunction_Create(producer, formula, inputType, type)
+GP_PiecesFunction_Create = _RenascenceBasic.GP_PiecesFunction_Create
+
+def GP_PiecesFunction_Run(piecesFunction, inputs, inputNumber):
+    return _RenascenceBasic.GP_PiecesFunction_Run(piecesFunction, inputs, inputNumber)
+GP_PiecesFunction_Run = _RenascenceBasic.GP_PiecesFunction_Run
+
+def GP_PiecesFunction_Destroy(pieceFunction):
+    return _RenascenceBasic.GP_PiecesFunction_Destroy(pieceFunction)
+GP_PiecesFunction_Destroy = _RenascenceBasic.GP_PiecesFunction_Destroy
+
+def GP_Pieces_Load(producer, type, path, description):
+    return _RenascenceBasic.GP_Pieces_Load(producer, type, path, description)
+GP_Pieces_Load = _RenascenceBasic.GP_Pieces_Load
+
+def GP_Pieces_Save(pieces, path, description):
+    return _RenascenceBasic.GP_Pieces_Save(pieces, path, description)
+GP_Pieces_Save = _RenascenceBasic.GP_Pieces_Save
+
+def GP_Pieces_Destroy(pieces):
+    return _RenascenceBasic.GP_Pieces_Destroy(pieces)
+GP_Pieces_Destroy = _RenascenceBasic.GP_Pieces_Destroy
 # This file is compatible with both classic and new-style classes.
 
 

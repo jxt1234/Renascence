@@ -794,3 +794,20 @@ GPPieces* GP_PiecesFunction_Run(GPPiecesFunction* piecesFunction, GPPieces** inp
     }
     return piecesFunction->vRun(inputs, inputNumber);
 }
+
+GPPieces* GP_Pieces_Load(AGPPiecesProducer* producer, const char* type, const char* path, const char* description)
+{
+    GPASSERT(0);
+    return NULL;
+}
+
+void GP_Pieces_Save(GPPieces* pieces, const char* path, const char* description)
+{
+    GPASSERT(0);
+}
+
+void GP_Pieces_Destroy(GPPieces* pieces)
+{
+    pieces->decRef();
+}
+

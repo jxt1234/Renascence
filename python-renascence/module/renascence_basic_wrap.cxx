@@ -2967,20 +2967,24 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_AGPContents swig_types[0]
+#define SWIGTYPE_p_AGPPiecesProducer swig_types[0]
 #define SWIGTYPE_p_AGPProducer swig_types[1]
 #define SWIGTYPE_p_AGPStrings swig_types[2]
-#define SWIGTYPE_p_GPOptimizorInfo swig_types[3]
-#define SWIGTYPE_p_GPStream swig_types[4]
-#define SWIGTYPE_p_GPWStream swig_types[5]
-#define SWIGTYPE_p_IGPAutoDefFunction swig_types[6]
-#define SWIGTYPE_p_char swig_types[7]
-#define SWIGTYPE_p_f_p_IGPAutoDefFunction_p_void__double swig_types[8]
-#define SWIGTYPE_p_p_GPStream swig_types[9]
-#define SWIGTYPE_p_p_IFunctionTable swig_types[10]
-#define SWIGTYPE_p_void swig_types[11]
-static swig_type_info *swig_types[13];
-static swig_module_info swig_module = {swig_types, 12, 0, 0, 0, 0};
+#define SWIGTYPE_p_GPContents swig_types[3]
+#define SWIGTYPE_p_GPOptimizorInfo swig_types[4]
+#define SWIGTYPE_p_GPPieces swig_types[5]
+#define SWIGTYPE_p_GPPiecesFunction swig_types[6]
+#define SWIGTYPE_p_GPStream swig_types[7]
+#define SWIGTYPE_p_GPWStream swig_types[8]
+#define SWIGTYPE_p_IGPAutoDefFunction swig_types[9]
+#define SWIGTYPE_p_char swig_types[10]
+#define SWIGTYPE_p_f_p_IGPAutoDefFunction_p_void__double swig_types[11]
+#define SWIGTYPE_p_p_GPPieces swig_types[12]
+#define SWIGTYPE_p_p_GPStream swig_types[13]
+#define SWIGTYPE_p_p_IFunctionTable swig_types[14]
+#define SWIGTYPE_p_void swig_types[15]
+static swig_type_info *swig_types[17];
+static swig_module_info swig_module = {swig_types, 16, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3528,7 +3532,7 @@ SWIGINTERN PyObject *_wrap_GP_Contents_Load(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  AGPContents *result = 0 ;
+  GPContents *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:GP_Contents_Load",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AGPProducer, 0 |  0 );
@@ -3551,8 +3555,8 @@ SWIGINTERN PyObject *_wrap_GP_Contents_Load(PyObject *SWIGUNUSEDPARM(self), PyOb
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "GP_Contents_Load" "', argument " "4"" of type '" "int""'");
   } 
   arg4 = static_cast< int >(val4);
-  result = (AGPContents *)GP_Contents_Load(arg1,arg2,(char const *)arg3,arg4);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_AGPContents, 0 |  0 );
+  result = (GPContents *)GP_Contents_Load(arg1,arg2,(char const *)arg3,arg4);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GPContents, 0 |  0 );
   if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
   return resultobj;
 fail:
@@ -3563,18 +3567,18 @@ fail:
 
 SWIGINTERN PyObject *_wrap_GP_Contents_Size(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  AGPContents *arg1 = (AGPContents *) 0 ;
+  GPContents *arg1 = (GPContents *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   int result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:GP_Contents_Size",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AGPContents, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPContents, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_Size" "', argument " "1"" of type '" "AGPContents *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_Size" "', argument " "1"" of type '" "GPContents *""'"); 
   }
-  arg1 = reinterpret_cast< AGPContents * >(argp1);
+  arg1 = reinterpret_cast< GPContents * >(argp1);
   result = (int)GP_Contents_Size(arg1);
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
@@ -3585,7 +3589,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_GP_Contents_Get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  AGPContents *arg1 = (AGPContents *) 0 ;
+  GPContents *arg1 = (GPContents *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -3596,11 +3600,11 @@ SWIGINTERN PyObject *_wrap_GP_Contents_Get(PyObject *SWIGUNUSEDPARM(self), PyObj
   void *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:GP_Contents_Get",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AGPContents, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPContents, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_Get" "', argument " "1"" of type '" "AGPContents *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_Get" "', argument " "1"" of type '" "GPContents *""'"); 
   }
-  arg1 = reinterpret_cast< AGPContents * >(argp1);
+  arg1 = reinterpret_cast< GPContents * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GP_Contents_Get" "', argument " "2"" of type '" "int""'");
@@ -3616,7 +3620,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_GP_Contents_GetDouble(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  AGPContents *arg1 = (AGPContents *) 0 ;
+  GPContents *arg1 = (GPContents *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -3627,11 +3631,11 @@ SWIGINTERN PyObject *_wrap_GP_Contents_GetDouble(PyObject *SWIGUNUSEDPARM(self),
   double result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:GP_Contents_GetDouble",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AGPContents, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPContents, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_GetDouble" "', argument " "1"" of type '" "AGPContents *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_GetDouble" "', argument " "1"" of type '" "GPContents *""'"); 
   }
-  arg1 = reinterpret_cast< AGPContents * >(argp1);
+  arg1 = reinterpret_cast< GPContents * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GP_Contents_GetDouble" "', argument " "2"" of type '" "int""'");
@@ -3647,7 +3651,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_GP_Contents_SetDouble(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  AGPContents *arg1 = (AGPContents *) 0 ;
+  GPContents *arg1 = (GPContents *) 0 ;
   double arg2 ;
   int arg3 ;
   void *argp1 = 0 ;
@@ -3661,11 +3665,11 @@ SWIGINTERN PyObject *_wrap_GP_Contents_SetDouble(PyObject *SWIGUNUSEDPARM(self),
   PyObject * obj2 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:GP_Contents_SetDouble",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AGPContents, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPContents, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_SetDouble" "', argument " "1"" of type '" "AGPContents *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_SetDouble" "', argument " "1"" of type '" "GPContents *""'"); 
   }
-  arg1 = reinterpret_cast< AGPContents * >(argp1);
+  arg1 = reinterpret_cast< GPContents * >(argp1);
   ecode2 = SWIG_AsVal_double(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GP_Contents_SetDouble" "', argument " "2"" of type '" "double""'");
@@ -3684,9 +3688,31 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_GP_Contents_CreateDouble(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  double arg1 ;
+  double val1 ;
+  int ecode1 = 0 ;
+  PyObject * obj0 = 0 ;
+  GPContents *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GP_Contents_CreateDouble",&obj0)) SWIG_fail;
+  ecode1 = SWIG_AsVal_double(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "GP_Contents_CreateDouble" "', argument " "1"" of type '" "double""'");
+  } 
+  arg1 = static_cast< double >(val1);
+  result = (GPContents *)GP_Contents_CreateDouble(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GPContents, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_GP_Contents_Save(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  AGPContents *arg1 = (AGPContents *) 0 ;
+  GPContents *arg1 = (GPContents *) 0 ;
   GPWStream *arg2 = (GPWStream *) 0 ;
   int arg3 ;
   void *argp1 = 0 ;
@@ -3700,11 +3726,11 @@ SWIGINTERN PyObject *_wrap_GP_Contents_Save(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject * obj2 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:GP_Contents_Save",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AGPContents, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPContents, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_Save" "', argument " "1"" of type '" "AGPContents *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_Save" "', argument " "1"" of type '" "GPContents *""'"); 
   }
-  arg1 = reinterpret_cast< AGPContents * >(argp1);
+  arg1 = reinterpret_cast< GPContents * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GPWStream, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GP_Contents_Save" "', argument " "2"" of type '" "GPWStream *""'"); 
@@ -3725,17 +3751,17 @@ fail:
 
 SWIGINTERN PyObject *_wrap_GP_Contents_Destroy(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  AGPContents *arg1 = (AGPContents *) 0 ;
+  GPContents *arg1 = (GPContents *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:GP_Contents_Destroy",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AGPContents, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPContents, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_Destroy" "', argument " "1"" of type '" "AGPContents *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_Destroy" "', argument " "1"" of type '" "GPContents *""'"); 
   }
-  arg1 = reinterpret_cast< AGPContents * >(argp1);
+  arg1 = reinterpret_cast< GPContents * >(argp1);
   GP_Contents_Destroy(arg1);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -3746,11 +3772,11 @@ fail:
 
 SWIGINTERN PyObject *_wrap_GP_Contents_CreateCollector(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  AGPContents *result = 0 ;
+  GPContents *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)":GP_Contents_CreateCollector")) SWIG_fail;
-  result = (AGPContents *)GP_Contents_CreateCollector();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_AGPContents, 0 |  0 );
+  result = (GPContents *)GP_Contents_CreateCollector();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GPContents, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3759,8 +3785,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_GP_Contents_Collect(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  AGPContents *arg1 = (AGPContents *) 0 ;
-  AGPContents *arg2 = (AGPContents *) 0 ;
+  GPContents *arg1 = (GPContents *) 0 ;
+  GPContents *arg2 = (GPContents *) 0 ;
   int arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -3773,16 +3799,16 @@ SWIGINTERN PyObject *_wrap_GP_Contents_Collect(PyObject *SWIGUNUSEDPARM(self), P
   PyObject * obj2 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:GP_Contents_Collect",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AGPContents, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPContents, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_Collect" "', argument " "1"" of type '" "AGPContents *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_Collect" "', argument " "1"" of type '" "GPContents *""'"); 
   }
-  arg1 = reinterpret_cast< AGPContents * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_AGPContents, 0 |  0 );
+  arg1 = reinterpret_cast< GPContents * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GPContents, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GP_Contents_Collect" "', argument " "2"" of type '" "AGPContents *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GP_Contents_Collect" "', argument " "2"" of type '" "GPContents *""'"); 
   }
-  arg2 = reinterpret_cast< AGPContents * >(argp2);
+  arg2 = reinterpret_cast< GPContents * >(argp2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "GP_Contents_Collect" "', argument " "3"" of type '" "int""'");
@@ -4227,7 +4253,59 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_new_GPOptimizorInfo(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPOptimizorInfo_fOutputBest_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GPOptimizorInfo *arg1 = (GPOptimizorInfo *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GPOptimizorInfo_fOutputBest_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPOptimizorInfo, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPOptimizorInfo_fOutputBest_set" "', argument " "1"" of type '" "GPOptimizorInfo *""'"); 
+  }
+  arg1 = reinterpret_cast< GPOptimizorInfo * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GPOptimizorInfo_fOutputBest_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->fOutputBest = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GPOptimizorInfo_fOutputBest_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GPOptimizorInfo *arg1 = (GPOptimizorInfo *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GPOptimizorInfo_fOutputBest_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPOptimizorInfo, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPOptimizorInfo_fOutputBest_get" "', argument " "1"" of type '" "GPOptimizorInfo *""'"); 
+  }
+  arg1 = reinterpret_cast< GPOptimizorInfo * >(argp1);
+  result = (double) ((arg1)->fOutputBest);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_GPOptimizorInfo__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GPOptimizorInfo *result = 0 ;
   
@@ -4237,6 +4315,64 @@ SWIGINTERN PyObject *_wrap_new_GPOptimizorInfo(PyObject *SWIGUNUSEDPARM(self), P
   return resultobj;
 fail:
   return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_GPOptimizorInfo__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GPOptimizorInfo *arg1 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  GPOptimizorInfo *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_GPOptimizorInfo",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1, SWIGTYPE_p_GPOptimizorInfo,  0  | 0);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_GPOptimizorInfo" "', argument " "1"" of type '" "GPOptimizorInfo const &""'"); 
+  }
+  if (!argp1) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_GPOptimizorInfo" "', argument " "1"" of type '" "GPOptimizorInfo const &""'"); 
+  }
+  arg1 = reinterpret_cast< GPOptimizorInfo * >(argp1);
+  result = (GPOptimizorInfo *)new GPOptimizorInfo((GPOptimizorInfo const &)*arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GPOptimizorInfo, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_GPOptimizorInfo(PyObject *self, PyObject *args) {
+  int argc;
+  PyObject *argv[2] = {
+    0
+  };
+  int ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? (int)PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 1) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 0) {
+    return _wrap_new_GPOptimizorInfo__SWIG_0(self, args);
+  }
+  if (argc == 1) {
+    int _v;
+    int res = SWIG_ConvertPtr(argv[0], 0, SWIGTYPE_p_GPOptimizorInfo, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_GPOptimizorInfo__SWIG_1(self, args);
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_GPOptimizorInfo'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    GPOptimizorInfo::GPOptimizorInfo()\n"
+    "    GPOptimizorInfo::GPOptimizorInfo(GPOptimizorInfo const &)\n");
+  return 0;
 }
 
 
@@ -4381,14 +4517,14 @@ fail:
 SWIGINTERN PyObject *_wrap_GP_Function_Run(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   IGPAutoDefFunction *arg1 = (IGPAutoDefFunction *) 0 ;
-  AGPContents *arg2 = (AGPContents *) 0 ;
+  GPContents *arg2 = (GPContents *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  AGPContents *result = 0 ;
+  GPContents *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:GP_Function_Run",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_IGPAutoDefFunction, 0 |  0 );
@@ -4396,13 +4532,13 @@ SWIGINTERN PyObject *_wrap_GP_Function_Run(PyObject *SWIGUNUSEDPARM(self), PyObj
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Function_Run" "', argument " "1"" of type '" "IGPAutoDefFunction *""'"); 
   }
   arg1 = reinterpret_cast< IGPAutoDefFunction * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_AGPContents, 0 |  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GPContents, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GP_Function_Run" "', argument " "2"" of type '" "AGPContents *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GP_Function_Run" "', argument " "2"" of type '" "GPContents *""'"); 
   }
-  arg2 = reinterpret_cast< AGPContents * >(argp2);
-  result = (AGPContents *)GP_Function_Run(arg1,arg2);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_AGPContents, 0 |  0 );
+  arg2 = reinterpret_cast< GPContents * >(argp2);
+  result = (GPContents *)GP_Function_Run(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GPContents, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -4764,6 +4900,39 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_GP_Function_MapParameters(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  IGPAutoDefFunction *arg1 = (IGPAutoDefFunction *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GP_Function_MapParameters",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_IGPAutoDefFunction, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Function_MapParameters" "', argument " "1"" of type '" "IGPAutoDefFunction *""'"); 
+  }
+  arg1 = reinterpret_cast< IGPAutoDefFunction * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GP_Function_MapParameters" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  GP_Function_MapParameters(arg1,(char const *)arg2);
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_GP_Producer_ListFunctions(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   AGPProducer *arg1 = (AGPProducer *) 0 ;
@@ -4810,18 +4979,18 @@ fail:
 
 SWIGINTERN PyObject *_wrap_GP_Contents_Types(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  AGPContents *arg1 = (AGPContents *) 0 ;
+  GPContents *arg1 = (GPContents *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   AGPStrings *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:GP_Contents_Types",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AGPContents, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPContents, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_Types" "', argument " "1"" of type '" "AGPContents *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Contents_Types" "', argument " "1"" of type '" "GPContents *""'"); 
   }
-  arg1 = reinterpret_cast< AGPContents * >(argp1);
+  arg1 = reinterpret_cast< GPContents * >(argp1);
   result = (AGPStrings *)GP_Contents_Types(arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_AGPStrings, 0 |  0 );
   return resultobj;
@@ -4857,10 +5026,10 @@ SWIGINTERN PyObject *_wrap_GP_OptimzorInfo_CreateTemplate(PyObject *SWIGUNUSEDPA
   int arg1 ;
   int arg2 ;
   int arg3 ;
-  AGPContents *arg4 = (AGPContents *) 0 ;
+  GPContents *arg4 = (GPContents *) 0 ;
   GPWStream *arg5 = (GPWStream *) 0 ;
   IGPAutoDefFunction *arg6 = (IGPAutoDefFunction *) 0 ;
-  AGPContents *arg7 = (AGPContents *) 0 ;
+  GPContents *arg7 = (GPContents *) 0 ;
   int val1 ;
   int ecode1 = 0 ;
   int val2 ;
@@ -4900,11 +5069,11 @@ SWIGINTERN PyObject *_wrap_GP_OptimzorInfo_CreateTemplate(PyObject *SWIGUNUSEDPA
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "GP_OptimzorInfo_CreateTemplate" "', argument " "3"" of type '" "int""'");
   } 
   arg3 = static_cast< int >(val3);
-  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_AGPContents, 0 |  0 );
+  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_GPContents, 0 |  0 );
   if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "GP_OptimzorInfo_CreateTemplate" "', argument " "4"" of type '" "AGPContents *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "GP_OptimzorInfo_CreateTemplate" "', argument " "4"" of type '" "GPContents *""'"); 
   }
-  arg4 = reinterpret_cast< AGPContents * >(argp4);
+  arg4 = reinterpret_cast< GPContents * >(argp4);
   res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_GPWStream, 0 |  0 );
   if (!SWIG_IsOK(res5)) {
     SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "GP_OptimzorInfo_CreateTemplate" "', argument " "5"" of type '" "GPWStream *""'"); 
@@ -4915,11 +5084,11 @@ SWIGINTERN PyObject *_wrap_GP_OptimzorInfo_CreateTemplate(PyObject *SWIGUNUSEDPA
     SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "GP_OptimzorInfo_CreateTemplate" "', argument " "6"" of type '" "IGPAutoDefFunction *""'"); 
   }
   arg6 = reinterpret_cast< IGPAutoDefFunction * >(argp6);
-  res7 = SWIG_ConvertPtr(obj6, &argp7,SWIGTYPE_p_AGPContents, 0 |  0 );
+  res7 = SWIG_ConvertPtr(obj6, &argp7,SWIGTYPE_p_GPContents, 0 |  0 );
   if (!SWIG_IsOK(res7)) {
-    SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "GP_OptimzorInfo_CreateTemplate" "', argument " "7"" of type '" "AGPContents *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "GP_OptimzorInfo_CreateTemplate" "', argument " "7"" of type '" "GPContents *""'"); 
   }
-  arg7 = reinterpret_cast< AGPContents * >(argp7);
+  arg7 = reinterpret_cast< GPContents * >(argp7);
   result = (GPOptimizorInfo *)GP_OptimzorInfo_CreateTemplate(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GPOptimizorInfo, 0 |  0 );
   return resultobj;
@@ -4949,61 +5118,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_GP_Contents_CreateDouble(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  double arg1 ;
-  double val1 ;
-  int ecode1 = 0 ;
-  PyObject * obj0 = 0 ;
-  AGPContents *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:GP_Contents_CreateDouble",&obj0)) SWIG_fail;
-  ecode1 = SWIG_AsVal_double(obj0, &val1);
-  if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "GP_Contents_CreateDouble" "', argument " "1"" of type '" "double""'");
-  } 
-  arg1 = static_cast< double >(val1);
-  result = (AGPContents *)GP_Contents_CreateDouble(arg1);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_AGPContents, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_GP_Function_MapParameters(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  IGPAutoDefFunction *arg1 = (IGPAutoDefFunction *) 0 ;
-  char *arg2 = (char *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:GP_Function_MapParameters",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_IGPAutoDefFunction, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Function_MapParameters" "', argument " "1"" of type '" "IGPAutoDefFunction *""'"); 
-  }
-  arg1 = reinterpret_cast< IGPAutoDefFunction * >(argp1);
-  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GP_Function_MapParameters" "', argument " "2"" of type '" "char const *""'");
-  }
-  arg2 = reinterpret_cast< char * >(buf2);
-  GP_Function_MapParameters(arg1,(char const *)arg2);
-  resultobj = SWIG_Py_Void();
-  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
-  return resultobj;
-fail:
-  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_GP_OptimzorInfo_TemplateGetBestValue(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GPOptimizorInfo *arg1 = (GPOptimizorInfo *) 0 ;
@@ -5026,6 +5140,359 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_GP_PiecesProducer_Create(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  AGPProducer *arg1 = (AGPProducer *) 0 ;
+  GPStream **arg2 = (GPStream **) 0 ;
+  IFunctionTable **arg3 = (IFunctionTable **) 0 ;
+  int arg4 ;
+  GPStream **arg5 = (GPStream **) 0 ;
+  int arg6 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  void *argp5 = 0 ;
+  int res5 = 0 ;
+  int val6 ;
+  int ecode6 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  AGPPiecesProducer *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:GP_PiecesProducer_Create",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AGPProducer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_PiecesProducer_Create" "', argument " "1"" of type '" "AGPProducer *""'"); 
+  }
+  arg1 = reinterpret_cast< AGPProducer * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_p_GPStream, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GP_PiecesProducer_Create" "', argument " "2"" of type '" "GPStream **""'"); 
+  }
+  arg2 = reinterpret_cast< GPStream ** >(argp2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_p_IFunctionTable, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "GP_PiecesProducer_Create" "', argument " "3"" of type '" "IFunctionTable **""'"); 
+  }
+  arg3 = reinterpret_cast< IFunctionTable ** >(argp3);
+  ecode4 = SWIG_AsVal_int(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "GP_PiecesProducer_Create" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = static_cast< int >(val4);
+  res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_p_GPStream, 0 |  0 );
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "GP_PiecesProducer_Create" "', argument " "5"" of type '" "GPStream **""'"); 
+  }
+  arg5 = reinterpret_cast< GPStream ** >(argp5);
+  ecode6 = SWIG_AsVal_int(obj5, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "GP_PiecesProducer_Create" "', argument " "6"" of type '" "int""'");
+  } 
+  arg6 = static_cast< int >(val6);
+  result = (AGPPiecesProducer *)GP_PiecesProducer_Create(arg1,arg2,arg3,arg4,arg5,arg6);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_AGPPiecesProducer, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GP_PiecesProducer_Destroy(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  AGPPiecesProducer *arg1 = (AGPPiecesProducer *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GP_PiecesProducer_Destroy",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AGPPiecesProducer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_PiecesProducer_Destroy" "', argument " "1"" of type '" "AGPPiecesProducer *""'"); 
+  }
+  arg1 = reinterpret_cast< AGPPiecesProducer * >(argp1);
+  GP_PiecesProducer_Destroy(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GP_PiecesProducer_ListType(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  AGPPiecesProducer *arg1 = (AGPPiecesProducer *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  AGPStrings *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GP_PiecesProducer_ListType",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AGPPiecesProducer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_PiecesProducer_ListType" "', argument " "1"" of type '" "AGPPiecesProducer *""'"); 
+  }
+  arg1 = reinterpret_cast< AGPPiecesProducer * >(argp1);
+  result = (AGPStrings *)GP_PiecesProducer_ListType(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_AGPStrings, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GP_PiecesFunction_Create(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  AGPPiecesProducer *arg1 = (AGPPiecesProducer *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  GPPiecesFunction *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:GP_PiecesFunction_Create",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AGPPiecesProducer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_PiecesFunction_Create" "', argument " "1"" of type '" "AGPPiecesProducer *""'"); 
+  }
+  arg1 = reinterpret_cast< AGPPiecesProducer * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GP_PiecesFunction_Create" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "GP_PiecesFunction_Create" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
+  res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "GP_PiecesFunction_Create" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = reinterpret_cast< char * >(buf4);
+  result = (GPPiecesFunction *)GP_PiecesFunction_Create(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GPPiecesFunction, 0 |  0 );
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GP_PiecesFunction_Run(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GPPiecesFunction *arg1 = (GPPiecesFunction *) 0 ;
+  GPPieces **arg2 = (GPPieces **) 0 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  GPPieces *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:GP_PiecesFunction_Run",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPPiecesFunction, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_PiecesFunction_Run" "', argument " "1"" of type '" "GPPiecesFunction *""'"); 
+  }
+  arg1 = reinterpret_cast< GPPiecesFunction * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_p_GPPieces, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GP_PiecesFunction_Run" "', argument " "2"" of type '" "GPPieces **""'"); 
+  }
+  arg2 = reinterpret_cast< GPPieces ** >(argp2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "GP_PiecesFunction_Run" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  result = (GPPieces *)GP_PiecesFunction_Run(arg1,arg2,arg3);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GPPieces, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GP_PiecesFunction_Destroy(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GPPiecesFunction *arg1 = (GPPiecesFunction *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GP_PiecesFunction_Destroy",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPPiecesFunction, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_PiecesFunction_Destroy" "', argument " "1"" of type '" "GPPiecesFunction *""'"); 
+  }
+  arg1 = reinterpret_cast< GPPiecesFunction * >(argp1);
+  GP_PiecesFunction_Destroy(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GP_Pieces_Load(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  AGPPiecesProducer *arg1 = (AGPPiecesProducer *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  GPPieces *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:GP_Pieces_Load",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AGPPiecesProducer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Pieces_Load" "', argument " "1"" of type '" "AGPPiecesProducer *""'"); 
+  }
+  arg1 = reinterpret_cast< AGPPiecesProducer * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GP_Pieces_Load" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "GP_Pieces_Load" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
+  res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "GP_Pieces_Load" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = reinterpret_cast< char * >(buf4);
+  result = (GPPieces *)GP_Pieces_Load(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GPPieces, 0 |  0 );
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  if (alloc4 == SWIG_NEWOBJ) delete[] buf4;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GP_Pieces_Save(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GPPieces *arg1 = (GPPieces *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:GP_Pieces_Save",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPPieces, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Pieces_Save" "', argument " "1"" of type '" "GPPieces *""'"); 
+  }
+  arg1 = reinterpret_cast< GPPieces * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GP_Pieces_Save" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "GP_Pieces_Save" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
+  GP_Pieces_Save(arg1,(char const *)arg2,(char const *)arg3);
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GP_Pieces_Destroy(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GPPieces *arg1 = (GPPieces *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GP_Pieces_Destroy",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GPPieces, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GP_Pieces_Destroy" "', argument " "1"" of type '" "GPPieces *""'"); 
+  }
+  arg1 = reinterpret_cast< GPPieces * >(argp1);
+  GP_Pieces_Destroy(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { (char *)"GP_Set_Lib_Path", _wrap_GP_Set_Lib_Path, METH_VARARGS, NULL},
@@ -5039,6 +5506,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"GP_Contents_Get", _wrap_GP_Contents_Get, METH_VARARGS, NULL},
 	 { (char *)"GP_Contents_GetDouble", _wrap_GP_Contents_GetDouble, METH_VARARGS, NULL},
 	 { (char *)"GP_Contents_SetDouble", _wrap_GP_Contents_SetDouble, METH_VARARGS, NULL},
+	 { (char *)"GP_Contents_CreateDouble", _wrap_GP_Contents_CreateDouble, METH_VARARGS, NULL},
 	 { (char *)"GP_Contents_Save", _wrap_GP_Contents_Save, METH_VARARGS, NULL},
 	 { (char *)"GP_Contents_Destroy", _wrap_GP_Contents_Destroy, METH_VARARGS, NULL},
 	 { (char *)"GP_Contents_CreateCollector", _wrap_GP_Contents_CreateCollector, METH_VARARGS, NULL},
@@ -5059,6 +5527,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"GPOptimizorInfo_fTargetBestValue_get", _wrap_GPOptimizorInfo_fTargetBestValue_get, METH_VARARGS, NULL},
 	 { (char *)"GPOptimizorInfo_pBestInfo_set", _wrap_GPOptimizorInfo_pBestInfo_set, METH_VARARGS, NULL},
 	 { (char *)"GPOptimizorInfo_pBestInfo_get", _wrap_GPOptimizorInfo_pBestInfo_get, METH_VARARGS, NULL},
+	 { (char *)"GPOptimizorInfo_fOutputBest_set", _wrap_GPOptimizorInfo_fOutputBest_set, METH_VARARGS, NULL},
+	 { (char *)"GPOptimizorInfo_fOutputBest_get", _wrap_GPOptimizorInfo_fOutputBest_get, METH_VARARGS, NULL},
 	 { (char *)"new_GPOptimizorInfo", _wrap_new_GPOptimizorInfo, METH_VARARGS, NULL},
 	 { (char *)"delete_GPOptimizorInfo", _wrap_delete_GPOptimizorInfo, METH_VARARGS, NULL},
 	 { (char *)"GPOptimizorInfo_swigregister", GPOptimizorInfo_swigregister, METH_VARARGS, NULL},
@@ -5078,6 +5548,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"GP_Strings_Free", _wrap_GP_Strings_Free, METH_VARARGS, NULL},
 	 { (char *)"GP_Function_GetFormula", _wrap_GP_Function_GetFormula, METH_VARARGS, NULL},
 	 { (char *)"GP_Function_GetParameters", _wrap_GP_Function_GetParameters, METH_VARARGS, NULL},
+	 { (char *)"GP_Function_MapParameters", _wrap_GP_Function_MapParameters, METH_VARARGS, NULL},
 	 { (char *)"GP_Producer_ListFunctions", _wrap_GP_Producer_ListFunctions, METH_VARARGS, NULL},
 	 { (char *)"GP_Producer_ListTypes", _wrap_GP_Producer_ListTypes, METH_VARARGS, NULL},
 	 { (char *)"GP_Contents_Types", _wrap_GP_Contents_Types, METH_VARARGS, NULL},
@@ -5085,66 +5556,89 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"GP_OPTIMIZOR_TIME_swigconstant", GP_OPTIMIZOR_TIME_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"GP_OptimzorInfo_CreateTemplate", _wrap_GP_OptimzorInfo_CreateTemplate, METH_VARARGS, NULL},
 	 { (char *)"GP_OptimzorInfo_FreeTemplate", _wrap_GP_OptimzorInfo_FreeTemplate, METH_VARARGS, NULL},
-	 { (char *)"GP_Contents_CreateDouble", _wrap_GP_Contents_CreateDouble, METH_VARARGS, NULL},
-	 { (char *)"GP_Function_MapParameters", _wrap_GP_Function_MapParameters, METH_VARARGS, NULL},
 	 { (char *)"GP_OptimzorInfo_TemplateGetBestValue", _wrap_GP_OptimzorInfo_TemplateGetBestValue, METH_VARARGS, NULL},
+	 { (char *)"GP_PiecesProducer_Create", _wrap_GP_PiecesProducer_Create, METH_VARARGS, NULL},
+	 { (char *)"GP_PiecesProducer_Destroy", _wrap_GP_PiecesProducer_Destroy, METH_VARARGS, NULL},
+	 { (char *)"GP_PiecesProducer_ListType", _wrap_GP_PiecesProducer_ListType, METH_VARARGS, NULL},
+	 { (char *)"GP_PiecesFunction_Create", _wrap_GP_PiecesFunction_Create, METH_VARARGS, NULL},
+	 { (char *)"GP_PiecesFunction_Run", _wrap_GP_PiecesFunction_Run, METH_VARARGS, NULL},
+	 { (char *)"GP_PiecesFunction_Destroy", _wrap_GP_PiecesFunction_Destroy, METH_VARARGS, NULL},
+	 { (char *)"GP_Pieces_Load", _wrap_GP_Pieces_Load, METH_VARARGS, NULL},
+	 { (char *)"GP_Pieces_Save", _wrap_GP_Pieces_Save, METH_VARARGS, NULL},
+	 { (char *)"GP_Pieces_Destroy", _wrap_GP_Pieces_Destroy, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
-static swig_type_info _swigt__p_AGPContents = {"_p_AGPContents", "AGPContents *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_AGPPiecesProducer = {"_p_AGPPiecesProducer", "AGPPiecesProducer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_AGPProducer = {"_p_AGPProducer", "AGPProducer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_AGPStrings = {"_p_AGPStrings", "AGPStrings *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_GPContents = {"_p_GPContents", "GPContents *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GPOptimizorInfo = {"_p_GPOptimizorInfo", "GPOptimizorInfo *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_GPPieces = {"_p_GPPieces", "GPPieces *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_GPPiecesFunction = {"_p_GPPiecesFunction", "GPPiecesFunction *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GPStream = {"_p_GPStream", "GPStream *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GPWStream = {"_p_GPWStream", "GPWStream *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_IGPAutoDefFunction = {"_p_IGPAutoDefFunction", "IGPAutoDefFunction *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_f_p_IGPAutoDefFunction_p_void__double = {"_p_f_p_IGPAutoDefFunction_p_void__double", "double (*)(IGPAutoDefFunction *,void *)", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_p_GPPieces = {"_p_p_GPPieces", "GPPieces **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_GPStream = {"_p_p_GPStream", "GPStream **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_IFunctionTable = {"_p_p_IFunctionTable", "IFunctionTable **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_void = {"_p_void", "void *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
-  &_swigt__p_AGPContents,
+  &_swigt__p_AGPPiecesProducer,
   &_swigt__p_AGPProducer,
   &_swigt__p_AGPStrings,
+  &_swigt__p_GPContents,
   &_swigt__p_GPOptimizorInfo,
+  &_swigt__p_GPPieces,
+  &_swigt__p_GPPiecesFunction,
   &_swigt__p_GPStream,
   &_swigt__p_GPWStream,
   &_swigt__p_IGPAutoDefFunction,
   &_swigt__p_char,
   &_swigt__p_f_p_IGPAutoDefFunction_p_void__double,
+  &_swigt__p_p_GPPieces,
   &_swigt__p_p_GPStream,
   &_swigt__p_p_IFunctionTable,
   &_swigt__p_void,
 };
 
-static swig_cast_info _swigc__p_AGPContents[] = {  {&_swigt__p_AGPContents, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_AGPPiecesProducer[] = {  {&_swigt__p_AGPPiecesProducer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_AGPProducer[] = {  {&_swigt__p_AGPProducer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_AGPStrings[] = {  {&_swigt__p_AGPStrings, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_GPContents[] = {  {&_swigt__p_GPContents, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GPOptimizorInfo[] = {  {&_swigt__p_GPOptimizorInfo, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_GPPieces[] = {  {&_swigt__p_GPPieces, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_GPPiecesFunction[] = {  {&_swigt__p_GPPiecesFunction, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GPStream[] = {  {&_swigt__p_GPStream, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GPWStream[] = {  {&_swigt__p_GPWStream, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_IGPAutoDefFunction[] = {  {&_swigt__p_IGPAutoDefFunction, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_f_p_IGPAutoDefFunction_p_void__double[] = {  {&_swigt__p_f_p_IGPAutoDefFunction_p_void__double, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_p_GPPieces[] = {  {&_swigt__p_p_GPPieces, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_GPStream[] = {  {&_swigt__p_p_GPStream, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_IFunctionTable[] = {  {&_swigt__p_p_IFunctionTable, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_void[] = {  {&_swigt__p_void, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
-  _swigc__p_AGPContents,
+  _swigc__p_AGPPiecesProducer,
   _swigc__p_AGPProducer,
   _swigc__p_AGPStrings,
+  _swigc__p_GPContents,
   _swigc__p_GPOptimizorInfo,
+  _swigc__p_GPPieces,
+  _swigc__p_GPPiecesFunction,
   _swigc__p_GPStream,
   _swigc__p_GPWStream,
   _swigc__p_IGPAutoDefFunction,
   _swigc__p_char,
   _swigc__p_f_p_IGPAutoDefFunction_p_void__double,
+  _swigc__p_p_GPPieces,
   _swigc__p_p_GPStream,
   _swigc__p_p_IFunctionTable,
   _swigc__p_void,
