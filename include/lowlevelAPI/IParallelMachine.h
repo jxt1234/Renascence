@@ -48,6 +48,12 @@ public:
     /*For Parameter adjust*/
     virtual int vMap(GPFLOAT* values) {return 0;}
     
+    typedef enum {
+        INPUT,
+        CACHE,
+        OUTPUT
+    } PIECETYPE;
+
     virtual ~IParallelMachine(){}
 protected:
     IParallelMachine(){}

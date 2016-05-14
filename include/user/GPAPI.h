@@ -23,7 +23,7 @@ extern "C"{
     typedef struct AGPPiecesProducer AGPPiecesProducer;
     typedef struct IGPAutoDefFunction IGPAutoDefFunction;
     typedef struct AGPProducer AGPProducer;
-    typedef struct AGPContents AGPContents;
+    typedef struct GPContents GPContents;
     typedef struct GPStreamFactory GPStreamFactory;
     typedef struct GPStream GPStream;
     typedef struct GPWStream GPWStream;
@@ -56,31 +56,31 @@ extern "C"{
     /*Destroy the stream created by GP_WStream_Create, must not be used to destroy other Stream*/
     void GP_WStream_Destroy(GPWStream* s);
     
-    /* Load Contents by IStatusType's vLoad method, Cona AGPContents
+    /* Load Contents by IStatusType's vLoad method, Cona GPContents
      * producer: the FunctionProducer
      * inputs: the list of Stream, must assume that all input are not NULL
      * typeNames: the list of types
      * n: select number, must be equal to types
      * For Example:
-     *      AGPContents* c = GP_Contents_Load(producer, inputs, "TrBmp TrBmp", 2);
+     *      GPContents* c = GP_Contents_Load(producer, inputs, "TrBmp TrBmp", 2);
      */
-    AGPContents* GP_Contents_Load(AGPProducer* producer, GPStream** inputs, const char* typeNames, int n);
+    GPContents* GP_Contents_Load(AGPProducer* producer, GPStream** inputs, const char* typeNames, int n);
     
     /*Return the number of contents*/
-    int GP_Contents_Size(AGPContents* contents);
+    int GP_Contents_Size(GPContents* contents);
     
     
     /*Return the content in the n pos*/
-    void* GP_Contents_Get(AGPContents* contents, int n);
+    void* GP_Contents_Get(GPContents* contents, int n);
     
     /*Return the double value of GP, must assert that the type is double*/
-    double GP_Contents_GetDouble(AGPContents* contents, int n);
+    double GP_Contents_GetDouble(GPContents* contents, int n);
     
     /*Set the double value of GP, must assert that the type is double*/
-    void GP_Contents_SetDouble(AGPContents* contents, double value, int n);
+    void GP_Contents_SetDouble(GPContents* contents, double value, int n);
     
     /*Create a double value*/
-    AGPContents* GP_Contents_CreateDouble(double value);
+    GPContents* GP_Contents_CreateDouble(double value);
     
     /* Write Contents to appointed stream
      * content: the contents to be write, must not be null
@@ -97,25 +97,25 @@ extern "C"{
      *          GP_WStream_Destroy(outputStream);
      *      }
      */
-    void GP_Contents_Save(AGPContents* content, GPWStream* outputs, int n);
+    void GP_Contents_Save(GPContents* content, GPWStream* outputs, int n);
     
-    /*Destroy the contents in AGPContents and itself
+    /*Destroy the contents in GPContents and itself
      * content: The memory to be freed
      */
-    void GP_Contents_Destroy(AGPContents* content);
+    void GP_Contents_Destroy(GPContents* content);
 
     
     /* Create a collector, used to merge contents, the collector is also needed to be free by GP_Contents_Destroy, the collector doesn't own its content*/
-    AGPContents* GP_Contents_CreateCollector();
+    GPContents* GP_Contents_CreateCollector();
     
     /*Select the nth content in B, and add to Collector's end. User should not destroy B before collector is destroyed*/
     /* Collector: The Dst Container, Must be come from GP_Contents_CreateCollector
      * B: The Src
      * n: The pos of content in B, n should be >=0, and n < B->size
      * Example:
-     *      AGPContents* col = GP_Contents_CreateCollector();
-     *      AGPContents* B = GP_Contents_Load(producer, inputsB, "TrBmp", 1);
-     *      AGPContents* A = GP_Contents_Load(producer, inputsA, "TrBmp TrBmp", 2);
+     *      GPContents* col = GP_Contents_CreateCollector();
+     *      GPContents* B = GP_Contents_Load(producer, inputsB, "TrBmp", 1);
+     *      GPContents* A = GP_Contents_Load(producer, inputsA, "TrBmp TrBmp", 2);
      *      GP_Contents_Collect(col, A, 0);
      *      GP_Contents_Collect(col, A, 1);
      *      GP_Contents_Collect(col, B, 0);
@@ -124,7 +124,7 @@ extern "C"{
      *      GP_Contents_Destroy(A);
      *      GP_Contents_Destroy(B);
      */
-    void GP_Contents_Collect(AGPContents* Collector, AGPContents* B, int n);
+    void GP_Contents_Collect(GPContents* Collector, GPContents* B, int n);
     
     
     
@@ -194,7 +194,7 @@ extern "C"{
     IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula, const char* inputType, GPOptimizorInfo* pInfo);
     
     /*The Inputs should be generate from stream by IStatusType inorder by the inputTypes return from GP_Function_Get_Inputs*/
-    AGPContents* GP_Function_Run(IGPAutoDefFunction* f, AGPContents* input);
+    GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input);
     /*Free the memory of function*/
     void GP_Function_Destroy(IGPAutoDefFunction* f);
     
@@ -275,7 +275,7 @@ extern "C"{
     AGPStrings* GP_Producer_ListTypes(AGPProducer* producer);
     
     /*Return all type name of contents*/
-    AGPStrings* GP_Contents_Types(AGPContents* contents);
+    AGPStrings* GP_Contents_Types(GPContents* contents);
 
     /*Default GPOptimizorInfo*/
     enum
@@ -290,7 +290,7 @@ extern "C"{
      *pPostFunction: the post treat function that will act with the result of target function, can be NULL
      *pPostExtraInput: the extra input to run pPostFunction, For example, P(x0, x1, x2), extra inputs is x1, x2
      */
-    GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, AGPContents* pInput, GPWStream* bestCache, IGPAutoDefFunction* pPostFunction, AGPContents* pPostExtraInput);
+    GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, GPContents* pInput, GPWStream* bestCache, IGPAutoDefFunction* pPostFunction, GPContents* pPostExtraInput);
     
     /*The info be freed must be come from GP_OptimzorInfo_CreateTemplate and can't be modified*/
     void GP_OptimzorInfo_FreeTemplate(GPOptimizorInfo* pInfo);
@@ -335,12 +335,9 @@ extern "C"{
     GPPieces* GP_Pieces_Load(AGPPiecesProducer* producer, const char* type, const char* path, const char* description);
     
     void GP_Pieces_Save(GPPieces* pieces, const char* path, const char* description);
-    
+
     void GP_Pieces_Destroy(GPPieces* pieces);
 
-    
-    
-    
 #ifdef __cplusplus
 }
 #endif

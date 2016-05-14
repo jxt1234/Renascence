@@ -351,5 +351,9 @@ formula中加入参数配置
 
 2016.5.8
 1、GP框架设定为大GP方案：上层库只调GP，下层函数库、文件管理库、并行运算库作为插件加入GP
-2、IStatusType 的vLoad 方法加入 description 选项 
+2、IStatusType 的vLoad 方法加入 description 选项（5.11取消）
 3、GPPieces 相关API实现
+
+2016.5.11
+1、参数化配置ADF
+2、延迟计算机制

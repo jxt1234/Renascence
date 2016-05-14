@@ -15,6 +15,9 @@ void GPSystemTest::run()
     {
         std::cout << s << std::endl;
     }
+
+    system_rm_dir("./output/testdir");
+    system_make_dir("./output/testdir");
 }
 
 static GPTestRegister<GPSystemTest> a("GPSystemTest");

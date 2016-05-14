@@ -24,4 +24,6 @@ void system_unload_lib(void* handle);
 
 
 std::vector<std::string> system_list_dir_files(const char* dir_name);
+bool system_make_dir(const char* dir_name);
+bool system_rm_dir(const char* dir_name);
 #endif

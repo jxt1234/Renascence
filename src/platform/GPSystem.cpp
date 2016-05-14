@@ -85,3 +85,21 @@ std::vector<std::string> system_list_dir_files(const char* dir_name)
     return result;
 }
 
+bool system_make_dir(const char* dir_name)
+{
+    GPASSERT(NULL!=dir_name);
+    struct stat status;
+    int error_code = stat(dir_name, &status);
+    if (error_code != 0)
+    {
+        mkdir(dir_name, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        return true;
+    }
+    return false;
+}
+
+bool system_rm_dir(const char* dir_name)
+{
+    GPASSERT(NULL!=dir_name);
+    return rmdir(dir_name) == 0;
+}

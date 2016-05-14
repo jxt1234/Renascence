@@ -20,6 +20,7 @@ class GPSingleParallelMachine:public IParallelMachine
 {
 public:
     virtual std::pair<Creator*, Executor*> vGenerate(const GPParallelType* data, PARALLELTYPE type) const override;
+
 };
 
 #endif

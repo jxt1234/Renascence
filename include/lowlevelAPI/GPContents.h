@@ -53,6 +53,12 @@ public:
     ~GPContents()
     {
     }
+    
+    
+    inline void setContent(size_t pos, GPPtr<GP_Unit> unit)
+    {
+        mContents[pos] = unit;
+    }
     void push(void* content, const IStatusType* type, bool own=true)
     {
         mContents.push_back(new GP_Unit(content, type, own));

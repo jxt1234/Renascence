@@ -10,15 +10,15 @@ using namespace std;
 struct OptMeta
 {
     IGPAutoDefFunction* pFit;
-    AGPContents* pInput;
-    AGPContents* pOutput;
+    GPContents* pInput;
+    GPContents* pOutput;
 };
 
 static double _OptFunction(IGPAutoDefFunction* target, void* meta)
 {
     OptMeta* _meta = (OptMeta*)meta;
-    AGPContents* output = GP_Function_Run(target, _meta->pInput);
-    AGPContents* totalInput = GP_Contents_CreateCollector();
+    GPContents* output = GP_Function_Run(target, _meta->pInput);
+    GPContents* totalInput = GP_Contents_CreateCollector();
     GP_Contents_Collect(totalInput, output, 0);
     GP_Contents_Collect(totalInput, _meta->pOutput, 0);
     auto foutput = GP_Function_Run(_meta->pFit, totalInput);

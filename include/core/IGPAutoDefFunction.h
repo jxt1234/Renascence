@@ -36,7 +36,7 @@ public:
     //Basic Function
     IGPAutoDefFunction(){}
     virtual ~IGPAutoDefFunction(){}
-    
+
     void setBasicTree(GPPtr<GPFunctionTree> basic) {mBasic = basic;}
     GPPtr<GPFunctionTree> getBasicTree() const {return mBasic;}
     void setParameters(GPPtr<GPParameter> para) {mPara = para;}
