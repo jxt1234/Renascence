@@ -205,7 +205,7 @@ def generateTypeFiles(filelist, outputt, inputt):
         if False == os.path.exists(typefile):
             with open(typefile, 'w') as f:
                 f.write(typecontents)
-    cppfile+='IStatusType* GP_IStatusType_Create(const std::string& name)\n{\n'
+    cppfile+='IStatusType* ' + gSoName + '_GP_IStatusType_Create(const std::string& name)\n{\n'
     for t in totoaltype:
         cppfile+='if (name == \"'+t + '\")\n{\n'
         cppfile+='return g' + t + ';\n}\n'
