@@ -33,7 +33,7 @@ public:
         }
         ~GP_Unit()
         {
-            if (mOwn)
+            if (mOwn && NULL!=mType)
             {
                 mType->vFree(mContent);
             }

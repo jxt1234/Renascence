@@ -35,23 +35,23 @@ static int test_main()
     GPPtr<GPStreamWrap> soxml = GPStreamFactory::NewStream("func.xml", GPStreamFactory::FILE);
     IFunctionTable* tables = NULL;
     GPStream* streamTables = soxml.get();
-    auto producer = GP_Producer_Create(&streamTables, &tables, 1, 0);
+    auto producer = GP_Producer_Create(&streamTables, &tables, 1, GP_PRODUCER_STREAM);
     GPPtr<GPWStreamWrap> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
     /*Input and output*/
     {
-        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "TrBmp TrBmp", NULL);
-        {
-            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_base.txt");
-            GP_Function_Save(adf, output.get());
-        }
-        GP_Function_Destroy(adf);
-        GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream("output/GPAPI_base.txt");
-        auto adf2 = GP_Function_Create_ByStream(producer, input.get());
-        {
-            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_base2.txt");
-            GP_Function_Save(adf2, output.get());
-        }
-        GP_Function_Destroy(adf2);
+//        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "TrBmp TrBmp", NULL);
+//        {
+//            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_base.txt");
+//            GP_Function_Save(adf, output.get());
+//        }
+//        GP_Function_Destroy(adf);
+//        GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream("output/GPAPI_base.txt");
+//        auto adf2 = GP_Function_Create_ByStream(producer, input.get());
+//        {
+//            GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream("output/GPAPI_base2.txt");
+//            GP_Function_Save(adf2, output.get());
+//        }
+//        GP_Function_Destroy(adf2);
     }
     /*Formula*/
     {

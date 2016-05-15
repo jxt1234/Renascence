@@ -27,6 +27,8 @@ bool GPStreamADF::SP::vReceive(CONTENT con, const Point* source)
 {
     GPASSERT(NULL==source);
     GPASSERT(NULL!=con.get());
+    GPASSERT(NULL!=con->type());
+    GPASSERT(NULL!=con->content());
     mOutputs[0]->vReceive(con, this);
     return true;
 }
@@ -441,7 +443,7 @@ GPContents* GPStreamADF::vRun(GPContents* inputs)
         //FUNC_PRINT_ALL(inputs->getContent(mInputPos[i]).content, p);
         if (NULL!=inputs->get(pos))
         {
-            mSources[i]->vReceive(inputs->getContent(i), NULL);
+            mSources[i]->vReceive(inputs->getContent(pos), NULL);
         }
     }
     bool res_valid = true;
