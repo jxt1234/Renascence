@@ -145,3 +145,7 @@ makeFile = open('Makefile','w')
 makeFile.write(files)
 
 makeFile.close();
+
+import os
+if False == os.path.exists('build'):
+    os.mkdir('build')

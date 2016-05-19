@@ -47,7 +47,12 @@ static bool _IsEnd(void* meta)
 
 GPFileStream::GPFileStream(const char* filename)
 {
+    GPASSERT(NULL!=filename);
     FILE* f = fopen(filename, "rb");
+    if (NULL == f)
+    {
+        FUNC_PRINT_ALL(filename, s);
+    }
     GPASSERT(NULL!=f);//TODO
     mF = f;
 }
