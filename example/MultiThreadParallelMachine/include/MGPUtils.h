@@ -16,6 +16,7 @@
 #ifndef MGPUTILS_H
 #define MGPUTILS_H
 #include <assert.h>
+#include <string.h>
 #define MGPASSERT(x) assert(x)
 #ifdef BUILD_FOR_ANDROID
 #include <android/log.h>

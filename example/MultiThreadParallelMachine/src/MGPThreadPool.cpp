@@ -15,6 +15,7 @@
 ******************************************************************/
 #include "MGPThreadPool.h"
 #include "MGPUtils.h"
+#include <string.h>
 
 class MGPThreadPool::ThreadWorker:public MGPThread
 {
