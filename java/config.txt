@@ -1,0 +1,9 @@
+INCLUDE:../include /Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/darwin/ /Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/include/
+**********
+
+TARGET:libGPJni.so
+DEPENDS:
+DIRS:
+SRCS:../swig/renascence_basic_wrap.cxx
+LINKS: ../libGP.a
+
