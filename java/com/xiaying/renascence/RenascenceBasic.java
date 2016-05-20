@@ -62,6 +62,11 @@ public class RenascenceBasic implements RenascenceBasicConstants {
     return (cPtr == 0) ? null : new SWIGTYPE_p_GPContents(cPtr, false);
   }
 
+  public static SWIGTYPE_p_GPContents GP_Contents_CreateString(String value) {
+    long cPtr = RenascenceBasicJNI.GP_Contents_CreateString(value);
+    return (cPtr == 0) ? null : new SWIGTYPE_p_GPContents(cPtr, false);
+  }
+
   public static void GP_Contents_Save(SWIGTYPE_p_GPContents content, SWIGTYPE_p_GPWStream outputs, int n) {
     RenascenceBasicJNI.GP_Contents_Save(SWIGTYPE_p_GPContents.getCPtr(content), SWIGTYPE_p_GPWStream.getCPtr(outputs), n);
   }

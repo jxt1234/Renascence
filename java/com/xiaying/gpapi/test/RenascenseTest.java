@@ -6,7 +6,7 @@ import com.xiaying.gpapi.Renascence;
  * Created by jiangxiaotang on 16/5/19.
  */
 public class RenascenseTest {
-    public void main() {
+    public static void main(String[] args) {
         Renascence.setLibBasicPath("/Users/jiangxiaotang/Documents/Renascence/");
         Renascence.setStreamBasicPath("/Users/jiangxiaotang/Documents/Renascence/");
 

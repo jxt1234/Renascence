@@ -21,6 +21,7 @@ public class RenascenceBasicJNI {
   public final static native double GP_Contents_GetDouble(long jarg1, int jarg2);
   public final static native void GP_Contents_SetDouble(long jarg1, double jarg2, int jarg3);
   public final static native long GP_Contents_CreateDouble(double jarg1);
+  public final static native long GP_Contents_CreateString(String jarg1);
   public final static native void GP_Contents_Save(long jarg1, long jarg2, int jarg3);
   public final static native void GP_Contents_Destroy(long jarg1);
   public final static native long GP_Contents_CreateCollector();

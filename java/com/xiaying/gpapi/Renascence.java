@@ -3,6 +3,7 @@ package com.xiaying.gpapi;
 import com.xiaying.renascence.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jiangxiaotang on 16/5/19.
@@ -20,6 +21,10 @@ public class Renascence extends AutoRecycle{
 
         public Content(double value) {
             mNativeContent = RenascenceBasic.GP_Contents_CreateDouble(value);
+        }
+
+        public Content(String value) {
+            mNativeContent = RenascenceBasic.GP_Contents_CreateString(value);
         }
 
         public int size() {
@@ -108,6 +113,17 @@ public class Renascence extends AutoRecycle{
         }
         RenascenceBasic.GP_Streams_Free(swigtypePPGpStreams);
         return new Content(contents);
+    }
+
+    public Content merge(List<Content> contents) {
+        Content output = new Content(RenascenceBasic.GP_Contents_CreateCollector());
+        for (Content c : contents) {
+            int size = c.size();
+            for (int i=0; i<size; ++i) {
+                RenascenceBasic.GP_Contents_Collect(output.get(), c.get(), i);
+            }
+        }
+        return output;	
     }
 
     public static void setStreamBasicPath(String path) {
