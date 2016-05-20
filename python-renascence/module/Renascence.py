@@ -67,7 +67,7 @@ class Producer:
         result = resultWrap.nativeContent
         for i in range(0, n):
             c = None
-            if isinstance(contents[i], int) or isinstance(contents[i], float):
+            if isinstance(contents[i], int) or isinstance(contents[i], float) or isinstance(contents[i], basestring):
                 temp = Content(contents[i], self)
                 resultWrap.referedContents.append(temp)
                 c = temp.get()
