@@ -50,6 +50,10 @@
     
     /*Create a double value*/
     GPContents* GP_Contents_CreateDouble(double value);
+
+    /*Create a string value*/
+    GPContents* GP_Contents_CreateString(const char* value);
+
     
     /* Write Contents to appointed stream
      * content: the contents to be write, must not be null

@@ -84,7 +84,7 @@ extern IStatusType* gDefaultDoubleType;//For GP Self, Don't use it
 class GPStringType:public IStatusType
 {
 public:
-    GPStringType():IStatusType("String")
+    GPStringType():IStatusType("string")
     {
     }
     virtual ~GPStringType()

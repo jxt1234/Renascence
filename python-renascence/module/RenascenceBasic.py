@@ -139,6 +139,10 @@ def GP_Contents_CreateDouble(value):
     return _RenascenceBasic.GP_Contents_CreateDouble(value)
 GP_Contents_CreateDouble = _RenascenceBasic.GP_Contents_CreateDouble
 
+def GP_Contents_CreateString(value):
+    return _RenascenceBasic.GP_Contents_CreateString(value)
+GP_Contents_CreateString = _RenascenceBasic.GP_Contents_CreateString
+
 def GP_Contents_Save(content, outputs, n):
     return _RenascenceBasic.GP_Contents_Save(content, outputs, n)
 GP_Contents_Save = _RenascenceBasic.GP_Contents_Save

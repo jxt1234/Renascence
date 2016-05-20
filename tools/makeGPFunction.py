@@ -4,7 +4,7 @@ GPSTATUSSIGN="/*S*/"
 GPCOMPLTESIGN="/*T*/"
 gSoName = 'NULL'
 
-gDefaultType = {'double':'GPDoubleType', 'String':'GPStringType'}
+gDefaultType = {'double':'GPDoubleType', 'string':'GPStringType'}
 import os
 def collectFiles(path):
     filelist = []

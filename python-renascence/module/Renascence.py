@@ -6,6 +6,8 @@ class Content:
             self.nativeContent = RenascenceBasic.GP_Contents_CreateCollector()
         elif isinstance(nativeContent, int) or isinstance(nativeContent, float):
             self.nativeContent = RenascenceBasic.GP_Contents_CreateDouble(nativeContent)
+        elif isinstance(nativeContent, basestring):
+            self.nativeContent = RenascenceBasic.GP_Contents_CreateString(nativeContent)
         else:
             self.nativeContent = nativeContent
         self.referedContents = []

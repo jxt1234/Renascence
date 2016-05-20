@@ -646,6 +646,15 @@ GPContents* GP_Contents_CreateDouble(double value)
     return content;
 }
 
+GPContents* GP_Contents_CreateString(const char* value)
+{
+    GPContents* content = new GPContents;
+    std::string* v = new std::string(value);
+    content->push(v, gDefaultStringType);
+    return content;
+}
+
+
 void GP_Function_MapParameters(IGPAutoDefFunction* f, const char* parameters)
 {
     if (NULL == parameters)
