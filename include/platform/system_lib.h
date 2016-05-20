@@ -28,7 +28,6 @@ class system_lib:public IFunctionTable
         system_lib(const std::string& libName)
         {
             mHandle = system_load_lib(libName.c_str());
-            assert(NULL!=mHandle);
         }
         virtual ~system_lib()
         {

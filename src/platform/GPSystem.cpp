@@ -49,7 +49,15 @@ void* system_load_lib(const char* libName)
     {
         completeName << gPath <<"/"<< libName << ".so";
     }
-    return dlopen(completeName.str().c_str(), RTLD_NOW);
+    auto res = dlopen(completeName.str().c_str(), RTLD_LAZY);
+    if (NULL == res)
+    {
+        auto error = dlerror();
+        FUNC_PRINT_ALL(error, s);
+        FUNC_PRINT_ALL(libName, s);
+        GPASSERT(false);
+    }
+    return res;
 }
 
 void* system_find_func(void* handle, const char* funcName)
