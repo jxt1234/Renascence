@@ -19,7 +19,7 @@
 class GPStream
 {
 public:
-    virtual ~GPStream() = default;
+    virtual ~GPStream() {}
     /*If the buffer is NULL, it means skip size bytes, return the fact bytes it read*/
     virtual size_t vRead(void* buffer, size_t size) = 0;
     /*Return true if the stream has moved to end*/
@@ -35,13 +35,13 @@ public:
         return buffer;
     }
 protected:
-    GPStream() = default;
+    GPStream() {}
 
 };
 class GPWStream
 {
 public:
-    virtual ~GPWStream() = default;
+    virtual ~GPWStream() {}
     virtual size_t vWrite(const void* buffer, size_t size) = 0;
     virtual bool vFlush() = 0;
     template<typename T>
@@ -50,6 +50,6 @@ public:
         return this->vWrite(&v, sizeof(T));
     }
 protected:
-    GPWStream() = default;
+    GPWStream() {}
 };
 #endif

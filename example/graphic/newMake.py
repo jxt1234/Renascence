@@ -5,8 +5,8 @@ import os
 import sys
 CFLAGS="-O3 -fPIC -g"
 #CFLAGS="-g -fPIC"
-CPP="g++ -std=c++11 "
-C="gcc -std=c11 "
+CPP="g++ "
+C="gcc "
 MIDPATH='build/'
 
 from config import *

@@ -86,14 +86,14 @@ public:
     
     void merge(const GPContents& other)
     {
-        for (auto c : other.mContents)
+        for (int i=0; i<other.mContents.size(); ++i)
         {
-            mContents.push_back(c);
+            mContents.push_back(other.mContents[i]);
         }
     }
 
 private:
-    std::vector<GPPtr<GP_Unit>> mContents;
+    std::vector<GPPtr<GP_Unit> > mContents;
 };
 
 typedef GPContents*(*computeFunction)(GPContents* inputs);
