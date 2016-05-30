@@ -37,6 +37,13 @@ static int test_main()
     GPStream* streamTables = soxml.get();
     auto producer = GP_Producer_Create(&streamTables, &tables, 1, GP_PRODUCER_STREAM);
     GPPtr<GPWStreamWrap> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
+    /*Contents*/
+    {
+        auto content = GP_Contents_CreateString("TestString");
+        GP_Contents_Destroy(content);
+        content = GP_Contents_CreateDouble(124.0f);
+        GP_Contents_Destroy(content);
+    }
     /*Input and output*/
     {
 //        auto adf = GP_Function_Create_ByType(producer, "TrFilterMatrix", "TrBmp TrBmp", NULL);

@@ -18,6 +18,8 @@
 #include "lowlevelAPI/GPStream.h"
 #include "lowlevelAPI/GPRefCount.h"
 #include <string>
+#include <istream>
+#include <ostream>
 class GPStreamWrap:public GPStream, public GPRefCount
 {
 public:
@@ -40,6 +42,9 @@ public:
     } MODE;
     static GPStreamWrap* NewStream(const char* meta, MODE m=FILE);
     static GPWStreamWrap* NewWStream(const char* meta, MODE m=FILE);
+    
+    static GPStreamWrap* NewStreamFromStl(std::istream& istream);
+    static GPWStreamWrap* NewWStreamFromStl(std::ostream& ostream);
     static void setParentPath(const char* path);
 private:
     static std::string gPath;

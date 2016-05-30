@@ -350,6 +350,10 @@ GP_Pieces_Save = _RenascenceBasic.GP_Pieces_Save
 def GP_Pieces_Destroy(pieces):
     return _RenascenceBasic.GP_Pieces_Destroy(pieces)
 GP_Pieces_Destroy = _RenascenceBasic.GP_Pieces_Destroy
+
+def GP_Contents_Dump(contents, n):
+    return _RenascenceBasic.GP_Contents_Dump(contents, n)
+GP_Contents_Dump = _RenascenceBasic.GP_Contents_Dump
 # This file is compatible with both classic and new-style classes.
 
 

@@ -19,6 +19,7 @@
 #include "core/GPStreamFactory.h"
 #include "GPFileStream.h"
 #include "GPUserStream.h"
+#include "GPStlStream.h"
 
 std::string GPStreamFactory::gPath = "";
 
@@ -77,4 +78,13 @@ GPWStreamWrap* GPStreamFactory::NewWStream(const char* meta, MODE m)
             break;
     }
     return r;
+}
+GPStreamWrap* GPStreamFactory::NewStreamFromStl(std::istream& istream)
+{
+    return new GPStlStream(istream);
+}
+
+GPWStreamWrap* GPStreamFactory::NewWStreamFromStl(std::ostream& ostream)
+{
+    return new GPStlWStream(ostream);
 }

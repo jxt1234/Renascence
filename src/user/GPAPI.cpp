@@ -654,6 +654,22 @@ GPContents* GP_Contents_CreateString(const char* value)
     return content;
 }
 
+AGPStrings* GP_Contents_Dump(GPContents* contents, int n)
+{
+    AGPStrings* s = new AGPStrings;
+    if (contents==NULL || n<0 || n>=contents->size())
+    {
+        FUNC_PRINT(0);
+        return s;
+    }
+    std::ostringstream ostringstream;
+    GPPtr<GPWStreamWrap> wrap = GPStreamFactory::NewWStreamFromStl(ostringstream);
+    auto c = contents->getContent(n);
+    c->type()->vSave(c->content(), wrap.get());
+    wrap->vFlush();
+    s->a.push_back(ostringstream.str());
+    return s;
+}
 
 void GP_Function_MapParameters(IGPAutoDefFunction* f, const char* parameters)
 {

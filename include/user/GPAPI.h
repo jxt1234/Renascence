@@ -280,6 +280,9 @@ extern "C"{
     
     /*Return all type name of contents*/
     AGPStrings* GP_Contents_Types(GPContents* contents);
+    
+    /*Print the info for contents*/
+    AGPStrings* GP_Contents_Dump(GPContents* contents, int n);
 
     /*Default GPOptimizorInfo*/
     enum
@@ -309,8 +312,6 @@ extern "C"{
      * libNumber: the number of piecesLibMeta and piecesLibTable
      * mapReduceMeta: mapReduceMetaNumber's xmlFile, which tell GP how to build Parallel Function
      * mapReduceMetaNumber: the number of mapReduceMeta
-     
-     
      */
     AGPPiecesProducer* GP_PiecesProducer_Create(AGPProducer* producer, GPStream** piecesLibMeta, IFunctionTable** piecesLibTable, int libNumber, GPStream** mapReduceMeta, int mapReduceMetaNumber);
     

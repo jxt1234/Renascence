@@ -311,3 +311,7 @@
 
     void GP_Pieces_Destroy(GPPieces* pieces);
 
+    /*Print the info for contents*/
+    AGPStrings* GP_Contents_Dump(GPContents* contents, int n);
+
+

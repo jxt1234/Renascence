@@ -97,6 +97,8 @@ public:
     }
     virtual void vSave(void* contents, GPWStream* output) const
     {
+        std::string* c = (std::string*)(contents);
+        output->vWrite(c->c_str(), c->size());
         return;
     }
     virtual void vFree(void* contents) const

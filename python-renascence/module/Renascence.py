@@ -24,6 +24,11 @@ class Content:
         output = RenascenceBasic.GP_WStream_Create(filename)
         RenascenceBasic.GP_Contents_Save(self.nativeContent, output, 0)
         RenascenceBasic.GP_WStream_Destroy(output)
+    def dump(self):
+        contentString = RenascenceBasic.GP_Contents_Dump(self.nativeContent, 0)
+        content = RenascenceBasic.GP_Strings_Get(contentString, 0)
+        RenascenceBasic.GP_Strings_Free(contentString)
+        return content
 class AutoDefFunction:
     def __init__(self, nativeFunction, producer):
         self.nativeFunction = nativeFunction
