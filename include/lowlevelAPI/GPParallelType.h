@@ -21,11 +21,16 @@
 /*Create By Renascence, Used by low level lib*/
 struct GPParallelType
 {
+    typedef std::vector<std::pair<unsigned int, unsigned int>> KEYS;
     /*For GPFunction Reconstruct*/
     struct FuncInfo
     {
         std::string formula;
         std::string parameter;
+
+        /*x0: 0,0  y1: 1,1  and so on*/
+        KEYS variableKey;
+        
         std::vector<const IStatusType*> inputs;
     };
     FuncInfo sFuncInfo;
@@ -41,7 +46,7 @@ struct GPParallelType
     std::string sVariableInfo;
     
     //a0: 0,0  b2: 1,2  d2: 3,2  and so on
-    std::vector<std::pair<unsigned int, unsigned int>> mOutputKey;
+    KEYS mOutputKey;
     
     const IGPFunctionContext* pContext;
     

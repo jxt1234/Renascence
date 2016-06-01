@@ -366,3 +366,25 @@ void GPFormulaTreePoint::render(std::ostream& output) const
     output << "</"<<type << ">\n";
 }
 
+void GPFormulaTreePoint::replaceName(const std::string& newName)
+{
+    GPASSERT(NUM == mT);
+    mName = newName;
+}
+
+GPFormulaTreePoint* GPFormulaTreePoint::deepCopy() const
+{
+    return _deepCopy(NULL);
+}
+
+GPFormulaTreePoint* GPFormulaTreePoint::_deepCopy(GPFormulaTreePoint* father) const
+{
+    GPFormulaTreePoint* current = new GPFormulaTreePoint(mT, mName, father);
+    for (int i=0; i<mChildren.size(); ++i)
+    {
+        auto p = GPCONVERT(GPFormulaTreePoint, mChildren[i]);
+        current->addPoint(p->_deepCopy(current));
+    }
+    return current;
+}
+

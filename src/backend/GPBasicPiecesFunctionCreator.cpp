@@ -80,6 +80,7 @@ public:
             needClean[i] = false;
             if (node->mInputPos < 0)
             {
+                /*The Content is from compute, must clean*/
                 needClean[i] = true;
             }
         }
@@ -95,6 +96,27 @@ public:
         return output;
     }
     
+    static std::vector<std::pair<unsigned int, unsigned int>> translate(const std::string& variables)
+    {
+        std::vector<std::pair<unsigned int, unsigned int>> result;
+        std::string s;
+        std::istringstream input(variables);
+        while (input >> s)
+        {
+            GPASSERT(s.size()>=2);
+            int first = s[0] - 'x';
+            GPASSERT(first>=0);
+            int second = 0;
+            for (int i=1; i<s.size(); ++i)
+            {
+                second = second*10 + (s[i]-'0');
+            }
+            result.push_back(std::make_pair(first, second));
+        }
+        return result;
+    }
+    
+    
     static GPPiecesFunctionNode* createFromFuncPoint(const GPFunctionTreePoint* root, const IParallelMachine* machine, const IGPFunctionContext* context)
     {
         GPASSERT(NULL!=context);
@@ -107,7 +129,9 @@ public:
         data.pContext = context;
         auto func = GPCONVERT(const GPFunctionTreePoint, root->getChild(1));
         GPASSERT(func->type() == GPFunctionTreePoint::STRING);
-        data.sFuncInfo.formula = func->extra();
+        GPASSERT(func->getChildrenNumber() == 2);
+        data.sFuncInfo.variableKey = translate(GPCONVERT(const GPFunctionTreePoint, func->getChild(0))->extra());
+        data.sFuncInfo.formula = GPCONVERT(const GPFunctionTreePoint, func->getChild(1))->extra();
         //TODO
         data.sFuncInfo.parameter = "";
         data.sFuncInfo.inputs.clear();

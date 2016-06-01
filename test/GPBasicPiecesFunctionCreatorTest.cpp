@@ -16,7 +16,7 @@ using namespace std;
 
 
 static const char* gFormula =
-"REDUCE((MAP((x0), S(S(S(x0))), [a0]->[a0])), C(x0, C(x0, x1)), [a0]->[1])";
+"REDUCE((MAP((x0), S(S(S(x0))), [a0]->[a0])), C(x0, C(x0, y0)), [a0]->[1])";
 
 static GPPieces* _createInputPieces(const IStatusType* s)
 {

@@ -146,30 +146,68 @@ private:
 class MapHandle:public SingleExecutor::Handle
 {
 public:
+    MapHandle(GPParallelType::KEYS keys)
+    {
+        mKey = keys;
+    }
+    
+    virtual ~ MapHandle()
+    {
+    }
+
     virtual void vHandle(IGPFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const override
     {
-        GPContents* currentGPOutput = function->vRun(input);
-        output->vSave(outputKey, keyNumber, currentGPOutput);
-        currentGPOutput->decRef();
+        GPContents mergeInput;
+        for (int i=0; i<mKey.size(); ++i)
+        {
+            GPASSERT(mKey[i].first == 0);
+            mergeInput.pushContent(input->getContent(mKey[i].second));
+        }
+        GPPtr<GPContents> currentGPOutput = function->vRun(&mergeInput);
+        output->vSave(outputKey, keyNumber, currentGPOutput.get());
     }
+private:
+    GPParallelType::KEYS mKey;
 };
 
 class ReduceHandle:public SingleExecutor::Handle
 {
+public:
+    ReduceHandle(GPParallelType::KEYS keys)
+    {
+        mKey = keys;
+    }
+    
+    virtual ~ ReduceHandle()
+    {
+    }
+    
     virtual void vHandle(IGPFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const override
     {
-        GPContents* oldOutput = output->vLoad(outputKey, keyNumber);
-        if (NULL == oldOutput)
+        GPPtr<GPContents> oldOutput = output->vLoad(outputKey, keyNumber);
+        if (NULL == oldOutput.get())
         {
             output->vSave(outputKey, keyNumber, input);
             return;
         }
+        GPContents mergeOutput;
+        for (int i=0; i<mKey.size(); ++i)
+        {
+            GPASSERT(mKey[i].first <=1);
+            if (1 == mKey[i].first)
+            {
+                mergeOutput.pushContent(input->getContent(mKey[i].second));
+            }
+            else
+            {
+                mergeOutput.pushContent(oldOutput->getContent(mKey[i].second));
+            }
+        }
         /*Merge, the oldOutput should be before the input*/
-        oldOutput->merge(*input);
-        GPContents* currentGPOutput = function->vRun(oldOutput);
-        output->vSave(outputKey, keyNumber, currentGPOutput);
-        currentGPOutput->decRef();
+        GPPtr<GPContents> currentGPOutput = function->vRun(&mergeOutput);
+        output->vSave(outputKey, keyNumber, currentGPOutput.get());
     }
+    GPParallelType::KEYS mKey;
 };
 
 
@@ -183,10 +221,10 @@ std::pair<IParallelMachine::Creator*, IParallelMachine::Executor*> GPSingleParal
     switch (type)
     {
         case IParallelMachine::MAP:
-            handle = new MapHandle;
+            handle = new MapHandle(data->sFuncInfo.variableKey);
             break;
         case IParallelMachine::REDUCE:
-            handle = new ReduceHandle;
+            handle = new ReduceHandle(data->sFuncInfo.variableKey);
             break;
         default:
             GPASSERT(0);

@@ -40,7 +40,14 @@ public:
     const GPFormulaTreePoint* father() const {return mFather;}
     void valid() const;
     static GPFormulaTreePoint* create(const std::vector<std::string>& words);
+    
+    void replaceName(const std::string& newName);
+    
+    GPFormulaTreePoint* deepCopy() const;
+    
 private:
+    GPFormulaTreePoint* _deepCopy(GPFormulaTreePoint* father) const;
+    
     GPFormulaTreePoint* _ParallelExpand(const std::vector<std::string>& words, int sta, int fin);
     void _createSubPoints(const std::vector<std::string>& words, int sta, int fin);
 

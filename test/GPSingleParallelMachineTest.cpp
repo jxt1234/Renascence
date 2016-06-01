@@ -58,13 +58,13 @@ static void __run()
     GPSingleParallelMachine machine;
     GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
     {
-        GPParallelType data;
         GPPtr<GPProducer> sys = GPFactory::createProducer(base.get());
         {
-            data.mOutputKey.clear();
+            GPParallelType data;
             data.mOutputKey.push_back(std::make_pair(0, 0));
             data.pContext = sys.get();
             data.sFuncInfo.formula = "S(x0)";
+            data.sFuncInfo.variableKey.push_back(std::make_pair(0, 0));
             auto p = machine.vGenerate(&data, IParallelMachine::MAP);
             GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
             GPPieces* outputs = p.first->vPrepare(&inputs, 1);
@@ -78,7 +78,10 @@ static void __run()
             delete p.second;
         }
         {
-            data.mOutputKey.clear();
+            GPParallelType data;
+            data.pContext = sys.get();
+            data.sFuncInfo.variableKey.push_back(std::make_pair(0, 0));
+            data.sFuncInfo.variableKey.push_back(std::make_pair(1, 0));
             data.sFuncInfo.formula = "C(x0, x1)";
             auto p = machine.vGenerate(&data, IParallelMachine::REDUCE);
             GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));

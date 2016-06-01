@@ -399,7 +399,7 @@ public:
             /*INPUT*/
             GPFunctionTreePoint* input_f = new GPFunctionTreePoint("INPUT");
             result->addPoint(input_f);
-            GPFormulaTreePoint* input = (GPFormulaTreePoint*)(point->getChild(0));
+            GPFormulaTreePoint* input =  GPFORCECONVERT(GPFormulaTreePoint, point->getChild(0));
             for (int i=0; i<input->getChildrenNumber(); ++i)
             {
                 input_f->addPoint(GPAbstractPoint::deepCopy((GPAbstractPoint*)(input->getChild(i)), this));
@@ -407,10 +407,34 @@ public:
         }
         {
             /*GP Function*/
+            GPFunctionTreePoint* function = new GPFunctionTreePoint("WORKFUNC");
+            result->addPoint(function);
+            std::ostringstream variables;
+            GPPtr<GPFormulaTreePoint> funcp = GPCONVERT(const GPFormulaTreePoint, point->getChild(1))->deepCopy();
+            auto children = funcp->display();
+            int x_pos = 0;
+            for (int i=0; i<children.size(); ++i)
+            {
+                std::ostringstream varyname;
+                auto f = GPFORCECONVERT(GPFormulaTreePoint, children[i]);
+                if (GPFormulaTreePoint::NUM != f->type())
+                {
+                    continue;
+                }
+                varyname << "x"<<x_pos++;
+                auto _v = varyname.str();
+                variables << f->name();
+                if (i != children.size()-1)
+                {
+                    variables << " ";
+                }
+                f->replaceName(_v);
+            }
+            function->addPoint(new GPFunctionTreePoint(variables.str()));
+
             std::ostringstream expression;
-            auto funcp = GPCONVERT(const GPFormulaTreePoint, point->getChild(1));
             funcp->renderAsFormula(expression);
-            result->addPoint(new GPFunctionTreePoint(expression.str()));
+            function->addPoint(new GPFunctionTreePoint(expression.str()));
         }
         if (point->getChildrenNumber()>2)
         {
