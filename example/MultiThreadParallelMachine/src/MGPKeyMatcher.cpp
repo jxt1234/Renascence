@@ -60,8 +60,13 @@ MGPKeyMatcher::MGPKeyMatcher(GPPieces** inputs, unsigned int inputNumber, GPPiec
     {
         sumDim += inputs[i]->nKeyNumber;
     }
-    AUTOSTORAGE(keyOutput, unsigned int, (int)outputKeys.size());
-    AUTOSTORAGE(keyOutputPos, unsigned int, (int)outputKeys.size());
+    int outputKeyStorage = (int)outputKeys.size();
+    if (outputKeys.empty())
+    {
+        outputKeyStorage = 1;
+    }
+    AUTOSTORAGE(keyOutput, unsigned int, outputKeyStorage);
+    AUTOSTORAGE(keyOutputPos, unsigned int, outputKeyStorage);
     for (int pos=0; pos < outputKeys.size(); ++pos)
     {
         keyOutputPos[pos] = 0;
@@ -106,7 +111,7 @@ MGPKeyMatcher::MGPKeyMatcher(GPPieces** inputs, unsigned int inputNumber, GPPiec
         
         /*Record the key*/
         GPPtr<Key> inputKey = new Key(keyCurrent, sumDim);
-        GPPtr<Key> outputKey = new Key(keyOutput, (unsigned int)outputKeys.size());
+        GPPtr<Key> outputKey = new Key(keyOutput, outputKeyStorage);
         bool match = false;
         for (auto& k : mKeyMatches)
         {

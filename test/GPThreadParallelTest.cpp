@@ -48,7 +48,7 @@ static void _saveOutputPieces(GPPieces* output, const char* prefix)
         GPContents* c = output->vLoad(&key, output->nKeyNumber);
         GPASSERT(c->size() == 1);
         std::stringstream os;
-        os << "output/GPFactoryPiecesFunctionCreator"<<prefix << "_"<<i+1<<".jpg";
+        os << "output/GPThreadParallelTest"<<prefix << "_"<<i+1<<".jpg";
         GPPtr<GPWStreamWrap> outputStream = GPStreamFactory::NewWStream(os.str().c_str());
         c->getType(0)->vSave(c->get(0), outputStream.get());
         c->decRef();
@@ -56,8 +56,6 @@ static void _saveOutputPieces(GPPieces* output, const char* prefix)
 }
 
 
-static const char* gMapFormula="C(S(x0), S(x0))";
-//static const char* gMapFormula="S(x0)";
 static void __run()
 {
     GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
@@ -73,7 +71,7 @@ static void __run()
         GPPtr<GPPiecesFunctionCreator> creator = GPFactory::createPieceFunctionProducer(totalProducer.get(), base.get(), map_reduce.get());
         IParallelMachine* machine = machineSet->newMachine("thread");
         GPASSERT(NULL!=machine);
-        GPPtr<GPFunctionTree> tree = totalProducer->getFront()->vCreateFromFormula("S(x0)", std::vector<const IStatusType*>());
+        GPPtr<GPFunctionTree> tree = totalProducer->getFront()->vCreateFromFormula("C(S(x0))", std::vector<const IStatusType*>());
         auto function = creator->vCreateFromFuncTree(tree.get(), machine);
         GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
         GPPieces* outputs = function->vRun(&inputs, 1);

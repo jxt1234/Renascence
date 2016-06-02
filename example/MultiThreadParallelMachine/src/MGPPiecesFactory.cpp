@@ -76,9 +76,9 @@ public:
 private:
     size_t _computePos(unsigned int* key, int keynum)
     {
-        MGPASSERT(keynum == mKeyDimesions.size());
+        MGPASSERT(keynum >= mKeyDimesions.size());
         size_t sum = 0;
-        for (int i=0; i<keynum; ++i)
+        for (int i=0; i<mKeyDimesions.size(); ++i)
         {
             sum = sum*mKeyDimesions[i] + key[i];
         }
