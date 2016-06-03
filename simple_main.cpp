@@ -15,9 +15,22 @@
 using namespace std;
 
 static string gPath = "/Users/jiangxiaotang/Documents/Renascence/";
+#include "frontend/GPFormulaTree.h"
+#include "frontend/GPFunctionFrontEndProducer.h"
+#include "backend/GPBasicPiecesFunctionCreator.h"
+#include "backend/GPSingleParallelMachine.h"
+#include "core/GPFactory.h"
+#include "core/GPProducer.h"
+#include "core/GPFunctionTree.h"
+#include <iostream>
+#include <sstream>
+#include "core/GPPieceFactory.h"
+#include <fstream>
+#include "core/GPStreamFactory.h"
+#include "core/GPParallelMachineSet.h"
+#include "user/GPAPI.h"
+using namespace std;
 
-static const char* gFormula =
-"REDUCE((MAP((x0), S(S(S(x0))), [a0]->[a0])), C(x0, C(x0, y0)), [a0]->[1])";
 
 static GPPieces* _createInputPieces(const IStatusType* s)
 {
@@ -51,7 +64,7 @@ static void _saveOutputPieces(GPPieces* output, const char* prefix)
         GPContents* c = output->vLoad(&key, output->nKeyNumber);
         GPASSERT(c->size() == 1);
         std::stringstream os;
-        os << "output/GPFactoryPiecesFunctionCreator"<<prefix << "_"<<i+1<<".jpg";
+        os << "output/GPThreadParallelTest"<<prefix << "_"<<i+1<<".jpg";
         GPPtr<GPWStreamWrap> outputStream = GPStreamFactory::NewWStream(os.str().c_str());
         c->getType(0)->vSave(c->get(0), outputStream.get());
         c->decRef();
@@ -62,13 +75,21 @@ static void _saveOutputPieces(GPPieces* output, const char* prefix)
 static void test_main()
 {
     GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
+    GPPtr<GPParallelMachineSet> machineSet = GPFactory::createParallelSet("mgpfunc.xml", NULL);
+    auto names = machineSet->listAllMachines();
+    for (auto name : names)
+    {
+        FUNC_PRINT_ALL(name.c_str(), s);
+    }
     GPPtr<GPStreamWrap> map_reduce = GPStreamFactory::NewStream("Map-Reduce.xml");
     {
         GPPtr<GPProducer> totalProducer = GPFactory::createProducer(base.get());
         GPPtr<GPPiecesFunctionCreator> creator = GPFactory::createPieceFunctionProducer(totalProducer.get(), base.get(), map_reduce.get());
-        GPSingleParallelMachine machine;
+//        GPSingleParallelMachine* machine = new GPSingleParallelMachine;
+        IParallelMachine* machine = machineSet->newMachine("thread");
+        GPASSERT(NULL!=machine);
         GPPtr<GPFunctionTree> tree = totalProducer->getFront()->vCreateFromFormula("C(S(x0))", std::vector<const IStatusType*>());
-        auto function = creator->vCreateFromFuncTree(tree.get(), &machine);
+        auto function = creator->vCreateFromFuncTree(tree.get(), machine);
         GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
         GPPieces* outputs = function->vRun(&inputs, 1);
         _saveOutputPieces(outputs, "Compose");
@@ -76,9 +97,9 @@ static void test_main()
         delete outputs;
         
         delete function;
+        delete machine;
     }
 }
-
 
 int main()
 {

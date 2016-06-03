@@ -24,7 +24,10 @@ public:
     {
         mUserData = userData;
     }
-    virtual ~ThreadWorker(){}
+    virtual ~ThreadWorker()
+    {
+        
+    }
     
     void setUserData(void* data)
     {

@@ -17,6 +17,7 @@
 #include <semaphore.h>
 #include <pthread.h>
 #include <assert.h>
+#include <stdio.h>
 
 struct TData
 {
@@ -27,6 +28,7 @@ struct TData
 bool MGPThread::platform_create()
 {
     TData* data = new TData;
+    data->lock = NULL;
     if (mLoop)
     {
         data->lock = new MGPSema;
@@ -48,7 +50,7 @@ bool MGPThread::platform_destroy()
 {
     assert(NULL!=mData);
     TData* data = (TData*)mData;
-    if (mLoop)
+    if (NULL != data->lock)
     {
         delete data->lock;
     }

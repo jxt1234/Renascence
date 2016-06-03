@@ -42,6 +42,7 @@ void GPParallelMachineSet::addFunction(const GPTreeNode* node, IFunctionTable* t
     mCreateFunctions.push_back(func);
     for (auto c : node->getChildren())
     {
+        GPASSERT(mNamesMap.find(c->name()) == mNamesMap.end());
         mNames.push_back(c->name());
         mNamesMap.insert(std::make_pair(c->name(), func));
     }
