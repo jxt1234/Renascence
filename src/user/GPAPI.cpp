@@ -20,6 +20,7 @@
 #include "core/IGPAutoDefFunction.h"
 #include "core/GPProducer.h"
 #include "core/GPFactory.h"
+#include "core/GPPieceFactory.h"
 #include "frontend/GPFrontEndProducer.h"
 #include "backend/GPBackEndProducer.h"
 #include "evolution/GPEvolutionGroup.h"
@@ -836,3 +837,17 @@ void GP_Pieces_Destroy(GPPieces* pieces)
     pieces->decRef();
 }
 
+GPPieces* GP_Pieces_CreateInMemory(unsigned int* dimensions, int n)
+{
+    if (NULL == dimensions || n <= 0)
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    std::vector<unsigned int> dims;
+    for (int i=0; i<n; ++i)
+    {
+        dims.push_back(dimensions[i]);
+    }
+    return GPPieceFactory::createMemoryPiece(dims);
+}

@@ -336,7 +336,11 @@ extern "C"{
     
     
     
+    
     /*GPPieces API, TODO*/
+    
+    GPPieces* GP_Pieces_CreateInMemory(unsigned int* dimensions, int n);
+    
     GPPieces* GP_Pieces_Load(AGPPiecesProducer* producer, const char* type, const char* path, const char* description);
     
     void GP_Pieces_Save(GPPieces* pieces, const char* path, const char* description);
