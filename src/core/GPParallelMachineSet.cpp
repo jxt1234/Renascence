@@ -14,6 +14,7 @@
    limitations under the License.
 ******************************************************************/
 #include "core/GPParallelMachineSet.h"
+#include "backend/GPSingleParallelMachine.h"
 #include "platform/system_lib.h"
 #include "GPStrings.h"
 
@@ -51,6 +52,10 @@ void GPParallelMachineSet::addFunction(const GPTreeNode* node, IFunctionTable* t
 
 IParallelMachine* GPParallelMachineSet::newMachine(const std::string& name)
 {
+    if (name == "basic")
+    {
+        return new GPSingleParallelMachine;
+    }
     auto iter = mNamesMap.find(name);
     GPASSERT(iter != mNamesMap.end());
     return (iter->second)(name);

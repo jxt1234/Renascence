@@ -71,7 +71,7 @@ static void __run()
         GPPtr<GPProducer> totalProducer = GPFactory::createProducer(base.get());
         GPPtr<GPPiecesFunctionCreator> creator = GPFactory::createPieceFunctionProducer(totalProducer.get(), base.get(), map_reduce.get());
         GPSingleParallelMachine machine;
-        GPPtr<GPFunctionTree> tree = totalProducer->getFront()->vCreateFromFormula("C(S(x0))", std::vector<const IStatusType*>());
+        GPPtr<GPFunctionTree> tree = totalProducer->getFront()->vCreateFromFormula("C(S(S(x0)))", std::vector<const IStatusType*>());
         auto function = creator->vCreateFromFuncTree(tree.get(), &machine);
         GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
         GPPieces* outputs = function->vRun(&inputs, 1);

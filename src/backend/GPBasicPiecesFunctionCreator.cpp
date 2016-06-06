@@ -75,6 +75,7 @@ public:
         AUTOSTORAGE(needClean, bool, subNum);
         for (int i=0; i<subNum; ++i)
         {
+            subinputs[i] = NULL;
             GPPiecesFunctionNode* node = GPCONVERT(GPPiecesFunctionNode, mChildren[i]);
             subinputs[i] = node->compute(inputs, n);
             needClean[i] = false;

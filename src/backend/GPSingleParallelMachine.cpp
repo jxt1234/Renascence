@@ -194,7 +194,7 @@ public:
         for (int i=0; i<mKey.size(); ++i)
         {
             GPASSERT(mKey[i].first <=1);
-            if (1 == mKey[i].first)
+            if (0 == mKey[i].first)
             {
                 mergeOutput.pushContent(input->getContent(mKey[i].second));
             }

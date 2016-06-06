@@ -834,6 +834,11 @@ void GP_Pieces_Save(GPPieces* pieces, const char* path, const char* description)
 
 void GP_Pieces_Destroy(GPPieces* pieces)
 {
+    if (NULL == pieces)
+    {
+        FUNC_PRINT(1);
+        return;
+    }
     pieces->decRef();
 }
 

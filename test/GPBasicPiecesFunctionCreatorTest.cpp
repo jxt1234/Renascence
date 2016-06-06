@@ -16,7 +16,7 @@ using namespace std;
 
 
 static const char* gFormula =
-"REDUCE((MAP((x0), S(S(S(x0))), [a0]->[a0])), C(x0, C(x0, y0)), [a0]->[1])";
+"REDUCE((MAP((x0), S(x0), [a0]->[a0]), MAP((x1), S(x0), [a0]->[a0])), C(C(x0, y0), x1), [a0, b0]->[1], a0==b0)";
 
 static GPPieces* _createInputPieces(const IStatusType* s)
 {
@@ -70,7 +70,10 @@ static void __run()
         GPBasicPiecesFunctionCreator creator(totalProducer.get());
         auto function = creator.vCreateFromFuncTree(tree.get(), &machine);
         GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
-        GPPieces* outputs = function->vRun(&inputs, 1);
+        GPPieces* inputAll[2];
+        inputAll[0] = inputs;
+        inputAll[1] = inputs;
+        GPPieces* outputs = function->vRun(inputAll, 2);
         _saveOutputPieces(outputs, "Compose");
         inputs->decRef();
         outputs->decRef();
