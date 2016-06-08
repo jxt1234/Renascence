@@ -4,6 +4,6 @@
     </TrPackageCompse>
 
     <TrPackageSaturation>
-        MAP((x0), S(x0), [a0]->[a0])
+        MAP((MAP((x0), F(x0), [a0]->[a0])), S(x0), [a0]->[a0])
     </TrPackageSaturation>
 </libpics>

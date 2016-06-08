@@ -52,17 +52,22 @@ public:
         mExecutor = executor;
         mInputPos = -1;
     }
-    
+
     GPPiecesFunctionNode(int inputPos)
     {
         GPASSERT(inputPos>=0);
         mInputPos = inputPos;
     }
     
+    void setDescription(const std::string& description)
+    {
+        mDescription = description;
+    }
+
     virtual ~GPPiecesFunctionNode()
     {
     }
-    
+
     GPPieces* compute(GPPieces** inputs, int n)
     {
         if (mInputPos >= 0)
@@ -85,6 +90,7 @@ public:
                 needClean[i] = true;
             }
         }
+        //FUNC_PRINT_ALL(mDescription.c_str(), s);
         GPPieces* output = mCreator->vPrepare(subinputs, subNum);
         mExecutor->vRun(output, subinputs, subNum);
         for (int i=0; i<subNum; ++i)
@@ -96,7 +102,7 @@ public:
         }
         return output;
     }
-    
+
     static std::vector<std::pair<unsigned int, unsigned int>> translate(const std::string& variables)
     {
         std::vector<std::pair<unsigned int, unsigned int>> result;
@@ -173,7 +179,7 @@ public:
             auto condition = GPCONVERT(const GPFunctionTreePoint, root->getChild(3));
             data.sConditionInfo.sConditionFormula = condition->extra();
         }
-        
+
         auto creator_executor = machine->vGenerate(&data, root->data().iParallelType);
         GPPiecesFunctionNode* result = new GPPiecesFunctionNode(creator_executor.first, creator_executor.second);
         GPASSERT(root->getChildrenNumber() >= 2);
@@ -185,14 +191,16 @@ public:
                 result->addPoint(createFromFuncPoint(p, machine, context));
             }
         }
+        //FUNC_PRINT_ALL(data.sFuncInfo.formula.c_str(), s);
+        result->setDescription(data.sFuncInfo.formula);
         return result;
-        
     }
-    
+
 private:
     GPPtr<IParallelMachine::Creator> mCreator;
     GPPtr<IParallelMachine::Executor> mExecutor;
     int mInputPos;
+    std::string mDescription;
 };
 
 
@@ -221,6 +229,7 @@ GPPiecesFunction* GPBasicPiecesFunctionCreator::vCreateFromFuncTree(const GPFunc
     GPASSERT(NULL!=machine);
     GPASSERT(tree->root()->type() == GPFunctionTreePoint::PARALLEL);
     auto root = tree->root();
+    //FUNC_PRINT_ALL(tree->dump().c_str(), s);
     GPPiecesFunctionNode* node = GPPiecesFunctionNode::createFromFuncPoint(root, machine, mContext);
     return new GPBasicPiecesFunction(node);
 }

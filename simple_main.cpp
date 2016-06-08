@@ -13,10 +13,6 @@
 #include "platform/system_lib.h"
 using namespace std;
 
-
-static const char* gFormula =
-"REDUCE((MAP((x0), S(x0), [a0]->[a0]), MAP((x1), S(x0), [a0]->[a0])), C(C(x0, y0), x1), [a0, b0]->[1], a0==b0)";
-
 static GPPieces* _createInputPieces(const IStatusType* s)
 {
     GPPieces* inputs = GPPieceFactory::createMemoryPiece(std::vector<unsigned int>{5});
@@ -49,7 +45,7 @@ static void _saveOutputPieces(GPPieces* output, const char* prefix)
         GPContents* c = output->vLoad(&key, output->nKeyNumber);
         GPASSERT(c->size() == 1);
         std::stringstream os;
-        os << "output/GPBasicParalleCreator"<<prefix << "_"<<i+1<<".jpg";
+        os << "output/GPFactoryPiecesFunctionCreator"<<prefix << "_"<<i+1<<".jpg";
         GPPtr<GPWStreamWrap> outputStream = GPStreamFactory::NewWStream(os.str().c_str());
         c->getType(0)->vSave(c->get(0), outputStream.get());
         c->decRef();
@@ -57,29 +53,26 @@ static void _saveOutputPieces(GPPieces* output, const char* prefix)
 }
 
 
-static void test_main()
+static void __run()
 {
     GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
+    GPPtr<GPStreamWrap> map_reduce = GPStreamFactory::NewStream("Map-Reduce.xml");
     {
         GPPtr<GPProducer> totalProducer = GPFactory::createProducer(base.get());
-        GPPtr<GPFunctionFrontEndProducer> producer = new GPFunctionFrontEndProducer(base.get());
-        GPPtr<GPFunctionTree> tree = producer->vCreateFromFormula(gFormula, std::vector<const IStatusType*>());
-        //FUNC_PRINT_ALL(tree->dump().c_str(), s);
+        GPPtr<GPPiecesFunctionCreator> creator = GPFactory::createPieceFunctionProducer(totalProducer.get(), base.get(), map_reduce.get());
         GPSingleParallelMachine machine;
-        GPBasicPiecesFunctionCreator creator(totalProducer.get());
-        auto function = creator.vCreateFromFuncTree(tree.get(), &machine);
+        GPPtr<GPFunctionTree> tree = totalProducer->getFront()->vCreateFromFormula("C(S(S(x0)))", std::vector<const IStatusType*>());
+        auto function = creator->vCreateFromFuncTree(tree.get(), &machine);
         GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
-        GPPieces* inputAll[2];
-        inputAll[0] = inputs;
-        inputAll[1] = inputs;
-        GPPieces* outputs = function->vRun(inputAll, 2);
+        GPPieces* outputs = function->vRun(&inputs, 1);
         _saveOutputPieces(outputs, "Compose");
-        inputs->decRef();
-        outputs->decRef();
+        delete inputs;
+        delete outputs;
         
         delete function;
     }
 }
+
 
 
 #include "user/GPAPI.h"
@@ -89,6 +82,6 @@ int main()
 {
     GP_Set_Lib_Path(gPath.c_str());
     GP_Set_Stream_Path(gPath.c_str());
-    test_main();
+    __run();
     return 1;
 }

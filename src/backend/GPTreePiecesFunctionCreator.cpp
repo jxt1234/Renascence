@@ -27,6 +27,7 @@ GPTreePiecesFunctionCreator::GPTreePiecesFunctionCreator(const GPFunctionDataBas
         auto func = base->vQueryFunction(funcName);
         GPASSERT(NULL!=func);
         GPPtr<GPFunctionTree> tree = front->vCreateFromFormula(formula, std::vector<const IStatusType*>());
+        //FUNC_PRINT_ALL(tree->dump().c_str(), s);
         mPieces.insert(std::make_pair(func, tree));
     }
     mBasic = new GPBasicPiecesFunctionCreator(context);
@@ -57,21 +58,26 @@ bool GPTreePiecesFunctionCreator::_checkValidTree(const GPFunctionTree* tree) co
     return true;
 }
 
-static std::string _getFunctionExpr(const GPFunction* function)
+
+static void _replaceLeafInputs(GPFunctionTreePoint* p, const std::map<int, GPFunctionTreePoint*>& replaceMap)
 {
-    std::ostringstream output;
-    output << function->shortname <<"(";
-    for (int i=0; i<function->inputType.size(); ++i)
+    GPASSERT(NULL!=p);
+    GPASSERT(GPFunctionTreePoint::STRING == p->type() && p->extra() == "INPUT");
+    for (int i=0; i<p->getChildrenNumber(); ++i)
     {
-        output << "x" << i;
-        if (i!=function->inputType.size()-1)
+        auto pc = GPFORCECONVERT(GPFunctionTreePoint, p->getChild(i));
+        if (GPFunctionTreePoint::PARALLEL == pc->type())
         {
-            output << ",";
+            _replaceLeafInputs(GPFORCECONVERT(GPFunctionTreePoint, pc->getChild(0)), replaceMap);
+            continue;
         }
+        GPASSERT(GPFunctionTreePoint::INPUT == pc->type());
+        auto copy = GPFunctionTree::copy(replaceMap.find(pc->data().iInput)->second);
+        p->replace(pc, copy);
+        copy->decRef();
     }
-    output << ")";
-    return output.str();
 }
+
 GPFunctionTreePoint* GPTreePiecesFunctionCreator::_transform(const GPFunctionTreePoint* p) const
 {
     GPASSERT(NULL!=p);
@@ -80,16 +86,22 @@ GPFunctionTreePoint* GPTreePiecesFunctionCreator::_transform(const GPFunctionTre
     {
         return new GPFunctionTreePoint(*p);
     }
+    //FUNC_PRINT_ALL(p->data().pFunc->name.c_str(), s);
     GPASSERT(mPieces.find(p->data().pFunc)!=mPieces.end());
+    //FUNC_PRINT_ALL(mPieces.find(p->data().pFunc)->second->dump().c_str(), s);
     GPFunctionTreePoint* copyMap = GPFunctionTree::copy(mPieces.find(p->data().pFunc)->second->root());
     auto inputs = GPFORCECONVERT(GPFunctionTreePoint, copyMap->getChild(0));
     GPASSERT(inputs->getChildrenNumber() == p->getChildrenNumber());
+    std::map<int, GPFunctionTreePoint*> replaceMap;
     for (int i=0; i<inputs->getChildrenNumber(); ++i)
     {
-        auto ip = GPFORCECONVERT(GPFunctionTreePoint, inputs->getChild(i));
         auto newP = _transform(GPCONVERT(const GPFunctionTreePoint, p->getChild(i)));
-        inputs->replace(ip, newP);
-        newP->decRef();
+        replaceMap.insert(std::make_pair(i, newP));
+    }
+    _replaceLeafInputs(inputs, replaceMap);
+    for (auto k : replaceMap)
+    {
+        k.second->decRef();
     }
     return copyMap;
 }
@@ -102,5 +114,6 @@ GPPiecesFunction* GPTreePiecesFunctionCreator::vCreateFromFuncTree(const GPFunct
     //TODO
     GPASSERT(valid);
     GPPtr<GPFunctionTree> treatedTree = new GPFunctionTree(_transform(tree->root()));
+    //FUNC_PRINT_ALL(treatedTree->dump().c_str(), s);
     return mBasic->vCreateFromFuncTree(treatedTree.get(), machine);
 }
