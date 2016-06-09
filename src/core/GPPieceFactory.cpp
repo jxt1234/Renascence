@@ -27,12 +27,20 @@ public:
     GPPieceInMemory(const std::vector<unsigned int>& keydimesions):mKeyDimesions(keydimesions)
     {
         mMaxSize = 1;
-        nKeyNumber = (unsigned int)keydimesions.size();
-        for (int i=0; i<keydimesions.size(); ++i)
+        if (keydimesions.empty())
         {
-            GPASSERT(keydimesions[i]>0);
-            mMaxSize *= keydimesions[i];
-            pKeySize[i] = keydimesions[i];
+            pKeySize[0] = 1;
+            nKeyNumber = 1;
+        }
+        else
+        {
+            nKeyNumber = (unsigned int)keydimesions.size();
+            for (int i=0; i<keydimesions.size(); ++i)
+            {
+                GPASSERT(keydimesions[i]>0);
+                mMaxSize *= keydimesions[i];
+                pKeySize[i] = keydimesions[i];
+            }
         }
         mPieces = new GPContents*[mMaxSize];
         ::memset(mPieces, 0, mMaxSize*sizeof(GPContents*));

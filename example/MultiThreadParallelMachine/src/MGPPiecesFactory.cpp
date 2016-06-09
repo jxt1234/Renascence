@@ -23,12 +23,20 @@ public:
     MGPPiecesLockMemory(const std::vector<unsigned int>& keydimesions):mKeyDimesions(keydimesions)
     {
         mMaxSize = 1;
-        nKeyNumber = (unsigned int)keydimesions.size();
-        for (int i=0; i<keydimesions.size(); ++i)
+        if (keydimesions.empty())
         {
-            MGPASSERT(keydimesions[i]>0);
-            mMaxSize *= keydimesions[i];
-            pKeySize[i] = keydimesions[i];
+            nKeyNumber = 1;
+            pKeySize[0] = 1;
+        }
+        else
+        {
+            nKeyNumber = (unsigned int)keydimesions.size();
+            for (int i=0; i<keydimesions.size(); ++i)
+            {
+                MGPASSERT(keydimesions[i]>0);
+                mMaxSize *= keydimesions[i];
+                pKeySize[i] = keydimesions[i];
+            }
         }
         mMutexes = new MGPMutex[mMaxSize];
         mPieces = new GPContents*[mMaxSize];
