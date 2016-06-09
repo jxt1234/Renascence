@@ -47,6 +47,7 @@ public:
     }
     virtual ~GPPieceInMemory()
     {
+        //FUNC_PRINT_ALL(this, p);
         for (size_t i=0; i<mMaxSize; ++i)
         {
             if (NULL!=mPieces[i])

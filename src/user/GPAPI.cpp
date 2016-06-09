@@ -358,7 +358,7 @@ void GP_Contents_Save(GPContents* content, GPWStream* outputs, int n)
 
 void GP_Contents_Destroy(GPContents* content)
 {
-    delete content;
+    content->decRef();
 }
 
 
