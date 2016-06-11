@@ -62,10 +62,11 @@ public:
     {
         auto sum = _computePos(pKey, keynum);
         GPContents* res = mPieces[sum];
-        if (NULL != res)
+        if (NULL == res)
         {
-            res->addRef();
+            return NULL;
         }
+        res->addRef();
         return res;
     }
     

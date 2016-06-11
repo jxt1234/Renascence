@@ -21,6 +21,21 @@
 #include "MGPKeyMatcher.h"
 #include "MGPThread.h"
 
+static GPContents* _loadContent(int inputNumber, GPPieces** inputs, unsigned int* inputKeys)
+{
+    GPContents* totalInput = new GPContents;
+    int pos = 0;
+    for (int i=0; i<inputNumber; ++i)
+    {
+        GPContents* current = inputs[i]->vLoad(inputKeys+pos, inputs[i]->nKeyNumber);
+        totalInput->merge(*current);
+        current->decRef();
+        pos+= inputs[i]->nKeyNumber;
+    }
+    return totalInput;
+}
+
+
 class MGPExecutor::ThreadData
 {
 public:
@@ -60,7 +75,6 @@ MGPExecutor::MGPExecutor(const IGPFunctionContext* context, const std::string& f
         userdata.push_back(t);
     }
     mPool = new MGPThreadPool(userdata);
-    mLoadPool = new MGPThreadPool(std::vector<void*>{NULL});
     mType = type;
     mOutputKey = outputKeys;
     if (!condition.empty())
@@ -73,102 +87,19 @@ MGPExecutor::MGPExecutor(const IGPFunctionContext* context, const std::string& f
 MGPExecutor::~MGPExecutor()
 {
     delete mPool;
-    delete mLoadPool;
     for (auto t : mUserData)
     {
         delete t;
     }
 }
-class FreeRunnalbe:public MGPThreadPool::Runnable
-{
-public:
-    FreeRunnalbe(GPContents* target)
-    {
-        mTarget = target;
-    }
-    virtual ~FreeRunnalbe(){}
-    virtual void vRun(void* threadData) override
-    {
-        mTarget->decRef();
-    }
-
-private:
-    GPContents* mTarget;
-};
-
-class SaveRunnable:public MGPThreadPool::Runnable
-{
-public:
-    SaveRunnable(unsigned int* outputKeys, GPPieces* output, GPContents* target)
-    {
-        mOutputKeys = outputKeys;
-        mOutput = output;
-        mTarget = target;
-    }
-    virtual ~SaveRunnable()
-    {
-        
-    }
-    virtual void vRun(void* threadData) override
-    {
-        mOutput->vSave(mOutputKeys, mOutput->nKeyNumber, mTarget);
-        mTarget->decRef();
-    }
-private:
-    GPContents* mTarget;
-    GPPieces* mOutput;
-    unsigned int* mOutputKeys;
-};
-
-
-class LoadRunnable:public MGPThreadPool::Runnable
-{
-public:
-    LoadRunnable(GPContents** target, GPPieces** inputs, unsigned int inputNum, unsigned int* inputKeys)
-    {
-        mTarget = target;
-        mInputNum = inputNum;
-        mInputKeys = inputKeys;
-        mTarget = target;
-        mInput = inputs;
-    }
-
-    virtual ~LoadRunnable()
-    {
-        
-    }
-    virtual void vRun(void* threadData) override
-    {
-        MGPASSERT(mInputNum>=1);
-        GPContents* totalInput = new GPContents;
-        int pos = 0;
-        for (int i=0; i<mInputNum; ++i)
-        {
-            GPContents* current = mInput[i]->vLoad(mInputKeys+pos, mInput[i]->nKeyNumber);
-            totalInput->merge(*current);
-            current->decRef();
-            pos+= mInput[i]->nKeyNumber;
-        }
-        *mTarget = totalInput;
-    }
-
-private:
-    GPContents** mTarget;
-    GPPieces** mInput;
-    unsigned int mInputNum;
-    
-    unsigned int* mInputKeys;
-    
-};
 
 class MapRunnable:public MGPThreadPool::Runnable
 {
 public:
-    MapRunnable(MGPThreadPool* loadpool, GPPieces** input, unsigned int inputNum, unsigned int* inputKeys, int inputKeyNum, GPPieces* output, unsigned int* outputKeys, unsigned int outputKeyNum, const GPParallelType::KEYS& key):mVariableKey(key)
+    MapRunnable(GPPieces** input, unsigned int inputNum, unsigned int* inputKeys, int inputKeyNum, GPPieces* output, unsigned int* outputKeys, unsigned int outputKeyNum, const GPParallelType::KEYS& key, MGPMutex& inputMutex, MGPMutex& outputMutex):mVariableKey(key), mInputMutex(inputMutex), mOutputMutex(outputMutex)
     {
         MGPASSERT(inputKeyNum>0);
         MGPASSERT(outputKeyNum>0);
-        mLoadPool = loadpool;
         mInput = input;
         mInputNum = inputNum;
         mOutput = output;
@@ -186,21 +117,30 @@ public:
     {
         MGPExecutor::ThreadData* data = (MGPExecutor::ThreadData*)threadData;
         auto function = data->get();
-        GPContents* totalInput = NULL;
-        Runnable* loadRunnable = new LoadRunnable(&totalInput, mInput, mInputNum, mInputKeys);
-        GPPtr<MGPSema> sema = mLoadPool->pushTask(loadRunnable);
-        sema->wait();
-        MGPASSERT(NULL!=totalInput);
-        GPContents orderedInput;
-        for (int i=0; i<mVariableKey.size(); ++i)
+        GPContents* orderedInput = NULL;
+        GPContents* orderedOriginInput = NULL;
         {
-            orderedInput.pushContent(totalInput->getContent(mVariableKey[i].second));
+            MGPAutoMutex __m(mInputMutex);
+            GPContents* totalInput = _loadContent(mInputNum, mInput, mInputKeys);
+            orderedOriginInput = new GPContents;
+            for (int i=0; i<mVariableKey.size(); ++i)
+            {
+                orderedOriginInput->pushContent(totalInput->getContent(mVariableKey[i].second));
+            }
+            totalInput->decRef();
+            orderedInput = orderedOriginInput->copyAsNoOwner();
         }
-        GPContents* output = function->vRun(&orderedInput);
-        sema = mLoadPool->pushTask(new SaveRunnable(mOutputKeys, mOutput, output));
-        sema->wait();
-        sema = mLoadPool->pushTask(new FreeRunnalbe(totalInput));
-        sema->wait();
+        GPContents* output = function->vRun(orderedInput);
+        {
+            MGPAutoMutex __m(mInputMutex);
+            orderedInput->decRef();
+            orderedOriginInput->decRef();
+        }
+        {
+            MGPAutoMutex __m(mOutputMutex);
+            mOutput->vSave(mOutputKeys, mOutput->nKeyNumber, output);
+            output->decRef();
+        }
     }
 private:
     GPPieces** mInput;
@@ -212,7 +152,8 @@ private:
     unsigned int* mOutputKeys;
     const GPParallelType::KEYS& mVariableKey;
     
-    MGPThreadPool* mLoadPool;
+    MGPMutex& mInputMutex;
+    MGPMutex& mOutputMutex;
 };
 
 
@@ -235,9 +176,12 @@ bool MGPExecutor::_mapRun(GPPieces* output, GPPieces** inputs, int inputNumber) 
     const size_t semaMaxNumber = mPool->getThreadNumber()*2;
     std::vector<GPPtr<MGPSema>> waitSemas;
 
+    MGPMutex inputMutex;
+    MGPMutex outputMutex;
+    
     for (auto& k : keymaps)
     {
-        GPPtr<MGPSema> sema = mPool->pushTask(new MapRunnable(mLoadPool, inputs, inputNumber, k.second[0]->getKey(), k.second[0]->getKeyNumber(), output, k.first->getKey(), k.first->getKeyNumber(), mVariableKey));
+        GPPtr<MGPSema> sema = mPool->pushTask(new MapRunnable(inputs, inputNumber, k.second[0]->getKey(), k.second[0]->getKeyNumber(), output, k.first->getKey(), k.first->getKeyNumber(), mVariableKey, inputMutex, outputMutex));
         MGPASSERT(NULL!=sema.get());
         waitSemas.push_back(sema);
         if (waitSemas.size() > semaMaxNumber)
@@ -273,7 +217,6 @@ public:
     }
     GPContents* lock()
     {
-        mMutex.lock();
         return mContents;
     }
     void unlock(GPContents* newContent)
@@ -283,19 +226,17 @@ public:
             mContents->decRef();
             mContents = newContent;
         }
-        mMutex.unlock();
     }
 private:
     GPContents* mContents;
-    MGPMutex mMutex;
 };
+
 
 class ReduceRunnable:public MGPThreadPool::Runnable
 {
 public:
-    ReduceRunnable(MGPThreadPool* loadPool, Collector* collector, GPPieces** inputs, unsigned int inputNum, unsigned int* inputKeys, const GPParallelType::KEYS& keys):mVariableKey(keys)
+    ReduceRunnable(Collector* collector, GPPieces** inputs, unsigned int inputNum, unsigned int* inputKeys, const GPParallelType::KEYS& keys, MGPMutex& inputMutex, MGPMutex& outputMutex):mVariableKey(keys), mInputMutex(inputMutex), mOutputtMutex(outputMutex)
     {
-        mLoadPool = loadPool;
         mInput = inputs;
         mInputNum = inputNum;
         mInputKeys = inputKeys;
@@ -313,37 +254,48 @@ public:
         auto function = data->get();
         GPContents* oldContent = mCollector->lock();
         GPContents* input = NULL;
-        Runnable* loadRunnable = new LoadRunnable(&input, mInput, mInputNum, mInputKeys);
-        GPPtr<MGPSema> sema = mLoadPool->pushTask(loadRunnable);
-        sema->wait();
-        GPContents mergeInput;
-        for (int i=0; i<mVariableKey.size(); ++i)
+        GPContents* mergeInput = NULL;
         {
-            auto v = mVariableKey[i];
-            MGPASSERT(v.first<=1);
-            if (v.first == 1)
+            MGPAutoMutex __m(mInputMutex);
+            auto tempMergeInput = new GPContents;
+            input = _loadContent(mInputNum, mInput, mInputKeys);
+            for (int i=0; i<mVariableKey.size(); ++i)
             {
-                mergeInput.pushContent(oldContent->getContent(v.second));
+                auto v = mVariableKey[i];
+                MGPASSERT(v.first<=1);
+                if (v.first == 1)
+                {
+                    tempMergeInput->pushContent(oldContent->getContent(v.second));
+                }
+                else
+                {
+                    tempMergeInput->pushContent(input->getContent(v.second));
+                }
             }
-            else
-            {
-                mergeInput.pushContent(input->getContent(v.second));
-            }
+            mergeInput = tempMergeInput->copyAsNoOwner();
+            tempMergeInput->decRef();
         }
-        GPPtr<GPContents> tempOutput = function->vRun(&mergeInput);
-        oldContent->setContent(0, tempOutput->getContent(0));
-        input->decRef();
-        tempOutput = NULL;
-        mCollector->unlock(oldContent);
+        GPContents* tempOutput = function->vRun(mergeInput);
+        {
+            MGPAutoMutex __m(mInputMutex);
+            mergeInput->decRef();
+            input->decRef();
+        }
+        {
+            MGPAutoMutex __l(mOutputtMutex);
+            oldContent->setContent(0, tempOutput->getContent(0));
+            tempOutput->decRef();
+            mCollector->unlock(oldContent);
+        }
     }
 private:
     Collector* mCollector;
-    MGPThreadPool* mLoadPool;
     GPPieces** mInput;
     unsigned int mInputNum;
     unsigned int* mInputKeys;
     const GPParallelType::KEYS& mVariableKey;
-    
+    MGPMutex& mInputMutex;
+    MGPMutex& mOutputtMutex;
 };
 
 
@@ -399,6 +351,8 @@ bool MGPExecutor::_reduceRun(GPPieces* output, GPPieces** inputs, int inputNumbe
     const size_t semaMaxNumber = mPool->getThreadNumber()*2;
     std::vector<GPPtr<MGPSema>> waitSemas;
 
+    MGPMutex inputMutex;
+    MGPMutex outputMutex;
     for (auto& k : keymaps)
     {
         auto& outputKey = k.first;
@@ -414,16 +368,16 @@ bool MGPExecutor::_reduceRun(GPPieces* output, GPPieces** inputs, int inputNumbe
         }
         for (int i=0; i<eachCollectSize; ++i)
         {
-            GPContents* target = NULL;
-            MGPThreadPool::Runnable* loadRunnable = new LoadRunnable(&target, inputs, inputNumber, inputKeys[i]->getKey());
-            GPPtr<MGPSema> sema = mLoadPool->pushTask(loadRunnable);
-            sema->wait();
-            collectors.push_back(new Collector(target));
+            {
+                MGPAutoMutex __m(inputMutex);
+                GPContents* target = _loadContent(inputNumber, inputs, inputKeys[i]->getKey());
+                collectors.push_back(new Collector(target));
+            }
         }
         /*For Remain outputKey, Parralelly to reduce*/
         for (size_t i=eachCollectSize; i<inputKeys.size(); ++i)
         {
-            GPPtr<MGPSema> sema = mPool->pushTask(new ReduceRunnable(mLoadPool, collectors[i%collectors.size()], inputs, inputNumber, inputKeys[i]->getKey(), mVariableKey));
+            GPPtr<MGPSema> sema = mPool->pushTask(new ReduceRunnable(collectors[i%collectors.size()], inputs, inputNumber, inputKeys[i]->getKey(), mVariableKey, inputMutex, outputMutex));
             waitSemas.push_back(sema);
             if (waitSemas.size() > semaMaxNumber)
             {

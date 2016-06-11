@@ -33,7 +33,6 @@ private:
     MGPThreadPool* mPool;
     std::vector<ThreadData*> mUserData;
     IParallelMachine::PARALLELTYPE mType;
-    MGPThreadPool* mLoadPool;
     GPParallelType::KEYS mOutputKey;
     GPParallelType::KEYS mVariableKey;
 };

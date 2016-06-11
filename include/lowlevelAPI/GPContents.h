@@ -91,6 +91,16 @@ public:
             mContents.push_back(other.mContents[i]);
         }
     }
+    
+    GPContents* copyAsNoOwner()
+    {
+        GPContents* newContent = new GPContents;
+        for (int i=0; i<mContents.size(); ++i)
+        {
+            newContent->pushContent(new GPContents::GP_Unit(mContents[i]->content(), mContents[i]->type(), false));
+        }
+        return newContent;
+    }
 
 private:
     std::vector<GPPtr<GP_Unit> > mContents;

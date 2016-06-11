@@ -38,7 +38,6 @@ public:
                 pKeySize[i] = keydimesions[i];
             }
         }
-        mMutexes = new MGPMutex[mMaxSize];
         mPieces = new GPContents*[mMaxSize];
         ::memset(mPieces, 0, mMaxSize*sizeof(GPContents*));
     }
@@ -50,29 +49,22 @@ public:
             {
                 mPieces[i]->decRef();
             }
-            mMutexes[i].unlock();
         }
         delete [] mPieces;
-        delete [] mMutexes;
     }
     
     virtual GPContents* vLoad(unsigned int* pKey, unsigned int keynum)
     {
         auto sum = _computePos(pKey, keynum);
-        MGPAutoMutex __lock(mMutexes[sum]);
         GPContents* res = mPieces[sum];
         MGPASSERT(NULL!=res);
-        if (NULL != res)
-        {
-            res->addRef();
-        }
+        res->addRef();
         return res;
     }
     
     virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents* c)
     {
         auto sum = _computePos(pKey, keynum);
-        MGPAutoMutex __lock(mMutexes[sum]);
         c->addRef();
         if (NULL != mPieces[sum])
         {
@@ -80,7 +72,7 @@ public:
         }
         mPieces[sum] = c;
     }
-    
+
 private:
     size_t _computePos(unsigned int* key, int keynum)
     {
@@ -94,7 +86,6 @@ private:
         return sum;
     }
     GPContents** mPieces;
-    MGPMutex* mMutexes;
     std::vector<unsigned int> mKeyDimesions;
     size_t mMaxSize;
 };
