@@ -9,11 +9,7 @@ import java.util.List;
  * Created by jiangxiaotang on 16/5/19.
  */
 public class Renascence extends AutoRecycle{
-    static {
-        System.load("/Users/jiangxiaotang/Documents/Renascence/java/libGPJni.so");
-    }
-
-    public class Content extends AutoRecycle{
+    public static class Content extends AutoRecycle{
         private SWIGTYPE_p_GPContents mNativeContent;
         protected Content(SWIGTYPE_p_GPContents contents) {
             mNativeContent = contents;
@@ -27,6 +23,27 @@ public class Renascence extends AutoRecycle{
             mNativeContent = RenascenceBasic.GP_Contents_CreateString(value);
         }
 
+        public Content(List<Object> values) {
+            for (int i=0; i<values.size(); ++i) {
+                if (values.get(i) instanceof Double || values.get(i) instanceof String) {
+                    continue;
+                }
+                throw new IllegalArgumentException("The class of "+i+" is " + values.getClass().getName());
+            }
+            mNativeContent = RenascenceBasic.GP_Contents_CreateCollector();
+            for (int i=0; i<values.size(); ++i) {
+                if (values.get(i) instanceof Double) {
+                    SWIGTYPE_p_GPContents p_gpContents = RenascenceBasic.GP_Contents_CreateDouble((Double)values.get(i));
+                    RenascenceBasic.GP_Contents_Collect(mNativeContent, p_gpContents, 0);
+                    RenascenceBasic.GP_Contents_Destroy(p_gpContents);
+                } else if (values.get(i) instanceof String) {
+                    SWIGTYPE_p_GPContents p_gpContents = RenascenceBasic.GP_Contents_CreateString((String)values.get(i));
+                    RenascenceBasic.GP_Contents_Collect(mNativeContent, p_gpContents, 0);
+                    RenascenceBasic.GP_Contents_Destroy(p_gpContents);
+                }
+            }
+        }
+
         public int size() {
             return RenascenceBasic.GP_Contents_Size(mNativeContent);
         }
@@ -35,6 +52,13 @@ public class Renascence extends AutoRecycle{
             SWIGTYPE_p_GPWStream swigtype_p_gpStream = RenascenceBasic.GP_WStream_Create(outputPath);
             RenascenceBasic.GP_Contents_Save(mNativeContent, swigtype_p_gpStream, n);
             RenascenceBasic.GP_WStream_Destroy(swigtype_p_gpStream);
+        }
+
+        public String dumpAsString() {
+            SWIGTYPE_p_AGPStrings agpStrings = RenascenceBasic.GP_Contents_Dump(mNativeContent, 0);
+            String result = RenascenceBasic.GP_Strings_Get(agpStrings, 0);
+            RenascenceBasic.GP_Strings_Free(agpStrings);
+            return result;
         }
 
         @Override

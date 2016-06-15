@@ -238,4 +238,9 @@ public class RenascenceBasic implements RenascenceBasicConstants {
     RenascenceBasicJNI.GP_Pieces_Destroy(SWIGTYPE_p_GPPieces.getCPtr(pieces));
   }
 
+  public static SWIGTYPE_p_AGPStrings GP_Contents_Dump(SWIGTYPE_p_GPContents contents, int n) {
+    long cPtr = RenascenceBasicJNI.GP_Contents_Dump(SWIGTYPE_p_GPContents.getCPtr(contents), n);
+    return (cPtr == 0) ? null : new SWIGTYPE_p_AGPStrings(cPtr, false);
+  }
+
 }

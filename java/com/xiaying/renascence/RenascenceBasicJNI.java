@@ -81,4 +81,5 @@ public class RenascenceBasicJNI {
   public final static native long GP_Pieces_Load(long jarg1, String jarg2, String jarg3, String jarg4);
   public final static native void GP_Pieces_Save(long jarg1, String jarg2, String jarg3);
   public final static native void GP_Pieces_Destroy(long jarg1);
+  public final static native long GP_Contents_Dump(long jarg1, int jarg2);
 }
