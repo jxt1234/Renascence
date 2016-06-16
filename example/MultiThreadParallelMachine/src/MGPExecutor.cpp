@@ -104,8 +104,10 @@ public:
         mInputNum = inputNum;
         mOutput = output;
         mInputKeys = new unsigned int[inputKeyNum];
+        MGPASSERT(NULL!=mInputKeys);
         ::memcpy(mInputKeys, inputKeys, sizeof(unsigned int)*inputKeyNum);
         mOutputKeys = new unsigned int[outputKeyNum];
+        MGPASSERT(NULL!=mOutputKeys);
         ::memcpy(mOutputKeys, outputKeys, sizeof(unsigned int)*outputKeyNum);
     }
     virtual ~MapRunnable()
@@ -173,7 +175,6 @@ bool MGPExecutor::_mapRun(GPPieces* output, GPPieces** inputs, int inputNumber) 
     
     MGPKeyMatcher matcher(inputs, inputNumber, output, mOutputKey, mCondition.get());
     auto keymaps = matcher.get();
-    const size_t semaMaxNumber = mPool->getThreadNumber()*2;
     std::vector<GPPtr<MGPSema>> waitSemas;
 
     MGPMutex inputMutex;
@@ -181,17 +182,10 @@ bool MGPExecutor::_mapRun(GPPieces* output, GPPieces** inputs, int inputNumber) 
     
     for (auto& k : keymaps)
     {
-        GPPtr<MGPSema> sema = mPool->pushTask(new MapRunnable(inputs, inputNumber, k.second[0]->getKey(), k.second[0]->getKeyNumber(), output, k.first->getKey(), k.first->getKeyNumber(), mVariableKey, inputMutex, outputMutex));
+        MapRunnable* runnalbe = new MapRunnable(inputs, inputNumber, k.second[0]->getKey(), k.second[0]->getKeyNumber(), output, k.first->getKey(), k.first->getKeyNumber(), mVariableKey, inputMutex, outputMutex);
+        GPPtr<MGPSema> sema = mPool->pushTask(runnalbe);
         MGPASSERT(NULL!=sema.get());
         waitSemas.push_back(sema);
-        if (waitSemas.size() > semaMaxNumber)
-        {
-            for (auto s : waitSemas)
-            {
-                s->wait();
-            }
-            waitSemas.clear();
-        }
     }
     for (auto s : waitSemas)
     {
@@ -257,6 +251,7 @@ public:
         GPContents* mergeInput = NULL;
         {
             MGPAutoMutex __m(mInputMutex);
+            MGPAutoMutex __m2(mOutputtMutex);
             auto tempMergeInput = new GPContents;
             input = _loadContent(mInputNum, mInput, mInputKeys);
             for (int i=0; i<mVariableKey.size(); ++i)
@@ -379,14 +374,6 @@ bool MGPExecutor::_reduceRun(GPPieces* output, GPPieces** inputs, int inputNumbe
         {
             GPPtr<MGPSema> sema = mPool->pushTask(new ReduceRunnable(collectors[i%collectors.size()], inputs, inputNumber, inputKeys[i]->getKey(), mVariableKey, inputMutex, outputMutex));
             waitSemas.push_back(sema);
-            if (waitSemas.size() > semaMaxNumber)
-            {
-                for (auto s : waitSemas)
-                {
-                    s->wait();
-                }
-                waitSemas.clear();
-            }
         }
     }
     for (auto s : waitSemas)
@@ -399,7 +386,10 @@ bool MGPExecutor::_reduceRun(GPPieces* output, GPPieces** inputs, int inputNumbe
     for (auto& kv : collectorMaps)
     {
         auto& collectors = kv.second;
-        waitSemas.push_back(mPool->pushTask(new CollectRunnable(collectors, mVariableKey)));
+        if (collectors.size()>1)
+        {
+            waitSemas.push_back(mPool->pushTask(new CollectRunnable(collectors, mVariableKey)));
+        }
     }
     for (auto s : waitSemas)
     {
