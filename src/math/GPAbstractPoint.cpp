@@ -49,9 +49,9 @@ bool GPAbstractPoint::replace(GPAbstractPoint* oldPoint, GPAbstractPoint* newPoi
     int pos = _posOfChild(oldPoint);
     if (pos >=0)
     {
+        newPoint->addRef();
         mChildren[pos]->decRef();
         mChildren[pos]=newPoint;
-        newPoint->addRef();
         return true;
     }
     for (auto c : mChildren)

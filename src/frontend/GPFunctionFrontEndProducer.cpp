@@ -378,7 +378,7 @@ public:
     }
     GPFunctionTreePoint* newParallel(GPFormulaTreePoint* point)
     {
-        GPASSERT(point->getChildrenNumber() >= 2);
+        GPASSERT(point->getChildrenNumber() >= 3);
         GPFunctionTreePoint* result = NULL;
         int type = 0;
         if (point->name() == "REDUCE")
@@ -436,7 +436,6 @@ public:
             funcp->renderAsFormula(expression);
             function->addPoint(new GPFunctionTreePoint(expression.str()));
         }
-        if (point->getChildrenNumber()>2)
         {
             /*KEYMAP*/
             GPFunctionTreePoint* keymap = new GPFunctionTreePoint("KEYMAP");
@@ -476,8 +475,10 @@ public:
             GPFormulaTreePoint* condition = (GPFormulaTreePoint*)(point->getChild(3));
             result->addPoint(new GPFunctionTreePoint(condition->name()));
         }
-        
-        
+        else
+        {
+            result->addPoint(new GPFunctionTreePoint(""));
+        }
         return result;
     }
 

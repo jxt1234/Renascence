@@ -1,0 +1,6 @@
+2016/6/24
+当前对 Parallel.txt 语法的支持情况：
+1、SPLIT 和 MERGE 表述暂不支持，需要API输入 GPPieces 类型。
+2、MAP 和 REDUCE 需要带三个参数，不支持keymap项为空的情况。
+3、并行脚本暂不支持。
+4、暂不支持keymap项目标key的计算式

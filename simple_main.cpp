@@ -1,5 +1,6 @@
 #include "frontend/GPFormulaTree.h"
 #include "frontend/GPFunctionFrontEndProducer.h"
+#include "midend/GPMapReduceMerger.h"
 #include "backend/GPBasicPiecesFunctionCreator.h"
 #include "backend/GPSingleParallelMachine.h"
 #include "core/GPFactory.h"

@@ -16,6 +16,7 @@
 #include <sstream>
 #include "backend/GPTreePiecesFunctionCreator.h"
 #include "midend/GPMultiLayerTree.h"
+#include "midend/GPMapReduceMerger.h"
 
 GPTreePiecesFunctionCreator::GPTreePiecesFunctionCreator(const GPFunctionDataBase* base, const IGPFunctionContext* context, const GPFrontEndProducer* front, const std::map<std::string, std::string>& map_reduce_formula)
 {
@@ -115,6 +116,10 @@ GPPiecesFunction* GPTreePiecesFunctionCreator::vCreateFromFuncTree(const GPFunct
     //TODO
     GPASSERT(valid);
     GPPtr<GPFunctionTree> treatedTree = new GPFunctionTree(_transform(tree->root()));
+    //FUNC_PRINT_ALL(treatedTree->dump().c_str(), s);
+    treatedTree = GPMapReduceMerger::reduce(treatedTree.get());
+    FUNC_PRINT_ALL(treatedTree->dump().c_str(), s);
+
     //FUNC_PRINT_ALL(treatedTree->dump().c_str(), s);
     return mBasic->vCreateFromFuncTree(treatedTree.get(), machine);
 }
