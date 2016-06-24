@@ -118,7 +118,7 @@ GPFunctionTreePoint* GPMapReduceMerger::_reduceCopy(const GPFunctionTreePoint* p
                 subFormulaTree.setFormula(subFormula);
 //                FUNC_PRINT_ALL(subFormula.c_str(), s);
 //                FUNC_PRINT(subInputInput->getChildrenNumber());
-                for (int j=1; i<subInputInput->getChildrenNumber(); ++j)
+                for (int j=1; j<subInputInput->getChildrenNumber(); ++j)
                 {
                     std::ostringstream os;
                     os << "x" << j+startNumber;
