@@ -22,6 +22,8 @@ public:
     static GPFunctionTree* reduce(const GPFunctionTree* point);
 private:
     static GPFunctionTreePoint* _reduceCopy(const GPFunctionTreePoint* point);
+    
+    static void _reduceInput(GPFunctionTreePoint* root);
 };
 
 #endif
