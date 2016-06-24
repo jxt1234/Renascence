@@ -193,7 +193,6 @@ void GPFunctionTreePoint::mapInput(const std::map<int, GPFunctionTreePoint*>& in
             pp->mapInput(inputMap);
         }
     }
-    
 }
 
 

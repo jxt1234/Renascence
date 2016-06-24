@@ -1,9 +1,9 @@
-INCLUDE:include
+INCLUDE:include third
 **********
 
 TARGET:libGP.a
 DEPENDS:
-DIRS:src
+DIRS:src third
 SRCS:
 LINKS:
 
@@ -11,7 +11,7 @@ LINKS:
 
 TARGET:libGP.so
 DEPENDS:
-DIRS:src
+DIRS:src third
 SRCS:
 LINKS:-lpthread -ldl
 

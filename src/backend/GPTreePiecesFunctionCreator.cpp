@@ -15,6 +15,7 @@
 ******************************************************************/
 #include <sstream>
 #include "backend/GPTreePiecesFunctionCreator.h"
+#include "midend/GPMultiLayerTree.h"
 
 GPTreePiecesFunctionCreator::GPTreePiecesFunctionCreator(const GPFunctionDataBase* base, const IGPFunctionContext* context, const GPFrontEndProducer* front, const std::map<std::string, std::string>& map_reduce_formula)
 {
