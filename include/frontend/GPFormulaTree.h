@@ -42,8 +42,11 @@ public:
     static GPFormulaTreePoint* create(const std::vector<std::string>& words);
     
     void replaceName(const std::string& newName);
+    void replaceNameAll(const std::string& oldName, const std::string& newName);
     
     GPFormulaTreePoint* deepCopy() const;
+    
+    void replaceNameByPoint(const std::string& name, GPFormulaTreePoint* point);
     
 private:
     GPFormulaTreePoint* _deepCopy(GPFormulaTreePoint* father) const;
@@ -66,6 +69,7 @@ public:
     virtual ~GPFormulaTree();
     void setFormula(const std::string& formula);
     inline GPFormulaTreePoint* root() {return mRoot;}
+    std::string dump() const;
 private:
     GPFormulaTreePoint* mRoot;
 };

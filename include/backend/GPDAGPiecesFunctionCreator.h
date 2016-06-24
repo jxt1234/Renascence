@@ -15,4 +15,16 @@
 ******************************************************************/
 #ifndef BACKEND_GPDAGPIECESFUNCTIONCREATOR_H
 #define BACKEND_GPDAGPIECESFUNCTIONCREATOR_H
+#include <map>
+#include "backend/GPPiecesFunctionCreator.h"
+#include "backend/GPBasicPiecesFunctionCreator.h"
+#include "frontend/GPFrontEndProducer.h"
+class GPDAGPiecesFunctionCreator:public GPPiecesFunctionCreator
+{
+public:
+    GPDAGPiecesFunctionCreator();
+    virtual ~GPDAGPiecesFunctionCreator();
+};
+
+
 #endif

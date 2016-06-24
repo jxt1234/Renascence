@@ -376,6 +376,39 @@ GPFormulaTreePoint* GPFormulaTreePoint::deepCopy() const
 {
     return _deepCopy(NULL);
 }
+void GPFormulaTreePoint::replaceNameByPoint(const std::string& name, GPFormulaTreePoint* point)
+{
+    GPASSERT(NUM!=mT);
+    for (int i=0; i<mChildren.size(); ++i)
+    {
+        auto p = GPCONVERT(GPFormulaTreePoint, mChildren[i]);
+        if (p->mT == NUM && p->mName == name)
+        {
+            point->addRef();
+            mChildren[i] = point;
+            p->decRef();
+        }
+        else if (p->mChildren.size() > 0)
+        {
+            p->replaceNameByPoint(name, point);
+        }
+    }
+}
+
+void GPFormulaTreePoint::replaceNameAll(const std::string& oldName, const std::string& newName)
+{
+    if (NUM == mT && mName == oldName)
+    {
+        mName = newName;
+        return;
+    }
+    for (int i=0; i<mChildren.size(); ++i)
+    {
+        auto p = GPCONVERT(GPFormulaTreePoint, mChildren[i]);
+        p->replaceNameAll(oldName, newName);
+    }
+}
+
 
 GPFormulaTreePoint* GPFormulaTreePoint::_deepCopy(GPFormulaTreePoint* father) const
 {
@@ -388,3 +421,10 @@ GPFormulaTreePoint* GPFormulaTreePoint::_deepCopy(GPFormulaTreePoint* father) co
     return current;
 }
 
+
+std::string GPFormulaTree::dump() const
+{
+    std::ostringstream os;
+    mRoot->renderAsFormula(os);
+    return os.str();
+}
