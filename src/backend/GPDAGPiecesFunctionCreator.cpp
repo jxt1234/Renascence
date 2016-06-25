@@ -14,3 +14,15 @@
    limitations under the License.
 ******************************************************************/
 #include "backend/GPDAGPiecesFunctionCreator.h"
+GPDAGPiecesFunctionCreator::GPDAGPiecesFunctionCreator()
+{
+}
+
+GPDAGPiecesFunctionCreator::~GPDAGPiecesFunctionCreator()
+{
+}
+
+GPPiecesFunction* GPDAGPiecesFunctionCreator::vCreateFromFuncTree(const GPFunctionTree* tree, const IParallelMachine* machine) const
+{
+    return NULL;
+}

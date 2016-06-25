@@ -207,10 +207,8 @@ int GPSingleTree::len() const
     return (int)(list.size());
 }
 
-
-GPSingleTree* GPSingleTree::createFromFormula(const std::string& formula, const std::map<std::string, int>& variableMap)
+std::vector<std::string> GPSingleTree::divideWords(const std::string& formula)
 {
-    vector<pair<GPSinglePoint::TYPE, int>> words;
     /*Divide words*/
     int sta = 0;
     int fin = 0;
@@ -225,7 +223,7 @@ std::string _str;\
 _str.assign(formula, sta, fin-sta);\
 results.push_back(_str);\
 }
-
+    
     for (int i=0;i<formula.size();)
     {
         int len = GPSingleTreeFunction::searchFunction(i, formula);
@@ -271,6 +269,14 @@ results.push_back(_str);\
     }
     FINISHWORDS((formula.size()));
 #undef FINISHWORDS
+    return results;
+}
+
+
+GPSingleTree* GPSingleTree::createFromFormula(const std::string& formula, const std::map<std::string, int>& variableMap)
+{
+    auto results = divideWords(formula);
+    vector<pair<GPSinglePoint::TYPE, int>> words;
     for (int i=0; i<results.size(); ++i)
     {
         if (results[i] == "(")

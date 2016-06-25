@@ -19,6 +19,7 @@
 #include "math/GPAbstractPoint.h"
 #include <string>
 #include <ostream>
+#include <map>
 class GPFormulaTreePoint:public GPAbstractPoint
 {
 public:
@@ -43,6 +44,7 @@ public:
     
     void replaceName(const std::string& newName);
     void replaceNameAll(const std::string& oldName, const std::string& newName);
+    void replaceNameAll(const std::map<std::string, std::string>& replaceMap);
     
     GPFormulaTreePoint* deepCopy() const;
     

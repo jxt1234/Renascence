@@ -71,6 +71,9 @@ public:
 
     inline GPFLOAT compute(GPFLOAT* inputs){return mRoot->compute(inputs);}
     int len() const;
+    
+    static std::vector<std::string> divideWords(const std::string& formula);
+    
     static GPSingleTree* createFromFormula(const std::string& formula, const std::string& variable);
 
     static GPSingleTree* createFromFormula(const std::string& formula, const std::map<std::string, int>& variableMap);

@@ -24,6 +24,7 @@ class GPDAGPiecesFunctionCreator:public GPPiecesFunctionCreator
 public:
     GPDAGPiecesFunctionCreator();
     virtual ~GPDAGPiecesFunctionCreator();
+    virtual GPPiecesFunction* vCreateFromFuncTree(const GPFunctionTree* tree, const IParallelMachine* machine) const;
 };
 
 

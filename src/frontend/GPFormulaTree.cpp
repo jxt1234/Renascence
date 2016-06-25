@@ -395,6 +395,21 @@ void GPFormulaTreePoint::replaceNameByPoint(const std::string& name, GPFormulaTr
     }
 }
 
+void GPFormulaTreePoint::replaceNameAll(const std::map<std::string, std::string>& replaceMap)
+{
+    if (NUM == mT && replaceMap.find(mName)!=replaceMap.end())
+    {
+        mName = replaceMap.find(mName)->second;
+        return;
+    }
+    for (int i=0; i<mChildren.size(); ++i)
+    {
+        auto p = GPCONVERT(GPFormulaTreePoint, mChildren[i]);
+        p->replaceNameAll(replaceMap);
+    }
+}
+
+
 void GPFormulaTreePoint::replaceNameAll(const std::string& oldName, const std::string& newName)
 {
     if (NUM == mT && mName == oldName)

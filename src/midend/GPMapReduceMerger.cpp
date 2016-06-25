@@ -15,13 +15,13 @@
 ******************************************************************/
 #include "frontend/GPFormulaTree.h"
 #include "midend/GPMapReduceMerger.h"
+#include "math/GPSingleTree.h"
 #include <queue>
 #include <vector>
 #include <string>
 #include <sstream>
 #include <set>
 #include <list>
-#include "pystring.h"
 
 GPFunctionTree* GPMapReduceMerger::reduce(const GPFunctionTree* tree)
 {
@@ -85,12 +85,12 @@ GPFunctionTreePoint* GPMapReduceMerger::_reduceCopy(const GPFunctionTreePoint* p
     {
         root->addPoint(GPFunctionTree::copy((GPFunctionTreePoint*)point->getChild(i)));
     }
-    
-    if (point->data().iParallelType != IParallelMachine::MAP)
+
+    if (root->data().iParallelType != IParallelMachine::MAP)
     {
         return root;
     }
-    
+
     /*Start Merge*/
     input = GPFORCECONVERT(GPFunctionTreePoint, root->getChild(0));
     auto conditionPoint = GPFORCECONVERT(GPFunctionTreePoint, root->getChild(3));
@@ -119,9 +119,9 @@ GPFunctionTreePoint* GPMapReduceMerger::_reduceCopy(const GPFunctionTreePoint* p
             replaceVariableMap.insert(std::make_pair(os.str(), forReplace));
         }
     }
-    
-    
+
     int initNumber = input->getChildrenNumber();
+    std::map<std::string, std::string> formulaReplaceMap;
     for (int i=0; i<initNumber; ++i)
     {
         GPFunctionTreePoint* subInput = (GPFunctionTreePoint*)input->getChild(i);
@@ -130,7 +130,9 @@ GPFunctionTreePoint* GPMapReduceMerger::_reduceCopy(const GPFunctionTreePoint* p
             auto subInputKeyMap = (GPFunctionTreePoint*)subInput->getChild(2);
             auto subInputInput =(GPFunctionTreePoint*)subInput->getChild(0);
             auto subInputKeyMapOutput =(GPFunctionTreePoint*)subInputKeyMap->getChild(1);
+            //auto subInputCondition = (GPFunctionTreePoint*)subInput->getChild(3);
             if (subInput->data().iParallelType == IParallelMachine::MAP && subInputKeyMapOutput->getChildrenNumber() == 1)
+                //&& subInputCondition->extra().empty())
             {
                 int startNumber = input->getChildrenNumber()-1;
                 //Replace the inputs
@@ -146,6 +148,14 @@ GPFunctionTreePoint* GPMapReduceMerger::_reduceCopy(const GPFunctionTreePoint* p
                 auto subFuncPoint = subInput->getChild(1);
                 std::string subFormula = GPCONVERT(const GPFunctionTreePoint, subFuncPoint->getChild(1))->extra();
                 std::map<std::string, std::string> replaceConditionMap;
+                std::map<std::string, std::string> subFormulaReplaceMap;
+                {
+                    std::ostringstream os;
+                    os << "x" << i;
+                    auto map_before = os.str();
+                    std::string x_before = replaceVariableMap.find(map_before)->second;
+                    subFormulaReplaceMap.insert(std::make_pair("x0", x_before));
+                }
                 GPFormulaTree subFormulaTree;
                 subFormulaTree.setFormula(subFormula);
 //                FUNC_PRINT_ALL(subFormula.c_str(), s);
@@ -164,7 +174,7 @@ GPFunctionTreePoint* GPMapReduceMerger::_reduceCopy(const GPFunctionTreePoint* p
                     c = ('a'+j+startNumber);
                     os << c << "0";
                     auto cv_after = os.str();
-                    
+
                     /*Merge the keymap input*/
                     keyMapInputPoint->addPoint(new GPFunctionTreePoint(cv_after));
                     replaceConditionMap.insert(std::make_pair(cv_before, cv_after));
@@ -177,8 +187,9 @@ GPFunctionTreePoint* GPMapReduceMerger::_reduceCopy(const GPFunctionTreePoint* p
                     os.str("");
                     os << "x" << j+startNumber;
                     std::string x_after = os.str();
-                    subFormulaTree.root()->replaceNameAll(x_before, x_after);
+                    subFormulaReplaceMap.insert(std::make_pair(x_before, x_after));
                 }
+                subFormulaTree.root()->replaceNameAll(subFormulaReplaceMap);
                 subFormula = subFormulaTree.dump();
 //                FUNC_PRINT_ALL(subFormula.c_str(), s);
                 //Secondly, replace xi by sub formula
@@ -188,31 +199,37 @@ GPFunctionTreePoint* GPMapReduceMerger::_reduceCopy(const GPFunctionTreePoint* p
                     auto map_before = os.str();
                     std::string x_before = replaceVariableMap.find(map_before)->second;
                     GPASSERT(map_before == x_before);
-                    GPFormulaTree formulaTree;
-                    formulaTree.setFormula(formula);
-                    formulaTree.root()->replaceNameAll(x_before, subFormula);
-                    formula = formulaTree.dump();
+                    formulaReplaceMap.insert(std::make_pair(x_before, subFormula));
                 }
 
-                
-                /*Merge the condition*/
-                
-                auto subCondition = GPCONVERT(const GPFunctionTreePoint, subInput->getChild(3))->extra();
                 //Replace condition's key
-                for (auto k : replaceConditionMap)
+                auto subCondition = GPCONVERT(const GPFunctionTreePoint, subInput->getChild(3))->extra();
+                if (!subCondition.empty())
                 {
-                    subCondition = pystring::replace(subCondition, k.first, k.second);
-                }
-                
-                if (condition.empty())
-                {
-                    condition = subCondition;
-                }
-                else if (!subCondition.empty())
-                {
-                    std::ostringstream oscondition;
-                    oscondition << condition << " && (" << subCondition << ")";
-                    condition = oscondition.str();
+                    auto words = GPSingleTree::divideWords(subCondition);
+                    for (int pos = 0; pos < words.size(); ++pos)
+                    {
+                        if (replaceConditionMap.find(words[pos])!=replaceConditionMap.end())
+                        {
+                            words[pos] = replaceConditionMap.find(words[pos])->second;
+                        }
+                    }
+                    std::ostringstream subConditionOs;
+                    for (int pos = 0; pos < words.size(); ++pos)
+                    {
+                        subConditionOs << words[pos];
+                    }
+                    subCondition = subConditionOs.str();
+                    if (condition.empty())
+                    {
+                        condition = subCondition;
+                    }
+                    else
+                    {
+                        std::ostringstream oscondition;
+                        oscondition << condition << " && (" << subCondition << ")";
+                        condition = oscondition.str();
+                    }
                 }
                 /*At last replace the input self*/
                 auto firstP = GPFORCECONVERT(GPFunctionTreePoint, subInputInput->getChild(0));
@@ -221,6 +238,11 @@ GPFunctionTreePoint* GPMapReduceMerger::_reduceCopy(const GPFunctionTreePoint* p
         }
     }
     
+    GPFormulaTree formulaTree;
+    formulaTree.setFormula(formula);
+    formulaTree.root()->replaceNameAll(formulaReplaceMap);
+    formula = formulaTree.dump();
+
     /*Update FunctionPoint*/
     auto variablePoint = new GPFunctionTreePoint(formulaVariableInfoOs.str());
     funcPoint->replace(GPFORCECONVERT(GPFunctionTreePoint,funcPoint->getChild(0)), variablePoint);
@@ -228,7 +250,7 @@ GPFunctionTreePoint* GPMapReduceMerger::_reduceCopy(const GPFunctionTreePoint* p
     auto formulaPoint = new GPFunctionTreePoint(formula);
     funcPoint->replace(GPFORCECONVERT(GPFunctionTreePoint,funcPoint->getChild(1)), formulaPoint);
     formulaPoint->decRef();
-    
+
     /*Update Condition*/
     auto newCondition = new GPFunctionTreePoint(condition);
     root->replace(conditionPoint, newCondition);
