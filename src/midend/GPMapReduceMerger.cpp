@@ -130,9 +130,8 @@ GPFunctionTreePoint* GPMapReduceMerger::_reduceCopy(const GPFunctionTreePoint* p
             auto subInputKeyMap = (GPFunctionTreePoint*)subInput->getChild(2);
             auto subInputInput =(GPFunctionTreePoint*)subInput->getChild(0);
             auto subInputKeyMapOutput =(GPFunctionTreePoint*)subInputKeyMap->getChild(1);
-            //auto subInputCondition = (GPFunctionTreePoint*)subInput->getChild(3);
-            if (subInput->data().iParallelType == IParallelMachine::MAP && subInputKeyMapOutput->getChildrenNumber() == 1)
-                //&& subInputCondition->extra().empty())
+            auto subInputCondition = (GPFunctionTreePoint*)subInput->getChild(3);
+            if (subInput->data().iParallelType == IParallelMachine::MAP && subInputKeyMapOutput->getChildrenNumber() == 1 && subInputCondition->extra().empty())
             {
                 int startNumber = input->getChildrenNumber()-1;
                 //Replace the inputs

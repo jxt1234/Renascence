@@ -26,11 +26,12 @@ public:
     
     GPTreePiecesFunctionCreator(const GPFunctionDataBase* base, const IGPFunctionContext* context, const GPFrontEndProducer* front, const std::map<std::string, std::string>& map_reduce_formula);
     virtual ~GPTreePiecesFunctionCreator();
-private:
+protected:
     bool _checkValidTree(const GPFunctionTree* tree) const;
     GPFunctionTreePoint* _transform(const GPFunctionTreePoint* p) const;
-    
-    std::map<const GPFunction*, GPPtr<GPFunctionTree>> mPieces;
+
     GPPtr<GPBasicPiecesFunctionCreator> mBasic;
+private:
+    std::map<const GPFunction*, GPPtr<GPFunctionTree>> mPieces;
 };
 #endif

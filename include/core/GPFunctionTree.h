@@ -20,6 +20,7 @@
 #include "GPFunctionDataBase.h"
 #include "GPParameter.h"
 #include <map>
+#include <set>
 #include <string>
 #include <ostream>
 class GPFunctionTreePoint:public GPAbstractPoint
@@ -49,6 +50,8 @@ public:
     
     std::map<int, const IStatusType*> getInputTypes() const;
     
+    std::set<int> getInputPos() const;
+    
     void mapInput(const std::map<int, int>& inputMap);
     void mapInput(const std::map<int, GPFunctionTreePoint*>& inputMap);
     bool equal(const GPFunctionTreePoint* point) const;
@@ -58,6 +61,7 @@ public:
     
     void valid() const;
 private:
+    void _getInputPos(std::set<int>& result) const;
     bool _equal(const GPFunctionTreePoint* p) const;
     void _getInputTypes(std::map<int, const IStatusType*>& types) const;
     void _renderChildren(std::ostream& output) const;

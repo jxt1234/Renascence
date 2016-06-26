@@ -19,6 +19,7 @@
 #include "backend/GPTreeProducer.h"
 #include "backend/GPStreamADFProducer.h"
 #include "backend/GPBasicPiecesFunctionCreator.h"
+#include "backend/GPDAGPiecesFunctionCreator.h"
 #include "backend/GPTreePiecesFunctionCreator.h"
 #include "core/GPStreamFactory.h"
 #include "xml/xmlReader.h"
@@ -59,7 +60,8 @@ GPFunctionDataBase* GPFactory::createDataBase(GPStream* file, IFunctionTable* t)
 
 GPPiecesFunctionCreator* GPFactory::createPieceFunctionProducer(const GPProducer* producer, const GPFunctionDataBase* base, const std::map<std::string, std::string>& map_reduce_formula)
 {
-    return new GPTreePiecesFunctionCreator(base, producer, producer->getFront(), map_reduce_formula);
+    return new GPDAGPiecesFunctionCreator(base, producer, producer->getFront(), map_reduce_formula);
+    //return new GPTreePiecesFunctionCreator(base, producer, producer->getFront(), map_reduce_formula);
 }
 
 GPPiecesFunctionCreator* GPFactory::createPieceFunctionProducer(const GPProducer* producer, const GPFunctionDataBase* base, GPStream* metafile)
@@ -72,7 +74,8 @@ GPPiecesFunctionCreator* GPFactory::createPieceFunctionProducer(const GPProducer
     {
         rules.insert(std::make_pair(p->name(), p->attr()));
     }
-    return new GPTreePiecesFunctionCreator(base, producer, producer->getFront(), rules);
+    //return new GPTreePiecesFunctionCreator(base, producer, producer->getFront(), rules);
+    return new GPDAGPiecesFunctionCreator(base, producer, producer->getFront(), rules);
 }
 
 GPParallelMachineSet* GPFactory::createParallelSet(const char* metafile, IFunctionTable* t)

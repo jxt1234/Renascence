@@ -244,6 +244,30 @@ void GPFunctionTreePoint::_getInputTypes(std::map<int, const IStatusType*>& type
         }
     }
 }
+std::set<int> GPFunctionTreePoint::getInputPos() const
+{
+    std::set<int> r;
+    _getInputPos(r);
+    return r;
+}
+
+
+void GPFunctionTreePoint::_getInputPos(std::set<int>& result) const
+{
+    if (INPUT == mType)
+    {
+        if (result.find(mData.iInput)==result.end())
+        {
+            result.insert(mData.iInput);
+        }
+        return;
+    }
+    for (size_t i=0; i<mChildren.size(); ++i)
+    {
+        auto p = GPCONVERT(GPFunctionTreePoint, mChildren[i]);
+        p->_getInputPos(result);
+    }
+}
 
 
 

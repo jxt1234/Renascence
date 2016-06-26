@@ -13,18 +13,24 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef BACKEND_GPDAGPIECESFUNCTIONCREATOR_H
-#define BACKEND_GPDAGPIECESFUNCTIONCREATOR_H
+#ifndef BACKEND_GPDAGPIECESFUNCTION_H
+#define BACKEND_GPDAGPIECESFUNCTION_H
 #include <map>
+#include "lowlevelAPI/GPPiecesFunction.h"
+#include "core/GPFunctionTree.h"
 #include "backend/GPPiecesFunctionCreator.h"
-#include "backend/GPTreePiecesFunctionCreator.h"
-#include "frontend/GPFrontEndProducer.h"
-class GPDAGPiecesFunctionCreator:public GPTreePiecesFunctionCreator
+class GPDAGPiecesFunction:public GPPiecesFunction
 {
 public:
-    GPDAGPiecesFunctionCreator(const GPFunctionDataBase* base, const IGPFunctionContext* context, const GPFrontEndProducer* front, const std::map<std::string, std::string>& map_reduce_formula);
-    virtual ~GPDAGPiecesFunctionCreator();
-    virtual GPPiecesFunction* vCreateFromFuncTree(const GPFunctionTree* tree, const IParallelMachine* machine) const;
+    typedef std::map<int, GPPtr<GPFunctionTree>> TREES;
+    GPDAGPiecesFunction(const TREES& p, const GPPiecesFunctionCreator* creator, const IParallelMachine* machine);
+    virtual ~GPDAGPiecesFunction();
+    virtual GPPieces* vRun(GPPieces** inputs, int n);
+private:
+    std::vector<GPPiecesFunction*> mFunctions;//Ordered
+    std::map<GPPiecesFunction*, int> mFunctionComputeOutputMap;
+    int mMaxInputPos;
+    
+    std::vector<GPPtr<GPPiecesFunction>> mHoldedFunction;//Use to storage and release functions
 };
-
 #endif

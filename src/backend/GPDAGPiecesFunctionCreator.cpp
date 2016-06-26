@@ -14,7 +14,12 @@
    limitations under the License.
 ******************************************************************/
 #include "backend/GPDAGPiecesFunctionCreator.h"
-GPDAGPiecesFunctionCreator::GPDAGPiecesFunctionCreator()
+#include "midend/GPMapReduceMerger.h"
+#include "midend/GPMultiLayerTree.h"
+#include "GPDAGPiecesFunction.h"
+
+
+GPDAGPiecesFunctionCreator::GPDAGPiecesFunctionCreator(const GPFunctionDataBase* base, const IGPFunctionContext* context, const GPFrontEndProducer* front, const std::map<std::string, std::string>& map_reduce_formula):GPTreePiecesFunctionCreator(base, context, front, map_reduce_formula)
 {
 }
 
@@ -24,5 +29,17 @@ GPDAGPiecesFunctionCreator::~GPDAGPiecesFunctionCreator()
 
 GPPiecesFunction* GPDAGPiecesFunctionCreator::vCreateFromFuncTree(const GPFunctionTree* tree, const IParallelMachine* machine) const
 {
-    return NULL;
+    bool valid = _checkValidTree(tree);
+    //TODO
+    GPASSERT(valid);
+    GPMultiLayerTree _multi(tree);
+    auto layers = _multi.layers();
+    GPDAGPiecesFunction::TREES allTrees;
+    for (auto p : layers)
+    {
+        GPPtr<GPFunctionTree> treatedTree = new GPFunctionTree(_transform(p.second.get()));
+        treatedTree = GPMapReduceMerger::reduce(treatedTree.get());
+        allTrees.insert(std::make_pair(p.first, treatedTree));
+    }
+    return new GPDAGPiecesFunction(allTrees, mBasic.get(), machine);
 }

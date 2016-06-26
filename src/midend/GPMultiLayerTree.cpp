@@ -151,7 +151,6 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
                     }
                 }
             }
-            
             inputpoints->decRef();
         }
         if (equallist.empty())

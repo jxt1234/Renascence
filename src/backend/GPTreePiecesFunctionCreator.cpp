@@ -38,7 +38,6 @@ GPTreePiecesFunctionCreator::~GPTreePiecesFunctionCreator()
 {
 }
 
-
 bool GPTreePiecesFunctionCreator::_checkValidTree(const GPFunctionTree* tree) const
 {
     auto allPoints = tree->root()->display();
@@ -120,6 +119,5 @@ GPPiecesFunction* GPTreePiecesFunctionCreator::vCreateFromFuncTree(const GPFunct
     treatedTree = GPMapReduceMerger::reduce(treatedTree.get());
     FUNC_PRINT_ALL(treatedTree->dump().c_str(), s);
 
-    //FUNC_PRINT_ALL(treatedTree->dump().c_str(), s);
     return mBasic->vCreateFromFuncTree(treatedTree.get(), machine);
 }
