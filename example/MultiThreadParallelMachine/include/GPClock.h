@@ -1,5 +1,5 @@
 /******************************************************************
-   Copyright 2016, Jiang Xiao-tang
+   Copyright 2013, Jiang Xiao-tang
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,18 +13,22 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef MGPUTILS_H
-#define MGPUTILS_H
-#include <assert.h>
-#include <string.h>
-#include <stdio.h>
-#define MGPASSERT(x) assert(x)
-#ifdef BUILD_FOR_ANDROID
-#include <android/log.h>
-#define MGPPRINT(format, ...) __android_log_print(ANDROID_LOG_INFO, "GP", format,##__VA_ARGS__)
-#else
-#define MGPPRINT(format, ...) printf(format,##__VA_ARGS__)
-#endif
-#define FUNC_PRINT(x) MGPPRINT(#x"=%d in %s, %d \n",x,  __func__, __LINE__);
-#define FUNC_PRINT_ALL(x, type) MGPPRINT(#x"= "#type" %"#type" in %s, %d \n",x,  __func__, __LINE__);
+#ifndef UTILS_GPCLOCK_H
+#define UTILS_GPCLOCK_H
+
+class GPClock
+{
+    public:
+        GPClock(int func, const char* name);
+        ~GPClock();
+        int reset();
+    protected:
+        size_t mStart;
+        int mId;
+        char* mName;
+};
+
+#define GPCLOCK GPClock __clock(__LINE__, __func__)
+
+
 #endif

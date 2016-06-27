@@ -16,6 +16,7 @@
 #ifndef UTILS_THREAD_H
 #define UTILS_THREAD_H
 #include <stdlib.h>
+#include <thread>
 #include "lowlevelAPI/GPRefCount.h"
 
 
@@ -33,12 +34,18 @@ private:
 class MGPMutex
 {
 public:
-    MGPMutex();
-    ~MGPMutex();
-    void lock();
-    void unlock();
+    MGPMutex(){}
+    ~MGPMutex(){}
+    void lock()
+    {
+        mData.lock();
+    }
+    void unlock()
+    {
+        mData.unlock();
+    }
 private:
-    void* mData;
+    std::mutex mData;
 };
 
 class MGPAutoMutex

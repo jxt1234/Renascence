@@ -18,6 +18,7 @@
 #include <string.h>
 #include "GPCarryVaryGroup.h"
 #include "AutoStorage.h"
+#include "GPClock.h"
 
 
 MGPKeyMatcher::Key::Key(unsigned int* keys, unsigned int keyNumber)
@@ -51,6 +52,7 @@ bool MGPKeyMatcher::Key::match(Key* other)
 
 MGPKeyMatcher::MGPKeyMatcher(GPPieces** inputs, unsigned int inputNumber, GPPieces* output, const std::vector<std::pair<unsigned int, unsigned int>>& outputKeys, IGPFloatFunction* condition)
 {
+    //GPCLOCK;
     MGPASSERT(NULL!=output);
     MGPASSERT(NULL!=inputs);
     MGPASSERT(inputNumber>0);
@@ -86,7 +88,7 @@ MGPKeyMatcher::MGPKeyMatcher(GPPieces** inputs, unsigned int inputNumber, GPPiec
         ::memcpy(keyDimesions+pos, inputs[i]->pKeySize, sizeof(unsigned int)*inputs[i]->nKeyNumber);
         pos += inputs[i]->nKeyNumber;
     }
-    
+
     GPCarryVaryGroup group(keyDimesions, sumDim);
     group.start(keyCurrent, sumDim);
     do

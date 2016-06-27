@@ -29,6 +29,7 @@ GPDAGPiecesFunctionCreator::~GPDAGPiecesFunctionCreator()
 
 GPPiecesFunction* GPDAGPiecesFunctionCreator::vCreateFromFuncTree(const GPFunctionTree* tree, const IParallelMachine* machine) const
 {
+    //GPCLOCK;
     bool valid = _checkValidTree(tree);
     //TODO
     GPASSERT(valid);

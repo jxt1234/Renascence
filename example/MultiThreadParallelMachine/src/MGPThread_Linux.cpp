@@ -14,7 +14,6 @@
    limitations under the License.
 ******************************************************************/
 #include "MGPThread.h"
-#include <semaphore.h>
 #include <pthread.h>
 #include <assert.h>
 #include <stdio.h>
@@ -34,7 +33,14 @@ bool MGPThread::platform_create()
         data->lock = new MGPSema;
     }
     mData = (void*)data;
+//    pthread_attr_t attr;
+//    pthread_attr_init(&attr);
+//    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+//    pthread_create(&(data->id), &attr, MGPThread::threadLoop, this);
+//    pthread_attr_destroy(&attr);
+
     pthread_create(&(data->id), NULL, MGPThread::threadLoop, this);
+
     return true;
 }
 
@@ -139,31 +145,4 @@ void MGPSema::post()
     assert(NULL!=mData);
     SemaData* s = (SemaData*)(mData);
     s->post();
-}
-
-MGPMutex::MGPMutex()
-{
-    pthread_mutex_t* m = new pthread_mutex_t;
-    pthread_mutex_init(m, NULL);
-    mData = (void*)m;
-}
-
-MGPMutex::~MGPMutex()
-{
-    assert(NULL!=mData);
-    pthread_mutex_t* m = (pthread_mutex_t*)mData;
-    pthread_mutex_destroy(m);
-    delete m;
-}
-
-void MGPMutex::lock()
-{
-    assert(NULL!=mData);
-    pthread_mutex_lock((pthread_mutex_t*)mData);
-}
-
-void MGPMutex::unlock()
-{
-    assert(NULL!=mData);
-    pthread_mutex_unlock((pthread_mutex_t*)mData);
 }

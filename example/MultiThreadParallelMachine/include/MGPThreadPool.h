@@ -34,10 +34,13 @@ public:
         virtual void vRun(void*) = 0;
     };
     
+    static Runnable* mergeRunnables(const std::vector<Runnable*>& runnable);
+    
     /*API
      * The Runnable will be free by pool, don't delete it any more
      */
     MGPSema* pushTask(Runnable* runnables);
+    
     
     /*For child thread*/
     Runnable* queueTask();

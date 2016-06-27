@@ -78,6 +78,7 @@ GPDAGPiecesFunction::~GPDAGPiecesFunction()
 
 GPPieces* GPDAGPiecesFunction::vRun(GPPieces** inputs, int n)
 {
+    //GPCLOCK;
     GPASSERT(mMaxInputPos >= n);
     AUTOSTORAGE(inputsEnlarge, GPPieces*, mMaxInputPos);
     ::memset(inputsEnlarge, 0, mMaxInputPos*sizeof(GPPieces*));

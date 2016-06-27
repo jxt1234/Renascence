@@ -130,3 +130,35 @@ MGPThreadPool::Runnable* MGPThreadPool::queueTask()
     mQueues.pop();
     return res;
 }
+
+
+class MergeRunnable:public MGPThreadPool::Runnable
+{
+public:
+    MergeRunnable(const std::vector<Runnable*>& runnable)
+    {
+        mRunnables = runnable;
+    }
+    virtual ~MergeRunnable()
+    {
+        for (auto r : mRunnables)
+        {
+            r->decRef();
+        }
+    }
+    virtual void vRun(void* data)
+    {
+        for (auto& r : mRunnables)
+        {
+            r->vRun(data);
+        }
+    }
+private:
+    std::vector<Runnable*> mRunnables;
+};
+
+
+MGPThreadPool::Runnable* MGPThreadPool::mergeRunnables(const std::vector<Runnable*>& runnable)
+{
+    return new MergeRunnable(runnable);
+}

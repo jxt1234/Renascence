@@ -31,6 +31,7 @@ public:
     
     virtual GPPieces* vPrepare(GPPieces** inputs, int inputNumber) const override
     {
+        //GPCLOCK;
         GPASSERT(NULL!=inputs);
         GPASSERT(inputNumber>0);
         std::vector<unsigned int> keyDms;
@@ -67,6 +68,7 @@ public:
     
     virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber) const
     {
+        //GPCLOCK;
         GPASSERT(NULL!=output);
         GPASSERT(NULL!=inputs);
         GPASSERT(inputNumber>0);
@@ -87,7 +89,6 @@ public:
                 keyOutputPos[pos] = keyOutputPos[pos] + inputs[i]->nKeyNumber;
             }
         }
-        
         AUTOSTORAGE(keyDimesions, unsigned int, sumDim);
         AUTOSTORAGE(keyCurrent, unsigned int, sumDim);
         AUTOSTORAGE(keyCurrentFloat, GPFLOAT, sumDim);
