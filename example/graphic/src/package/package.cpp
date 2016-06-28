@@ -34,6 +34,7 @@ GPContents* TrPackageCompse(GPContents* inputs)
     for (int i=0; i<picsize; ++i)
     {
         pic[i] = (TrBmp*)inputs->get(i);
+        assert(NULL!=pic[i]);
     }
     TrBmp* dst = TrMixPicture(pic, factor, picsize, pic[0]->width, pic[0]->height);
 

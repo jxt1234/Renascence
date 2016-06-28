@@ -1,5 +1,6 @@
 #include "transform.h"
 #include <stdio.h>
+#include <assert.h>
 #include "../third_party/libjpeg/jpeglib.h"
 static inline void TrmultiPixels(TrPixels* p, int alpha)
 {
@@ -38,11 +39,13 @@ TrBmp* TrScaleBmp(TrBmp* src, int targetWidth, int targetHeight)
     int wScale, hScale;
     int wAlpha, hAlpha;
     TrPixels *src_, *dst_;
-    if (!TrValidBmp(src)) return NULL;
-    if (targetWidth<=0||targetHeight<=0) return NULL;
+    assert(TrValidBmp(src));
+    assert(targetWidth>0&&targetHeight>0);
     dst = TrAllocBmp(targetWidth, targetHeight);
     dst_ = dst->pixels;
     src_ = src->pixels;
+    assert(NULL!=dst_);
+    assert(NULL!=src_);
     wScale = (src->width << SCALE_UNIT) / targetWidth;
     hScale = (src->height << SCALE_UNIT) /targetHeight;
     for (i=0; i<targetHeight; ++i)
@@ -59,16 +62,17 @@ TrBmp* TrScaleBmp(TrBmp* src, int targetWidth, int targetHeight)
 
 TrBmp* TrMixturePixels(TrBmp* src1, TrBmp* src2, double alpha)
 {
+    assert(NULL!=src1);
+    assert(NULL!=src2);
     int i,size, alpha_int;
     TrBmp* dst;
     unsigned char* src1_, src2_, dst_;
-    if (NULL==src1 || NULL==src2) return NULL;
     size = src1->width*src1->height;
-    if (size!=src2->width*src2->height) return NULL;
+    assert(size ==src2->width*src2->height);
     dst = (TrBmp*)malloc(sizeof(TrBmp));
-    if (NULL==dst) return NULL;
+    assert(NULL!=dst);
     dst->pixels = malloc(size*sizeof(TrPixels));
-    if (NULL==dst->pixels) return NULL;
+    assert(NULL!=dst->pixels);
     alpha_int=Tr_DOUBLE_TO_CHAR(alpha);
     for (i=0; i < size; ++i)
     {
@@ -190,8 +194,9 @@ TrBmp* TrColorReverse(TrBmp* src)
 }
 TrBmp* TrMixPicture(TrBmp** pictures, float* factor, int n, int width, int height)
 {
-    if (NULL==pictures || NULL==factor|| 0>=n) return NULL;
+    assert(NULL!=pictures && NULL!=factor && n>0);
     TrBmp* dst = TrAllocBmp(width, height);
+    assert(TrValidBmp(dst));
     TrBmp** scalePics;
     /*Allocate and compute Scale pictures*/
     {
