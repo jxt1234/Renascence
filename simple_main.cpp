@@ -17,12 +17,12 @@ using namespace std;
 
 static GPPieces* _createInputPieces(const IStatusType* s)
 {
-    GPPieces* inputs = GPPieceFactory::createMemoryPiece(std::vector<unsigned int>{5});
-    for (int i=1; i<=5; ++i)
+    GPPieces* inputs = GPPieceFactory::createMemoryPiece(std::vector<unsigned int>{50});
+    for (int i=1; i<=50; ++i)
     {
         unsigned int key = i-1;
         std::ostringstream os;
-        os << "res/pictures/"<<i<<".jpg";
+        os << "res/pictures/"<<((i%5))+1<<".jpg";
         
         GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream(os.str().c_str());
         GPContents* c = new GPContents;

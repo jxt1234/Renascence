@@ -23,9 +23,12 @@ GPContents* TrPackageSaturation(GPContents* inputs)
 //以第一幅图像的大小为最终的图像大小
 GPContents* TrPackageCompse(GPContents* inputs)
 {
-    assert(inputs->size() >= 2);
+    assert(inputs->size() == 3);
+    assert(inputs->getType(0) == &gTrBmpType);
+    assert(inputs->getType(1) == &gTrBmpType);
+    assert(inputs->getType(2)->name() == "float");
     GPContents* result = new GPContents;
-    int picsize = inputs->size() - 1;
+    int picsize = 2;
     TrBmp** pic = (TrBmp**)(malloc(picsize*sizeof(TrBmp)));
     float* factor = (float*)inputs->get(picsize);
     for (int i=0; i<picsize; ++i)
@@ -91,6 +94,9 @@ GPContents* TrPackageFilterMatrixRegress(GPContents* inputs)
 {
     GPContents* result = new GPContents;
     assert(inputs->size()==3);
+    assert(inputs->getType(0)->name() == "TrBmp");
+    assert(inputs->getType(1)->name() == "TrBmp");
+    assert(inputs->getType(2)->name() == "TrRegreeMode");
     TrBmp* src = (TrBmp*)inputs->get(0);
     TrBmp* dst = (TrBmp*)inputs->get(1);
     TrRegreeMode* mode = (TrRegreeMode*)inputs->get(2);
