@@ -33,13 +33,21 @@ bool MGPThread::platform_create()
         data->lock = new MGPSema;
     }
     mData = (void*)data;
-//    pthread_attr_t attr;
-//    pthread_attr_init(&attr);
-//    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-//    pthread_create(&(data->id), &attr, MGPThread::threadLoop, this);
-//    pthread_attr_destroy(&attr);
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    //pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
-    pthread_create(&(data->id), NULL, MGPThread::threadLoop, this);
+//    pthread_attr_setschedpolicy(&attr, SCHED_RR);
+//    struct sched_param param;
+//    int rs = pthread_attr_getschedparam(&attr, &param);
+//    assert(rs == 0);
+//    param.sched_priority = 99;
+//    pthread_attr_setschedparam(&attr, &param);
+
+    pthread_create(&(data->id), &attr, MGPThread::threadLoop, this);
+    pthread_attr_destroy(&attr);
+
+//    pthread_create(&(data->id), NULL, MGPThread::threadLoop, this);
 
     return true;
 }
@@ -105,7 +113,7 @@ public:
         }
         pthread_mutex_unlock(&mMutex);
     }
-    
+
     void post()
     {
         pthread_mutex_lock(&mMutex);

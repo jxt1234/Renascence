@@ -31,6 +31,7 @@ private:
     
     GPPtr<IGPFloatFunction> mCondition;
     MGPThreadPool* mPool;
+    ThreadData* mMainData;
     std::vector<ThreadData*> mUserData;
     IParallelMachine::PARALLELTYPE mType;
     GPParallelType::KEYS mOutputKey;

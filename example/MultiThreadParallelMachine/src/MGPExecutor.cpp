@@ -57,7 +57,6 @@ public:
 
 private:
     IGPFunction* mFunction;
-    MGPThreadPool* mPieceHandlerPool;
 };
 
 MGPExecutor::MGPExecutor(const IGPFunctionContext* context, const std::string& formula, const std::string& condition, const std::string& variable, int threadNum, IParallelMachine::PARALLELTYPE type, const GPParallelType::KEYS& outputKeys, const GPParallelType::KEYS& variableKey)
@@ -65,11 +64,12 @@ MGPExecutor::MGPExecutor(const IGPFunctionContext* context, const std::string& f
     MGPASSERT(NULL!=context);
     MGPASSERT(threadNum>1);
     MGPASSERT(type == IParallelMachine::MAP || type == IParallelMachine::REDUCE);
+    mMainData = new ThreadData(context, formula);
     for (int i=0; i<threadNum; ++i)
     {
         mUserData.push_back(new ThreadData(context, formula));
     }
-    
+
     std::vector<void*> userdata;
     for (auto t : mUserData)
     {
@@ -92,6 +92,7 @@ MGPExecutor::~MGPExecutor()
     {
         delete t;
     }
+    delete mMainData;
 }
 
 class MapRunnable:public MGPThreadPool::Runnable
@@ -199,14 +200,19 @@ bool MGPExecutor::_mapRun(GPPieces* output, GPPieces** inputs, int inputNumber) 
     }
 
     std::vector<GPPtr<MGPSema>> waitSemas;
-    for (int i=0; i<threadNum; ++i)
+    for (int i=1; i<threadNum; ++i)
     {
+        //FUNC_PRINT(runnableList[i].size());
         GPPtr<MGPSema> sema = mPool->pushTask(MGPThreadPool::mergeRunnables(runnableList[i]));
         MGPASSERT(NULL!=sema.get());
         waitSemas.push_back(sema);
     }
+    auto main_runnable = MGPThreadPool::mergeRunnables(runnableList[0]);
+    main_runnable->vRun(mMainData);
+    main_runnable->decRef();
     for (auto s : waitSemas)
     {
+        //GPCLOCK;
         s->wait();
     }
     return true;

@@ -69,18 +69,32 @@ static void __run()
     {
         GPPtr<GPProducer> totalProducer = GPFactory::createProducer(base.get());
         GPPtr<GPPiecesFunctionCreator> creator = GPFactory::createPieceFunctionProducer(totalProducer.get(), base.get(), map_reduce.get());
-        IParallelMachine* machine = machineSet->newMachine("thread");
-        GPASSERT(NULL!=machine);
         GPPtr<GPFunctionTree> tree = totalProducer->getFront()->vCreateFromFormula("C(S(x0))", std::vector<const IStatusType*>());
-        auto function = creator->vCreateFromFuncTree(tree.get(), machine);
         GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
-        GPPieces* outputs = function->vRun(&inputs, 1);
-        _saveOutputPieces(outputs, "Compose");
+        {
+            GPCLOCK;
+            IParallelMachine* machine = machineSet->newMachine("thread");
+            GPASSERT(NULL!=machine);
+            auto function = creator->vCreateFromFuncTree(tree.get(), machine);
+            GPPieces* outputs = function->vRun(&inputs, 1);
+            _saveOutputPieces(outputs, "Compose");
+            delete outputs;
+            delete function;
+            delete machine;
+        }
+        {
+            GPCLOCK;
+            IParallelMachine* machine = machineSet->newMachine("basic");
+            GPASSERT(NULL!=machine);
+            auto function = creator->vCreateFromFuncTree(tree.get(), machine);
+            GPPieces* outputs = function->vRun(&inputs, 1);
+            _saveOutputPieces(outputs, "ComposeBasic");
+            delete outputs;
+            delete function;
+            delete machine;
+        }
         delete inputs;
-        delete outputs;
         
-        delete function;
-        delete machine;
     }
 }
 
