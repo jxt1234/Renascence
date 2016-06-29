@@ -70,6 +70,7 @@ static void __run()
         GPPtr<GPPiecesFunctionCreator> creator = GPFactory::createPieceFunctionProducer(totalProducer.get(), base.get(), map_reduce.get());
         GPPtr<GPFunctionTree> tree = totalProducer->getFront()->vCreateFromFormula("C(S(x0))", std::vector<const IStatusType*>());
         GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
+        //if (false)
         {
             IParallelMachine* machine = machineSet->newMachine("thread");
             GPASSERT(NULL!=machine);
@@ -110,7 +111,7 @@ int main()
 {
     GP_Set_Lib_Path(gPath.c_str());
     GP_Set_Stream_Path(gPath.c_str());
-    //while(true)
+    while(true)
     {
         __run();
     }

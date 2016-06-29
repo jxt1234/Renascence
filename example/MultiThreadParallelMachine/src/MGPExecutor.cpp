@@ -253,7 +253,7 @@ private:
 class ReduceRunnable:public MGPThreadPool::Runnable
 {
 public:
-    ReduceRunnable(Collector* collector, GPPieces** inputs, unsigned int inputNum, unsigned int* inputKeys, const GPParallelType::KEYS& keys, MGPMutex& inputMutex, MGPMutex& outputMutex):mVariableKey(keys), mInputMutex(inputMutex), mOutputtMutex(outputMutex)
+    ReduceRunnable(Collector* collector, GPPieces** inputs, unsigned int inputNum, unsigned int* inputKeys, const GPParallelType::KEYS& keys, MGPMutex& inputMutex):mVariableKey(keys), mInputMutex(inputMutex)
     {
         mInput = inputs;
         mInputNum = inputNum;
@@ -275,7 +275,6 @@ public:
         GPContents* mergeInput = NULL;
         {
             MGPAutoMutex __m(mInputMutex);
-            MGPAutoMutex __m2(mOutputtMutex);
             auto tempMergeInput = new GPContents;
             input = _loadContent(mInputNum, mInput, mInputKeys);
             for (int i=0; i<mVariableKey.size(); ++i)
@@ -301,7 +300,6 @@ public:
             input->decRef();
         }
         {
-            MGPAutoMutex __l(mOutputtMutex);
             oldContent->setContent(0, tempOutput->getContent(0));
             tempOutput->decRef();
             mCollector->unlock(oldContent);
@@ -314,7 +312,6 @@ private:
     unsigned int* mInputKeys;
     const GPParallelType::KEYS& mVariableKey;
     MGPMutex& mInputMutex;
-    MGPMutex& mOutputtMutex;
 };
 
 
@@ -385,17 +382,26 @@ bool MGPExecutor::_reduceRun(GPPieces* output, GPPieces** inputs, int inputNumbe
         }
         for (int i=0; i<eachCollectSize; ++i)
         {
-            {
-                MGPAutoMutex __m(inputMutex);
-                GPContents* target = _loadContent(inputNumber, inputs, inputKeys[i]->getKey());
-                collectors.push_back(new Collector(target));
-            }
+            GPContents* target = _loadContent(inputNumber, inputs, inputKeys[i]->getKey());
+            collectors.push_back(new Collector(target));
         }
+        std::vector<std::vector<MGPThreadPool::Runnable*>> runnableList;
+        for (int i=0; i<collectors.size(); ++i)
+        {
+            std::vector<MGPThreadPool::Runnable*> rr;
+            runnableList.push_back(rr);
+        }
+        
         /*For Remain outputKey, Parralelly to reduce*/
         for (size_t i=eachCollectSize; i<inputKeys.size(); ++i)
         {
-            GPPtr<MGPSema> sema = mPool->pushTask(new ReduceRunnable(collectors[i%collectors.size()], inputs, inputNumber, inputKeys[i]->getKey(), mVariableKey, inputMutex, outputMutex));
-            waitSemas.push_back(sema);
+            size_t index = i % collectors.size();
+            runnableList[index].push_back(new ReduceRunnable(collectors[index], inputs, inputNumber, inputKeys[i]->getKey(), mVariableKey, inputMutex));
+        }
+        for (int i=0; i<collectors.size(); ++i)
+        {
+            MGPThreadPool::Runnable* merge = MGPThreadPool::mergeRunnables(runnableList[i]);
+            waitSemas.push_back(mPool->pushTask(merge));
         }
     }
     for (auto s : waitSemas)

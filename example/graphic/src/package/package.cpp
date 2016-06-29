@@ -30,11 +30,13 @@ GPContents* TrPackageCompse(GPContents* inputs)
     GPContents* result = new GPContents;
     int picsize = 2;
     TrBmp** pic = (TrBmp**)(malloc(picsize*sizeof(TrBmp)));
+    assert(NULL!=pic);
     float* factor = (float*)inputs->get(picsize);
     for (int i=0; i<picsize; ++i)
     {
         pic[i] = (TrBmp*)inputs->get(i);
         assert(NULL!=pic[i]);
+        assert(TrValidBmp(pic[i]));
     }
     TrBmp* dst = TrMixPicture(pic, factor, picsize, pic[0]->width, pic[0]->height);
 
