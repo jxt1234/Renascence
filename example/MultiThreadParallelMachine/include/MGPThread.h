@@ -17,6 +17,7 @@
 #define UTILS_THREAD_H
 #include <stdlib.h>
 #include <thread>
+#include <mutex>
 #include "lowlevelAPI/GPRefCount.h"
 
 
