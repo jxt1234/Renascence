@@ -38,6 +38,8 @@ public:
                 return new GPTreeADFPoint(point->data().pFunc, -1);
             case GPFunctionTreePoint::INPUT:
                 return new GPTreeADFPoint(NULL, point->data().iInput);
+            case GPFunctionTreePoint::OUTPUT:
+                return new GPTreeADFPoint(NULL, -1);
             default:
                 GPASSERT(0);
                 break;

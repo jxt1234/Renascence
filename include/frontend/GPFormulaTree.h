@@ -28,7 +28,8 @@ public:
         NUM,
         OPERATOR,
         ADF,
-        PARALLEL
+        PARALLEL,
+        OUTPUT
     }TYPE;
     GPFormulaTreePoint(TYPE t, const std::string& name, GPFormulaTreePoint* father = NULL);
     virtual ~GPFormulaTreePoint();

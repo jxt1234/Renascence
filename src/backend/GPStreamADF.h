@@ -32,7 +32,6 @@ public:
     friend class GPStreamADFProducer;
 
     GPStreamADF(const GPMultiLayerTree* opttree);
-    GPStreamADF(const GPFunctionTree* root);
     GPStreamADF(const GPTreeNode* n, const GPFunctionDataBase* base);
     virtual ~GPStreamADF();
     

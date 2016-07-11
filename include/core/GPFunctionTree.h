@@ -30,7 +30,8 @@ public:
         FUNCTION,
         INPUT,
         PARALLEL,
-        STRING
+        STRING,
+        OUTPUT
     } TYPE;
     GPFunctionTreePoint(const GPFunction* f);
     GPFunctionTreePoint(TYPE t, int iData);

@@ -183,6 +183,7 @@ void GPFormulaTreePoint::_createSubPoint(const std::vector<std::string>& words, 
     switch (mT) {
         case OPERATOR:
         case ADF:
+        case OUTPUT:
             addPoint(_create(words, sta, fin, this));
             break;
         case PARALLEL:
@@ -271,6 +272,10 @@ GPFormulaTreePoint* GPFormulaTreePoint::_create(const std::vector<std::string>& 
     else if ("ADF" == words[sta])
     {
         root = new GPFormulaTreePoint(ADF, words[sta], father);
+    }
+    else if ("OUTPUT" == words[sta])
+    {
+        root = new GPFormulaTreePoint(OUTPUT, words[sta], father);
     }
     else
     {

@@ -240,69 +240,21 @@ GPStreamADF::GPStreamADF(const GPMultiLayerTree* opttree)
     {
         if(iter.first < 0)
         {
+            int outputPos = GPMultiLayerTree::getOutputPos(iter.first);
+            if (mDest.size() <= outputPos)
+            {
+                for (auto i=mDest.size(); i<=outputPos; ++i)
+                {
+                    mDest.push_back(NULL);
+                }
+            }
             GPPtr<Point> input = maplists.find(iter.second.get())->second;
             for (size_t i=0; i<iter.second->data().pFunc->outputType.size(); ++i)
             {
                 GPPtr<Point> dst = new DP(iter.second->data().pFunc->outputType[i]);
-                mDest.push_back(dst);
+                mDest[outputPos] = dst;
                 dst->connectInput(input.get(), 0);
                 input->connectOutput(dst, 0);
-            }
-        }
-    }
-}
-
-GPStreamADF::GPStreamADF(const GPFunctionTree* tree)
-{
-    auto root = tree->root();
-    auto rootfunc = root->data().pFunc;
-    GPASSERT(NULL!=rootfunc);
-    auto lists = root->display();
-    std::map<const GPAbstractPoint*, GPPtr<Point>> maplists;
-    /*Create All Function*/
-    for (auto p : lists)
-    {
-        auto pp = (GPFunctionTreePoint*)p;
-        if (GPFunctionTreePoint::INPUT == pp->type())
-        {
-            GPPtr<Point> cp = new SP(NULL);
-            mSources.push_back(cp);
-            mInputPos.push_back(pp->data().iInput);
-            maplists.insert(std::make_pair(p, cp));
-        }
-        else
-        {
-            GPPtr<Point> cp = new CP(new GPComputePoint(pp->data().pFunc));
-            mFunctions.push_back((CP*)(cp.get()));
-            maplists.insert(std::make_pair(p, cp));
-        }
-    }
-    /*Dest*/
-    auto rootcp = maplists.find(root)->second;
-    for (int i=0; i<rootfunc->outputType.size(); ++i)
-    {
-        GPPtr<Point> dst = (new DP(rootfunc->outputType[i]));
-        dst->connectInput(rootcp.get(), 0);
-        rootcp->connectOutput(dst, i);
-        mDest.push_back(dst);
-    }
-    /*Connect*/
-    for (auto p : lists)
-    {
-        auto PP = maplists.find(p)->second;
-        auto func = ((GPFunctionTreePoint*)p)->data().pFunc;
-        size_t n = p->getChildrenNumber();
-        GPASSERT(!(NULL!=func && n==0));
-        for (int i=0; i<n; ++i)
-        {
-            auto pc = p->getChild(i);
-            auto PC = maplists.find(pc)->second;
-            PP->connectInput(PC.get(), i);
-            PC->connectOutput(PP, 0);
-            if (pc->getChildrenNumber() == 0)
-            {
-                SP* s = (SP*)PC.get();
-                s->setType(func->inputType[i]);
             }
         }
     }

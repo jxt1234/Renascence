@@ -24,6 +24,7 @@ public:
     GPMultiLayerTree(const GPFunctionTree* tree);
     virtual ~GPMultiLayerTree();
     inline const POINTS& layers() const {return mLayers;}
+    static int getOutputPos(int pos);
 private:
     POINTS mLayers;
 };

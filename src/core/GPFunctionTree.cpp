@@ -35,6 +35,9 @@ GPFunctionTreePoint::GPFunctionTreePoint(TYPE t, int iData)
         case PARALLEL:
             mData.iParallelType = (IParallelMachine::PARALLELTYPE)iData;
             break;
+        case OUTPUT:
+            mData.iInput = iData;
+            break;
         default:
             GPASSERT(0);
             break;

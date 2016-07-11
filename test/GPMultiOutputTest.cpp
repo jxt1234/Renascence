@@ -1,22 +1,19 @@
-#include "frontend/GPFormulaTree.h"
-#include "frontend/GPFunctionFrontEndProducer.h"
-#include "backend/GPBasicPiecesFunctionCreator.h"
-#include "backend/GPSingleParallelMachine.h"
-#include "core/GPFactory.h"
+#include "test/GPTest.h"
 #include "core/GPProducer.h"
-#include "core/GPFunctionTree.h"
+#include "frontend/GPFormulaTree.h"
 #include <iostream>
-#include <sstream>
-#include "core/GPPieceFactory.h"
-#include <fstream>
+#include "core/GPFactory.h"
+#include "core/GPFunctionDataBase.h"
 #include "core/GPStreamFactory.h"
-#include "core/GPParallelMachineSet.h"
-#include "user/GPAPI.h"
-using namespace std;
-
-
-
-static void __run()
+#include "head.h"
+class GPMultiOutputTest:public GPTest
+{
+    public:
+        virtual void run();
+        GPMultiOutputTest(){}
+        virtual ~GPMultiOutputTest(){}
+};
+void GPMultiOutputTest::run()
 {
     GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
     const char* formula = "OUTPUT(FIT(C(x1, ADF[filter, x1, x1, x1, C(x0, S(x0))]), x0), FIT(x1, x0))";
@@ -51,18 +48,7 @@ static void __run()
                 delete _fits;
             }
         }
-    }}
-
-#include "user/GPAPI.h"
-static string gPath = "/Users/jiangxiaotang/Documents/Renascence/";
-
-int main()
-{
-    GP_Set_Lib_Path(gPath.c_str());
-    GP_Set_Stream_Path(gPath.c_str());
-    //while(true)
-    {
-        __run();
     }
-    return 1;
 }
+
+static GPTestRegister<GPMultiOutputTest> a("GPMultiOutputTest");

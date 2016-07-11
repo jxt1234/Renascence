@@ -15,18 +15,34 @@
 ******************************************************************/
 #include "midend/GPMultiLayerTree.h"
 #include <set>
+
+int GPMultiLayerTree::getOutputPos(int pos)
+{
+    return -pos-1;
+}
+
 GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
 {
-    GPPtr<GPFunctionTreePoint> root = GPFunctionTree::copy(tree->root());
-    mLayers.insert(std::make_pair(-1, root));
+    auto _root = tree->root();
     /*Find Origin Inputs*/
     int maxInputNumber = -1;
-    for (auto p : root->display())
+    if (GPFunctionTreePoint::OUTPUT != _root->type())
     {
-        auto pp = GPCONVERT(const GPFunctionTreePoint, p);
-        if (pp->data().iInput>maxInputNumber && pp->type() == GPFunctionTreePoint::INPUT)
+        GPPtr<GPFunctionTreePoint> root = GPFunctionTree::copy(tree->root());
+        mLayers.insert(std::make_pair(-1, root));
+        maxInputNumber = root->maxInputPos();
+    }
+    else
+    {
+        for (int i=0; i<_root->getChildrenNumber(); ++i)
         {
-            maxInputNumber = pp->data().iInput;
+            GPPtr<GPFunctionTreePoint> subRoot = GPFunctionTree::copy(GPCONVERT(const GPFunctionTreePoint, _root->getChild(i)));
+            int _maxI = subRoot->maxInputPos();
+            if (_maxI > maxInputNumber)
+            {
+                maxInputNumber = _maxI;
+            }
+            mLayers.insert(std::make_pair(-i-1, subRoot));
         }
     }
     int subtree_inputpos = maxInputNumber+1;

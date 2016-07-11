@@ -27,7 +27,7 @@ using namespace std;
 typedef const IStatusType* TYPEP;
 GPTreeADFPoint::GPTreeADFPoint(const GPFunction* func, int inputpos)
 {
-    GPASSERT(NULL != func || inputpos >= 0);
+    //GPASSERT(NULL != func || inputpos >= 0);
     mInputPos = inputpos;
     mFunc = func;
     GPASSERT(inputpos < 1000);
@@ -142,9 +142,8 @@ GPTreeADFPoint* GPTreeADFPoint::xmlLoad(const GPTreeNode* node, const GPFunction
 GPContents* GPTreeADFPoint::compute(GPContents* input)
 {
     GPContents outsideinputs;
-    GPASSERT(NULL!=mFunc);
     GPContents childreninputs;
-    GPContents totalInputs;
+    GPContents* totalInputs = new GPContents;
     //Get Inputs from childern point
     for (int i=0; i<mChildren.size(); ++i)
     {
@@ -153,26 +152,32 @@ GPContents* GPTreeADFPoint::compute(GPContents* input)
         if (p->mFunc == NULL)
         {
             GPASSERT(p->mInputPos < input->size());
-            totalInputs.pushContent(input->getContent(p->mInputPos));
+            totalInputs->pushContent(input->getContent(p->mInputPos));
             continue;
         }
         GPContents* out = p->compute(input);
         childreninputs.merge(*out);
-        totalInputs.merge(*out);
+        totalInputs->merge(*out);
         delete out;
+    }
+    if (NULL == mFunc)
+    {
+        GPASSERT(-1 == mInputPos);//Output Point
+        return totalInputs;
     }
     //Get status
     for (int i=0; i<mStatus.size(); ++i)
     {
-        totalInputs.push(mStatus[i]->content(), mStatus[i]->type(), false);
+        totalInputs->push(mStatus[i]->content(), mStatus[i]->type(), false);
     }
     GPContents* result;
     {
 #ifdef DEBUG_TIMES
         GP_Clock c(__LINE__, (mFunc->name).c_str());
 #endif
-        result = mFunc->basic(&totalInputs);
+        result = mFunc->basic(totalInputs);
     }
+    totalInputs->decRef();
     return result;
 }
 

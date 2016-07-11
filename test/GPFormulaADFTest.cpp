@@ -20,7 +20,7 @@ void GPFormulaADFTest::run()
     const char* formula = "FIT(C(x1, ADF[filter, x1, x1, x1, C(x0, S(x0))]), x0)";
     AUTOCLEAN(base);
     {
-        GPProducer* sys = GPFactory::createProducer(base);
+        GPPtr<GPProducer> sys = GPFactory::createProducer(base);
         {
             const IStatusType* bmp_type = base->vQueryType("TrBmp");
             GPContents inputs;
@@ -29,7 +29,7 @@ void GPFormulaADFTest::run()
             GPPtr<GPStreamWrap> input2 = GPStreamFactory::NewStream("output.jpg");
             inputs.push(bmp_type->vLoad(input2.get()), bmp_type);
             std::vector<const IStatusType*> inputTypes(2, bmp_type);
-            IGPAutoDefFunction* comp = sys->createFunction(formula, inputTypes);
+            GPPtr<IGPAutoDefFunction> comp = sys->createFunction(formula, inputTypes);
             auto _fits = comp->vRun(&inputs);
             double* __fit = (double*)_fits->get(0);
             FUNC_PRINT_ALL(*__fit, f);

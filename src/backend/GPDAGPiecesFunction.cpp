@@ -24,7 +24,7 @@ GPDAGPiecesFunction::GPDAGPiecesFunction(const TREES& p, const GPPiecesFunctionC
     typedef std::pair<std::vector<int>, GPPiecesFunction*> FUNCINDEX;
     std::map<int, GPPiecesFunction*> functionInputObtainMap;
     std::list<FUNCINDEX> orderedFunctionBefore;
-    mMaxInputPos = 0;
+    mMaxInputPos = -1;
     for (auto kv : p)
     {
         int maxInputPos = kv.second->root()->maxInputPos();
