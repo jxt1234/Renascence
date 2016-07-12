@@ -11,6 +11,8 @@ class Content:
         else:
             self.nativeContent = nativeContent
         self.referedContents = []
+    def size(self):
+        return RenascenceBasic.GP_Contents_Size(self.nativeContent)
     def __del__(self):
         RenascenceBasic.GP_Contents_Destroy(self.nativeContent)
     def get(self):
@@ -20,12 +22,12 @@ class Content:
         inputTypes_python = RenascenceBasic.GP_Strings_Get(inputTypes, 0)
         RenascenceBasic.GP_Strings_Free(inputTypes)
         return inputTypes_python
-    def save(self, filename):
+    def save(self, filename, pos=0):
         output = RenascenceBasic.GP_WStream_Create(filename)
-        RenascenceBasic.GP_Contents_Save(self.nativeContent, output, 0)
+        RenascenceBasic.GP_Contents_Save(self.nativeContent, output, pos)
         RenascenceBasic.GP_WStream_Destroy(output)
-    def dump(self):
-        contentString = RenascenceBasic.GP_Contents_Dump(self.nativeContent, 0)
+    def dump(self, pos=0):
+        contentString = RenascenceBasic.GP_Contents_Dump(self.nativeContent, pos)
         content = RenascenceBasic.GP_Strings_Get(contentString, 0)
         RenascenceBasic.GP_Strings_Free(contentString)
         return content
