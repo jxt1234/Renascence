@@ -31,6 +31,7 @@ public:
     virtual void* vLoad(GPStream* input) const = 0;
     virtual void vSave(void* contents, GPWStream* output) const = 0;
     virtual void vFree(void* contents) const = 0;
+    
     /* map
      * Modify contents by values.
      * return the number of parameters it needed.
@@ -38,16 +39,24 @@ public:
      * If *content is NULL and value is not NULL, alloc a new one.
      */
     virtual int vMap(void** content, double* value) const = 0;
+    
+    
     /* Check(Optional)
      * For Continue Data (Stream), Check if the data is completed, content must be not null
      */
     virtual bool vCheckCompleted(void* content) const {return NULL!=content;}
+
     /* Merge(Optional)
      * For Continue Data (Stream), Merge the src data to dst, dst and src must be not null
      * Normally, dst and src will be freed after calling this api
      * return NULL means can't merge
      */
     virtual void* vMerge(void* dst, void* src) const {return NULL;}
+
+    /* Measure(Optional)
+     * Return the 
+     */
+    virtual long vMeasure(void* content) const {return 0;}
 
 private:
     std::string mName;
