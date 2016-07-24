@@ -73,15 +73,7 @@ def Generate_Output(outName, srcDirs, srcFiles, CLINK, depend):
             fileContents+=(' '+h)
     fileContents+='\n'
     def getNameWithofO(fileName):
-        pos = 0
-        while fileName[pos]=='.':
-            pos+=1
-        sta = pos
-        pos+=1
-        while fileName[pos]!='.':
-            pos+=1
-        result = fileName[sta:pos].replace('/','_')
-        return result+'.o'
+        return fileName.replace('/', '_').replace('.', '_') + '.o'
     #All cpp c and .o
     objs = []
     sequences = []
