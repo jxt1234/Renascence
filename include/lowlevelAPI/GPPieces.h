@@ -16,11 +16,14 @@
 #ifndef USER_GPPIECES_H
 #define USER_GPPIECES_H
 #include "GPContents.h"
+#include <string>
 class GPPieces : public GPRefCount
 {
 public:
     unsigned int pKeySize[10];
     unsigned int nKeyNumber;
+    std::string sType;
+    std::string sInfo;
 
     virtual GPContents* vLoad(unsigned int* pKey, unsigned int keynum) = 0;
     
