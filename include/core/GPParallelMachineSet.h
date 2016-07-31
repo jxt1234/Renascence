@@ -27,17 +27,16 @@ public:
     GPParallelMachineSet();
     virtual ~GPParallelMachineSet();
     void addFunction(const GPTreeNode* node, IFunctionTable* table);
-    
+
     const std::vector<std::string> listAllMachines() const
     {
         return mNames;
     }
-    
-    IParallelMachine* newMachine(const std::string& name);
+
+    const IParallelMachine* getMachine(const std::string& name);
 private:
-    std::vector<PARALLELMACHINE_CREATE_FUNC> mCreateFunctions;
     std::vector<std::string> mNames;
-    std::map<std::string, PARALLELMACHINE_CREATE_FUNC> mNamesMap;
+    std::map<std::string, IParallelMachine*> mNamesMap;
     GPPtr<GPMultiTable> mHandle;
 };
 #endif

@@ -33,6 +33,7 @@ extern "C"{
         GP_PRODUCER_TREE=0,
         GP_PRODUCER_STREAM=2
     };
+    
     /*Set basic path of lib
      * The lib will be loaded  from basic_path/
      * For Example, set basic_path as /a/b/c/
@@ -312,17 +313,34 @@ extern "C"{
      * libNumber: the number of piecesLibMeta and piecesLibTable
      * mapReduceMeta: mapReduceMetaNumber's xmlFile, which tell GP how to build Parallel Function
      * mapReduceMetaNumber: the number of mapReduceMeta
+     * Example:
+     -----
+     GPStream* meta = GP_Stream_Create("libsqldag.xml");
+     mProducer = GP_Producer_Create(&meta, &t, 1, GP_PRODUCER_STREAM);
+     //mProducer = GP_Producer_Create(&meta, &t, 1, GP_PRODUCER_TREE);
+     GP_Stream_Destroy(meta);
+     meta = GP_Stream_Create("Map-Reduce.xml");
+     GPStream* metaMachine = GP_Stream_Create("mgpfunc.xml");
+     mPieceProducer = GP_PiecesProducer_Create(mProducer, &metaMachine, NULL, 1, &meta, 1);
+     GP_Stream_Destroy(meta);
+     GP_Stream_Destroy(metaMachine);
+     -----
      */
     AGPPiecesProducer* GP_PiecesProducer_Create(AGPProducer* producer, GPStream** piecesLibMeta, IFunctionTable** piecesLibTable, int libNumber, GPStream** mapReduceMeta, int mapReduceMetaNumber);
     
+    /*
+     * Release the producer created by GP_PiecesProducer_Create
+     * Must be called by all GPPieces and GPPiecesFunction created by this producer released
+     */
     void GP_PiecesProducer_Destroy(AGPPiecesProducer* producer);
     
     /*
-     
+     * Return all kinds of AGPPiecesProducer.
+     * The name of it should be input as type in GP_Pieces_Create and GP_PiecesFunction_Create
      */
     AGPStrings* GP_PiecesProducer_ListType(AGPPiecesProducer* producer);
     
-    
+    /*GPPieces API*/
     /*Pieces Function*/
     
     /*Create GPPieces Function
@@ -335,16 +353,14 @@ extern "C"{
     void GP_PiecesFunction_Destroy(GPPiecesFunction* pieceFunction);
     
     
+    enum {
+        GP_PIECES_INPUT = 0,
+        GP_PIECES_OUTPUT = 1,
+        GP_PIECES_CACHE = 2
+    };
     
+    GPPieces* GP_Pieces_Create(AGPPiecesProducer* producer, const char* type, const char* dataType, const char* path, unsigned int* keys, int keyNum, int usage);
     
-    /*GPPieces API, TODO*/
-    
-    GPPieces* GP_Pieces_CreateInMemory(unsigned int* dimensions, int n);
-    
-    GPPieces* GP_Pieces_Load(AGPPiecesProducer* producer, const char* type, const char* path, const char* description);
-    
-    void GP_Pieces_Save(GPPieces* pieces, const char* path, const char* description);
-
     void GP_Pieces_Destroy(GPPieces* pieces);
 
 #ifdef __cplusplus

@@ -73,25 +73,23 @@ static void __run()
         GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
         {
             GPCLOCK;
-            IParallelMachine* machine = machineSet->newMachine("thread");
+            const IParallelMachine* machine = machineSet->getMachine("thread");
             GPASSERT(NULL!=machine);
             auto function = creator->vCreateFromFuncTree(tree.get(), machine);
             GPPieces* outputs = function->vRun(&inputs, 1);
             _saveOutputPieces(outputs, "Compose");
             delete outputs;
             delete function;
-            delete machine;
         }
         {
             GPCLOCK;
-            IParallelMachine* machine = machineSet->newMachine("basic");
+            const IParallelMachine* machine = machineSet->getMachine("basic");
             GPASSERT(NULL!=machine);
             auto function = creator->vCreateFromFuncTree(tree.get(), machine);
             GPPieces* outputs = function->vRun(&inputs, 1);
             _saveOutputPieces(outputs, "ComposeBasic");
             delete outputs;
             delete function;
-            delete machine;
         }
         delete inputs;
         

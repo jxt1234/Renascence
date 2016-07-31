@@ -20,7 +20,6 @@ class GPPieceFactory
 {
 public:
     static GPPieces* createMemoryPiece(const std::vector<unsigned int> &keydimesions);
-    static GPPieces* createInputFilePiece(const IStatusType* type, const char* srcPath, size_t maxMemoryCacheSize/*MB*/);
-    GPPieces* createOutputFilePiece(const std::vector<unsigned int> &keydimesions, const char* dstPath, const char* postfix);
+    static GPPieces* createLocalFilePiece(const std::vector<const IStatusType*>& types, const char* srcPath, size_t maxMemoryCacheSize/*MB*/);
 };
 #endif

@@ -799,10 +799,9 @@ GPPiecesFunction* GP_PiecesFunction_Create(AGPPiecesProducer* producer, const ch
         FUNC_PRINT(1);
         return NULL;
     }
-    IParallelMachine* machine = producer->get()->newMachine(type);
+    const IParallelMachine* machine = producer->get()->getMachine(type);
     GPPtr<GPFunctionTree> tree = producer->getProducer()->P->getFront()->vCreateFromFormula(formula, _transform(inputType, producer->getProducer()));
     GPPiecesFunction* function = producer->getCreator()->vCreateFromFuncTree(tree.get(), machine);
-    delete machine;
     return function;
 }
 
@@ -821,38 +820,35 @@ GPPieces* GP_PiecesFunction_Run(GPPiecesFunction* piecesFunction, GPPieces** inp
     return piecesFunction->vRun(inputs, inputNumber);
 }
 
-GPPieces* GP_Pieces_Load(AGPPiecesProducer* producer, const char* type, const char* path, const char* description)
-{
-    GPASSERT(0);
-    return NULL;
-}
 
-void GP_Pieces_Save(GPPieces* pieces, const char* path, const char* description)
+GPPieces* GP_Pieces_Create(AGPPiecesProducer* producer, const char* type, const char* dataType, const char* path, unsigned int* keys, int keyNum, int usage)
 {
-    GPASSERT(0);
-}
-
-void GP_Pieces_Destroy(GPPieces* pieces)
-{
-    if (NULL == pieces)
-    {
-        FUNC_PRINT(1);
-        return;
-    }
-    pieces->decRef();
-}
-
-GPPieces* GP_Pieces_CreateInMemory(unsigned int* dimensions, int n)
-{
-    if (NULL == dimensions || n <= 0)
+    if (NULL == producer || NULL == dataType || NULL == type || NULL == path)
     {
         FUNC_PRINT(1);
         return NULL;
     }
-    std::vector<unsigned int> dims;
-    for (int i=0; i<n; ++i)
+    const IParallelMachine* machine = producer->get()->getMachine(type);
+    if (NULL == machine)
     {
-        dims.push_back(dimensions[i]);
+        FUNC_PRINT(1);
+        return NULL;
     }
-    return GPPieceFactory::createMemoryPiece(dims);
+    std::vector<const IStatusType*> inputs = _transform(dataType, producer->getProducer());
+    switch (usage)
+    {
+        case GP_PIECES_CACHE:
+            return machine->vCreatePieces(path, inputs, keys, keyNum, IParallelMachine::CACHE);
+        case GP_PIECES_INPUT:
+            return machine->vCreatePieces(path, inputs, keys, keyNum, IParallelMachine::INPUT);
+        case GP_PIECES_OUTPUT:
+            return machine->vCreatePieces(path, inputs, keys, keyNum, IParallelMachine::OUTPUT);
+    }
+    FUNC_PRINT(1);
+    return NULL;
+}
+
+void GP_Pieces_Destroy(GPPieces* pieces)
+{
+    pieces->decRef();
 }

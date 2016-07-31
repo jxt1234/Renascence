@@ -24,6 +24,10 @@ GPParallelMachineSet::GPParallelMachineSet()
 }
 GPParallelMachineSet::~GPParallelMachineSet()
 {
+    for (auto s : mNamesMap)
+    {
+        delete s.second;
+    }
 }
 void GPParallelMachineSet::addFunction(const GPTreeNode* node, IFunctionTable* table)
 {
@@ -40,23 +44,22 @@ void GPParallelMachineSet::addFunction(const GPTreeNode* node, IFunctionTable* t
     }
     PARALLELMACHINE_CREATE_FUNC func = mHandle->get<PARALLELMACHINE_CREATE_FUNC>(libName+"_" + GPStrings::FunctionDataBase_PARALLELMACHINE_CREATE_FUNC);
     GPASSERT(NULL!=func);
-    mCreateFunctions.push_back(func);
     for (auto c : node->getChildren())
     {
         GPASSERT(mNamesMap.find(c->name()) == mNamesMap.end());
         mNames.push_back(c->name());
-        mNamesMap.insert(std::make_pair(c->name(), func));
+        mNamesMap.insert(std::make_pair(c->name(), func(c->name())));
     }
+    mNamesMap.insert(std::make_pair("basic", new GPSingleParallelMachine));
 }
 
 
-IParallelMachine* GPParallelMachineSet::newMachine(const std::string& name)
+const IParallelMachine* GPParallelMachineSet::getMachine(const std::string& name)
 {
-    if (name == "basic")
-    {
-        return new GPSingleParallelMachine;
-    }
     auto iter = mNamesMap.find(name);
-    GPASSERT(iter != mNamesMap.end());
-    return (iter->second)(name);
+    if (iter == mNamesMap.end())
+    {
+        return NULL;
+    }
+    return iter->second;
 }

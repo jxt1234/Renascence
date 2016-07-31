@@ -41,18 +41,28 @@ public:
     protected:
         Executor(){}
     };
-    
+
     /*Basic API*/
     virtual std::pair<Creator*, Executor*> vGenerate(const GPParallelType* data, PARALLELTYPE type) const = 0;
 
     /*For Parameter adjust*/
     virtual int vMap(GPFLOAT* values) {return 0;}
-    
+
     typedef enum {
         INPUT,
         CACHE,
         OUTPUT
-    } PIECETYPE;
+    } USAGE;
+    
+    /*Create Pieces from store system, or give a reference.
+     *If keys = NULL and keyNum = 0, the IParallelMachine should determine it by description.
+     *If don't support, return NULL*/
+    virtual GPPieces* vCreatePieces(const char* description, std::vector<const IStatusType*> types, unsigned int* keys, int keyNum, USAGE usage) const = 0;
+    
+    /*Map the pieces created outside to the machine self
+     *If no need to map, return NULL
+     */
+    virtual GPPieces* vMapPieces(GPPieces* outsidePieces) const = 0;
 
     virtual ~IParallelMachine(){}
 protected:

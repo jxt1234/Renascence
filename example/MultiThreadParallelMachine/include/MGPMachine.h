@@ -21,7 +21,9 @@ class MGPMachine:public IParallelMachine
 {
 public:
     virtual std::pair<Creator*, Executor*> vGenerate(const GPParallelType* data, PARALLELTYPE type) const override;
-
+    virtual GPPieces* vCreatePieces(const char* description, std::vector<const IStatusType*> types, unsigned int* keys, int keyNum, USAGE usage) const override {return NULL;}
+    
+    virtual GPPieces* vMapPieces(GPPieces* outsidePieces) const override {return NULL;}
 };
 
 extern "C"{

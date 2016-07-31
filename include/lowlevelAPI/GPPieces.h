@@ -22,13 +22,13 @@ class GPPieces : public GPRefCount
 public:
     unsigned int pKeySize[10];
     unsigned int nKeyNumber;
-    std::string sType;
+    std::vector<const IStatusType*> pTypes;
     std::string sInfo;
 
     virtual GPContents* vLoad(unsigned int* pKey, unsigned int keynum) = 0;
     
     virtual long vPreMeasure(unsigned int* pKey, unsigned int keynum) const {return -1;}
-    
+
     virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents* c) = 0;
     
     virtual ~GPPieces(){}

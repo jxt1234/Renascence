@@ -381,3 +381,6 @@ formula中加入参数配置
 
 2016.7.27
 1、为 Parrallel 的 formula 加入循环语法及支持
+
+2016.7.29
+1、增加并行计算的python API

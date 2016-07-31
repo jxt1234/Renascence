@@ -242,3 +242,25 @@ std::pair<IParallelMachine::Creator*, IParallelMachine::Executor*> GPSingleParal
     Executor* executor = new SingleExecutor(func, condition, data->mOutputKey, handle);
     return std::make_pair(creator, executor);
 }
+
+
+
+GPPieces* GPSingleParallelMachine::vCreatePieces(const char* description, std::vector<const IStatusType*> types, unsigned int* keys, int keyNum, USAGE usage) const
+{
+    GPASSERT(keyNum <= 10);
+    GPPieces* pieces = GPPieceFactory::createLocalFilePiece(types, description, 0);
+    GPASSERT(NULL!=pieces);
+    pieces->nKeyNumber = keyNum;
+    pieces->sInfo = "LOCAL";
+    for (int i=0; i<keyNum; ++i)
+    {
+        pieces->pKeySize[i] = keys[i];
+    }
+    return pieces;
+}
+
+GPPieces* GPSingleParallelMachine::vMapPieces(GPPieces* outsidePieces) const
+{
+    /*TODO*/
+    return NULL;
+}
