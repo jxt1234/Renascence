@@ -115,7 +115,7 @@ public:
     std::string generatePath(unsigned int* pKey, unsigned int keynum, const std::string& type)
     {
         std::ostringstream output;
-        output << mPath << "_"<<type;
+        output << mPath << "/"<<type;
         for (int i=0; i<keynum; ++i)
         {
             output << "_" << pKey[i];

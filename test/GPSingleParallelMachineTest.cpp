@@ -15,23 +15,6 @@ class GPSingleParallelMachineTest:public GPTest
         virtual ~GPSingleParallelMachineTest(){}
 };
 
-static GPPieces* _createInputPieces(const IStatusType* s)
-{
-    GPPieces* inputs = GPPieceFactory::createMemoryPiece(std::vector<unsigned int>{5});
-    for (int i=1; i<=5; ++i)
-    {
-        unsigned int key = i-1;
-        std::ostringstream os;
-        os << "res/pictures/"<<i<<".jpg";
-        
-        GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream(os.str().c_str());
-        GPContents* c = new GPContents;
-        c->push(s->vLoad(input.get()), s);
-        inputs->vSave(&key, 1, c);
-    }
-    return inputs;
-}
-
 static void _saveOutputPieces(GPPieces* output, const char* prefix)
 {
     GPASSERT(output->nKeyNumber <= 1);
@@ -66,7 +49,9 @@ static void __run()
             data.sFuncInfo.formula = "S(x0)";
             data.sFuncInfo.variableKey.push_back(std::make_pair(0, 0));
             auto p = machine.vGenerate(&data, IParallelMachine::MAP);
-            GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
+            GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0);
+            inputs->pKeySize[0] = 5;
+            inputs->nKeyNumber = 1;
             GPPieces* outputs = p.first->vPrepare(&inputs, 1);
             p.second->vRun(outputs, &inputs, 1);
             _saveOutputPieces(outputs, "Map");
@@ -84,7 +69,9 @@ static void __run()
             data.sFuncInfo.variableKey.push_back(std::make_pair(1, 0));
             data.sFuncInfo.formula = "C(x0, x1)";
             auto p = machine.vGenerate(&data, IParallelMachine::REDUCE);
-            GPPieces* inputs = _createInputPieces(base->vQueryType("TrBmp"));
+            GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0);
+            inputs->pKeySize[0] = 5;
+            inputs->nKeyNumber = 1;
             GPPieces* outputs = p.first->vPrepare(&inputs, 1);
             p.second->vRun(outputs, &inputs, 1);
             _saveOutputPieces(outputs, "Reduce");
