@@ -46,6 +46,7 @@ public:
     static GPStreamWrap* NewStreamFromStl(std::istream& istream);
     static GPWStreamWrap* NewWStreamFromStl(std::ostream& ostream);
     static void setParentPath(const char* path);
+    static const char* getParentPath();
 private:
     static std::string gPath;
 };

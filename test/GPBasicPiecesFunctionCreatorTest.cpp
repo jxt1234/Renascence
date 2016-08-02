@@ -18,27 +18,6 @@ using namespace std;
 static const char* gFormula =
 "REDUCE((MAP((x0), S(x0), [a0]->[a0]), MAP((x1), S(x0), [a0]->[a0])), C(C(x0, y0), x1), [a0, b0]->[1], a0==b0)";
 
-static void _saveOutputPieces(GPPieces* output, const char* prefix)
-{
-    GPASSERT(output->nKeyNumber <= 1);
-    unsigned int n = 1;
-    if (output->nKeyNumber == 1)
-    {
-        n = output->pKeySize[0];
-    }
-    for (int i=0; i<n; ++i)
-    {
-        unsigned int key = i;
-        GPContents* c = output->vLoad(&key, output->nKeyNumber);
-        GPASSERT(c->size() == 1);
-        std::stringstream os;
-        os << "output/GPBasicParalleCreator"<<prefix << "_"<<i+1<<".jpg";
-        GPPtr<GPWStreamWrap> outputStream = GPStreamFactory::NewWStream(os.str().c_str());
-        c->getType(0)->vSave(c->get(0), outputStream.get());
-        c->decRef();
-    }
-}
-
 
 static void __run()
 {
@@ -51,17 +30,19 @@ static void __run()
         GPSingleParallelMachine machine;
         GPBasicPiecesFunctionCreator creator(totalProducer.get());
         auto function = creator.vCreateFromFuncTree(tree.get(), &machine);
-        GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0);
+        GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0, false);
         inputs->pKeySize[0] = 5;
         inputs->nKeyNumber = 1;
         GPPieces* inputAll[2];
         inputAll[0] = inputs;
         inputAll[1] = inputs;
         GPPieces* outputs = function->vRun(inputAll, 2);
-        _saveOutputPieces(outputs, "Compose");
+        GPPieces* savedOutput = machine.vCreatePieces("output/GPBasicParalleCreatorCompose", std::vector<const IStatusType*>(), NULL, 0, IParallelMachine::OUTPUT);
+        machine.vCopyPieces(outputs, savedOutput);
         inputs->decRef();
         outputs->decRef();
-        
+        savedOutput->decRef();
+
         delete function;
     }
 }

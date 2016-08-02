@@ -37,6 +37,11 @@ GPWStreamWrap::~GPWStreamWrap()
 }
 
 
+const char* GPStreamFactory::getParentPath()
+{
+    return gPath.c_str();
+}
+
 void GPStreamFactory::setParentPath(const char* path)
 {
     gPath = path;

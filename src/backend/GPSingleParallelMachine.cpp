@@ -21,33 +21,6 @@
 #include "math/GPCarryVaryGroup.h"
 #include <string.h>
 
-class PieceInMemoryCreator:public IParallelMachine::Creator
-{
-public:
-    PieceInMemoryCreator(const std::vector<std::pair<unsigned int, unsigned int>>& outputKey)
-    {
-        mOutputKey = outputKey;
-    }
-    
-    virtual GPPieces* vPrepare(GPPieces** inputs, int inputNumber) const override
-    {
-        //GPCLOCK;
-        GPASSERT(NULL!=inputs);
-        GPASSERT(inputNumber>0);
-        std::vector<unsigned int> keyDms;
-        for (auto& p : mOutputKey)
-        {
-            GPASSERT(p.first < inputNumber);//TODO
-            GPPieces* inp = inputs[p.first];
-            GPASSERT(inp->nKeyNumber > p.second);//TODO
-            keyDms.push_back(inp->pKeySize[p.second]);
-        }
-        return GPPieceFactory::createMemoryPiece(keyDms);
-    }
-private:
-    std::vector<std::pair<unsigned int, unsigned int>> mOutputKey;
-};
-
 class SingleExecutor:public IParallelMachine::Executor
 {
 public:
@@ -214,11 +187,10 @@ public:
 
 
 
-std::pair<IParallelMachine::Creator*, IParallelMachine::Executor*> GPSingleParallelMachine::vGenerate(const GPParallelType* data, PARALLELTYPE type) const
+IParallelMachine::Executor* GPSingleParallelMachine::vPrepare(const GPParallelType* data, PARALLELTYPE type) const
 {
     GPASSERT(NULL!=data);
     GPASSERT(NULL!=data->pContext);
-    Creator* creator = new PieceInMemoryCreator(data->mOutputKey);
     GPPtr<SingleExecutor::Handle> handle;
     switch (type)
     {
@@ -240,7 +212,7 @@ std::pair<IParallelMachine::Creator*, IParallelMachine::Executor*> GPSingleParal
     }
 
     Executor* executor = new SingleExecutor(func, condition, data->mOutputKey, handle);
-    return std::make_pair(creator, executor);
+    return executor;
 }
 
 
@@ -248,19 +220,68 @@ std::pair<IParallelMachine::Creator*, IParallelMachine::Executor*> GPSingleParal
 GPPieces* GPSingleParallelMachine::vCreatePieces(const char* description, std::vector<const IStatusType*> types, unsigned int* keys, int keyNum, USAGE usage) const
 {
     GPASSERT(keyNum <= 10);
-    GPPieces* pieces = GPPieceFactory::createLocalFilePiece(types, description, 0);
-    GPASSERT(NULL!=pieces);
-    pieces->nKeyNumber = keyNum;
-    pieces->sInfo = "LOCAL";
-    for (int i=0; i<keyNum; ++i)
-    {
-        pieces->pKeySize[i] = keys[i];
+    GPPieces* pieces = NULL;
+    bool write = true;
+    switch (usage) {
+        case IParallelMachine::CACHE:
+        {
+            std::vector<unsigned int> keysV;
+            for (int i=0; i<keyNum; ++i)
+            {
+                keysV.push_back(keys[i]);
+            }
+            pieces = GPPieceFactory::createMemoryPiece(keysV);
+            break;
+        }
+        case IParallelMachine::INPUT:
+            write = false;
+        case IParallelMachine::OUTPUT:
+        {
+            pieces = GPPieceFactory::createLocalFilePiece(types, description, 0, write);
+            GPASSERT(NULL!=pieces);
+            pieces->nKeyNumber = keyNum;
+            pieces->sInfo = "LOCAL";
+            for (int i=0; i<keyNum; ++i)
+            {
+                pieces->pKeySize[i] = keys[i];
+            }
+            break;
+        }
+        default:
+            GPASSERT(0);
+            break;
     }
     return pieces;
 }
 
-GPPieces* GPSingleParallelMachine::vMapPieces(GPPieces* outsidePieces) const
+bool GPSingleParallelMachine::vCopyPieces(GPPieces* readPieces, GPPieces* writePieces) const
 {
-    /*TODO*/
-    return NULL;
+    /*TODO, Remove assert
+     *When not match, return false
+     */
+    GPASSERT(NULL!=readPieces);
+    GPASSERT(NULL!=writePieces);
+    GPASSERT(readPieces->nKeyNumber == writePieces->nKeyNumber || writePieces->nKeyNumber == 0);
+    if (0 == writePieces->nKeyNumber)
+    {
+        writePieces->nKeyNumber = readPieces->nKeyNumber;
+        for (int i=0; i<readPieces->nKeyNumber; ++i)
+        {
+            writePieces->pKeySize[i] = readPieces->pKeySize[i];
+        }
+    }
+    for (int i=0; i<readPieces->nKeyNumber; ++i)
+    {
+        GPASSERT(readPieces->pKeySize[i] == writePieces->pKeySize[i]);
+    }
+    GPCarryVaryGroup group(readPieces->pKeySize, readPieces->nKeyNumber);
+    AUTOSTORAGE(keyCurrent, unsigned int, readPieces->nKeyNumber);
+    group.start(keyCurrent, readPieces->nKeyNumber);
+    do
+    {
+        GPContents* ci = readPieces->vLoad(keyCurrent, readPieces->nKeyNumber);
+        writePieces->vSave(keyCurrent, readPieces->nKeyNumber, ci);
+        ci->decRef();
+    } while (group.next(keyCurrent, readPieces->nKeyNumber));
+    return true;
 }

@@ -84,9 +84,9 @@ public:
 private:
     size_t _computePos(unsigned int* key, int keynum)
     {
-        GPASSERT(keynum == mKeyDimesions.size() || (keynum==1 && mKeyDimesions.size()==0));
+        GPASSERT(keynum <= mKeyDimesions.size() || (keynum==1 && mKeyDimesions.size()==0));
         size_t sum = 0;
-        for (int i=0; i<mKeyDimesions.size(); ++i)
+        for (int i=0; i<keynum; ++i)
         {
             sum = sum*mKeyDimesions[i] + key[i];
         }
@@ -101,11 +101,15 @@ private:
 class GPLocalFilePiece : public GPPieces
 {
 public:
-    GPLocalFilePiece(const char* path, std::vector<const IStatusType*> types)
+    GPLocalFilePiece(const char* path, std::vector<const IStatusType*> types, bool write)
     {
         pTypes = types;
         nKeyNumber = 0;
-        system_make_dir(path);
+        if (write)
+        {
+            const std::string totalPath = GPStreamFactory::getParentPath();
+            system_make_dir((totalPath + path).c_str());
+        }
         mPath = path;
     }
     virtual ~GPLocalFilePiece()
@@ -125,6 +129,7 @@ public:
     
     virtual GPContents* vLoad(unsigned int* pKey, unsigned int keynum)
     {
+        GPASSERT(!pTypes.empty());
         GPContents* c = new GPContents;
         for (int i=0; i<pTypes.size(); ++i)
         {
@@ -138,15 +143,14 @@ public:
     virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents* c)
     {
         GPASSERT(NULL!=c);
-        GPASSERT(c->size() == pTypes.size());
-        for (int i=0; i<pTypes.size(); ++i)
+        for (int i=0; i<c->size(); ++i)
         {
-            std::string path = generatePath(pKey, keynum, pTypes[i]->name());
+            auto type = c->getType(i);
+            std::string path = generatePath(pKey, keynum, type->name());
             GPPtr<GPWStreamWrap> writeStream = GPStreamFactory::NewWStream(path.c_str());
-            pTypes[i]->vSave(c->get(i), writeStream.get());
+            type->vSave(c->get(i), writeStream.get());
         }
     }
-    
 private:
     std::string mPath;
 };
@@ -164,7 +168,7 @@ GPPieces* GPPieceFactory::createMemoryPiece(const std::vector<unsigned int> &key
     return _createMemoryPieces(keydimesions);
 }
 
-GPPieces* GPPieceFactory::createLocalFilePiece(const std::vector<const IStatusType*>& types, const char* srcPath, size_t maxMemoryCacheSize/*MB*/)
+GPPieces* GPPieceFactory::createLocalFilePiece(const std::vector<const IStatusType*>& types, const char* srcPath, size_t maxMemoryCacheSize/*MB*/, bool write)
 {
-    return new GPLocalFilePiece(srcPath, types);
+    return new GPLocalFilePiece(srcPath, types, write);
 }

@@ -25,14 +25,6 @@ public:
         REDUCE
     }PARALLELTYPE;
 
-    class Creator : public GPRefCount
-    {
-    public:
-        virtual ~Creator(){}
-        virtual GPPieces* vPrepare(GPPieces** inputs, int inputNumber) const = 0;
-    protected:
-        Creator(){}
-    };
     class Executor : public GPRefCount
     {
     public:
@@ -42,27 +34,41 @@ public:
         Executor(){}
     };
 
-    /*Basic API*/
-    virtual std::pair<Creator*, Executor*> vGenerate(const GPParallelType* data, PARALLELTYPE type) const = 0;
 
     /*For Parameter adjust*/
     virtual int vMap(GPFLOAT* values) {return 0;}
 
+    /*Get Executor by Parallel Data
+     *The API will be called when build ADF, so parallelMachine can run some optimization in this API
+     */
+    virtual Executor* vPrepare(const GPParallelType* data, PARALLELTYPE type) const = 0;
+
+
     typedef enum {
-        INPUT,
-        CACHE,
-        OUTPUT
+        INPUT,//Can only read
+        CACHE,//Can read and write
+        OUTPUT//Can only write
     } USAGE;
-    
+
     /*Create Pieces from store system, or give a reference.
-     *If keys = NULL and keyNum = 0, the IParallelMachine should determine it by description.
-     *If don't support, return NULL*/
+     *If don't support, return NULL
+     * For INPUT
+     * types and description is needed,
+     * if keys = NULL and keyNum = 0, the IParallelMachine should determine it by description.
+     *
+     * For OUTPUT
+     * description is needed for OUTPUT, keys and keyNum should be valid
+     *
+     * For CACHE
+     * Only keys and keyNum is needed
+     */
     virtual GPPieces* vCreatePieces(const char* description, std::vector<const IStatusType*> types, unsigned int* keys, int keyNum, USAGE usage) const = 0;
     
-    /*Map the pieces created outside to the machine self
-     *If no need to map, return NULL
+    /*Copy the contents of readPieces to the writePieces
+     *If can not support, return false;
+     *The key dimension of readPieces and writePieces must be the same
      */
-    virtual GPPieces* vMapPieces(GPPieces* outsidePieces) const = 0;
+    virtual bool vCopyPieces(GPPieces* readPieces, GPPieces* writePieces) const = 0;
 
     virtual ~IParallelMachine(){}
 protected:

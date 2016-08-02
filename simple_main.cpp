@@ -15,44 +15,69 @@
 using namespace std;
 
 
+static void _saveOutputPieces(GPPieces* output, const char* prefix)
+{
+    GPASSERT(output->nKeyNumber <= 1);
+    unsigned int n = 1;
+    if (output->nKeyNumber == 1)
+    {
+        n = output->pKeySize[0];
+    }
+    for (int i=0; i<n; ++i)
+    {
+        unsigned int key = i;
+        GPContents* c = output->vLoad(&key, output->nKeyNumber);
+        GPASSERT(c->size() == 1);
+        std::stringstream os;
+        os << "output/GPThreadParallelTest"<<prefix << "_"<<i+1<<".jpg";
+        GPPtr<GPWStreamWrap> outputStream = GPStreamFactory::NewWStream(os.str().c_str());
+        c->getType(0)->vSave(c->get(0), outputStream.get());
+        c->decRef();
+    }
+}
+
 
 static void __run()
 {
-    GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
-    const char* formula = "OUTPUT(FIT(C(x1, ADF[filter, x1, x1, x1, C(x0, S(x0))]), x0), FIT(x1, x0))";
-    AUTOCLEAN(base);
+    GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
+    GPPtr<GPParallelMachineSet> machineSet = GPFactory::createParallelSet("mgpfunc.xml", NULL);
+    auto names = machineSet->listAllMachines();
+    for (auto name : names)
     {
-        GPPtr<GPProducer> sys = GPFactory::createProducer(base);
-        GPPtr<GPProducer> sys2 = GPFactory::createProducer(base, GPFactory::STREAM);
+        FUNC_PRINT_ALL(name.c_str(), s);
+    }
+    GPPtr<GPStreamWrap> map_reduce = GPStreamFactory::NewStream("Map-Reduce.xml");
+    {
+        GPPtr<GPProducer> totalProducer = GPFactory::createProducer(base.get());
+        GPPtr<GPPiecesFunctionCreator> creator = GPFactory::createPieceFunctionProducer(totalProducer.get(), base.get(), map_reduce.get());
+        GPPtr<GPFunctionTree> tree = totalProducer->getFront()->vCreateFromFormula("C(S(x0))", std::vector<const IStatusType*>());
+        GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0, false);
+        inputs->pKeySize[0] = 5;
+        inputs->nKeyNumber = 1;
         {
-            const IStatusType* bmp_type = base->vQueryType("TrBmp");
-            GPContents inputs;
-            GPPtr<GPStreamWrap> input1 = GPStreamFactory::NewStream("input.jpg");
-            inputs.push(bmp_type->vLoad(input1.get()), bmp_type);
-            GPPtr<GPStreamWrap> input2 = GPStreamFactory::NewStream("output.jpg");
-            inputs.push(bmp_type->vLoad(input2.get()), bmp_type);
-            std::vector<const IStatusType*> inputTypes(2, bmp_type);
-            {
-                GPPtr<IGPAutoDefFunction> comp = sys->createFunction(formula, inputTypes);
-                auto _fits = comp->vRun(&inputs);
-                double* __fit1 = (double*)_fits->get(0);
-                double* __fit2 = (double*)_fits->get(1);
-                FUNC_PRINT_ALL(*__fit1, f);
-                FUNC_PRINT_ALL(*__fit2, f);
-                delete _fits;
-            }
-            {
-                GPPtr<IGPAutoDefFunction> comp = sys2->createFunction(formula, inputTypes);
-                auto _fits = comp->vRun(&inputs);
-                double* __fit1 = (double*)_fits->get(0);
-                double* __fit2 = (double*)_fits->get(1);
-                FUNC_PRINT_ALL(*__fit1, f);
-                FUNC_PRINT_ALL(*__fit2, f);
-                delete _fits;
-            }
+            GPCLOCK;
+            const IParallelMachine* machine = machineSet->getMachine("thread");
+            GPASSERT(NULL!=machine);
+            auto function = creator->vCreateFromFuncTree(tree.get(), machine);
+            GPPieces* outputs = function->vRun(&inputs, 1);
+            _saveOutputPieces(outputs, "Compose");
+            delete outputs;
+            delete function;
         }
-    }}
-
+        {
+            GPCLOCK;
+            const IParallelMachine* machine = machineSet->getMachine("basic");
+            GPASSERT(NULL!=machine);
+            auto function = creator->vCreateFromFuncTree(tree.get(), machine);
+            GPPieces* outputs = function->vRun(&inputs, 1);
+            _saveOutputPieces(outputs, "ComposeBasic");
+            delete outputs;
+            delete function;
+        }
+        delete inputs;
+        
+    }
+}
 #include "user/GPAPI.h"
 static string gPath = "/Users/jiangxiaotang/Documents/Renascence/";
 

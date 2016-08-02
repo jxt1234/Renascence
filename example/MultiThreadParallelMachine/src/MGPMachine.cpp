@@ -14,15 +14,12 @@
    limitations under the License.
 ******************************************************************/
 #include "MGPMachine.h"
-#include "MGPCreator.h"
 #include "MGPExecutor.h"
 
-std::pair<IParallelMachine::Creator*, IParallelMachine::Executor*> MGPMachine::vGenerate(const GPParallelType* data, PARALLELTYPE type) const
+IParallelMachine::Executor* MGPMachine::vPrepare(const GPParallelType* data, PARALLELTYPE type) const
 {
     MGPExecutor* executor = new MGPExecutor(data->pContext, data->sFuncInfo.formula, data->sConditionInfo.sConditionFormula, data->sVariableInfo, 4,  type, data->mOutputKey, data->sFuncInfo.variableKey);
-    MGPCreator* creator = new MGPCreator(data->mOutputKey);
-    
-    return std::make_pair(creator, executor);
+    return executor;
 }
 
 

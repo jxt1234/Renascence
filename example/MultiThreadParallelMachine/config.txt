@@ -5,7 +5,7 @@ TARGET:libmthpGP.so
 DEPENDS:
 DIRS:src
 SRCS:
-LINKS:-lpthread -ldl
+LINKS:../../libGP.a -lpthread -ldl
 
 ##########
 

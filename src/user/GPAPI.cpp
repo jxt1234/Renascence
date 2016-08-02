@@ -837,8 +837,6 @@ GPPieces* GP_Pieces_Create(AGPPiecesProducer* producer, const char* type, const 
     std::vector<const IStatusType*> inputs = _transform(dataType, producer->getProducer());
     switch (usage)
     {
-        case GP_PIECES_CACHE:
-            return machine->vCreatePieces(path, inputs, keys, keyNum, IParallelMachine::CACHE);
         case GP_PIECES_INPUT:
             return machine->vCreatePieces(path, inputs, keys, keyNum, IParallelMachine::INPUT);
         case GP_PIECES_OUTPUT:
@@ -852,3 +850,63 @@ void GP_Pieces_Destroy(GPPieces* pieces)
 {
     pieces->decRef();
 }
+
+bool GP_Pieces_Copy(AGPPiecesProducer* producer, const char* type, GPPieces* readPieces, GPPieces* writePieces)
+{
+    if (NULL == producer || NULL == type)
+    {
+        FUNC_PRINT(1);
+        return false;
+    }
+    const IParallelMachine* machine = producer->get()->getMachine(type);
+    if (NULL == machine)
+    {
+        FUNC_PRINT(1);
+        return false;
+    }
+    return machine->vCopyPieces(readPieces, writePieces);
+}
+
+GPPieces** GP_Pieces_CreateArray(int n)
+{
+    if (n <= 0)
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    GPPieces** pieces = new GPPieces*[n];
+    for (int i=0; i<n; ++i)
+    {
+        pieces[i] = NULL;
+    }
+    return pieces;
+}
+void GP_Pieces_Array_Free(GPPieces** array)
+{
+    if (NULL == array)
+    {
+        FUNC_PRINT(1);
+        return;
+    }
+    delete [] array;
+}
+GPPieces* GP_Pieces_Array_Get(GPPieces** array, int n)
+{
+    if (n<0 || NULL == array)
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    return array[n];
+}
+
+void GP_Pieces_Array_Set(GPPieces** array, GPPieces* contents, int n)
+{
+    if (NULL == array || NULL == contents || n<0)
+    {
+        FUNC_PRINT(1);
+        return;
+    }
+    array[n] = contents;
+}
+

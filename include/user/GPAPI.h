@@ -341,8 +341,6 @@ extern "C"{
     AGPStrings* GP_PiecesProducer_ListType(AGPPiecesProducer* producer);
     
     /*GPPieces API*/
-    /*Pieces Function*/
-    
     /*Create GPPieces Function
      
      */
@@ -356,12 +354,21 @@ extern "C"{
     enum {
         GP_PIECES_INPUT = 0,
         GP_PIECES_OUTPUT = 1,
-        GP_PIECES_CACHE = 2
     };
     
+    /*Pieces Function*/
     GPPieces* GP_Pieces_Create(AGPPiecesProducer* producer, const char* type, const char* dataType, const char* path, unsigned int* keys, int keyNum, int usage);
     
     void GP_Pieces_Destroy(GPPieces* pieces);
+    
+    bool GP_Pieces_Copy(AGPPiecesProducer* producer, const char* type, GPPieces* readPieces, GPPieces* writePieces);
+    
+    /*For GPPieces array operate*/
+    GPPieces** GP_Pieces_CreateArray(int n);
+    void GP_Pieces_Array_Free(GPPieces** array);
+    GPPieces* GP_Pieces_Array_Get(GPPieces** array, int n);
+    void GP_Pieces_Array_Set(GPPieces** array,GPPieces* contents, int n);
+    
 
 #ifdef __cplusplus
 }

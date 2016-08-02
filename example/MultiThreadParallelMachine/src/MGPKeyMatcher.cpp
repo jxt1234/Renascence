@@ -16,7 +16,7 @@
 #include "MGPKeyMatcher.h"
 #include "MGPUtils.h"
 #include <string.h>
-#include "GPCarryVaryGroup.h"
+#include "math/GPCarryVaryGroup.h"
 #include "AutoStorage.h"
 #include "GPClock.h"
 
@@ -106,6 +106,10 @@ MGPKeyMatcher::MGPKeyMatcher(GPPieces** inputs, unsigned int inputNumber, GPPiec
             }
         }
         /*Compute Target Key*/
+        for (int i=0; i<outputKeyStorage; ++i)
+        {
+            keyOutput[i] = 0;
+        }
         for (int i=0; i<outputKeys.size(); ++i)
         {
             keyOutput[i] = keyCurrent[keyOutputPos[i]];

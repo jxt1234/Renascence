@@ -1,6 +1,6 @@
 GP_Function_Create_ByFormula
 格式规定：
-1、基本形式： 
+1、基本形式：
 f(x0, g(x1, h(x2), f(x2, x3)));
 f(x0, ADF[NAME, x0,x1,f(x0,x3)])
 2、符号说明：
