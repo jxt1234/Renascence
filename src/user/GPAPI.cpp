@@ -823,7 +823,12 @@ GPPieces* GP_PiecesFunction_Run(GPPiecesFunction* piecesFunction, GPPieces** inp
 
 GPPieces* GP_Pieces_Create(AGPPiecesProducer* producer, const char* type, const char* dataType, const char* path, unsigned int* keys, int keyNum, int usage)
 {
-    if (NULL == producer || NULL == dataType || NULL == type || NULL == path)
+    if (NULL == producer || NULL == path || NULL == type)
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    if (GP_PIECES_INPUT == usage && (NULL == dataType || 0 == keyNum || NULL == keys))
     {
         FUNC_PRINT(1);
         return NULL;
@@ -834,7 +839,11 @@ GPPieces* GP_Pieces_Create(AGPPiecesProducer* producer, const char* type, const 
         FUNC_PRINT(1);
         return NULL;
     }
-    std::vector<const IStatusType*> inputs = _transform(dataType, producer->getProducer());
+    std::vector<const IStatusType*> inputs;
+    if (NULL != dataType)
+    {
+        inputs = _transform(dataType, producer->getProducer());
+    }
     switch (usage)
     {
         case GP_PIECES_INPUT:
@@ -908,5 +917,22 @@ void GP_Pieces_Array_Set(GPPieces** array, GPPieces* contents, int n)
         return;
     }
     array[n] = contents;
+}
+
+unsigned int* GP_Unsigned_Int_Array_Create(int n)
+{
+    return new unsigned int[n];
+}
+void GP_Unsigned_Int_Array_Free(unsigned int* array)
+{
+    delete [] array;
+}
+unsigned int GP_Unsigned_Int_Array_Get(unsigned int* array, int n)
+{
+    return array[n];
+}
+void GP_Unsigned_Int_Array_Set(unsigned int* array, unsigned int s, int n)
+{
+    array[n] = s;
 }
 

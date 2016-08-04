@@ -51,6 +51,98 @@ class AutoDefFunction:
         RenascenceBasic.GP_Strings_Free(string_native)
         return string_python
 
+class Piece:
+    def __init__(self, piece, producer):
+        self.nativePiece = piece
+        self.producer = producer
+    def __del__(self):
+        RenascenceBasic.GP_Pieces_Destroy(self.nativePiece)
+    def get(self):
+        return self.nativePiece
+
+class PieceArray:
+    def __init__(self, pieces):
+        self.pieces = pieces
+        n = len(pieces)
+        self.nativePieceArray = RenascenceBasic.GP_Pieces_CreateArray(n)
+        for i in range(0, n):
+            RenascenceBasic.GP_Pieces_Array_Set(self.nativePieceArray, pieces[i].get(), i)
+    def __del__(self):
+        RenascenceBasic.GP_Pieces_Array_Free(self.nativePieceArray)
+
+    def get(self):
+        return self.nativePieceArray
+    def size(self):
+        return len(self.pieces)
+
+class PieceFunction:
+    def __init__(self, nativeFunction, producer):
+        self.nativeFunction = nativeFunction
+        self.producer = producer
+    def __del__(self):
+        RenascenceBasic.GP_PiecesFunction_Destroy(self.nativeFunction)
+    def run(self, pieces):
+        pieceArray = PieceArray(pieces)
+        return Piece(RenascenceBasic.GP_PiecesFunction_Run(self.nativeFunction, pieceArray.get(), pieceArray.size()), self.producer)
+
+class PieceFunctionProducer:
+    def __init__(self, basicProducer, pieceLibMetaFileList, mapReduceMetaFileList):
+        self.basicProducer = basicProducer
+        libNumber = len(pieceLibMetaFileList)
+        libStreams = RenascenceBasic.GP_Streams_Malloc(libNumber)
+        mapReduceMetaNumber = len(mapReduceMetaFileList)
+        mapReduceMeta = RenascenceBasic.GP_Streams_Malloc(mapReduceMetaNumber)
+        for [i, name] in enumerate(mapReduceMetaFileList):
+            stream = RenascenceBasic.GP_Stream_Create(name)
+            RenascenceBasic.GP_Streams_Set(mapReduceMeta, stream, i)
+        for [i, name] in enumerate(pieceLibMetaFileList):
+            stream = RenascenceBasic.GP_Stream_Create(name)
+            RenascenceBasic.GP_Streams_Set(libStreams, stream, i)
+        self.nativeProducer = RenascenceBasic.GP_PiecesProducer_Create(basicProducer.get(), libStreams, None, libNumber, mapReduceMeta, mapReduceMetaNumber)
+        for i in range(0, libNumber):
+            stream = RenascenceBasic.GP_Streams_Get(libStreams, i)
+            RenascenceBasic.GP_Stream_Destroy(stream)
+        for i in range(0, mapReduceMetaNumber):
+            stream = RenascenceBasic.GP_Streams_Get(mapReduceMeta, i)
+            RenascenceBasic.GP_Stream_Destroy(stream)
+        RenascenceBasic.GP_Streams_Free(libStreams)
+        RenascenceBasic.GP_Streams_Free(mapReduceMeta)
+    def __del__(self):
+        RenascenceBasic.GP_PiecesProducer_Destroy(self.nativeProducer)
+    def listType(self):
+        result = []
+        nativeResult = RenascenceBasic.GP_PiecesProducer_ListType(self.nativeProducer)
+        number = RenascenceBasic.GP_Strings_Number(nativeResult)
+        for i in range(0, number):
+            result.append(RenascenceBasic.GP_Strings_Get(nativeResult, i))
+        RenascenceBasic.GP_Strings_Free(nativeResult)
+        return result
+    def get(self):
+        return self.nativeProducer
+
+class PieceFunctionProducerParallel:
+    def __init__(self, producer, parallelType):
+        self.parallelType = parallelType
+        self.producer = producer
+    def __del__(self):
+        #Nothing needed to do
+        return
+    def createFunction(self, formula, inputTypes):
+        return PieceFunction(RenascenceBasic.GP_PiecesFunction_Create(self.producer.get(), formula, inputTypes, self.parallelType), self)
+    def createInput(self, path, dataType, keyDimesions):
+        n = len(keyDimesions)
+        nativeKeyDimesions = RenascenceBasic.GP_Unsigned_Int_Array_Create(n)
+        for i in range(0, n):
+            RenascenceBasic.GP_Unsigned_Int_Array_Set(nativeKeyDimesions, keyDimesions[i], i)
+        piece = Piece(RenascenceBasic.GP_Pieces_Create(self.producer.get(), self.parallelType, dataType, path, nativeKeyDimesions, n, RenascenceBasic.GP_PIECES_INPUT), self)
+        RenascenceBasic.GP_Unsigned_Int_Array_Free(nativeKeyDimesions)
+        return piece
+    def createOutput(self, path):
+        piece = Piece(RenascenceBasic.GP_Pieces_Create(self.producer.get(), self.parallelType, None, path, None, 0, RenascenceBasic.GP_PIECES_OUTPUT), self)
+        return piece
+    def copyPiece(self, read, write):
+        RenascenceBasic.GP_Pieces_Copy(self.producer.get(), self.parallelType, read.get(), write.get())
+
 class Producer:
     def __init__(self, xmlFileList, producerType):
         n = len(xmlFileList)

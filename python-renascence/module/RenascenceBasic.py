@@ -91,6 +91,12 @@ except AttributeError:
 
 
 
+_RenascenceBasic.GP_PRODUCER_TREE_swigconstant(_RenascenceBasic)
+GP_PRODUCER_TREE = _RenascenceBasic.GP_PRODUCER_TREE
+
+_RenascenceBasic.GP_PRODUCER_STREAM_swigconstant(_RenascenceBasic)
+GP_PRODUCER_STREAM = _RenascenceBasic.GP_PRODUCER_STREAM
+
 def GP_Set_Lib_Path(basic_path):
     return _RenascenceBasic.GP_Set_Lib_Path(basic_path)
 GP_Set_Lib_Path = _RenascenceBasic.GP_Set_Lib_Path
@@ -297,6 +303,10 @@ def GP_Contents_Types(contents):
     return _RenascenceBasic.GP_Contents_Types(contents)
 GP_Contents_Types = _RenascenceBasic.GP_Contents_Types
 
+def GP_Contents_Dump(contents, n):
+    return _RenascenceBasic.GP_Contents_Dump(contents, n)
+GP_Contents_Dump = _RenascenceBasic.GP_Contents_Dump
+
 _RenascenceBasic.GP_OPTIMIZOR_VALUE_swigconstant(_RenascenceBasic)
 GP_OPTIMIZOR_VALUE = _RenascenceBasic.GP_OPTIMIZOR_VALUE
 
@@ -339,21 +349,55 @@ def GP_PiecesFunction_Destroy(pieceFunction):
     return _RenascenceBasic.GP_PiecesFunction_Destroy(pieceFunction)
 GP_PiecesFunction_Destroy = _RenascenceBasic.GP_PiecesFunction_Destroy
 
-def GP_Pieces_Load(producer, type, path, description):
-    return _RenascenceBasic.GP_Pieces_Load(producer, type, path, description)
-GP_Pieces_Load = _RenascenceBasic.GP_Pieces_Load
+_RenascenceBasic.GP_PIECES_INPUT_swigconstant(_RenascenceBasic)
+GP_PIECES_INPUT = _RenascenceBasic.GP_PIECES_INPUT
 
-def GP_Pieces_Save(pieces, path, description):
-    return _RenascenceBasic.GP_Pieces_Save(pieces, path, description)
-GP_Pieces_Save = _RenascenceBasic.GP_Pieces_Save
+_RenascenceBasic.GP_PIECES_OUTPUT_swigconstant(_RenascenceBasic)
+GP_PIECES_OUTPUT = _RenascenceBasic.GP_PIECES_OUTPUT
+
+def GP_Pieces_Create(producer, type, dataType, path, keys, keyNum, usage):
+    return _RenascenceBasic.GP_Pieces_Create(producer, type, dataType, path, keys, keyNum, usage)
+GP_Pieces_Create = _RenascenceBasic.GP_Pieces_Create
 
 def GP_Pieces_Destroy(pieces):
     return _RenascenceBasic.GP_Pieces_Destroy(pieces)
 GP_Pieces_Destroy = _RenascenceBasic.GP_Pieces_Destroy
 
-def GP_Contents_Dump(contents, n):
-    return _RenascenceBasic.GP_Contents_Dump(contents, n)
-GP_Contents_Dump = _RenascenceBasic.GP_Contents_Dump
+def GP_Pieces_Copy(producer, type, readPieces, writePieces):
+    return _RenascenceBasic.GP_Pieces_Copy(producer, type, readPieces, writePieces)
+GP_Pieces_Copy = _RenascenceBasic.GP_Pieces_Copy
+
+def GP_Pieces_CreateArray(n):
+    return _RenascenceBasic.GP_Pieces_CreateArray(n)
+GP_Pieces_CreateArray = _RenascenceBasic.GP_Pieces_CreateArray
+
+def GP_Pieces_Array_Free(array):
+    return _RenascenceBasic.GP_Pieces_Array_Free(array)
+GP_Pieces_Array_Free = _RenascenceBasic.GP_Pieces_Array_Free
+
+def GP_Pieces_Array_Get(array, n):
+    return _RenascenceBasic.GP_Pieces_Array_Get(array, n)
+GP_Pieces_Array_Get = _RenascenceBasic.GP_Pieces_Array_Get
+
+def GP_Pieces_Array_Set(array, contents, n):
+    return _RenascenceBasic.GP_Pieces_Array_Set(array, contents, n)
+GP_Pieces_Array_Set = _RenascenceBasic.GP_Pieces_Array_Set
+
+def GP_Unsigned_Int_Array_Create(n):
+    return _RenascenceBasic.GP_Unsigned_Int_Array_Create(n)
+GP_Unsigned_Int_Array_Create = _RenascenceBasic.GP_Unsigned_Int_Array_Create
+
+def GP_Unsigned_Int_Array_Free(array):
+    return _RenascenceBasic.GP_Unsigned_Int_Array_Free(array)
+GP_Unsigned_Int_Array_Free = _RenascenceBasic.GP_Unsigned_Int_Array_Free
+
+def GP_Unsigned_Int_Array_Get(array, n):
+    return _RenascenceBasic.GP_Unsigned_Int_Array_Get(array, n)
+GP_Unsigned_Int_Array_Get = _RenascenceBasic.GP_Unsigned_Int_Array_Get
+
+def GP_Unsigned_Int_Array_Set(array, s, n):
+    return _RenascenceBasic.GP_Unsigned_Int_Array_Set(array, s, n)
+GP_Unsigned_Int_Array_Set = _RenascenceBasic.GP_Unsigned_Int_Array_Set
 # This file is compatible with both classic and new-style classes.
 
 

@@ -341,34 +341,36 @@ extern "C"{
     AGPStrings* GP_PiecesProducer_ListType(AGPPiecesProducer* producer);
     
     /*GPPieces API*/
-    /*Create GPPieces Function
-     
-     */
+    /*GPPieces Function*/
     GPPiecesFunction* GP_PiecesFunction_Create(AGPPiecesProducer* producer, const char* formula, const char* inputType, const char* type);
-    
+
     GPPieces* GP_PiecesFunction_Run(GPPiecesFunction* piecesFunction, GPPieces** inputs, int inputNumber);
-    
+
     void GP_PiecesFunction_Destroy(GPPiecesFunction* pieceFunction);
-    
-    
+
     enum {
         GP_PIECES_INPUT = 0,
         GP_PIECES_OUTPUT = 1,
     };
-    
-    /*Pieces Function*/
+
+    /*Pieces Create*/
     GPPieces* GP_Pieces_Create(AGPPiecesProducer* producer, const char* type, const char* dataType, const char* path, unsigned int* keys, int keyNum, int usage);
-    
+
     void GP_Pieces_Destroy(GPPieces* pieces);
-    
+
     bool GP_Pieces_Copy(AGPPiecesProducer* producer, const char* type, GPPieces* readPieces, GPPieces* writePieces);
-    
+
     /*For GPPieces array operate*/
     GPPieces** GP_Pieces_CreateArray(int n);
     void GP_Pieces_Array_Free(GPPieces** array);
     GPPieces* GP_Pieces_Array_Get(GPPieces** array, int n);
     void GP_Pieces_Array_Set(GPPieces** array,GPPieces* contents, int n);
     
+    /*For unsigned int array operate*/
+    unsigned int* GP_Unsigned_Int_Array_Create(int n);
+    void GP_Unsigned_Int_Array_Free(unsigned int* array);
+    unsigned int GP_Unsigned_Int_Array_Get(unsigned int* array, int n);
+    void GP_Unsigned_Int_Array_Set(unsigned int* array, unsigned int s, int n);
 
 #ifdef __cplusplus
 }
