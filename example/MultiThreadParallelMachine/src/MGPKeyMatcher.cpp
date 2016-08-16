@@ -17,8 +17,8 @@
 #include "MGPUtils.h"
 #include <string.h>
 #include "math/GPCarryVaryGroup.h"
-#include "AutoStorage.h"
-#include "GPClock.h"
+#include "utils/AutoStorage.h"
+#include "utils/GPClock.h"
 
 
 MGPKeyMatcher::Key::Key(unsigned int* keys, unsigned int keyNumber)

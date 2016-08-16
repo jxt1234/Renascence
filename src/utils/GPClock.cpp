@@ -16,7 +16,8 @@
 #include <time.h>
 #include "utils/GPDebug.h"
 #include "utils/GPClock.h"
-#include "string.h"
+#include <string.h>
+#include <stdlib.h>
 
 GPClock::GPClock(int func, const char* name)
 {

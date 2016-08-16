@@ -15,12 +15,12 @@
 ******************************************************************/
 #include "MGPExecutor.h"
 #include "MGPUtils.h"
-#include "AutoStorage.h"
+#include "utils/AutoStorage.h"
+#include "utils/GPClock.h"
 #include "math/GPCarryVaryGroup.h"
 #include <string.h>
 #include "MGPKeyMatcher.h"
 #include "MGPThread.h"
-#include "GPClock.h"
 
 static GPContents* _loadContent(int inputNumber, GPPieces** inputs, unsigned int* inputKeys)
 {
