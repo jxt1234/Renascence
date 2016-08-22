@@ -14,6 +14,7 @@
  limitations under the License.
  ******************************************************************/
 #include "head.h"
+#include "backend/GPKeyIteratorFactory.h"
 #include "backend/GPSingleParallelMachine.h"
 #include "core/GPPieceFactory.h"
 #include "core/IGPAutoDefFunction.h"
@@ -31,7 +32,7 @@ public:
         virtual void vHandle(IGPFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const = 0;
     };
     
-    SingleExecutor(GPPtr<IGPFunction> f, GPPtr<IGPFloatFunction> c, const std::vector<std::pair<unsigned int, unsigned int>>& outputKey, GPPtr<Handle> h):mFunction(f), mCondition(c), mOutputKey(outputKey), mHandle(h)
+    SingleExecutor(GPPtr<IGPFunction> f, GPPtr<GPKeyIteratorFactory> c, const std::vector<std::pair<unsigned int, unsigned int>>& outputKey, GPPtr<Handle> h):mFunction(f), mKeyIteratorFactory(c), mOutputKey(outputKey), mHandle(h)
     {
     }
     
@@ -45,75 +46,37 @@ public:
         GPASSERT(NULL!=output);
         GPASSERT(NULL!=inputs);
         GPASSERT(inputNumber>0);
-        /*Compute all dimesions*/
-        unsigned int sumDim = 0;
-        for (int i=0; i<inputNumber; ++i)
+        auto keyIterator = mKeyIteratorFactory->create(inputs, inputNumber, output);
+        auto size = keyIterator->vGetSize();
+        AUTOSTORAGE(keyOutput, unsigned int, (int)size.second);
+        AUTOSTORAGE(keyInput, unsigned int, (int)size.first);
+        bool hasData = keyIterator->vRewind(keyInput, keyOutput);
+        if (!hasData)
         {
-            sumDim += inputs[i]->nKeyNumber;
+            GPASSERT(0);//TODO
+            return false;
         }
-        AUTOSTORAGE(keyOutput, unsigned int, (int)mOutputKey.size());
-        AUTOSTORAGE(keyOutputPos, unsigned int, (int)mOutputKey.size());
-        for (int pos=0; pos < mOutputKey.size(); ++pos)
-        {
-            keyOutputPos[pos] = 0;
-            auto p = mOutputKey[pos];
-            for (int i=0; i<p.first; ++i)
-            {
-                keyOutputPos[pos] = keyOutputPos[pos] + inputs[i]->nKeyNumber;
-            }
-        }
-        AUTOSTORAGE(keyDimesions, unsigned int, sumDim);
-        AUTOSTORAGE(keyCurrent, unsigned int, sumDim);
-        AUTOSTORAGE(keyCurrentFloat, GPFLOAT, sumDim);
-        unsigned int pos = 0;
-        for (int i=0; i<inputNumber; ++i)
-        {
-            ::memcpy(keyDimesions+pos, inputs[i]->pKeySize, sizeof(unsigned int)*inputs[i]->nKeyNumber);
-            pos += inputs[i]->nKeyNumber;
-        }
-        
-        GPCarryVaryGroup group(keyDimesions, sumDim);
-        group.start(keyCurrent, sumDim);
         do
         {
-            if (NULL!=mCondition.get())
-            {
-                for (int i=0; i<sumDim; ++i)
-                {
-                    keyCurrentFloat[i] = keyCurrent[i];
-                }
-                GPFLOAT c = mCondition->vRun(keyCurrentFloat, sumDim);
-                if (c <= 0)
-                {
-                    continue;
-                }
-            }
-
-            /*Compute Target Key*/
-            for (int i=0; i<mOutputKey.size(); ++i)
-            {
-                keyOutput[i] = keyCurrent[keyOutputPos[i]];
-            }
-            
             /*Get Current Input*/
-            pos = 0;
+            unsigned int pos = 0;
             GPContents* currentGPInputs = new GPContents;
             for (int i=0; i<inputNumber; ++i)
             {
-                GPContents* ci = inputs[i]->vLoad(keyCurrent+pos, inputs[i]->nKeyNumber);
+                GPContents* ci = inputs[i]->vLoad(keyInput+pos, inputs[i]->nKeyNumber);
                 pos += inputs[i]->nKeyNumber;
                 currentGPInputs->merge(*ci);
                 ci->decRef();//Don't delete content
             }
             mHandle->vHandle(mFunction.get(), output, currentGPInputs, keyOutput, (unsigned int)mOutputKey.size());
             currentGPInputs->decRef();
-        } while (group.next(keyCurrent, sumDim));
+        } while (keyIterator->vNext(keyInput, keyOutput));
         
         return true;
     }
 private:
     GPPtr<IGPFunction> mFunction;
-    GPPtr<IGPFloatFunction> mCondition;
+    GPPtr<GPKeyIteratorFactory> mKeyIteratorFactory;
     std::vector<std::pair<unsigned int, unsigned int>> mOutputKey;
     GPPtr<Handle> mHandle;
 };
@@ -210,8 +173,9 @@ IParallelMachine::Executor* GPSingleParallelMachine::vPrepare(const GPParallelTy
     {
         condition = data->pContext->vCreateFloatFunction(data->sConditionInfo.sConditionFormula, data->sVariableInfo);
     }
+    GPPtr<GPKeyIteratorFactory> keyFactory = new GPKeyIteratorFactory(data);
 
-    Executor* executor = new SingleExecutor(func, condition, data->mOutputKey, handle);
+    Executor* executor = new SingleExecutor(func, keyFactory, data->mOutputKey, handle);
     return executor;
 }
 

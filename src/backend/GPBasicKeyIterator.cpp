@@ -1,0 +1,128 @@
+/******************************************************************
+   Copyright 2016, Jiang Xiao-tang
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+******************************************************************/
+#include "GPBasicKeyIterator.h"
+#include "utils/GPDebug.h"
+#include "utils/AutoStorage.h"
+bool GPBasicKeyIterator::vNext(unsigned int* pInputKeys, unsigned int* pOutputKeys)
+{
+    GPFLOAT conditionRes = -1;
+    do
+    {
+        bool res = mGroup->next(mCache, mCacheSize);
+        if (!res)
+        {
+            return false;
+        }
+        if (NULL == mCondition)
+        {
+            break;
+        }
+        for (int i=0; i<mCacheSize; ++i)
+        {
+            mCacheFloat[i] = mCache[i];
+        }
+        conditionRes = mCondition->vRun(mCacheFloat, mCacheSize);
+    } while (conditionRes <= 0);
+    ::memcpy(pInputKeys, mCache, mCacheSize*sizeof(unsigned int));
+    for (int i=0; i<mOutputPos.size(); ++i)
+    {
+        pOutputKeys[i] = pInputKeys[mOutputPos[i]];
+    }
+    return true;
+}
+
+GPBasicKeyIterator::GPBasicKeyIterator(GPPieces** inputs, int inputNumber, GPPieces* output, const GPParallelType::KEYS& outputKeys, IGPFloatFunction* condition)
+{
+    mCondition = condition;
+    GPASSERT(NULL!=output);
+    GPASSERT(NULL!=inputs);
+    GPASSERT(inputNumber>0);
+    /*Compute all dimesions*/
+    unsigned int sumDim = 0;
+    for (int i=0; i<inputNumber; ++i)
+    {
+        sumDim += inputs[i]->nKeyNumber;
+    }
+    for (int pos=0; pos < outputKeys.size(); ++pos)
+    {
+        auto p = outputKeys[pos];
+        unsigned int outputPos = p.second;
+        for (int i=0; i<p.first; ++i)
+        {
+            outputPos += inputs[i]->nKeyNumber;
+        }
+        mOutputPos.push_back(outputPos);
+    }
+    mCacheSize = sumDim;
+    mCache = new unsigned int[sumDim];
+    mCacheFloat = new GPFLOAT[sumDim];
+    AUTOSTORAGE(keyDimesions, unsigned int, sumDim);
+    GPASSERT(NULL!=mCacheFloat && NULL!=mCache && NULL!=keyDimesions);
+    unsigned int pos = 0;
+    for (int i=0; i<inputNumber; ++i)
+    {
+        ::memcpy(keyDimesions+pos, inputs[i]->pKeySize, sizeof(unsigned int)*inputs[i]->nKeyNumber);
+        pos += inputs[i]->nKeyNumber;
+    }
+    mGroup = new GPCarryVaryGroup(keyDimesions, sumDim);
+    mGroup->start(mCache, mCacheSize);
+}
+
+GPBasicKeyIterator::~GPBasicKeyIterator()
+{
+    delete mGroup;
+    delete [] mCacheFloat;
+    delete [] mCache;
+}
+
+std::pair<unsigned int, unsigned int> GPBasicKeyIterator::vGetSize() const
+{
+    return std::make_pair(mCacheSize, mOutputPos.size());
+}
+
+bool GPBasicKeyIterator::vRewind(unsigned int* pInputKeys, unsigned int* pOutputKeys)
+{
+    mGroup->start(mCache, mCacheSize);
+    GPFLOAT conditionRes = -1;
+    do
+    {
+        if (NULL == mCondition)
+        {
+            break;
+        }
+        for (int i=0; i<mCacheSize; ++i)
+        {
+            mCacheFloat[i] = mCache[i];
+        }
+        conditionRes = mCondition->vRun(mCacheFloat, mCacheSize);
+        if (conditionRes > 0)
+        {
+            break;
+        }
+        bool res = mGroup->next(mCache, mCacheSize);
+        if (!res)
+        {
+            return false;
+        }
+    } while (true);
+    ::memcpy(pInputKeys, mCache, mCacheSize*sizeof(unsigned int));
+    for (int i=0; i<mOutputPos.size(); ++i)
+    {
+        pOutputKeys[i] = pInputKeys[mOutputPos[i]];
+    }
+    return true;
+}
+
