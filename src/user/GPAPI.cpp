@@ -823,12 +823,22 @@ GPPieces* GP_PiecesFunction_Run(GPPiecesFunction* piecesFunction, GPPieces** inp
 
 GPPieces* GP_Pieces_Create(AGPPiecesProducer* producer, const char* type, const char* dataType, const char* path, unsigned int* keys, int keyNum, int usage)
 {
-    if (NULL == producer || NULL == path || NULL == type)
+    if (NULL == producer || NULL == type)
     {
         FUNC_PRINT(1);
         return NULL;
     }
-    if (GP_PIECES_INPUT == usage && (NULL == dataType || 0 == keyNum || NULL == keys))
+    if (NULL == path && GP_PIECES_CACHE != usage)
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    if ((0 == keyNum || NULL == keys) && GP_PIECES_OUTPUT != usage)
+    {
+        FUNC_PRINT(1);
+        return NULL;
+    }
+    if (GP_PIECES_INPUT == usage && (NULL == dataType))
     {
         FUNC_PRINT(1);
         return NULL;
@@ -850,6 +860,8 @@ GPPieces* GP_Pieces_Create(AGPPiecesProducer* producer, const char* type, const 
             return machine->vCreatePieces(path, inputs, keys, keyNum, IParallelMachine::INPUT);
         case GP_PIECES_OUTPUT:
             return machine->vCreatePieces(path, inputs, keys, keyNum, IParallelMachine::OUTPUT);
+        case GP_PIECES_CACHE:
+            return machine->vCreatePieces(path, inputs, keys, keyNum, IParallelMachine::CACHE);
     }
     FUNC_PRINT(1);
     return NULL;

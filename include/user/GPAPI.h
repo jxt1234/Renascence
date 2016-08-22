@@ -351,6 +351,7 @@ extern "C"{
     enum {
         GP_PIECES_INPUT = 0,
         GP_PIECES_OUTPUT = 1,
+        GP_PIECES_CACHE = 2,
     };
 
     /*Pieces Create*/
