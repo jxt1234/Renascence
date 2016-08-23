@@ -13,8 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef BACKEND_GPBASICKEYITERATOR_H
-#define BACKEND_GPBASICKEYITERATOR_H
+#ifndef BACKEND_GPOPTIMIZEDKEYITERATOR_H
+#define BACKEND_GPOPTIMIZEDKEYITERATOR_H
 #include <vector>
 #include "backend/IGPKeyIterator.h"
 #include "math/GPCarryVaryGroup.h"
@@ -22,24 +22,23 @@
 #include "lowlevelAPI/IGPFunction.h"
 #include "lowlevelAPI/GPParallelType.h"
 
-class GPBasicKeyIterator:public IGPKeyIterator
+class GPOptimizedKeyIterator:public IGPKeyIterator
 {
 public:
-    GPBasicKeyIterator(GPPieces** inputs, int nInput, const GPParallelType::KEYS& outputKeys, IGPFloatFunction* condition);
-    virtual ~GPBasicKeyIterator();
-    
+    GPOptimizedKeyIterator(GPPieces** inputs, int nInput, const GPParallelType::KEYS& outputKeys, const GPParallelType::KEYS& sameKeys);
+    virtual ~GPOptimizedKeyIterator();
+
     virtual bool vNext(unsigned int* pInputKeys, unsigned int* pOutputKeys) override;
     virtual std::pair<unsigned int, unsigned int> vGetSize() const override;
     virtual bool vRewind(unsigned int* pInputKeys, unsigned int* pOutputKeys) override;
 private:
     std::vector<unsigned int> mOutputPos;
     GPCarryVaryGroup* mGroup;
-    
+
     unsigned int* mCache;
     unsigned int mCacheSize;
-    
-    GPFLOAT* mCacheFloat;    
-    IGPFloatFunction* mCondition;
+
+    std::vector<unsigned int> mMapPosForInput;
 };
 
 #endif

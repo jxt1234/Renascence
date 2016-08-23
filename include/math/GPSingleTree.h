@@ -24,6 +24,7 @@
 #include "GPAbstractPoint.h"
 #include "GPSingleTreeFunction.h"
 #include "head.h"
+#include <set>
 
 /*GPSingleTree is used to Generate single formula such as y=x*2+sin(cos(x))*/
 
@@ -40,6 +41,9 @@ public:
     GPSinglePoint(TYPE type, int func_or_input);
     virtual ~GPSinglePoint();
     GPFLOAT compute(GPFLOAT* inputs);
+    
+    void insertData(std::set<int>& result, TYPE t) const;
+    
     class GPSinglePointCopy:public GPAbstractPoint::IPointCopy
     {
     public:
@@ -71,6 +75,9 @@ public:
 
     inline GPFLOAT compute(GPFLOAT* inputs){return mRoot->compute(inputs);}
     int len() const;
+    
+    std::set<int> getAllInput() const;
+    std::set<int> getAllFunction() const;
     
     static std::vector<std::string> divideWords(const std::string& formula);
     

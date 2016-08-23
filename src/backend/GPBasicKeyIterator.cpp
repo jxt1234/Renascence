@@ -44,10 +44,9 @@ bool GPBasicKeyIterator::vNext(unsigned int* pInputKeys, unsigned int* pOutputKe
     return true;
 }
 
-GPBasicKeyIterator::GPBasicKeyIterator(GPPieces** inputs, int inputNumber, GPPieces* output, const GPParallelType::KEYS& outputKeys, IGPFloatFunction* condition)
+GPBasicKeyIterator::GPBasicKeyIterator(GPPieces** inputs, int inputNumber, const GPParallelType::KEYS& outputKeys, IGPFloatFunction* condition)
 {
     mCondition = condition;
-    GPASSERT(NULL!=output);
     GPASSERT(NULL!=inputs);
     GPASSERT(inputNumber>0);
     /*Compute all dimesions*/

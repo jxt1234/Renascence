@@ -36,5 +36,5 @@ GPKeyIteratorFactory::~GPKeyIteratorFactory()
 
 IGPKeyIterator* GPKeyIteratorFactory::create(GPPieces** inputs, unsigned int nInput, GPPieces* output) const
 {
-    return new GPBasicKeyIterator(inputs, nInput, output, mOutputKeys, mConditionFunction);
+    return new GPBasicKeyIterator(inputs, nInput, mOutputKeys, mConditionFunction);
 }

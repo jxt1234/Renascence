@@ -18,6 +18,27 @@
 #include <stdlib.h>
 #include <sstream>
 using namespace std;
+void GPSinglePoint::insertData(std::set<int>& result, TYPE t) const
+{
+    if(FUNCTION != t && INPUT != t)
+    {
+        return;
+    }
+    if (mType == t)
+    {
+        int data = FUNCTION == t ? mData.sFunc.iFunc : mData.iInput;
+        if (result.find(data) == result.end())
+        {
+            result.insert(data);
+        }
+    }
+    for (auto p : mChildren)
+    {
+        ((GPSinglePoint*)p)->insertData(result, t);
+    }
+}
+
+
 GPSinglePoint* GPSinglePoint::createFromFormula(const vector<pair<TYPE, int>>& words)
 {
     return _createFromFormula(words, 0, (int)words.size()-1);
@@ -315,4 +336,18 @@ GPSingleTree* GPSingleTree::createFromFormula(const std::string& formula, const 
         pos++;
     }
     return createFromFormula(formula, variableMap);
+}
+
+std::set<int> GPSingleTree::getAllInput() const
+{
+    std::set<int> res;
+    mRoot->insertData(res, GPSinglePoint::INPUT);
+    return res;
+}
+
+std::set<int> GPSingleTree::getAllFunction() const
+{
+    std::set<int> res;
+    mRoot->insertData(res, GPSinglePoint::FUNCTION);
+    return res;
 }
