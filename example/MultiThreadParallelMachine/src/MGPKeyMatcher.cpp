@@ -50,71 +50,24 @@ bool MGPKeyMatcher::Key::match(Key* other)
 
 
 
-MGPKeyMatcher::MGPKeyMatcher(GPPieces** inputs, unsigned int inputNumber, GPPieces* output, const std::vector<std::pair<unsigned int, unsigned int>>& outputKeys, IGPFloatFunction* condition)
+MGPKeyMatcher::MGPKeyMatcher(IGPKeyIterator* iterator)
 {
     //GPCLOCK;
-    MGPASSERT(NULL!=output);
-    MGPASSERT(NULL!=inputs);
-    MGPASSERT(inputNumber>0);
-    /*Compute all dimesions*/
-    unsigned int sumDim = 0;
-    for (int i=0; i<inputNumber; ++i)
-    {
-        sumDim += inputs[i]->nKeyNumber;
-    }
-    int outputKeyStorage = (int)outputKeys.size();
-    if (outputKeys.empty())
-    {
-        outputKeyStorage = 1;
-    }
-    AUTOSTORAGE(keyOutput, unsigned int, outputKeyStorage);
-    AUTOSTORAGE(keyOutputPos, unsigned int, outputKeyStorage);
-    for (int pos=0; pos < outputKeys.size(); ++pos)
-    {
-        keyOutputPos[pos] = 0;
-        auto p = outputKeys[pos];
-        for (int i=0; i<p.first; ++i)
-        {
-            keyOutputPos[pos] = keyOutputPos[pos] + inputs[i]->nKeyNumber;
-        }
-    }
+    MGPASSERT(NULL!=iterator);
+    auto size = iterator->vGetSize();
+    int sumDim = size.first;
+    int outputKeyStorage = size.second;
     
-    AUTOSTORAGE(keyDimesions, unsigned int, sumDim);
+    AUTOSTORAGE(keyOutput, unsigned int, outputKeyStorage);
     AUTOSTORAGE(keyCurrent, unsigned int, sumDim);
-    AUTOSTORAGE(keyCurrentFloat, GPFLOAT, sumDim);
-    unsigned int pos = 0;
-    for (int i=0; i<inputNumber; ++i)
+    bool hasData = iterator->vRewind(keyCurrent, keyOutput);
+    if (!hasData)
     {
-        ::memcpy(keyDimesions+pos, inputs[i]->pKeySize, sizeof(unsigned int)*inputs[i]->nKeyNumber);
-        pos += inputs[i]->nKeyNumber;
+        MGPASSERT(0);
+        return;
     }
-
-    GPCarryVaryGroup group(keyDimesions, sumDim);
-    group.start(keyCurrent, sumDim);
     do
     {
-        if (NULL!=condition)
-        {
-            for (int i=0; i<sumDim; ++i)
-            {
-                keyCurrentFloat[i] = keyCurrent[i];
-            }
-            GPFLOAT c = condition->vRun(keyCurrentFloat, sumDim);
-            if (c <= 0)
-            {
-                continue;
-            }
-        }
-        /*Compute Target Key*/
-        for (int i=0; i<outputKeyStorage; ++i)
-        {
-            keyOutput[i] = 0;
-        }
-        for (int i=0; i<outputKeys.size(); ++i)
-        {
-            keyOutput[i] = keyCurrent[keyOutputPos[i]];
-        }
-        
         /*Record the key*/
         GPPtr<Key> inputKey = new Key(keyCurrent, sumDim);
         GPPtr<Key> outputKey = new Key(keyOutput, outputKeyStorage);
@@ -132,7 +85,7 @@ MGPKeyMatcher::MGPKeyMatcher(GPPieces** inputs, unsigned int inputNumber, GPPiec
             mKeyMatches.insert(std::make_pair(outputKey.get(), std::vector<GPPtr<Key>>{inputKey}));
             mOutputKeys.push_back(outputKey);
         }
-    } while (group.next(keyCurrent, sumDim));
+    } while (iterator->vNext(keyCurrent, keyOutput));
 }
 
 MGPKeyMatcher::~MGPKeyMatcher()

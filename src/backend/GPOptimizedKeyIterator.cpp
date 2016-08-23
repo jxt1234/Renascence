@@ -26,6 +26,7 @@ bool GPOptimizedKeyIterator::vNext(unsigned int* pInputKeys, unsigned int* pOutp
     {
         return false;
     }
+    pOutputKeys[0] = 0;
     for (int i=0; i<mMapPosForInput.size(); ++i)
     {
         pInputKeys[i] = mCache[mMapPosForInput[i]];
@@ -38,13 +39,18 @@ bool GPOptimizedKeyIterator::vNext(unsigned int* pInputKeys, unsigned int* pOutp
 }
 std::pair<unsigned int, unsigned int> GPOptimizedKeyIterator::vGetSize() const
 {
-    return std::make_pair(mMapPosForInput.size(), mOutputPos.size());
+    if (mOutputPos.size() > 0)
+    {
+        return std::make_pair(mMapPosForInput.size(), mOutputPos.size());
+    }
+    return std::make_pair(mMapPosForInput.size(), 1);
 }
 bool GPOptimizedKeyIterator::vRewind(unsigned int* pInputKeys, unsigned int* pOutputKeys)
 {
     mGroup->start(mCache, mCacheSize);
-    ::memset(pInputKeys, 0, sizeof(unsigned int)*mMapPosForInput.size());
-    ::memset(pOutputKeys, 0, sizeof(unsigned int)*mOutputPos.size());
+    auto size = this->vGetSize();
+    ::memset(pInputKeys, 0, sizeof(unsigned int)*size.first);
+    ::memset(pOutputKeys, 0, sizeof(unsigned int)*size.second);
     return true;
 }
 
@@ -113,6 +119,12 @@ GPOptimizedKeyIterator::GPOptimizedKeyIterator(GPPieces** inputs, int nInput, co
             posOrigin++;
         }
     }
+//    printf("Dimesions:");
+//    for (int i=0; i<mCacheSize; ++i)
+//    {
+//        printf("%d ", dimesions[i]);
+//    }
+//    printf("\n");
     mGroup = new GPCarryVaryGroup(dimesions, mCacheSize);
     for (int pos=0; pos < outputKeys.size(); ++pos)
     {

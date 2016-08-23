@@ -26,7 +26,9 @@ public:
     IGPKeyIterator* create(GPPieces** inputs, unsigned int nInput, GPPieces* output) const;
 private:
     std::string mCondition;
+    GPParallelType::KEYS mInputsInConditionKeys;
     IGPFloatFunction* mConditionFunction;
     GPParallelType::KEYS mOutputKeys;
+    bool mCanOptimize;
 };
 #endif

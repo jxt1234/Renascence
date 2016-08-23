@@ -59,12 +59,16 @@ private:
     IGPFunction* mFunction;
 };
 
-MGPExecutor::MGPExecutor(const IGPFunctionContext* context, const std::string& formula, const std::string& condition, const std::string& variable, int threadNum, IParallelMachine::PARALLELTYPE type, const GPParallelType::KEYS& outputKeys, const GPParallelType::KEYS& variableKey)
+//MGPExecutor::MGPExecutor(const IGPFunctionContext* context, const std::string& formula, const std::string& condition, const std::string& variable, int threadNum, IParallelMachine::PARALLELTYPE type, const GPParallelType::KEYS& outputKeys, const GPParallelType::KEYS& variableKey)
+MGPExecutor::MGPExecutor(const GPParallelType* data, int threadNum, IParallelMachine::PARALLELTYPE type)
 {
+    auto context = data->pContext;
+    auto formula = data->sFuncInfo.formula;
     MGPASSERT(NULL!=context);
     MGPASSERT(threadNum>1);
     MGPASSERT(type == IParallelMachine::MAP || type == IParallelMachine::REDUCE);
     mMainData = new ThreadData(context, formula);
+    mFactory = new GPKeyIteratorFactory(data);
     for (int i=0; i<threadNum; ++i)
     {
         mUserData.push_back(new ThreadData(context, formula));
@@ -77,12 +81,12 @@ MGPExecutor::MGPExecutor(const IGPFunctionContext* context, const std::string& f
     }
     mPool = new MGPThreadPool(userdata);
     mType = type;
-    mOutputKey = outputKeys;
-    if (!condition.empty())
+    mOutputKey = data->mOutputKey;
+    if (!data->sConditionInfo.sConditionFormula.empty())
     {
-        mCondition = context->vCreateFloatFunction(condition, variable);
+        mCondition = context->vCreateFloatFunction(data->sConditionInfo.sConditionFormula, data->sVariableInfo);
     }
-    mVariableKey = variableKey;
+    mVariableKey = data->sFuncInfo.variableKey;
 }
 
 MGPExecutor::~MGPExecutor()
@@ -176,8 +180,8 @@ bool MGPExecutor::_mapRun(GPPieces* output, GPPieces** inputs, int inputNumber) 
     MGPASSERT(NULL!=output);
     MGPASSERT(NULL!=inputs);
     MGPASSERT(inputNumber>0);
-    
-    MGPKeyMatcher matcher(inputs, inputNumber, output, mOutputKey, mCondition.get());
+    GPPtr<IGPKeyIterator> iterator = mFactory->create(inputs, inputNumber, output);
+    MGPKeyMatcher matcher(iterator.get());
     auto keymaps = matcher.get();
 
     MGPMutex inputMutex;
@@ -359,7 +363,8 @@ private:
 bool MGPExecutor::_reduceRun(GPPieces* output, GPPieces** inputs, int inputNumber) const
 {
     /*Collect Keys*/
-    MGPKeyMatcher matcher(inputs, inputNumber, output, mOutputKey, mCondition.get());
+    GPPtr<IGPKeyIterator> iterator = mFactory->create(inputs, inputNumber, output);
+    MGPKeyMatcher matcher(iterator.get());
     auto keymaps = matcher.get();
     size_t threadNumber = mPool->getThreadNumber();
     std::map<MGPKeyMatcher::Key*, std::vector<Collector*>> collectorMaps;

@@ -15,14 +15,66 @@
 ******************************************************************/
 #include "backend/GPKeyIteratorFactory.h"
 #include "GPBasicKeyIterator.h"
+#include "GPOptimizedKeyIterator.h"
 #include "utils/GPDebug.h"
+#include "math/GPSingleTree.h"
+#include <sstream>
+#include <string>
 GPKeyIteratorFactory::GPKeyIteratorFactory(const GPParallelType* type)
 {
     GPASSERT(NULL!=type);
+    mCanOptimize = false;
     mOutputKeys = type->mOutputKey;
     mConditionFunction = NULL;
+    mCondition = type->sConditionInfo.sConditionFormula;
+    
+    static const char* optimzeFunction[] = {
+        "==",
+        "&&"
+    };
+    int size = sizeof(optimzeFunction)/sizeof(const char*);
+    std::set<int> optimizeFunctionInt;
+    for (int i=0; i<size; ++i)
+    {
+        optimizeFunctionInt.insert(GPSingleTreeFunction::func(optimzeFunction[i]));
+    }
+    
     if (type->sConditionInfo.sConditionFormula.size() > 0)
     {
+        /*Translate variable info to keys*/
+        std::string v;
+        std::istringstream inputStream(type->sVariableInfo);
+        std::map<int, std::pair<unsigned int, unsigned int>> keyMaps;
+        int pos = 0;
+        while (inputStream >> v)
+        {
+            unsigned int first = v[0] - 'a';
+            unsigned int second = 0;
+            for (int i=1; i<v.size(); ++i)
+            {
+                second = second*10 + (v[i]-'0');
+            }
+            keyMaps.insert(std::make_pair(pos++, (std::make_pair(first, second))));
+        }
+        
+        /*Check the function tree*/
+        GPPtr<GPSingleTree> tree = GPSingleTree::createFromFormula(type->sConditionInfo.sConditionFormula, type->sVariableInfo);
+        auto allFunctions = tree->getAllFunction();
+        auto allVariable = tree->getAllInput();
+        for (auto vi : allVariable)
+        {
+            mInputsInConditionKeys.push_back(keyMaps.find(vi)->second);
+        }
+        mCanOptimize = true;
+        for (auto f : allFunctions)
+        {
+            if (optimizeFunctionInt.find(f) == optimizeFunctionInt.end())
+            {
+                mCanOptimize = false;
+                break;
+            }
+        }
+        
         mConditionFunction = type->pContext->vCreateFloatFunction(type->sConditionInfo.sConditionFormula, type->sVariableInfo);
     }
 }
@@ -36,5 +88,9 @@ GPKeyIteratorFactory::~GPKeyIteratorFactory()
 
 IGPKeyIterator* GPKeyIteratorFactory::create(GPPieces** inputs, unsigned int nInput, GPPieces* output) const
 {
+    if (mCanOptimize)
+    {
+        return new GPOptimizedKeyIterator(inputs, nInput, mOutputKeys, mInputsInConditionKeys);
+    }
     return new GPBasicKeyIterator(inputs, nInput, mOutputKeys, mConditionFunction);
 }

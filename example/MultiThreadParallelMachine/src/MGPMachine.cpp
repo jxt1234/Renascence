@@ -18,7 +18,7 @@
 
 IParallelMachine::Executor* MGPMachine::vPrepare(const GPParallelType* data, PARALLELTYPE type) const
 {
-    MGPExecutor* executor = new MGPExecutor(data->pContext, data->sFuncInfo.formula, data->sConditionInfo.sConditionFormula, data->sVariableInfo, 4,  type, data->mOutputKey, data->sFuncInfo.variableKey);
+    MGPExecutor* executor = new MGPExecutor(data, 4,  type);
     return executor;
 }
 

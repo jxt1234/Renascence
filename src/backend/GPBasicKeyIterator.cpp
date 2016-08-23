@@ -37,6 +37,7 @@ bool GPBasicKeyIterator::vNext(unsigned int* pInputKeys, unsigned int* pOutputKe
         conditionRes = mCondition->vRun(mCacheFloat, mCacheSize);
     } while (conditionRes <= 0);
     ::memcpy(pInputKeys, mCache, mCacheSize*sizeof(unsigned int));
+    pOutputKeys[0] = 0;
     for (int i=0; i<mOutputPos.size(); ++i)
     {
         pOutputKeys[i] = pInputKeys[mOutputPos[i]];
@@ -89,6 +90,10 @@ GPBasicKeyIterator::~GPBasicKeyIterator()
 
 std::pair<unsigned int, unsigned int> GPBasicKeyIterator::vGetSize() const
 {
+    if (mOutputPos.empty())
+    {
+        return std::make_pair(mCacheSize, 1);
+    }
     return std::make_pair(mCacheSize, mOutputPos.size());
 }
 
@@ -118,6 +123,7 @@ bool GPBasicKeyIterator::vRewind(unsigned int* pInputKeys, unsigned int* pOutput
         }
     } while (true);
     ::memcpy(pInputKeys, mCache, mCacheSize*sizeof(unsigned int));
+    pOutputKeys[0] = 0;
     for (int i=0; i<mOutputPos.size(); ++i)
     {
         pOutputKeys[i] = pInputKeys[mOutputPos[i]];

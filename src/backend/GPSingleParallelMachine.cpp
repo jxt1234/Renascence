@@ -58,6 +58,17 @@ public:
         }
         do
         {
+//            for (int i=0; i<size.first; ++i)
+//            {
+//                printf("%d ", keyInput[i]);
+//            }
+//            printf(" -> ");
+//            for (int i=0; i<size.second; ++i)
+//            {
+//                printf("%d ", keyOutput[i]);
+//            }
+//            printf("\n");
+            
             /*Get Current Input*/
             unsigned int pos = 0;
             GPContents* currentGPInputs = new GPContents;

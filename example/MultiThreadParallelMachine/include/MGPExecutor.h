@@ -18,10 +18,11 @@
 #include "lowlevelAPI/IParallelMachine.h"
 #include <queue>
 #include "MGPThreadPool.h"
+#include "backend/GPKeyIteratorFactory.h"
 class MGPExecutor:public IParallelMachine::Executor
 {
 public:
-    MGPExecutor(const IGPFunctionContext* context, const std::string& formula, const std::string& condition, const std::string& variable, int threadNum, IParallelMachine::PARALLELTYPE type, const GPParallelType::KEYS& outputKeys, const GPParallelType::KEYS& variableKey);
+    MGPExecutor(const GPParallelType* data, int threadNum, IParallelMachine::PARALLELTYPE type);
     virtual ~MGPExecutor();
     virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber) const;
     class ThreadData;
@@ -36,5 +37,6 @@ private:
     IParallelMachine::PARALLELTYPE mType;
     GPParallelType::KEYS mOutputKey;
     GPParallelType::KEYS mVariableKey;
+    GPPtr<GPKeyIteratorFactory> mFactory;
 };
 #endif

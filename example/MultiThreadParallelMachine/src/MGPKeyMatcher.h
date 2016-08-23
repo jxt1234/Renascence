@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef MGPKEYMATCHER_H
 #define MGPKEYMATCHER_H
-#include "lowlevelAPI/IParallelMachine.h"
+#include "backend/IGPKeyIterator.h"
 #include <map>
 #include <vector>
 class MGPKeyMatcher:public GPRefCount
@@ -35,7 +35,7 @@ public:
         unsigned int mKeyNumber;
     };
 
-    MGPKeyMatcher(GPPieces** inputs, unsigned int inputNumber, GPPieces* output, const std::vector<std::pair<unsigned int, unsigned int>>& outputKey, IGPFloatFunction* condition);
+    MGPKeyMatcher(IGPKeyIterator* iterator);
     virtual ~MGPKeyMatcher();
     
     const std::map<Key*, std::vector<GPPtr<Key>>>& get() const {return mKeyMatches;}
