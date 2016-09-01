@@ -22,7 +22,7 @@
 class GPDAGPiecesFunctionCreator:public GPTreePiecesFunctionCreator
 {
 public:
-    GPDAGPiecesFunctionCreator(const GPFunctionDataBase* base, const IGPFunctionContext* context, const GPFrontEndProducer* front, const std::map<std::string, std::string>& map_reduce_formula);
+    GPDAGPiecesFunctionCreator(const GPProducer* context, const GPFrontEndProducer* front, const std::map<std::string, std::string>& map_reduce_formula);
     virtual ~GPDAGPiecesFunctionCreator();
     virtual GPPiecesFunction* vCreateFromFuncTree(const GPFunctionTree* tree, const IParallelMachine* machine) const;
 };

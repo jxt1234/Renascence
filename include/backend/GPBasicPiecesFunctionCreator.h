@@ -16,13 +16,14 @@
 #ifndef BACKEND_GPBASICPIECESFUNCTIONCREATOR_H
 #define BACKEND_GPBASICPIECESFUNCTIONCREATOR_H
 #include "GPPiecesFunctionCreator.h"
+#include "core/GPProducer.h"
 class GPBasicPiecesFunctionCreator:public GPPiecesFunctionCreator
 {
 public:
     virtual GPPiecesFunction* vCreateFromFuncTree(const GPFunctionTree* tree, const IParallelMachine* machine) const;
-    GPBasicPiecesFunctionCreator(const IGPFunctionContext* context);
+    GPBasicPiecesFunctionCreator(const GPProducer* context);
     virtual ~GPBasicPiecesFunctionCreator();
 private:
-    const IGPFunctionContext* mContext;
+    const GPProducer* mContext;
 };
 #endif

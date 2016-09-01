@@ -18,15 +18,14 @@
 #include "midend/GPMultiLayerTree.h"
 #include "midend/GPMapReduceMerger.h"
 
-GPTreePiecesFunctionCreator::GPTreePiecesFunctionCreator(const GPFunctionDataBase* base, const IGPFunctionContext* context, const GPFrontEndProducer* front, const std::map<std::string, std::string>& map_reduce_formula)
+GPTreePiecesFunctionCreator::GPTreePiecesFunctionCreator(const GPProducer* context, const GPFrontEndProducer* front, const std::map<std::string, std::string>& map_reduce_formula)
 {
-    GPASSERT(NULL!=base);
     GPASSERT(NULL!=front);
     for (auto iter : map_reduce_formula)
     {
         auto funcName = iter.first;
         auto formula = iter.second;
-        auto func = base->vQueryFunction(funcName);
+        auto func = context->getDataBase()->vQueryFunction(funcName);
         GPASSERT(NULL!=func);
         GPPtr<GPFunctionTree> tree = front->vCreateFromFormula(formula, std::vector<const IStatusType*>());
         //FUNC_PRINT_ALL(tree->dump().c_str(), s);

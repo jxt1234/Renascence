@@ -14,6 +14,7 @@
  limitations under the License.
  ******************************************************************/
 #include "backend/GPBasicPiecesFunctionCreator.h"
+#include "frontend/GPFrontEndProducer.h"
 #include <sstream>
 
 static std::pair<int, int> _translate(const std::string& name)
@@ -86,7 +87,11 @@ public:
         {
             keyDims[i] = keyDms[i];
         }
-
+//        for (auto t : mTypes)
+//        {
+//            FUNC_PRINT_ALL(t->name().c_str(), s);
+//        }
+//        FUNC_PRINT(mTypes.size());
         return mMachine->vCreatePieces(mPath.c_str(), mTypes, keyDims, (int)keyDms.size(), mUsage);
     }
 private:
@@ -179,7 +184,7 @@ public:
     }
     
     
-    static GPPiecesFunctionNode* createFromFuncPoint(const GPFunctionTreePoint* root, const IParallelMachine* machine, const IGPFunctionContext* context)
+    static GPPiecesFunctionNode* createFromFuncPoint(const GPFunctionTreePoint* root, const IParallelMachine* machine, const GPProducer* context)
     {
         GPASSERT(NULL!=context);
         GPASSERT(GPFunctionTreePoint::PARALLEL == root->type() || GPFunctionTreePoint::INPUT == root->type());
@@ -197,6 +202,10 @@ public:
         //TODO
         data.sFuncInfo.parameter = "";
         data.sFuncInfo.inputs.clear();
+        
+        GPPtr<GPFunctionTree> tree = context->getFront()->vCreateFromFormula(data.sFuncInfo.formula, data.sFuncInfo.inputs);
+        GPASSERT(tree->root()->type() == GPFunctionTreePoint::FUNCTION);//TODO, currently don't support multi output
+        std::vector<const IStatusType*> outputTypes = tree->root()->data().pFunc->outputType;
         
         std::ostringstream inputVariables;
         if (root->getChildrenNumber()>2)
@@ -234,7 +243,7 @@ public:
             auto condition = GPCONVERT(const GPFunctionTreePoint, root->getChild(3));
             data.sConditionInfo.sConditionFormula = condition->extra();
         }
-        GPPtr<PieceCreator> pieceCreator = new PieceCreator(data.mOutputKey, std::vector<const IStatusType*>(), machine, IParallelMachine::CACHE, NULL);
+        GPPtr<PieceCreator> pieceCreator = new PieceCreator(data.mOutputKey, outputTypes, machine, IParallelMachine::CACHE, NULL);
         GPPtr<IParallelMachine::Executor> executor = machine->vPrepare(&data, root->data().iParallelType);
         GPPiecesFunctionNode* result = new GPPiecesFunctionNode(pieceCreator, executor);
         GPASSERT(root->getChildrenNumber() >= 2);
@@ -290,7 +299,7 @@ GPPiecesFunction* GPBasicPiecesFunctionCreator::vCreateFromFuncTree(const GPFunc
     GPPiecesFunctionNode* node = GPPiecesFunctionNode::createFromFuncPoint(root, machine, mContext);
     return new GPBasicPiecesFunction(node);
 }
-GPBasicPiecesFunctionCreator::GPBasicPiecesFunctionCreator(const IGPFunctionContext* context)
+GPBasicPiecesFunctionCreator::GPBasicPiecesFunctionCreator(const GPProducer* context)
 {
     mContext = context;
 }

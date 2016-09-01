@@ -19,7 +19,7 @@
 #include "GPDAGPiecesFunction.h"
 
 
-GPDAGPiecesFunctionCreator::GPDAGPiecesFunctionCreator(const GPFunctionDataBase* base, const IGPFunctionContext* context, const GPFrontEndProducer* front, const std::map<std::string, std::string>& map_reduce_formula):GPTreePiecesFunctionCreator(base, context, front, map_reduce_formula)
+GPDAGPiecesFunctionCreator::GPDAGPiecesFunctionCreator(const GPProducer* context, const GPFrontEndProducer* front, const std::map<std::string, std::string>& map_reduce_formula):GPTreePiecesFunctionCreator(context, front, map_reduce_formula)
 {
 }
 

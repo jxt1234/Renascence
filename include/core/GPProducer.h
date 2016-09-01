@@ -37,6 +37,7 @@ public:
     
     inline const GPBackEndProducer* getBack() const {return mBack;}
     inline const GPFrontEndProducer* getFront() const {return mFront;}
+    inline const GPFunctionDataBase* getDataBase() const {return mBase;}
     
     virtual IGPFunction* vCreateContentFunction(const std::string& formula, const std::string& parameters, const std::vector<const IStatusType*>& inputs) const override;
     virtual IGPFloatFunction* vCreateFloatFunction(const std::string& formula, const std::string& variable) const override;
