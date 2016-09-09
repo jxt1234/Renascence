@@ -93,3 +93,10 @@ GPWStreamWrap* GPStreamFactory::NewWStreamFromStl(std::ostream& ostream)
 {
     return new GPStlWStream(ostream);
 }
+
+bool GPStreamFactory::fileExist(const char* path)
+{
+    std::ostringstream os;
+    os <<gPath << path;
+    return GPFileStream::exist(os.str().c_str());
+}

@@ -57,6 +57,18 @@ GPFileStream::GPFileStream(const char* filename)
     mF = f;
 }
 
+bool GPFileStream::exist(const char* filename)
+{
+    FILE* f = fopen(filename, "rb");
+    if (NULL!=f)
+    {
+        fclose(f);
+        return true;
+    }
+    return false;
+}
+
+
 GPFileStream::~GPFileStream()
 {
     fclose(mF);

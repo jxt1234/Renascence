@@ -79,7 +79,7 @@ public:
                 currentGPInputs->merge(*ci);
                 ci->decRef();//Don't delete content
             }
-            mHandle->vHandle(mFunction.get(), output, currentGPInputs, keyOutput, (unsigned int)mOutputKey.size());
+            mHandle->vHandle(mFunction.get(), output, currentGPInputs, keyOutput, size.second);
             currentGPInputs->decRef();
         } while (keyIterator->vNext(keyInput, keyOutput));
         
@@ -214,17 +214,22 @@ GPPieces* GPSingleParallelMachine::vCreatePieces(const char* description, std::v
         {
             pieces = GPPieceFactory::createLocalFilePiece(types, description, 0, write);
             GPASSERT(NULL!=pieces);
-            pieces->nKeyNumber = keyNum;
-            pieces->sInfo = "LOCAL";
-            for (int i=0; i<keyNum; ++i)
-            {
-                pieces->pKeySize[i] = keys[i];
-            }
             break;
         }
         default:
             GPASSERT(0);
             break;
+    }
+    pieces->pTypes = types;
+    pieces->nKeyNumber = keyNum;
+    for (int i=0; i<keyNum; ++i)
+    {
+        pieces->pKeySize[i] = keys[i];
+    }
+    if (keyNum == 0)
+    {
+        pieces->pKeySize[0] = 1;
+        pieces->nKeyNumber = 1;
     }
     return pieces;
 }
@@ -255,6 +260,7 @@ bool GPSingleParallelMachine::vCopyPieces(GPPieces* readPieces, GPPieces* writeP
     do
     {
         GPContents* ci = readPieces->vLoad(keyCurrent, readPieces->nKeyNumber);
+        GPASSERT(NULL!=ci);
         writePieces->vSave(keyCurrent, readPieces->nKeyNumber, ci);
         ci->decRef();
     } while (group.next(keyCurrent, readPieces->nKeyNumber));

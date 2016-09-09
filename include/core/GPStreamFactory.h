@@ -47,6 +47,7 @@ public:
     static GPWStreamWrap* NewWStreamFromStl(std::ostream& ostream);
     static void setParentPath(const char* path);
     static const char* getParentPath();
+    static bool fileExist(const char* path);
 private:
     static std::string gPath;
 };

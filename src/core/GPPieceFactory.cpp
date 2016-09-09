@@ -131,9 +131,16 @@ public:
     {
         GPASSERT(!pTypes.empty());
         GPContents* c = new GPContents;
+        GPASSERT(keynum>0);
         for (int i=0; i<pTypes.size(); ++i)
         {
             std::string path = generatePath(pKey, keynum, pTypes[i]->name());
+            //TODO
+            if (!GPStreamFactory::fileExist(path.c_str()))
+            {
+                delete c;
+                return NULL;
+            }
             GPPtr<GPStreamWrap> readStream = GPStreamFactory::NewStream(path.c_str());
             c->push(pTypes[i]->vLoad(readStream.get()), pTypes[i]);
         }
@@ -143,6 +150,7 @@ public:
     virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents* c)
     {
         GPASSERT(NULL!=c);
+        GPASSERT(keynum>0);
         for (int i=0; i<c->size(); ++i)
         {
             auto type = c->getType(i);

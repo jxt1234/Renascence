@@ -26,6 +26,8 @@ public:
     virtual bool vIsEnd() const;
     virtual bool vRewind();
     virtual ~GPFileStream();
+    
+    static bool exist(const char* filename);
 private:
     FILE* mF;
 };
