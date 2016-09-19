@@ -16,11 +16,14 @@
 
 #include <stdio.h>
 #include <sstream>
+#include "utils/GPDebug.h"
 #include "core/GPStreamFactory.h"
 #include "GPFileStream.h"
 #include "GPStlStream.h"
 
 std::string GPStreamFactory::gPath = "";
+const GPIStreamCreator* GPStreamFactory::gCreator = NULL;
+
 
 
 const char* GPStreamFactory::getParentPath()
@@ -35,19 +38,24 @@ void GPStreamFactory::setParentPath(const char* path)
 
 GPStream* GPStreamFactory::NewStream(const char* meta)
 {
-    GPStream* r = NULL;
     std::ostringstream os;
     os <<gPath << meta;
-    r = new GPFileStream(os.str().c_str());
-    return r;
+    if (NULL == gCreator)
+    {
+        //TODO, check if the path is exist
+        return new GPFileStream(os.str().c_str());
+    }
+    return gCreator->vRead(os.str().c_str());
 }
 GPWStream* GPStreamFactory::NewWStream(const char* meta)
 {
-    GPWStream* r = NULL;
     std::ostringstream os;
     os <<gPath << meta;
-    r = new GPFileWStream(os.str().c_str());
-    return r;
+    if (NULL == gCreator)
+    {
+        return new GPFileWStream(os.str().c_str());
+    }
+    return gCreator->vWrite(os.str().c_str());
 }
 GPStream* GPStreamFactory::NewStreamFromStl(std::istream& istream)
 {
@@ -65,3 +73,10 @@ bool GPStreamFactory::fileExist(const char* path)
     os <<gPath << path;
     return GPFileStream::exist(os.str().c_str());
 }
+
+void GPStreamFactory::setStreamCreator(const GPIStreamCreator* creator)
+{
+    GPASSERT(NULL!=creator);
+    gCreator = creator;
+}
+

@@ -17,6 +17,7 @@
 #define CORE_GPSTREAMFACTORY_H
 #include "lowlevelAPI/GPStream.h"
 #include "lowlevelAPI/GPRefCount.h"
+#include "lowlevelAPI/GPIStreamCreator.h"
 #include <string>
 #include <istream>
 #include <ostream>
@@ -32,8 +33,12 @@ public:
     static void setParentPath(const char* path);
     static const char* getParentPath();
     static bool fileExist(const char* path);
+    static void setStreamCreator(const GPIStreamCreator* creator);
+    
+    
 private:
     static std::string gPath;
+    static const GPIStreamCreator* gCreator;
 };
 
 #endif
