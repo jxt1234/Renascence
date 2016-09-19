@@ -76,7 +76,7 @@ bool GPStreamFactory::fileExist(const char* path)
 
 void GPStreamFactory::setStreamCreator(const GPIStreamCreator* creator)
 {
-    GPASSERT(NULL!=creator);
+    //GPASSERT(NULL!=creator);
     gCreator = creator;
 }
 
