@@ -14,9 +14,9 @@ void GPStreamTest::run()
 {
     std::string content = "You are a fool";
     std::ostringstream os;
-    GPPtr<GPWStreamWrap> osWrap = GPStreamFactory::NewWStreamFromStl(os);
-    osWrap->vWrite(content.c_str(), content.size());
-    osWrap->vFlush();
+    GPPtr<GPWStream> stream = GPStreamFactory::NewWStreamFromStl(os);
+    stream->vWrite(content.c_str(), content.size());
+    stream->vFlush();
     std::string newContent = os.str();
     FUNC_PRINT_ALL(newContent.c_str(), s);
     FUNC_PRINT_ALL(content.c_str(), s);

@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include "core/GPStreamFactory.h"
 
-class GPUserStream:public GPStreamWrap
+class GPUserStream:public GPStream
 {
 public:
     GPUserStream(const char* filename);
@@ -34,7 +34,7 @@ public:
     virtual ~GPUserStream();
 };
 
-class GPUserWStream:public GPWStreamWrap
+class GPUserWStream:public GPWStream
 {
 public:
     GPUserWStream(const char* filename);

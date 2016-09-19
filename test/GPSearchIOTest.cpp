@@ -14,7 +14,7 @@ class GPSearchIOTest:public GPTest
     public:
         virtual void run()
         {
-            GPPtr<GPWStreamWrap> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
+            GPPtr<GPWStream> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
             /*Single*/
             GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
             AUTOCLEAN(base);
@@ -29,7 +29,7 @@ class GPSearchIOTest:public GPTest
                 vector<const IStatusType*> inp(2, bmp);
                 IGPAutoDefFunction* f = gen.createFunction(out, inp);
                 GPContents GPinp;
-                GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream("input.jpg");
+                GPPtr<GPStream> input = GPStreamFactory::NewStream("input.jpg");
                 GPinp.push(bmp->vLoad(input.get()), bmp);
                 input = GPStreamFactory::NewStream("output.jpg");
                 GPinp.push(bmp->vLoad(input.get()), bmp);
@@ -53,7 +53,7 @@ class GPSearchIOTest:public GPTest
                     ist->vSave(_output2->get(0), screen.get());
                     cout << endl;
                     delete _output2;
-                    GPPtr<GPWStreamWrap> output = GPStreamFactory::NewWStream(fileName.str().c_str());
+                    GPPtr<GPWStream> output = GPStreamFactory::NewWStream(fileName.str().c_str());
                     GPPtr<GPTreeNode> n = f_mul[i]->vSave();
                     xmlReader::dumpNodes(n.get(), output.get());
                 }

@@ -24,9 +24,9 @@ void GPMultiOutputTest::run()
         {
             const IStatusType* bmp_type = base->vQueryType("TrBmp");
             GPContents inputs;
-            GPPtr<GPStreamWrap> input1 = GPStreamFactory::NewStream("input.jpg");
+            GPPtr<GPStream> input1 = GPStreamFactory::NewStream("input.jpg");
             inputs.push(bmp_type->vLoad(input1.get()), bmp_type);
-            GPPtr<GPStreamWrap> input2 = GPStreamFactory::NewStream("output.jpg");
+            GPPtr<GPStream> input2 = GPStreamFactory::NewStream("output.jpg");
             inputs.push(bmp_type->vLoad(input2.get()), bmp_type);
             std::vector<const IStatusType*> inputTypes(2, bmp_type);
             {

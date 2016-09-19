@@ -25,7 +25,7 @@ void GPTreeProducerTest::run()
         auto fs = sys->listAllFunction(output, input);
         GPASSERT(fs.size()>0);
         GPContents inp;
-        GPPtr<GPStreamWrap> inputStream = GPStreamFactory::NewStream("input.jpg");
+        GPPtr<GPStream> inputStream = GPStreamFactory::NewStream("input.jpg");
         inp.push(bmp->vLoad(inputStream.get()), bmp);
         inputStream = GPStreamFactory::NewStream("input_sharp.jpg");
         inp.push(bmp->vLoad(inputStream.get()), bmp);

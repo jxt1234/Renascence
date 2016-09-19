@@ -28,7 +28,7 @@ void GPParallelTest::run()
     }
     GPPtr<GPFunctionDataBase> base = new GPFunctionDataBase();
     {
-        GPPtr<GPStreamWrap> input = GPStreamFactory::NewStream("func.xml");
+        GPPtr<GPStream> input = GPStreamFactory::NewStream("func.xml");
         base->loadXml(input.get());
     }
     {

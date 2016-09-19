@@ -13,37 +13,18 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef CORE_GPSTLSTREAM_H
-#define CORE_GPSTLSTREAM_H
-#include <stdio.h>
-#include "core/GPStreamFactory.h"
-#include <istream>
-#include <ostream>
-class GPStlStream:public GPStream
+#ifndef LOWLEVELAPI_GPISTREAMCREATOR_H
+#define LOWLEVELAPI_GPISTREAMCREATOR_H
+#include "GPStream.h"
+class GPIStreamCreator
 {
 public:
-    GPStlStream(std::istream& inputStream):mStream(inputStream){mEnd = false;}
-    virtual ~GPStlStream(){}
-
-    virtual size_t vRead(void* buffer, size_t size);
-    virtual bool vIsEnd() const;
-    virtual bool vRewind();
-
-private:
-    std::istream& mStream;
-    bool mEnd;
-};
-
-class GPStlWStream:public GPWStream
-{
-public:
-    GPStlWStream(std::ostream& outputStream);
-    virtual size_t vWrite(const void* buffer, size_t size);
-    virtual bool vFlush();
+    virtual ~ GPIStreamCreator(){}
     
-    virtual ~GPStlWStream();
-private:
-    std::ostream& mStream;
+    virtual GPStream* vRead(const char* path) const = 0;
+    virtual GPWStream* vWrite(const char* path) const = 0;
+    
+protected:
+    GPIStreamCreator(){}
 };
-
 #endif

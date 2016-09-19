@@ -27,13 +27,13 @@ void GPStreamADFTest::run()
         auto n = r.loadFile("stream_test.xml");
         GPPtr<IGPAutoDefFunction> gp = gen->createFunction(n);
         GPPtr<GPTreeNode> node = gp->vSave();
-        GPPtr<GPWStreamWrap> outp = GPStreamFactory::NewWStream("output/GPStreamTest.xml");
+        GPPtr<GPWStream> outp = GPStreamFactory::NewWStream("output/GPStreamTest.xml");
         xmlReader::dumpNodes(node.get(), outp.get());
         auto bmptype = base->vQueryType("TrBmp");
         outp->vFlush();
         {
             GPContents contents;
-            GPPtr<GPStreamWrap> inputjpeg = GPStreamFactory::NewStream("input.jpg", GPStreamFactory::FILE);
+            GPPtr<GPStream> inputjpeg = GPStreamFactory::NewStream("input.jpg", GPStreamFactory::FILE);
             auto pic = bmptype->vLoad(inputjpeg.get());
             contents.push(pic, bmptype);
             inputjpeg = GPStreamFactory::NewStream("output.jpg", GPStreamFactory::FILE);
@@ -49,7 +49,7 @@ void GPStreamADFTest::run()
             GPContents* out = gp->vRun(&contents);
             GPASSERT(NULL!=out);
             GPASSERT(out->size() == 1);
-            GPPtr<GPWStreamWrap> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest.jpg", GPStreamFactory::FILE);
+            GPPtr<GPWStream> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest.jpg", GPStreamFactory::FILE);
             out->getType(0)->vSave(out->get(0), outputjpeg.get());
             delete out;
         }
@@ -57,7 +57,7 @@ void GPStreamADFTest::run()
         gp = gen->createFunction("S(TFR(C(x0,x1), FR(x2, x3)))", types);
         {
             GPContents contents;
-            GPPtr<GPStreamWrap> inputjpeg = GPStreamFactory::NewStream("input.jpg", GPStreamFactory::FILE);
+            GPPtr<GPStream> inputjpeg = GPStreamFactory::NewStream("input.jpg", GPStreamFactory::FILE);
             auto pic = bmptype->vLoad(inputjpeg.get());
             contents.push(pic, bmptype);
             inputjpeg = GPStreamFactory::NewStream("output.jpg", GPStreamFactory::FILE);
@@ -73,7 +73,7 @@ void GPStreamADFTest::run()
             GPContents* out = gp->vRun(&contents);
             GPASSERT(NULL!=out);
             GPASSERT(out->size() == 1);
-            GPPtr<GPWStreamWrap> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest2.jpg", GPStreamFactory::FILE);
+            GPPtr<GPWStream> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest2.jpg", GPStreamFactory::FILE);
             out->getType(0)->vSave(out->get(0), outputjpeg.get());
             delete out;
         }

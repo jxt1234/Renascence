@@ -30,7 +30,7 @@ public:
             group->vSetInput(eInp);
             group->vSetOutput(eOut);
             GPContents inp;
-            GPPtr<GPStreamWrap> inputStream = GPStreamFactory::NewStream("input.jpg");
+            GPPtr<GPStream> inputStream = GPStreamFactory::NewStream("input.jpg");
             inp.push(bmp->vLoad(inputStream.get()), bmp);
             inputStream = GPStreamFactory::NewStream("input_sharp.jpg");
             inp.push(bmp->vLoad(inputStream.get()), bmp);
@@ -61,7 +61,7 @@ public:
             GPPRINT_FL("Best Fit is %f", group->getBestFit());
             
             delete group;
-            GPPtr<GPWStreamWrap> outputF = GPStreamFactory::NewWStream("output/tree_result.xml");
+            GPPtr<GPWStream> outputF = GPStreamFactory::NewWStream("output/tree_result.xml");
             GPPtr<GPTreeNode> n = result->vSave();
             xmlReader::dumpNodes(n.get(), outputF.get());
         }

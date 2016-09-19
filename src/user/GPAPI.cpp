@@ -664,7 +664,7 @@ AGPStrings* GP_Contents_Dump(GPContents* contents, int n)
         return s;
     }
     std::ostringstream ostringstream;
-    GPPtr<GPWStreamWrap> wrap = GPStreamFactory::NewWStreamFromStl(ostringstream);
+    GPPtr<GPWStream> wrap = GPStreamFactory::NewWStreamFromStl(ostringstream);
     auto c = contents->getContent(n);
     c->type()->vSave(c->content(), wrap.get());
     wrap->vFlush();

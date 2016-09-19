@@ -18,7 +18,7 @@
 #include <stdio.h>
 
 
-class GPFileStream:public GPStreamWrap
+class GPFileStream:public GPStream
 {
 public:
     GPFileStream(const char* filename);
@@ -32,7 +32,7 @@ private:
     FILE* mF;
 };
 
-class GPFileWStream:public GPWStreamWrap
+class GPFileWStream:public GPWStream
 {
 public:
     GPFileWStream(const char* filename);

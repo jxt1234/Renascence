@@ -23,19 +23,6 @@
 
 std::string GPStreamFactory::gPath = "";
 
-GPStreamWrap::GPStreamWrap()
-{
-}
-GPStreamWrap::~GPStreamWrap()
-{
-}
-GPWStreamWrap::GPWStreamWrap()
-{
-}
-GPWStreamWrap::~GPWStreamWrap()
-{
-}
-
 
 const char* GPStreamFactory::getParentPath()
 {
@@ -47,9 +34,9 @@ void GPStreamFactory::setParentPath(const char* path)
     gPath = path;
 }
 
-GPStreamWrap* GPStreamFactory::NewStream(const char* meta, MODE m)
+GPStream* GPStreamFactory::NewStream(const char* meta, MODE m)
 {
-    GPStreamWrap* r = NULL;
+    GPStream* r = NULL;
     switch(m)
     {
         case FILE:
@@ -64,9 +51,9 @@ GPStreamWrap* GPStreamFactory::NewStream(const char* meta, MODE m)
     }
     return r;
 }
-GPWStreamWrap* GPStreamFactory::NewWStream(const char* meta, MODE m)
+GPWStream* GPStreamFactory::NewWStream(const char* meta, MODE m)
 {
-    GPWStreamWrap* r = NULL;
+    GPWStream* r = NULL;
     switch(m)
     {
         case FILE:
@@ -84,12 +71,12 @@ GPWStreamWrap* GPStreamFactory::NewWStream(const char* meta, MODE m)
     }
     return r;
 }
-GPStreamWrap* GPStreamFactory::NewStreamFromStl(std::istream& istream)
+GPStream* GPStreamFactory::NewStreamFromStl(std::istream& istream)
 {
     return new GPStlStream(istream);
 }
 
-GPWStreamWrap* GPStreamFactory::NewWStreamFromStl(std::ostream& ostream)
+GPWStream* GPStreamFactory::NewWStreamFromStl(std::ostream& ostream)
 {
     return new GPStlWStream(ostream);
 }

@@ -46,7 +46,7 @@ GPFunctionDataBase* GPFactory::createDataBase(const char* metafile, IFunctionTab
 {
     GPASSERT(NULL!=metafile);
     GPFunctionDataBase* base = new GPFunctionDataBase;
-    GPPtr<GPStreamWrap> s = GPStreamFactory::NewStream(metafile, GPStreamFactory::FILE);
+    GPPtr<GPStream> s = GPStreamFactory::NewStream(metafile, GPStreamFactory::FILE);
     base->loadXml(s.get(), t);
     return base;
 }
@@ -82,7 +82,7 @@ GPParallelMachineSet* GPFactory::createParallelSet(const char* metafile, IFuncti
 {
     GPParallelMachineSet* set = new GPParallelMachineSet;
     xmlReader r;
-    GPPtr<GPStreamWrap> s = GPStreamFactory::NewStream(metafile, GPStreamFactory::FILE);
+    GPPtr<GPStream> s = GPStreamFactory::NewStream(metafile, GPStreamFactory::FILE);
     auto root = r.loadStream(s.get());
     GPASSERT(NULL!=root);
     set->addFunction(root, t);

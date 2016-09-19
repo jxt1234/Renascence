@@ -20,18 +20,6 @@
 #include <string>
 #include <istream>
 #include <ostream>
-class GPStreamWrap:public GPStream, public GPRefCount
-{
-public:
-    GPStreamWrap();
-    virtual ~GPStreamWrap();
-};
-class GPWStreamWrap:public GPWStream, public GPRefCount
-{
-public:
-    GPWStreamWrap();
-    virtual ~GPWStreamWrap();
-};
 
 class GPStreamFactory
 {
@@ -40,11 +28,11 @@ public:
         FILE,
         USER
     } MODE;
-    static GPStreamWrap* NewStream(const char* meta, MODE m=FILE);
-    static GPWStreamWrap* NewWStream(const char* meta, MODE m=FILE);
+    static GPStream* NewStream(const char* meta, MODE m=FILE);
+    static GPWStream* NewWStream(const char* meta, MODE m=FILE);
     
-    static GPStreamWrap* NewStreamFromStl(std::istream& istream);
-    static GPWStreamWrap* NewWStreamFromStl(std::ostream& ostream);
+    static GPStream* NewStreamFromStl(std::istream& istream);
+    static GPWStream* NewWStreamFromStl(std::ostream& ostream);
     static void setParentPath(const char* path);
     static const char* getParentPath();
     static bool fileExist(const char* path);

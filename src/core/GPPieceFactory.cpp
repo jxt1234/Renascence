@@ -141,7 +141,7 @@ public:
                 delete c;
                 return NULL;
             }
-            GPPtr<GPStreamWrap> readStream = GPStreamFactory::NewStream(path.c_str());
+            GPPtr<GPStream> readStream = GPStreamFactory::NewStream(path.c_str());
             c->push(pTypes[i]->vLoad(readStream.get()), pTypes[i]);
         }
         return c;
@@ -155,7 +155,7 @@ public:
         {
             auto type = c->getType(i);
             std::string path = generatePath(pKey, keynum, type->name());
-            GPPtr<GPWStreamWrap> writeStream = GPStreamFactory::NewWStream(path.c_str());
+            GPPtr<GPWStream> writeStream = GPStreamFactory::NewWStream(path.c_str());
             type->vSave(c->get(i), writeStream.get());
         }
     }

@@ -16,7 +16,8 @@
 #ifndef USER_GPSTREAM_H
 #define USER_GPSTREAM_H
 #include <stdlib.h>
-class GPStream
+#include "GPRefCount.h"
+class GPStream : public GPRefCount
 {
 public:
     virtual ~GPStream() {}
@@ -38,7 +39,7 @@ protected:
     GPStream() {}
 
 };
-class GPWStream
+class GPWStream : public GPRefCount
 {
 public:
     virtual ~GPWStream() {}

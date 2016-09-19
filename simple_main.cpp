@@ -30,7 +30,7 @@ static void _saveOutputPieces(GPPieces* output, const char* prefix)
         GPASSERT(c->size() == 1);
         std::stringstream os;
         os << "output/GPThreadParallelTest"<<prefix << "_"<<i+1<<".jpg";
-        GPPtr<GPWStreamWrap> outputStream = GPStreamFactory::NewWStream(os.str().c_str());
+        GPPtr<GPWStream> outputStream = GPStreamFactory::NewWStream(os.str().c_str());
         c->getType(0)->vSave(c->get(0), outputStream.get());
         c->decRef();
     }
@@ -46,7 +46,7 @@ static void __run()
     {
         FUNC_PRINT_ALL(name.c_str(), s);
     }
-    GPPtr<GPStreamWrap> map_reduce = GPStreamFactory::NewStream("Map-Reduce.xml");
+    GPPtr<GPStream> map_reduce = GPStreamFactory::NewStream("Map-Reduce.xml");
     {
         GPPtr<GPProducer> totalProducer = GPFactory::createProducer(base.get());
         GPPtr<GPPiecesFunctionCreator> creator = GPFactory::createPieceFunctionProducer(totalProducer.get(), base.get(), map_reduce.get());
