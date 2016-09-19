@@ -98,7 +98,6 @@ public:
     }
     virtual ~GPStringType()
     {
-        
     }
     virtual void* vLoad(GPStream* input) const
     {
@@ -122,6 +121,63 @@ public:
 };
 extern IStatusType* gDefaultStringType;//For GP Self, Don't use it
 
+
+class GPByteType:public IStatusType
+{
+public:
+    class byte
+    {
+    public:
+        byte(uint32_t length)
+        {
+            mBuffer = new char[length];
+            mLength = length;
+        }
+        ~byte()
+        {
+            delete [] mBuffer;
+        }
+        
+        char* get() const {return mBuffer;}
+        uint32_t length() const {return mLength;}
+        
+    private:
+        char* mBuffer;
+        uint32_t mLength;
+    };
+    
+    
+    GPByteType():IStatusType("byte")
+    {
+    }
+    virtual ~GPByteType()
+    {
+    }
+    virtual void* vLoad(GPStream* input) const
+    {
+        uint32_t length = input->readUnit<uint32_t>();
+        byte* buffer = new byte(length);
+        input->vRead(buffer->get(), length*sizeof(char));
+        return buffer;
+    }
+    virtual void vSave(void* contents, GPWStream* output) const
+    {
+        byte* c = (byte*)(contents);
+        output->writeUnit(c->length());
+        output->vWrite(c->get(), c->length());
+        return;
+    }
+    virtual void vFree(void* contents) const
+    {
+        byte* c = (byte*)(contents);
+        delete c;
+    }
+    virtual int vMap(void** content, double* value) const
+    {
+        return 0;
+    }
+};
+extern IStatusType* gDefaultByteType;//For GP Self, Don't use it
 
 
 typedef IStatusType*(*TYPECREATER)(const std::string& name);

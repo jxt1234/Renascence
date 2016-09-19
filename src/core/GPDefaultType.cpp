@@ -16,4 +16,6 @@
 #include "lowlevelAPI/IStatusType.h"
 #include <string>
 
-IStatusType* gDefaultStringType = new GPStringType();
+IStatusType* gDefaultStringType = new GPStringType;
+IStatusType* gDefaultDoubleType = new GPDoubleType;
+IStatusType* gDefaultByteType = new GPByteType;
