@@ -17,7 +17,7 @@
 #define USER_AGPPIECESPRODUCER_H
 #include "backend/GPPiecesFunctionCreator.h"
 #include "lowlevelAPI/GPPiecesFunction.h"
-class AGPPiecesProducer:public GPRefCount
+class AGPPiecesProducer : public GPRefCount
 {
 public:
     AGPPiecesProducer(GPParallelMachineSet* set, AGPProducer* producer, GPPiecesFunctionCreator* creator)

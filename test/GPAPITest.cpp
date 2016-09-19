@@ -32,11 +32,11 @@ static double _OptFunction(IGPAutoDefFunction* target, void* meta)
 
 static int test_main()
 {
-    GPPtr<GPStream> soxml = GPStreamFactory::NewStream("func.xml", GPStreamFactory::FILE);
+    GPPtr<GPStream> soxml = GPStreamFactory::NewStream("func.xml");
     IFunctionTable* tables = NULL;
     GPStream* streamTables = soxml.get();
     auto producer = GP_Producer_Create(&streamTables, &tables, 1, GP_PRODUCER_STREAM);
-    GPPtr<GPWStream> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
+    GPPtr<GPWStream> screen = GPStreamFactory::NewWStreamFromStl(std::cout);
     /*Contents*/
     {
         auto content = GP_Contents_CreateString("TestString");

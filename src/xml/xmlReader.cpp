@@ -53,7 +53,7 @@ XMLAPI const GPTreeNode* xmlReader::loadFile(const char* file)
 {
     GPASSERT(NULL!=file);
     clear();
-    GPPtr<GPStream> filestream = GPStreamFactory::NewStream(file, GPStreamFactory::FILE);
+    GPPtr<GPStream> filestream = GPStreamFactory::NewStream(file);
     loadPackage(filestream.get());
     this->attributeUnflatten();
     return mAttributes;

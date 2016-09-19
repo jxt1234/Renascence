@@ -24,12 +24,8 @@
 class GPStreamFactory
 {
 public:
-    typedef enum{
-        FILE,
-        USER
-    } MODE;
-    static GPStream* NewStream(const char* meta, MODE m=FILE);
-    static GPWStream* NewWStream(const char* meta, MODE m=FILE);
+    static GPStream* NewStream(const char* meta);
+    static GPWStream* NewWStream(const char* meta);
     
     static GPStream* NewStreamFromStl(std::istream& istream);
     static GPWStream* NewWStreamFromStl(std::ostream& ostream);

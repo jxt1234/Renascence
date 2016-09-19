@@ -18,7 +18,6 @@
 #include <sstream>
 #include "core/GPStreamFactory.h"
 #include "GPFileStream.h"
-#include "GPUserStream.h"
 #include "GPStlStream.h"
 
 std::string GPStreamFactory::gPath = "";
@@ -34,41 +33,20 @@ void GPStreamFactory::setParentPath(const char* path)
     gPath = path;
 }
 
-GPStream* GPStreamFactory::NewStream(const char* meta, MODE m)
+GPStream* GPStreamFactory::NewStream(const char* meta)
 {
     GPStream* r = NULL;
-    switch(m)
-    {
-        case FILE:
-        {
-            std::ostringstream os;
-            os <<gPath << meta;
-            r = new GPFileStream(os.str().c_str());
-            break;
-        }
-        default:
-            break;
-    }
+    std::ostringstream os;
+    os <<gPath << meta;
+    r = new GPFileStream(os.str().c_str());
     return r;
 }
-GPWStream* GPStreamFactory::NewWStream(const char* meta, MODE m)
+GPWStream* GPStreamFactory::NewWStream(const char* meta)
 {
     GPWStream* r = NULL;
-    switch(m)
-    {
-        case FILE:
-        {
-            std::ostringstream os;
-            os <<gPath << meta;
-            r = new GPFileWStream(os.str().c_str());
-            break;
-        }
-        case USER:
-            r = new GPUserWStream(NULL);
-            break;
-        default:
-            break;
-    }
+    std::ostringstream os;
+    os <<gPath << meta;
+    r = new GPFileWStream(os.str().c_str());
     return r;
 }
 GPStream* GPStreamFactory::NewStreamFromStl(std::istream& istream)

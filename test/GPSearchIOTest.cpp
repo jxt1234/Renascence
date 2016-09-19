@@ -14,7 +14,7 @@ class GPSearchIOTest:public GPTest
     public:
         virtual void run()
         {
-            GPPtr<GPWStream> screen = GPStreamFactory::NewWStream(NULL, GPStreamFactory::USER);
+            GPPtr<GPWStream> screen = GPStreamFactory::NewWStreamFromStl(cout);
             /*Single*/
             GPFunctionDataBase* base = GPFactory::createDataBase("func.xml", NULL);
             AUTOCLEAN(base);

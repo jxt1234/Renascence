@@ -33,23 +33,23 @@ void GPStreamADFTest::run()
         outp->vFlush();
         {
             GPContents contents;
-            GPPtr<GPStream> inputjpeg = GPStreamFactory::NewStream("input.jpg", GPStreamFactory::FILE);
+            GPPtr<GPStream> inputjpeg = GPStreamFactory::NewStream("input.jpg");
             auto pic = bmptype->vLoad(inputjpeg.get());
             contents.push(pic, bmptype);
-            inputjpeg = GPStreamFactory::NewStream("output.jpg", GPStreamFactory::FILE);
+            inputjpeg = GPStreamFactory::NewStream("output.jpg");
             pic = bmptype->vLoad(inputjpeg.get());
             contents.push(pic, bmptype);
-            inputjpeg = GPStreamFactory::NewStream("input_sharp.jpg", GPStreamFactory::FILE);
+            inputjpeg = GPStreamFactory::NewStream("input_sharp.jpg");
             pic = bmptype->vLoad(inputjpeg.get());
             contents.push(pic, bmptype);
-            inputjpeg = GPStreamFactory::NewStream("output.jpg", GPStreamFactory::FILE);
+            inputjpeg = GPStreamFactory::NewStream("output.jpg");
             pic = bmptype->vLoad(inputjpeg.get());
             contents.push(pic, bmptype);
             
             GPContents* out = gp->vRun(&contents);
             GPASSERT(NULL!=out);
             GPASSERT(out->size() == 1);
-            GPPtr<GPWStream> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest.jpg", GPStreamFactory::FILE);
+            GPPtr<GPWStream> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest.jpg");
             out->getType(0)->vSave(out->get(0), outputjpeg.get());
             delete out;
         }
@@ -57,23 +57,23 @@ void GPStreamADFTest::run()
         gp = gen->createFunction("S(TFR(C(x0,x1), FR(x2, x3)))", types);
         {
             GPContents contents;
-            GPPtr<GPStream> inputjpeg = GPStreamFactory::NewStream("input.jpg", GPStreamFactory::FILE);
+            GPPtr<GPStream> inputjpeg = GPStreamFactory::NewStream("input.jpg");
             auto pic = bmptype->vLoad(inputjpeg.get());
             contents.push(pic, bmptype);
-            inputjpeg = GPStreamFactory::NewStream("output.jpg", GPStreamFactory::FILE);
+            inputjpeg = GPStreamFactory::NewStream("output.jpg");
             pic = bmptype->vLoad(inputjpeg.get());
             contents.push(pic, bmptype);
-            inputjpeg = GPStreamFactory::NewStream("input_sharp.jpg", GPStreamFactory::FILE);
+            inputjpeg = GPStreamFactory::NewStream("input_sharp.jpg");
             pic = bmptype->vLoad(inputjpeg.get());
             contents.push(pic, bmptype);
-            inputjpeg = GPStreamFactory::NewStream("output.jpg", GPStreamFactory::FILE);
+            inputjpeg = GPStreamFactory::NewStream("output.jpg");
             pic = bmptype->vLoad(inputjpeg.get());
             contents.push(pic, bmptype);
             
             GPContents* out = gp->vRun(&contents);
             GPASSERT(NULL!=out);
             GPASSERT(out->size() == 1);
-            GPPtr<GPWStream> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest2.jpg", GPStreamFactory::FILE);
+            GPPtr<GPWStream> outputjpeg = GPStreamFactory::NewWStream("output/GPStreamTest2.jpg");
             out->getType(0)->vSave(out->get(0), outputjpeg.get());
             delete out;
         }
