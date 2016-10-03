@@ -1,2 +1,4 @@
 #!/bin/bash
-swig -c++ -python  -outdir . ../../swig/renascence_basic.i
+cp ../../swig/renascence_basic.i .
+swig -c++ -python  -outdir . renascence_basic.i
+rm ./renascence_basic.i

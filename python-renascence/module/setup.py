@@ -6,7 +6,7 @@ setup(
         packages = find_packages(),
         py_modules =['Renascence', 'RenascenceBasic'],
         ext_modules=[Extension("_RenascenceBasic",
-            ["../../swig/renascence_basic_wrap.cxx"], include_dirs=['../../include/'],
+            ["renascence_basic_wrap.cxx"], include_dirs=['../../include/'],
             extra_link_args=["../../libGP.a"],
             ),
             ],
