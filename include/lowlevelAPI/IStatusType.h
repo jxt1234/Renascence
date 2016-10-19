@@ -17,6 +17,7 @@
 #define USER_STATUS_H
 
 #include <string>
+#include <stdint.h>
 #include <stdlib.h>
 #include "GPStream.h"
 

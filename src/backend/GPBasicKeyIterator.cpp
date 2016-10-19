@@ -16,6 +16,7 @@
 #include "GPBasicKeyIterator.h"
 #include "utils/GPDebug.h"
 #include "utils/AutoStorage.h"
+#include <string.h>
 bool GPBasicKeyIterator::vNext(unsigned int* pInputKeys, unsigned int* pOutputKeys)
 {
     GPFLOAT conditionRes = -1;
