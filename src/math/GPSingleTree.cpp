@@ -146,7 +146,7 @@ GPSinglePoint::GPSinglePoint(TYPE type, int func_or_input)
             int number = GPSingleTreeFunction::inputNumber(func_or_input);
             if (number > 0)
             {
-                mData.sFunc.pCache = new GPFLOAT[number];
+                mData.sFunc.pCache = new unsigned int[number];
                 GPASSERT(NULL!=mData.sFunc.pCache);
             }
             break;
@@ -167,7 +167,7 @@ GPSinglePoint::~GPSinglePoint()
     }
 }
 
-GPFLOAT GPSinglePoint::compute(GPFLOAT* inputs)
+unsigned int GPSinglePoint::compute(unsigned int* inputs)
 {
     if (INPUT == mType)
     {

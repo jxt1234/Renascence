@@ -84,7 +84,7 @@ MGPExecutor::MGPExecutor(const GPParallelType* data, int threadNum, IParallelMac
     mOutputKey = data->mOutputKey;
     if (!data->sConditionInfo.sConditionFormula.empty())
     {
-        mCondition = context->vCreateFloatFunction(data->sConditionInfo.sConditionFormula, data->sVariableInfo);
+        mCondition = context->vCreateKeyFunction(data->sConditionInfo.sConditionFormula, data->sVariableInfo);
     }
     mVariableKey = data->sFuncInfo.variableKey;
 }

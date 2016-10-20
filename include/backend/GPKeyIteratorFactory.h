@@ -27,7 +27,7 @@ public:
 private:
     std::string mCondition;
     GPParallelType::KEYS mInputsInConditionKeys;
-    IGPFloatFunction* mConditionFunction;
+    IKeyFunction* mConditionFunction;
     GPParallelType::KEYS mOutputKeys;
     bool mCanOptimize;
 };

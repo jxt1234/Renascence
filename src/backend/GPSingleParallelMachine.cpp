@@ -179,10 +179,10 @@ IParallelMachine::Executor* GPSingleParallelMachine::vPrepare(const GPParallelTy
             break;
     }
     GPPtr<IGPFunction> func = data->pContext->vCreateContentFunction(data->sFuncInfo.formula, data->sFuncInfo.parameter, data->sFuncInfo.inputs);
-    GPPtr<IGPFloatFunction> condition;
+    GPPtr<IKeyFunction> condition;
     if (!data->sConditionInfo.sConditionFormula.empty())
     {
-        condition = data->pContext->vCreateFloatFunction(data->sConditionInfo.sConditionFormula, data->sVariableInfo);
+        condition = data->pContext->vCreateKeyFunction(data->sConditionInfo.sConditionFormula, data->sVariableInfo);
     }
     GPPtr<GPKeyIteratorFactory> keyFactory = new GPKeyIteratorFactory(data);
 

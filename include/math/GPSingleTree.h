@@ -40,7 +40,7 @@ public:
     } TYPE;
     GPSinglePoint(TYPE type, int func_or_input);
     virtual ~GPSinglePoint();
-    GPFLOAT compute(GPFLOAT* inputs);
+    unsigned int compute(unsigned int* inputs);
     
     void insertData(std::set<int>& result, TYPE t) const;
     
@@ -55,7 +55,7 @@ private:
 
     union{
         struct {
-            GPFLOAT* pCache;
+            unsigned int* pCache;
             int iFunc;
         }sFunc;
         int iInput;
@@ -63,7 +63,7 @@ private:
     TYPE mType;
 };
 
-class GPSingleTree:public IGPFloatFunction
+class GPSingleTree:public IKeyFunction
 {
 public:
     GPSingleTree(GPPtr<GPSinglePoint> root);
@@ -71,9 +71,9 @@ public:
     void operator=(const GPSingleTree& tree);
     virtual ~GPSingleTree();
     
-    virtual GPFLOAT vRun(GPFLOAT* values, unsigned int n) {return compute(values);}
+    virtual unsigned int vRun(unsigned int* values, unsigned int n) {return compute(values);}
 
-    inline GPFLOAT compute(GPFLOAT* inputs){return mRoot->compute(inputs);}
+    inline unsigned int compute(unsigned int* inputs){return mRoot->compute(inputs);}
     int len() const;
     
     std::set<int> getAllInput() const;

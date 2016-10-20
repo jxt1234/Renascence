@@ -42,7 +42,7 @@ for i in range(0, len(functions)):
     inputNumberContents += 'return %d' %(getNumber(functions[i][1])) + ';\n'
 inputNumberContents += 'return -1;\n}\n'
 
-computeContents = 'GPFLOAT GPSingleTreeFunction::compute(int func, GPFLOAT* x)\n{\n'
+computeContents = 'unsigned int GPSingleTreeFunction::compute(int func, unsigned int* x)\n{\n'
 for i in range(0, len(functions)):
     computeContents += 'if (func == %d)' %i + ' '
     computeContents += 'return ' + functions[i][1] + ';\n'

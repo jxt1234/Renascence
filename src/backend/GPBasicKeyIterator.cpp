@@ -19,7 +19,7 @@
 #include <string.h>
 bool GPBasicKeyIterator::vNext(unsigned int* pInputKeys, unsigned int* pOutputKeys)
 {
-    GPFLOAT conditionRes = -1;
+    unsigned int conditionRes = -1;
     do
     {
         bool res = mGroup->next(mCache, mCacheSize);
@@ -31,11 +31,7 @@ bool GPBasicKeyIterator::vNext(unsigned int* pInputKeys, unsigned int* pOutputKe
         {
             break;
         }
-        for (int i=0; i<mCacheSize; ++i)
-        {
-            mCacheFloat[i] = mCache[i];
-        }
-        conditionRes = mCondition->vRun(mCacheFloat, mCacheSize);
+        conditionRes = mCondition->vRun(mCache, mCacheSize);
     } while (conditionRes <= 0);
     ::memcpy(pInputKeys, mCache, mCacheSize*sizeof(unsigned int));
     pOutputKeys[0] = 0;
@@ -46,7 +42,7 @@ bool GPBasicKeyIterator::vNext(unsigned int* pInputKeys, unsigned int* pOutputKe
     return true;
 }
 
-GPBasicKeyIterator::GPBasicKeyIterator(GPPieces** inputs, int inputNumber, const GPParallelType::KEYS& outputKeys, IGPFloatFunction* condition)
+GPBasicKeyIterator::GPBasicKeyIterator(GPPieces** inputs, int inputNumber, const GPParallelType::KEYS& outputKeys, IKeyFunction* condition)
 {
     mCondition = condition;
     GPASSERT(NULL!=inputs);
@@ -69,9 +65,8 @@ GPBasicKeyIterator::GPBasicKeyIterator(GPPieces** inputs, int inputNumber, const
     }
     mCacheSize = sumDim;
     mCache = new unsigned int[sumDim];
-    mCacheFloat = new GPFLOAT[sumDim];
     AUTOSTORAGE(keyDimesions, unsigned int, sumDim);
-    GPASSERT(NULL!=mCacheFloat && NULL!=mCache && NULL!=keyDimesions);
+    GPASSERT(NULL!=mCache && NULL!=keyDimesions);
     unsigned int pos = 0;
     for (int i=0; i<inputNumber; ++i)
     {
@@ -85,7 +80,6 @@ GPBasicKeyIterator::GPBasicKeyIterator(GPPieces** inputs, int inputNumber, const
 GPBasicKeyIterator::~GPBasicKeyIterator()
 {
     delete mGroup;
-    delete [] mCacheFloat;
     delete [] mCache;
 }
 
@@ -101,18 +95,14 @@ std::pair<unsigned int, unsigned int> GPBasicKeyIterator::vGetSize() const
 bool GPBasicKeyIterator::vRewind(unsigned int* pInputKeys, unsigned int* pOutputKeys)
 {
     mGroup->start(mCache, mCacheSize);
-    GPFLOAT conditionRes = -1;
+    unsigned int conditionRes = -1;
     do
     {
         if (NULL == mCondition)
         {
             break;
         }
-        for (int i=0; i<mCacheSize; ++i)
-        {
-            mCacheFloat[i] = mCache[i];
-        }
-        conditionRes = mCondition->vRun(mCacheFloat, mCacheSize);
+        conditionRes = mCondition->vRun(mCache, mCacheSize);
         if (conditionRes > 0)
         {
             break;

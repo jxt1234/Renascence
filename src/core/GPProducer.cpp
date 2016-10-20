@@ -118,7 +118,7 @@ IGPFunction* GPProducer::vCreateContentFunction(const std::string& formula, cons
 
     return function;
 }
-IGPFloatFunction* GPProducer::vCreateFloatFunction(const std::string& formula, const std::string& variable) const
+IKeyFunction* GPProducer::vCreateKeyFunction(const std::string& formula, const std::string& variable) const
 {
     return GPSingleTree::createFromFormula(formula, variable);
 }

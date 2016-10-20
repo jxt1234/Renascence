@@ -40,7 +40,7 @@ public:
     inline const GPFunctionDataBase* getDataBase() const {return mBase;}
     
     virtual IGPFunction* vCreateContentFunction(const std::string& formula, const std::string& parameters, const std::vector<const IStatusType*>& inputs) const override;
-    virtual IGPFloatFunction* vCreateFloatFunction(const std::string& formula, const std::string& variable) const override;
+    virtual IKeyFunction* vCreateKeyFunction(const std::string& formula, const std::string& variable) const override;
 
 private:
     GPBackEndProducer* mBack;

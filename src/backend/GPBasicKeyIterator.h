@@ -25,7 +25,7 @@
 class GPBasicKeyIterator:public IGPKeyIterator
 {
 public:
-    GPBasicKeyIterator(GPPieces** inputs, int nInput, const GPParallelType::KEYS& outputKeys, IGPFloatFunction* condition);
+    GPBasicKeyIterator(GPPieces** inputs, int nInput, const GPParallelType::KEYS& outputKeys, IKeyFunction* condition);
     virtual ~GPBasicKeyIterator();
     
     virtual bool vNext(unsigned int* pInputKeys, unsigned int* pOutputKeys) override;
@@ -38,8 +38,7 @@ private:
     unsigned int* mCache;
     unsigned int mCacheSize;
     
-    GPFLOAT* mCacheFloat;    
-    IGPFloatFunction* mCondition;
+    IKeyFunction* mCondition;
 };
 
 #endif

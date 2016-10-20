@@ -30,7 +30,7 @@ private:
     bool _mapRun(GPPieces* output, GPPieces** inputs, int inputNumber) const;
     bool _reduceRun(GPPieces* output, GPPieces** inputs, int inputNumber) const;
     
-    GPPtr<IGPFloatFunction> mCondition;
+    GPPtr<IKeyFunction> mCondition;
     MGPThreadPool* mPool;
     ThreadData* mMainData;
     std::vector<ThreadData*> mUserData;

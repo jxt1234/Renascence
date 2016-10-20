@@ -20,7 +20,7 @@
 class GPSingleTreeFunction
 {
 public:
-    static GPFLOAT compute(int func, GPFLOAT* inputs);
+    static unsigned int compute(int func, unsigned int* inputs);
     static int func(const std::string& name);
     static int inputNumber(int func);
     static int priority(int func);

@@ -29,19 +29,19 @@ public:
 protected:
     IGPFunction() {}
 };
-class IGPFloatFunction : public GPRefCount
+class IKeyFunction : public GPRefCount
 {
 public:
-    virtual GPFLOAT vRun(GPFLOAT* values, unsigned int n) = 0;
-    virtual ~IGPFloatFunction() {}
+    virtual unsigned int vRun(unsigned int* values, unsigned int n) = 0;
+    virtual ~IKeyFunction() {}
 protected:
-    IGPFloatFunction() {}
+    IKeyFunction() {}
 };
 class IGPFunctionContext : public GPRefCount
 {
 public:
     virtual IGPFunction* vCreateContentFunction(const std::string& formula, const std::string& parameters, const std::vector<const IStatusType*>& inputs) const = 0;
-    virtual IGPFloatFunction* vCreateFloatFunction(const std::string& formula, const std::string& variable) const = 0;
+    virtual IKeyFunction* vCreateKeyFunction(const std::string& formula, const std::string& variable) const = 0;
     
     virtual ~IGPFunctionContext() {}
 protected:

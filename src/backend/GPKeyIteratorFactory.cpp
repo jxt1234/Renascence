@@ -75,7 +75,7 @@ GPKeyIteratorFactory::GPKeyIteratorFactory(const GPParallelType* type)
             }
         }
         
-        mConditionFunction = type->pContext->vCreateFloatFunction(type->sConditionInfo.sConditionFormula, type->sVariableInfo);
+        mConditionFunction = type->pContext->vCreateKeyFunction(type->sConditionInfo.sConditionFormula, type->sVariableInfo);
     }
 }
 GPKeyIteratorFactory::~GPKeyIteratorFactory()
