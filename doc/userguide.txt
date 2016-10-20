@@ -7,7 +7,7 @@
 然后运行./test.out，看是否能正常执行完成
 
 第二步：编译python版本
-1、安装swig
+1、安装软件:swig, pyton-setuptools, python-dev
 2、进入目录 ./python-renascence/module/
 3、执行 ./build_source.sh
 4、执行 sudo python setup.py install
