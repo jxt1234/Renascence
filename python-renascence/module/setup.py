@@ -7,7 +7,7 @@ setup(
         py_modules =['Renascence', 'RenascenceBasic'],
         ext_modules=[Extension("_RenascenceBasic",
             ["renascence_basic_wrap.cxx"], include_dirs=['../../include/'],
-            extra_link_args=["../../libGP.a"],
+            extra_link_args=["../../libRenascence_Static.a"],
             ),
             ],
         )

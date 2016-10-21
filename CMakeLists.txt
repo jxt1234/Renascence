@@ -1,0 +1,32 @@
+cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+project (Renascence)
+MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -std=c++11")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall")
+
+include_directories(include)
+file(GLOB SRC_LIBS "src/*/*.cpp" "src/*/*.c" "src/*.cpp")
+file(GLOB SRC_TEST "test/*.cpp")
+
+add_library(Renascence SHARED ${SRC_LIBS})
+add_library(Renascence_Static STATIC ${SRC_LIBS})
+add_executable(test.out ${SRC_TEST})
+add_executable(example.out ./simple_main.cpp)
+target_link_libraries(test.out Renascence)
+target_link_libraries(example.out Renascence)
+
+install(TARGETS Renascence LIBRARY DESTINATION /usr/local/lib)
+
+include_directories(example/graphic/include example/graphic/third_party/libjpeg/ include/)
+file(GLOB SRC_LIBS_PICS "example/graphic/src/*/*.cpp" "example/graphic/src/*/*.c" "example/graphic/third_party/*/*.c")
+
+add_library(pics SHARED ${SRC_LIBS_PICS})
+
+include_directories(include example/MultiThreadParallelMachine/include/)
+file(GLOB SRC_LIBS_MGP "example/MultiThreadParallelMachine/src/*.cpp")
+
+add_library(mthpGP SHARED ${SRC_LIBS_MGP})
+
+target_link_libraries(mthpGP Renascence)
+

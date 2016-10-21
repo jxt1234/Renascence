@@ -37,17 +37,26 @@ void system_set_path(const char* path)
 #define PATH_MAX_SIZE 1024
 void* system_load_lib(const char* libName)
 {
+#ifdef __APPLE__
+    const char* postFix = ".dylib";
+#else
+#ifdef _WIN32
+    const char* postFix = ".dll";
+#else
+    const char* postFix = ".so";
+#endif
+#endif
     /*Get absolute path*/
     ostringstream completeName;
     if (gPath == "")
     {
         char current_absolute_path[PATH_MAX_SIZE];
         getcwd(current_absolute_path, PATH_MAX_SIZE);
-        completeName<<current_absolute_path << "/" << libName<<".so";
+        completeName<<current_absolute_path << "/" << libName<<postFix;
     }
     else
     {
-        completeName << gPath <<"/"<< libName << ".so";
+        completeName << gPath <<"/"<< libName << postFix;
     }
     auto res = dlopen(completeName.str().c_str(), RTLD_LAZY);
     if (NULL == res)
