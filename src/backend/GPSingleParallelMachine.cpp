@@ -212,7 +212,7 @@ GPPieces* GPSingleParallelMachine::vCreatePieces(const char* description, std::v
             write = false;
         case IParallelMachine::OUTPUT:
         {
-            pieces = GPPieceFactory::createLocalFilePiece(types, description, 0, write);
+            pieces = GPPieceFactory::createLocalFilePiece(types, description, 0);
             GPASSERT(NULL!=pieces);
             break;
         }

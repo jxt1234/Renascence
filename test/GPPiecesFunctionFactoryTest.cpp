@@ -54,7 +54,7 @@ static void __run()
         GPSingleParallelMachine machine;
         GPPtr<GPFunctionTree> tree = totalProducer->getFront()->vCreateFromFormula("C(S(S(x0)))", std::vector<const IStatusType*>());
         auto function = creator->vCreateFromFuncTree(tree.get(), &machine);
-        GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0, false);
+        GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0);
         inputs->pKeySize[0] = 5;
         inputs->nKeyNumber = 1;
         GPPieces* outputs = function->vRun(&inputs, 1);

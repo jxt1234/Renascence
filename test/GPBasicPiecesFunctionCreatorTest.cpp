@@ -30,7 +30,7 @@ static void __run()
         GPSingleParallelMachine machine;
         GPBasicPiecesFunctionCreator creator(totalProducer.get());
         auto function = creator.vCreateFromFuncTree(tree.get(), &machine);
-        GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0, false);
+        GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0);
         inputs->pKeySize[0] = 5;
         inputs->nKeyNumber = 1;
         GPPieces* inputAll[2];
