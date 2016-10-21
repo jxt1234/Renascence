@@ -101,15 +101,10 @@ private:
 class GPLocalFilePiece : public GPPieces
 {
 public:
-    GPLocalFilePiece(const char* path, std::vector<const IStatusType*> types, bool write)
+    GPLocalFilePiece(const char* path, std::vector<const IStatusType*> types)
     {
         pTypes = types;
         nKeyNumber = 0;
-        if (write)
-        {
-            const std::string totalPath = GPStreamFactory::getParentPath();
-            system_make_dir((totalPath + path).c_str());
-        }
         mPath = path;
     }
     virtual ~GPLocalFilePiece()
@@ -135,13 +130,12 @@ public:
         for (int i=0; i<pTypes.size(); ++i)
         {
             std::string path = generatePath(pKey, keynum, pTypes[i]->name());
-            //TODO
-            if (!GPStreamFactory::fileExist(path.c_str()))
+            GPPtr<GPStream> readStream = GPStreamFactory::NewStream(path.c_str());
+            if (NULL==readStream.get())
             {
                 delete c;
                 return NULL;
             }
-            GPPtr<GPStream> readStream = GPStreamFactory::NewStream(path.c_str());
             c->push(pTypes[i]->vLoad(readStream.get()), pTypes[i]);
         }
         return c;
@@ -176,7 +170,7 @@ GPPieces* GPPieceFactory::createMemoryPiece(const std::vector<unsigned int> &key
     return _createMemoryPieces(keydimesions);
 }
 
-GPPieces* GPPieceFactory::createLocalFilePiece(const std::vector<const IStatusType*>& types, const char* srcPath, size_t maxMemoryCacheSize/*MB*/, bool write)
+GPPieces* GPPieceFactory::createLocalFilePiece(const std::vector<const IStatusType*>& types, const char* srcPath, size_t maxMemoryCacheSize/*MB*/)
 {
-    return new GPLocalFilePiece(srcPath, types, write);
+    return new GPLocalFilePiece(srcPath, types);
 }

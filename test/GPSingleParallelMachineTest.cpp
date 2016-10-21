@@ -29,7 +29,7 @@ static void __run()
             data.sFuncInfo.formula = "S(x0)";
             data.sFuncInfo.variableKey.push_back(std::make_pair(0, 0));
             auto p = machine.vPrepare(&data, IParallelMachine::MAP);
-            GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0, false);
+            GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0);
             inputs->pKeySize[0] = 5;
             inputs->nKeyNumber = 1;
             output->pKeySize[0] = 5;
@@ -48,7 +48,7 @@ static void __run()
             data.sFuncInfo.variableKey.push_back(std::make_pair(1, 0));
             data.sFuncInfo.formula = "C(x0, x1)";
             auto p = machine.vPrepare(&data, IParallelMachine::REDUCE);
-            GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0, false);
+            GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0);
             inputs->pKeySize[0] = 5;
             inputs->nKeyNumber = 1;
             output->pKeySize[0] = 1;

@@ -20,11 +20,21 @@
 #include "core/GPStreamFactory.h"
 #include "GPFileStream.h"
 #include "GPStlStream.h"
+#include "platform/GPSystem.h"
 
 std::string GPStreamFactory::gPath = "";
 const GPIStreamCreator* GPStreamFactory::gCreator = NULL;
 
 
+std::string static getDirectory(const std::string& fullPath)
+{
+    auto pos = fullPath.rfind("/");
+    if (std::string::npos != pos)
+    {
+        return fullPath.substr(0,pos);
+    }
+    return "";
+}
 
 const char* GPStreamFactory::getParentPath()
 {
@@ -40,12 +50,16 @@ GPStream* GPStreamFactory::NewStream(const char* meta)
 {
     std::ostringstream os;
     os <<gPath << meta;
+    auto fileName = os.str();
     if (NULL == gCreator)
     {
-        //TODO, check if the path is exist
-        return new GPFileStream(os.str().c_str());
+        if (!GPFileStream::exist(fileName.c_str()))
+        {
+            return NULL;
+        }
+        return new GPFileStream(fileName.c_str());
     }
-    return gCreator->vRead(os.str().c_str());
+    return gCreator->vRead(fileName.c_str());
 }
 GPWStream* GPStreamFactory::NewWStream(const char* meta)
 {
@@ -53,7 +67,13 @@ GPWStream* GPStreamFactory::NewWStream(const char* meta)
     os <<gPath << meta;
     if (NULL == gCreator)
     {
-        return new GPFileWStream(os.str().c_str());
+        auto fileName = os.str();
+        auto dir = getDirectory(fileName);
+        if (!dir.empty())
+        {
+            system_make_dir(dir.c_str());
+        }
+        return new GPFileWStream(fileName.c_str());
     }
     return gCreator->vWrite(os.str().c_str());
 }

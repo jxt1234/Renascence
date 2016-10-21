@@ -51,7 +51,7 @@ static void __run()
         GPPtr<GPProducer> totalProducer = GPFactory::createProducer(base.get());
         GPPtr<GPPiecesFunctionCreator> creator = GPFactory::createPieceFunctionProducer(totalProducer.get(), base.get(), map_reduce.get());
         GPPtr<GPFunctionTree> tree = totalProducer->getFront()->vCreateFromFormula("C(S(x0))", std::vector<const IStatusType*>());
-        GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0, false);
+        GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0);
         inputs->pKeySize[0] = 5;
         inputs->nKeyNumber = 1;
         {
@@ -79,12 +79,9 @@ static void __run()
     }
 }
 #include "user/GPAPI.h"
-static string gPath = "/Users/jiangxiaotang/Documents/Renascence/";
 
 int main()
 {
-    GP_Set_Lib_Path(gPath.c_str());
-    GP_Set_Stream_Path(gPath.c_str());
     //while(true)
     {
         __run();
