@@ -134,6 +134,7 @@ public:
             if (NULL==readStream.get())
             {
                 delete c;
+                FUNC_PRINT_ALL(path.c_str(), s);
                 return NULL;
             }
             c->push(pTypes[i]->vLoad(readStream.get()), pTypes[i]);
