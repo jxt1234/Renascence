@@ -62,10 +62,7 @@ public:
     {
         auto sum = _computePos(pKey, keynum);
         GPContents* res = mPieces[sum];
-        if (NULL == res)
-        {
-            return NULL;
-        }
+        GPASSERT(NULL!=res);
         res->addRef();
         return res;
     }
@@ -131,12 +128,7 @@ public:
         {
             std::string path = generatePath(pKey, keynum, pTypes[i]->name());
             GPPtr<GPStream> readStream = GPStreamFactory::NewStream(path.c_str());
-            if (NULL==readStream.get())
-            {
-                delete c;
-                FUNC_PRINT_ALL(path.c_str(), s);
-                return NULL;
-            }
+            GPASSERT(NULL!=readStream.get());
             c->push(pTypes[i]->vLoad(readStream.get()), pTypes[i]);
         }
         return c;

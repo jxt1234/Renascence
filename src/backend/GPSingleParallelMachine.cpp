@@ -133,12 +133,13 @@ public:
     
     virtual void vHandle(IGPFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const override
     {
-        GPPtr<GPContents> oldOutput = output->vLoad(outputKey, keyNumber);
-        if (NULL == oldOutput.get())
+        if (!mInit)
         {
             output->vSave(outputKey, keyNumber, input);
+            mInit = true;
             return;
         }
+        GPPtr<GPContents> oldOutput = output->vLoad(outputKey, keyNumber);
         GPContents mergeOutput;
         for (int i=0; i<mKey.size(); ++i)
         {
@@ -157,6 +158,8 @@ public:
         output->vSave(outputKey, keyNumber, currentGPOutput.get());
     }
     GPParallelType::KEYS mKey;
+private:
+    mutable bool mInit = false;
 };
 
 
