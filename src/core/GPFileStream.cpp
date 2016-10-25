@@ -101,6 +101,10 @@ static bool _Flush(void* meta)
 GPFileWStream::GPFileWStream(const char* name)
 {
     FILE* f = fopen(name, "wb");
+    if (NULL == f)
+    {
+        FUNC_PRINT_ALL(name, s);
+    }
     GPASSERT(NULL!=f);
     mF = f;
 }

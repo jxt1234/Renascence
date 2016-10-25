@@ -859,7 +859,7 @@ GPPieces* GP_Pieces_Create(AGPPiecesProducer* producer, const char* type, const 
         case GP_PIECES_INPUT:
             return machine->vCreatePieces(path, inputs, keys, keyNum, IParallelMachine::INPUT);
         case GP_PIECES_OUTPUT:
-            return machine->vCreatePieces(path, inputs, keys, keyNum, IParallelMachine::OUTPUT);
+            return machine->vCreatePieces(path, inputs, NULL, 0, IParallelMachine::OUTPUT);
         case GP_PIECES_CACHE:
             return machine->vCreatePieces(path, inputs, keys, keyNum, IParallelMachine::CACHE);
     }

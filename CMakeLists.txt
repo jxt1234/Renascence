@@ -28,10 +28,12 @@ file(GLOB SRC_LIBS_PICS "example/graphic/src/*/*.cpp" "example/graphic/src/*/*.c
 
 add_library(pics SHARED ${SRC_LIBS_PICS})
 
+find_package (Threads)
 include_directories(include example/MultiThreadParallelMachine/include/)
 file(GLOB SRC_LIBS_MGP "example/MultiThreadParallelMachine/src/*.cpp")
 
 add_library(mthpGP SHARED ${SRC_LIBS_MGP})
 
 target_link_libraries(mthpGP Renascence)
+target_link_libraries(mthpGP ${CMAKE_THREAD_LIBS_INIT})
 

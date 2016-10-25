@@ -226,7 +226,7 @@ GPPieces* GPSingleParallelMachine::vCreatePieces(const char* description, std::v
     {
         pieces->pKeySize[i] = keys[i];
     }
-    if (keyNum == 0)
+    if (keyNum == 0 && usage != IParallelMachine::OUTPUT)
     {
         pieces->pKeySize[0] = 1;
         pieces->nKeyNumber = 1;
