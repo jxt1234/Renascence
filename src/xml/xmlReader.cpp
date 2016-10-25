@@ -23,6 +23,7 @@
 #include "core/GPStreamFactory.h"
 #include "utils/GPDebug.h"
 #include "utils/AutoStorage.h"
+#include "tinyxml.h"
 
 using namespace std;
 
@@ -59,125 +60,15 @@ XMLAPI const GPTreeNode* xmlReader::loadFile(const char* file)
     return mAttributes;
 }
 
-
-static bool xmlReader_endPackage(const string& line, int pos)
+static GPTreeNode* _convert(const TiXmlNode* tiNode)
 {
-    bool result =  line.find("</")!=string::npos;
-    return result;
-}
-
-static bool xmlReader_startPackage(const string& line, int& cur)
-{
-    bool result = true;
-    cur = line.find("<", cur);
-    if (string::npos == cur || cur >=line.size())
+    auto name = tiNode->Value();
+    auto root = new GPTreeNode(name);
+    for (auto c = tiNode->FirstChild(); c!=NULL; c=c->NextSibling())
     {
-        cur = 0;
-        result = false;
+        root->addChild(_convert(c));
     }
-    else
-    {
-        // "</"  Means End
-        if (line[cur+1]=='/')
-        {
-            cur = 0;
-            result = false;
-        }
-    }
-    //cout <<line << " start "<<result<<endl;
-    return result;
-}
-
-static string xmlReader_getPackageName(const string& line, int& sta)
-{
-    int cur = sta;
-    string result;
-    while (line[cur]!='>' && cur < line.size()) cur++;
-    if (cur>=line.size()) return result;
-    result = line.substr(sta+1, cur-sta-1);
-    sta = cur+1;
-    return result;
-}
-
-
-static string xmlReader_getAttribute(const string& line, int& pos)
-{
-    int newPos = line.find("</", pos);
-    if (string::npos == newPos)
-    {
-        newPos = line.size();
-    }
-    string result = line.substr(pos, newPos-pos);
-    pos = newPos;
-    return result;
-}
-
-static bool xmlReader_divider(char c)
-{
-    return (c == ' ') || (c == '\t')||(c == ',');
-}
-
-vector<string> xmlReader_divideString(const string& line)
-{
-#define LENGTH_OUT(x) if (x >= line.size()) {break;}
-    vector<string> result;
-    int cur =0;
-    while(true)
-    {
-        for (;xmlReader_divider(line[cur]) && cur < line.size();++cur);
-        LENGTH_OUT(cur);
-        int sta = cur;
-        for (++cur;(!xmlReader_divider(line[cur]))&& cur < line.size();++cur);
-        int fin = cur;
-        result.push_back(line.substr(sta, fin-sta));
-        LENGTH_OUT(cur);
-        ++cur;
-    }
-#undef LENGTH_OUT
-    return result;
-}
-
-void xmlReader::analysisLine(const string& line)
-{
-    string results = "";
-    if (line.size()<=0) return;
-    int cur = 0;
-    if (xmlReader_startPackage(line, cur))
-    {
-        string name = xmlReader_getPackageName(line, cur);
-        GPTreeNode* newpackage = new GPTreeNode(name, "");
-        if (NULL!=mCurPackage)
-        {
-            mCurPackage->addChild(newpackage);
-        }
-        //Save current string to current package
-        if (mString!="")
-        {
-            mCurPackage->setAttributes(mString);
-        }
-        mString.clear();
-        //Turn to new package
-        mCurPackage = newpackage;
-        mPackage.push_back(mCurPackage);
-    }
-    //Get attribute
-    mString = mString + xmlReader_getAttribute(line, cur);
-    //Just if end meet
-    if (xmlReader_endPackage(line, cur))
-    {
-        //Save current string to current package
-        if ("" == mCurPackage->attr())
-        {
-            mCurPackage->setAttributes(mString);
-        }
-        mString.clear();
-        //Turn to new package
-        mPackage.pop_back();
-        if (!mPackage.empty())
-        {
-            mCurPackage = *(mPackage.rbegin());
-        }
-    }
+    return root;
 }
 
 GPTreeNode* xmlReader::loadPackage(GPStream* input)
@@ -185,12 +76,9 @@ GPTreeNode* xmlReader::loadPackage(GPStream* input)
     string tempLine;
     GPPtr<GPBlock> content = GPStreamUtils::read(input, true);
     const char* c = content->contents();
-    istringstream inp(c);
-    while(getline(inp, tempLine, '\n'))
-    {
-        analysisLine(tempLine);
-    }
-    mAttributes = mCurPackage;
+    TiXmlDocument document;
+    document.Parse(c);
+    mAttributes = _convert(document.FirstChild());
     attributeUnflatten();
     return mAttributes;
 }
@@ -204,7 +92,6 @@ void xmlReader::dumpNodes(const GPTreeNode* node, GPWStream* output)
 {
     ostringstream os;
     os << "<"<<node->name()<<">\n";
-    os <<node->attr()<<"\n";
     output->vWrite(os.str().c_str(), os.str().size());
     for (auto c : node->getChildren())
     {
@@ -220,7 +107,6 @@ void xmlReaderTest::printUnit(GPTreeNode* p)
 {
     if (NULL == p) return;
     cout << endl<<"Name = "<<p->name() <<endl;
-    cout << "attribute:"<<p->attr()<<endl;
     cout << "Has "<<p->getChildren().size()<<" children"<<endl;
     for (auto c:p->getChildren())
     {

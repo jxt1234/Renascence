@@ -22,17 +22,25 @@
 class GPTreeNode:public GPRefCount
 {
 public:
+    GPTreeNode(const std::string& name);
     GPTreeNode(const std::string& name, const std::string& attr);
     virtual ~GPTreeNode();
     void addChild(GPPtr<GPTreeNode> n);
+    void addChild(const std::string& name);
     void addChild(const std::string& name, const std::string& attr);
-    inline void setAttributes(const std::string& attr){mAttr = attr;}
-    inline const std::string& attr() const {return mAttr;}
+    inline std::string attr() const
+    {
+        if (mChildren.size()>1)
+        {
+            auto defaultString = "";
+            return defaultString;
+        }
+        return mChildren[0]->name();
+    }
     inline const std::vector<GPPtr<GPTreeNode> >& getChildren() const {return mChildren;}
     inline const std::string& name() const {return mName;}
 private:
     std::string mName;
-    std::string mAttr;
     std::vector<GPPtr<GPTreeNode> > mChildren;
 };
 #endif

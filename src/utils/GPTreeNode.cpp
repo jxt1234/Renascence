@@ -14,10 +14,9 @@
  limitations under the License.
  ******************************************************************/
 #include "utils/GPTreeNode.h"
-GPTreeNode::GPTreeNode(const std::string& name, const std::string& attr)
+GPTreeNode::GPTreeNode(const std::string& name)
 {
     mName = name;
-    mAttr = attr;
 }
 GPTreeNode::~GPTreeNode()
 {
@@ -28,8 +27,19 @@ void GPTreeNode::addChild(GPPtr<GPTreeNode> n)
 {
     mChildren.push_back(n);
 }
+void GPTreeNode::addChild(const std::string& name)
+{
+    mChildren.push_back(new GPTreeNode(name));
+}
+
 void GPTreeNode::addChild(const std::string& name, const std::string& attr)
 {
     mChildren.push_back(new GPTreeNode(name, attr));
 }
 
+
+GPTreeNode::GPTreeNode(const std::string& name, const std::string& attr)
+{
+    mName = name;
+    mChildren.push_back(new GPTreeNode(attr));
+}

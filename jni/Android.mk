@@ -27,9 +27,14 @@ LOCAL_CFLAGS    := -Werror -O3
 LOCAL_CFLAGS    += -DBUILD_FOR_ANDROID
 LOCAL_CPP_FEATURES := rtti
 LOCAL_SRC_FILES := $(call all-cpp-files) \
-                   $(call all-c-files)
+                   $(call all-c-files) \
+				   ../third/tinyxml/tinystr.cpp \
+				   ../third/tinyxml/tinyxml.cpp \
+				   ../third/tinyxml/tinyxmlerror.cpp \
+				   ../third/tinyxml/tinyxmlparser.cpp
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../include/
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../third/tinyxml
 LOCAL_LDLIBS    := -lz -lm -llog
 
 include $(BUILD_SHARED_LIBRARY)

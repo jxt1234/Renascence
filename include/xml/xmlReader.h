@@ -38,7 +38,6 @@ protected:
     void clear();
     //For child class to clear their self data
     virtual void subClear(){}
-    void analysisLine(const std::string& line);
     GPTreeNode* loadPackage(GPStream* input);
     GPTreeNode* mAttributes;
 private:
