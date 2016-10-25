@@ -14,6 +14,7 @@
  limitations under the License.
  ******************************************************************/
 #include "utils/GPTreeNode.h"
+#include "utils/GPDebug.h"
 GPTreeNode::GPTreeNode(const std::string& name)
 {
     mName = name;
@@ -42,4 +43,13 @@ GPTreeNode::GPTreeNode(const std::string& name, const std::string& attr)
 {
     mName = name;
     mChildren.push_back(new GPTreeNode(attr));
+}
+
+std::string GPTreeNode::attr() const
+{
+    if (mChildren.size()>1 || mChildren.empty())
+    {
+        return "";
+    }
+    return mChildren[0]->name();
 }

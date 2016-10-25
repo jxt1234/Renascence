@@ -55,10 +55,12 @@ GPBlock* GPBlock::merge(GPBlock* b)
     auto res = new GPBlock(sum+1);
     iter = b;
     auto rescontent = res->contents();
+    size_t cur = 0;
     while (NULL!=iter)
     {
         auto content = iter->contents();
-        ::memcpy(rescontent, content, iter->size());
+        ::memcpy(rescontent+cur, content, iter->size());
+        cur += iter->size();
         iter = iter->getNext();
     }
     rescontent[sum] = 0;

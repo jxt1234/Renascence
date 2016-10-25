@@ -62,6 +62,7 @@ XMLAPI const GPTreeNode* xmlReader::loadFile(const char* file)
 
 static GPTreeNode* _convert(const TiXmlNode* tiNode)
 {
+    GPASSERT(NULL!=tiNode);
     auto name = tiNode->Value();
     auto root = new GPTreeNode(name);
     for (auto c = tiNode->FirstChild(); c!=NULL; c=c->NextSibling())
@@ -77,7 +78,8 @@ GPTreeNode* xmlReader::loadPackage(GPStream* input)
     GPPtr<GPBlock> content = GPStreamUtils::read(input, true);
     const char* c = content->contents();
     TiXmlDocument document;
-    document.Parse(c);
+    auto success = document.Parse(c);
+    GPASSERT(success);
     mAttributes = _convert(document.FirstChild());
     attributeUnflatten();
     return mAttributes;

@@ -28,15 +28,7 @@ public:
     void addChild(GPPtr<GPTreeNode> n);
     void addChild(const std::string& name);
     void addChild(const std::string& name, const std::string& attr);
-    inline std::string attr() const
-    {
-        if (mChildren.size()>1)
-        {
-            auto defaultString = "";
-            return defaultString;
-        }
-        return mChildren[0]->name();
-    }
+    std::string attr() const;
     inline const std::vector<GPPtr<GPTreeNode> >& getChildren() const {return mChildren;}
     inline const std::string& name() const {return mName;}
 private:
