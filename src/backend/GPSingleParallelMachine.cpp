@@ -28,6 +28,7 @@ public:
     class Handle:public GPRefCount
     {
     public:
+        virtual void vReset() {}
         /*Should Clear input*/
         virtual void vHandle(IGPFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const = 0;
     };
@@ -56,6 +57,7 @@ public:
             GPASSERT(0);//TODO
             return false;
         }
+        mHandle->vReset();
         do
         {
 //            for (int i=0; i<size.first; ++i)
@@ -127,6 +129,10 @@ public:
         mKey = keys;
     }
     
+    virtual void vReset() override
+    {
+        mInit = false;
+    }
     virtual ~ ReduceHandle()
     {
     }
