@@ -82,8 +82,8 @@ static void __run()
 
 int main()
 {
-    GP_Set_Stream_Path("/Users/jiangxiaotang/Documents/Renascence/");
-    GP_Set_Lib_Path("/Users/jiangxiaotang/Documents/Renascence/");
+    //GP_Set_Stream_Path("/Users/jiangxiaotang/Documents/Renascence/");
+    //GP_Set_Lib_Path("/Users/jiangxiaotang/Documents/Renascence/");
     //while(true)
     {
         __run();

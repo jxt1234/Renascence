@@ -55,6 +55,7 @@ GPStream* GPStreamFactory::NewStream(const char* meta)
     {
         if (!GPFileStream::exist(fileName.c_str()))
         {
+            FUNC_PRINT_ALL(fileName.c_str(), s);
             return NULL;
         }
         return new GPFileStream(fileName.c_str());

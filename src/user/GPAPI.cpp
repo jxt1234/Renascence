@@ -895,7 +895,7 @@ GPPieces** GP_Pieces_CreateArray(int n)
         FUNC_PRINT(1);
         return NULL;
     }
-    GPPieces** pieces = new GPPieces*[n];
+    GPPieces** pieces = (GPPieces**)::malloc(n*sizeof(GPPieces*));
     for (int i=0; i<n; ++i)
     {
         pieces[i] = NULL;
@@ -909,7 +909,7 @@ void GP_Pieces_Array_Free(GPPieces** array)
         FUNC_PRINT(1);
         return;
     }
-    delete [] array;
+    ::free(array);
 }
 GPPieces* GP_Pieces_Array_Get(GPPieces** array, int n)
 {
