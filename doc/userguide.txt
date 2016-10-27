@@ -1,10 +1,16 @@
 平台要求：Linux/Mac
 其他平台下可以编译C++版本，但不能安装python版
 
+
 第一步：编译C++版本
-若要修改编译方式，修改tools/newMake.py中相关内容然后执行tools/newMake.py
-运行./install.sh
+安装软件：
+cmake
+
+在根目录下执行 cmake .
 然后运行./test.out，看是否能正常执行完成
+
+安装：sudo make install
+默认安装到 /usr/local/lib 目录下
 
 第二步：编译python版本
 1、安装软件:swig, pyton-setuptools, python-dev
