@@ -12,4 +12,10 @@ def main():
     outputPieces = sub_p_producer.createOutput('output/pythonTestParallel')
     tempPiece = pfunction.run([inputPieces])
     sub_p_producer.copyPiece(tempPiece, outputPieces)
+
+    input1 = inputPieces.read('0')
+    input1.save('output/pythonTestParallel/input.jpg')
+
+    tempPiece.write(input1, '0')
+    print input1
 main()

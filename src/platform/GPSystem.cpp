@@ -77,6 +77,7 @@ void* system_find_func(void* handle, const char* funcName)
 
 void system_unload_lib(void* handle)
 {
+    //FUNC_PRINT_ALL(handle, p);
     dlclose(handle);
 }
 

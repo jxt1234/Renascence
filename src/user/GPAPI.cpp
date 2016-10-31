@@ -358,6 +358,11 @@ void GP_Contents_Save(GPContents* content, GPWStream* outputs, int n)
 
 void GP_Contents_Destroy(GPContents* content)
 {
+    if (NULL == content)
+    {
+        FUNC_PRINT(1);
+        return;
+    }
     content->decRef();
 }
 
@@ -948,3 +953,32 @@ void GP_Unsigned_Int_Array_Set(unsigned int* array, unsigned int s, int n)
     array[n] = s;
 }
 
+GPContents* GP_Pieces_Read(GPPieces* pieces, const char* keys)
+{
+    //FIXME
+    GPASSERT(NULL!=pieces);
+    GPASSERT(NULL!=keys);
+    unsigned int keyNumbers[10];
+    std::istringstream input(keys);
+    for (int i=0; i<pieces->nKeyNumber; ++i)
+    {
+        keyNumbers[i] = 0;
+        input >> keyNumbers[i];
+    }
+    return pieces->vLoad(keyNumbers, pieces->nKeyNumber);
+}
+void GP_Pieces_Write(GPPieces* pieces, GPContents* src, const char* keys)
+{
+    //FIXME
+    GPASSERT(NULL!=pieces);
+    GPASSERT(NULL!=src);
+    GPASSERT(NULL!=keys);
+    unsigned int keyNumbers[10];
+    std::istringstream input(keys);
+    for (int i=0; i<pieces->nKeyNumber; ++i)
+    {
+        keyNumbers[i] = 0;
+        input >> keyNumbers[i];
+    }
+    pieces->vSave(keyNumbers, pieces->nKeyNumber, src);
+}

@@ -357,6 +357,14 @@ extern "C"{
     /*Pieces Create*/
     GPPieces* GP_Pieces_Create(AGPPiecesProducer* producer, const char* type, const char* dataType, const char* path, unsigned int* keys, int keyNum, int usage);
 
+    /*Example:
+     * GPContents* c = GP_Pieces_Read(output, "0 0 0");
+     * */
+    GPContents* GP_Pieces_Read(GPPieces* pieces, const char* keys);
+
+    //TODO
+    void GP_Pieces_Write(GPPieces* pieces, GPContents* src, const char* keys);
+
     void GP_Pieces_Destroy(GPPieces* pieces);
 
     bool GP_Pieces_Copy(AGPPiecesProducer* producer, const char* type, GPPieces* readPieces, GPPieces* writePieces);

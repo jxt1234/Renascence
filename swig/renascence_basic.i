@@ -333,6 +333,8 @@ enum {
 /*Pieces Function*/
 GPPieces* GP_Pieces_Create(AGPPiecesProducer* producer, const char* type, const char* dataType, const char* path, unsigned int* keys, int keyNum, int usage);
 
+GPContents* GP_Pieces_Read(GPPieces* pieces, const char* keys);
+void GP_Pieces_Write(GPPieces* pieces, GPContents* src, const char* keys);
 void GP_Pieces_Destroy(GPPieces* pieces);
 
 bool GP_Pieces_Copy(AGPPiecesProducer* producer, const char* type, GPPieces* readPieces, GPPieces* writePieces);

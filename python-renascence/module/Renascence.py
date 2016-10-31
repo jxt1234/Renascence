@@ -59,6 +59,11 @@ class Piece:
         RenascenceBasic.GP_Pieces_Destroy(self.nativePiece)
     def get(self):
         return self.nativePiece
+    def read(self, keys):
+        nativeContent = RenascenceBasic.GP_Pieces_Read(self.nativePiece, keys)
+        return Content(nativeContent, self.producer)
+    def write(self, content, keys):
+        RenascenceBasic.GP_Pieces_Write(self.nativePiece, content.get(), keys)
 
 class PieceArray:
     def __init__(self, pieces):
@@ -119,6 +124,8 @@ class PieceFunctionProducer:
         return result
     def get(self):
         return self.nativeProducer
+    def basic(self):
+        return self.basicProducer
 
 class PieceFunctionProducerParallel:
     def __init__(self, producer, parallelType):
@@ -142,6 +149,8 @@ class PieceFunctionProducerParallel:
         return piece
     def copyPiece(self, read, write):
         RenascenceBasic.GP_Pieces_Copy(self.producer.get(), self.parallelType, read.get(), write.get())
+    def basic(self):
+        return self.producer.basic()
 
 class Producer:
     def __init__(self, xmlFileList, producerType):
