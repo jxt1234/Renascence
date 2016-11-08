@@ -22,6 +22,12 @@ class Content:
         inputTypes_python = RenascenceBasic.GP_Strings_Get(inputTypes, 0)
         RenascenceBasic.GP_Strings_Free(inputTypes)
         return inputTypes_python
+    def saveAll(self, fileLists):
+        for i in range(0, len(fileLists)):
+            filename = fileLists[i]
+            output = RenascenceBasic.GP_WStream_Create(filename)
+            RenascenceBasic.GP_Contents_Save(self.nativeContent, output, i)
+            RenascenceBasic.GP_WStream_Destroy(output)
     def save(self, filename, pos=0):
         output = RenascenceBasic.GP_WStream_Create(filename)
         RenascenceBasic.GP_Contents_Save(self.nativeContent, output, pos)
