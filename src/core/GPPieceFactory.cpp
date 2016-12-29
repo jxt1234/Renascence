@@ -110,13 +110,7 @@ public:
     
     std::string generatePath(unsigned int* pKey, unsigned int keynum, const std::string& type)
     {
-        std::ostringstream output;
-        output << mPath << "/"<<type;
-        for (int i=0; i<keynum; ++i)
-        {
-            output << "_" << pKey[i];
-        }
-        return output.str();
+        return GPPieceFactory::getFilePath(pKey, keynum, type, mPath);
     }
     
     virtual GPContents* vLoad(unsigned int* pKey, unsigned int keynum)
@@ -166,4 +160,15 @@ GPPieces* GPPieceFactory::createMemoryPiece(const std::vector<unsigned int> &key
 GPPieces* GPPieceFactory::createLocalFilePiece(const std::vector<const IStatusType*>& types, const char* srcPath, size_t maxMemoryCacheSize/*MB*/)
 {
     return new GPLocalFilePiece(srcPath, types);
+}
+
+std::string GPPieceFactory::getFilePath(unsigned int* pKey, unsigned int keynum, const std::string& type, const std::string& basicPath)
+{
+    std::ostringstream output;
+    output << basicPath << "/"<<type;
+    for (int i=0; i<keynum; ++i)
+    {
+        output << "_" << pKey[i];
+    }
+    return output.str();
 }

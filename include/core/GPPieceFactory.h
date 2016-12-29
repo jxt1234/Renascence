@@ -21,5 +21,6 @@ class GPPieceFactory
 public:
     static GPPieces* createMemoryPiece(const std::vector<unsigned int> &keydimesions);
     static GPPieces* createLocalFilePiece(const std::vector<const IStatusType*>& types, const char* srcPath, size_t maxMemoryCacheSize/*MB*/);
+    static std::string getFilePath(unsigned int* pKey, unsigned int keynum, const std::string& types, const std::string& basicPath);
 };
 #endif
