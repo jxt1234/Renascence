@@ -29,14 +29,12 @@ public:
     /*inputs can only has one content*/
     bool receive(GPPtr<ContentWrap> inputs, int n);
     inline const GPFunction* get() const {return mF;}
-    const std::vector<bool>& flags() const {return mFlags;}
     int map(double* value, int n);
     inline bool completed() const {return mComplte;}
     GPContents* compute();
 private:
     bool _computeCompleteStatus() const;
     const GPFunction* mF;
-    std::vector<bool> mFlags;
     std::vector<GPPtr<ContentWrap>> mCache;
     bool mComplte;
     std::vector<GPPtr<GPStatusContent> > mStatus;

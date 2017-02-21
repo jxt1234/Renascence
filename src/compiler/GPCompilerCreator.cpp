@@ -1,5 +1,5 @@
 /******************************************************************
-   Copyright 2016, Jiang Xiao-tang
+   Copyright 2017, Jiang Xiao-tang
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,22 +13,27 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef CORE_GPFUNCTION_H
-#define CORE_GPFUNCTION_H
-#include <string>
-#include <vector>
-#include "lowlevelAPI/IStatusType.h"
-#include "lowlevelAPI/GPContents.h"
-struct GPFunction
+#include "compiler/GPCompilerCreator.h"
+#include "GPFrontEnd.h"
+#include "GPBackEnd.h"
+#include "GPBasicMidEnd.h"
+
+
+IGPFrontEnd* GPCompilerCreator::createFront()
 {
-public:
-    //For print
-    std::string name;
-    std::string shortname;
-    //For compute
-    computeFunction basic;
-    std::vector<const IStatusType*> inputType;
-    std::vector<const IStatusType*> outputType;
-    std::vector<const IStatusType*> statusType;
-};
-#endif
+    return new GPFrontEnd;
+}
+IGPAdaptor* GPCompilerCreator::createAdaptor()
+{
+    return NULL;
+}
+
+IGPMidEnd* GPCompilerCreator::createMidEnd()
+{
+    return new GPBasicMidEnd;
+}
+
+IGPBackEnd* GPCompilerCreator::createBackEnd(const GPFunctionDataBase* base)
+{
+    return new GPBackEnd(base);
+}

@@ -13,22 +13,19 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#ifndef CORE_GPFUNCTION_H
-#define CORE_GPFUNCTION_H
-#include <string>
-#include <vector>
-#include "lowlevelAPI/IStatusType.h"
-#include "lowlevelAPI/GPContents.h"
-struct GPFunction
+#ifndef COMPILER_GPBACKEND_H
+#define COMPILER_GPBACKEND_H
+#include "compiler/IGPCompilerInterface.h"
+#include "core/GPFunctionDataBase.h"
+class GPBackEnd : public IGPBackEnd
 {
 public:
-    //For print
-    std::string name;
-    std::string shortname;
-    //For compute
-    computeFunction basic;
-    std::vector<const IStatusType*> inputType;
-    std::vector<const IStatusType*> outputType;
-    std::vector<const IStatusType*> statusType;
+    GPBackEnd(const GPFunctionDataBase* dataBase):mDataBase(dataBase){}
+    virtual ~ GPBackEnd(){}
+    
+    virtual IGPFunction* vCreate(const GP__DAG* dag) const override;
+private:
+    const GPFunctionDataBase* mDataBase;
 };
+
 #endif

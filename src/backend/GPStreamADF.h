@@ -94,7 +94,7 @@ private:
     class TP:public Point
     {
     public:
-        TP(int outputNumber):Point(1, outputNumber){}
+        TP(int outputNumber=1):Point(1, outputNumber){}
         virtual ~TP(){}
         virtual bool vReceive(CONTENT c, const Point* source);
         GPPtr<GPTreeNode> dump() const;

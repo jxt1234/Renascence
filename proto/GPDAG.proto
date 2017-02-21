@@ -4,21 +4,57 @@ message Point {
     enum TYPE {
         FUNCTION = 0;
         INPUT = 1;
-        STRING = 2;
-        PARALLEL = 3;
+        PARALLEL = 2;
+        ADF = 3;
         OUTPUT = 4;
     }
     required TYPE type = 1 [default=INPUT];
-    repeated Point children = 2;
-    optional uint32 input_number = 3;//For INPUT
+    repeated Point input_variable = 2;
     enum PARALLELTPYE {
         MAP = 0;
         REDUCE = 1;
         PAL_FUNCTION = 2;
     }
-    optional PARALLELTPYE parallel_type = 4;//For PARALLEL
-    optional string parallel_function = 5;//For PARALLEL
-    optional string function_name = 6;//For FUNCTION
-    optional string content = 7;//For STRING
-    repeated string output_names = 8;//For OUTPUT
+    optional PARALLELTPYE parallel_type = 3;//For PARALLEL
+    optional string content = 4;//FUNCTION: function name, Input: variable name, PARALLEL: parallel function
+    repeated string output_types = 5;//For ADF
+    repeated string output_names = 6;//For OUTPUT
+}
+
+message PointGroup {
+    repeated Point formulas = 1;//Each point should be type of OUTPUT
+    repeated string input_types = 2;
+    repeated string output_types = 3;
+}
+
+message FuncInfo {
+    required string formula = 1;
+    repeated double parameters = 2;
+}
+message ParallelType {
+    required FuncInfo function = 1;
+}
+
+message DAGPoint {
+    required uint32 id = 1;
+    enum TYPE {
+        FUNCTION = 0;
+        TRANSMIT = 1;
+        INPUT = 2;
+        OUTPUT = 3;
+    }
+    required TYPE type = 2;
+    optional uint32 position = 3;//For INPUT and OUTPUT
+    optional string function = 4;//For FUNCTION
+}
+
+message DAG {
+    repeated DAGPoint points = 1;
+    message Connection {
+        required uint32 srcPoint = 1;
+        required uint32 dstPoint = 2;
+        required uint32 get_src = 3;
+        required uint32 put_dst = 4;
+    }
+    repeated Connection connections = 2;
 }

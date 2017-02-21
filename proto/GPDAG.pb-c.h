@@ -16,6 +16,12 @@ PROTOBUF_C__BEGIN_DECLS
 
 
 typedef struct _GP__Point GP__Point;
+typedef struct _GP__PointGroup GP__PointGroup;
+typedef struct _GP__FuncInfo GP__FuncInfo;
+typedef struct _GP__ParallelType GP__ParallelType;
+typedef struct _GP__DAGPoint GP__DAGPoint;
+typedef struct _GP__DAG GP__DAG;
+typedef struct _GP__DAG__Connection GP__DAG__Connection;
 
 
 /* --- enums --- */
@@ -23,8 +29,8 @@ typedef struct _GP__Point GP__Point;
 typedef enum _GP__Point__TYPE {
   GP__POINT__TYPE__FUNCTION = 0,
   GP__POINT__TYPE__INPUT = 1,
-  GP__POINT__TYPE__STRING = 2,
-  GP__POINT__TYPE__PARALLEL = 3,
+  GP__POINT__TYPE__PARALLEL = 2,
+  GP__POINT__TYPE__ADF = 3,
   GP__POINT__TYPE__OUTPUT = 4
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(GP__POINT__TYPE)
 } GP__Point__TYPE;
@@ -34,6 +40,13 @@ typedef enum _GP__Point__PARALLELTPYE {
   GP__POINT__PARALLELTPYE__PAL_FUNCTION = 2
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(GP__POINT__PARALLELTPYE)
 } GP__Point__PARALLELTPYE;
+typedef enum _GP__DAGPoint__TYPE {
+  GP__DAGPOINT__TYPE__FUNCTION = 0,
+  GP__DAGPOINT__TYPE__TRANSMIT = 1,
+  GP__DAGPOINT__TYPE__INPUT = 2,
+  GP__DAGPOINT__TYPE__OUTPUT = 3
+    PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(GP__DAGPOINT__TYPE)
+} GP__DAGPoint__TYPE;
 
 /* --- messages --- */
 
@@ -41,30 +54,22 @@ struct  _GP__Point
 {
   ProtobufCMessage base;
   GP__Point__TYPE type;
-  size_t n_children;
-  GP__Point **children;
-  /*
-   *For INPUT
-   */
-  protobuf_c_boolean has_input_number;
-  uint32_t input_number;
+  size_t n_input_variable;
+  GP__Point **input_variable;
   /*
    *For PARALLEL
    */
   protobuf_c_boolean has_parallel_type;
   GP__Point__PARALLELTPYE parallel_type;
   /*
-   *For PARALLEL
-   */
-  char *parallel_function;
-  /*
-   *For FUNCTION
-   */
-  char *function_name;
-  /*
-   *For STRING
+   *FUNCTION: function name, Input: variable name, PARALLEL: parallel function
    */
   char *content;
+  /*
+   *For ADF
+   */
+  size_t n_output_types;
+  char **output_types;
   /*
    *For OUTPUT
    */
@@ -73,7 +78,93 @@ struct  _GP__Point
 };
 #define GP__POINT__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&gp__point__descriptor) \
-    , GP__POINT__TYPE__INPUT, 0,NULL, 0,0, 0,0, NULL, NULL, NULL, 0,NULL }
+    , GP__POINT__TYPE__INPUT, 0,NULL, 0,0, NULL, 0,NULL, 0,NULL }
+
+
+struct  _GP__PointGroup
+{
+  ProtobufCMessage base;
+  /*
+   *Each point should be type of OUTPUT
+   */
+  size_t n_formulas;
+  GP__Point **formulas;
+  size_t n_input_types;
+  char **input_types;
+  size_t n_output_types;
+  char **output_types;
+};
+#define GP__POINT_GROUP__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&gp__point_group__descriptor) \
+    , 0,NULL, 0,NULL, 0,NULL }
+
+
+struct  _GP__FuncInfo
+{
+  ProtobufCMessage base;
+  char *formula;
+  size_t n_parameters;
+  double *parameters;
+};
+#define GP__FUNC_INFO__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&gp__func_info__descriptor) \
+    , NULL, 0,NULL }
+
+
+struct  _GP__ParallelType
+{
+  ProtobufCMessage base;
+  GP__FuncInfo *function;
+};
+#define GP__PARALLEL_TYPE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&gp__parallel_type__descriptor) \
+    , NULL }
+
+
+struct  _GP__DAGPoint
+{
+  ProtobufCMessage base;
+  uint32_t id;
+  GP__DAGPoint__TYPE type;
+  /*
+   *For INPUT and OUTPUT
+   */
+  protobuf_c_boolean has_position;
+  uint32_t position;
+  /*
+   *For FUNCTION
+   */
+  char *function;
+};
+#define GP__DAGPOINT__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&gp__dagpoint__descriptor) \
+    , 0, 0, 0,0, NULL }
+
+
+struct  _GP__DAG__Connection
+{
+  ProtobufCMessage base;
+  uint32_t srcpoint;
+  uint32_t dstpoint;
+  uint32_t get_src;
+  uint32_t put_dst;
+};
+#define GP__DAG__CONNECTION__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&gp__dag__connection__descriptor) \
+    , 0, 0, 0, 0 }
+
+
+struct  _GP__DAG
+{
+  ProtobufCMessage base;
+  size_t n_points;
+  GP__DAGPoint **points;
+  size_t n_connections;
+  GP__DAG__Connection **connections;
+};
+#define GP__DAG__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&gp__dag__descriptor) \
+    , 0,NULL, 0,NULL }
 
 
 /* GP__Point methods */
@@ -95,10 +186,126 @@ GP__Point *
 void   gp__point__free_unpacked
                      (GP__Point *message,
                       ProtobufCAllocator *allocator);
+/* GP__PointGroup methods */
+void   gp__point_group__init
+                     (GP__PointGroup         *message);
+size_t gp__point_group__get_packed_size
+                     (const GP__PointGroup   *message);
+size_t gp__point_group__pack
+                     (const GP__PointGroup   *message,
+                      uint8_t             *out);
+size_t gp__point_group__pack_to_buffer
+                     (const GP__PointGroup   *message,
+                      ProtobufCBuffer     *buffer);
+GP__PointGroup *
+       gp__point_group__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   gp__point_group__free_unpacked
+                     (GP__PointGroup *message,
+                      ProtobufCAllocator *allocator);
+/* GP__FuncInfo methods */
+void   gp__func_info__init
+                     (GP__FuncInfo         *message);
+size_t gp__func_info__get_packed_size
+                     (const GP__FuncInfo   *message);
+size_t gp__func_info__pack
+                     (const GP__FuncInfo   *message,
+                      uint8_t             *out);
+size_t gp__func_info__pack_to_buffer
+                     (const GP__FuncInfo   *message,
+                      ProtobufCBuffer     *buffer);
+GP__FuncInfo *
+       gp__func_info__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   gp__func_info__free_unpacked
+                     (GP__FuncInfo *message,
+                      ProtobufCAllocator *allocator);
+/* GP__ParallelType methods */
+void   gp__parallel_type__init
+                     (GP__ParallelType         *message);
+size_t gp__parallel_type__get_packed_size
+                     (const GP__ParallelType   *message);
+size_t gp__parallel_type__pack
+                     (const GP__ParallelType   *message,
+                      uint8_t             *out);
+size_t gp__parallel_type__pack_to_buffer
+                     (const GP__ParallelType   *message,
+                      ProtobufCBuffer     *buffer);
+GP__ParallelType *
+       gp__parallel_type__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   gp__parallel_type__free_unpacked
+                     (GP__ParallelType *message,
+                      ProtobufCAllocator *allocator);
+/* GP__DAGPoint methods */
+void   gp__dagpoint__init
+                     (GP__DAGPoint         *message);
+size_t gp__dagpoint__get_packed_size
+                     (const GP__DAGPoint   *message);
+size_t gp__dagpoint__pack
+                     (const GP__DAGPoint   *message,
+                      uint8_t             *out);
+size_t gp__dagpoint__pack_to_buffer
+                     (const GP__DAGPoint   *message,
+                      ProtobufCBuffer     *buffer);
+GP__DAGPoint *
+       gp__dagpoint__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   gp__dagpoint__free_unpacked
+                     (GP__DAGPoint *message,
+                      ProtobufCAllocator *allocator);
+/* GP__DAG__Connection methods */
+void   gp__dag__connection__init
+                     (GP__DAG__Connection         *message);
+/* GP__DAG methods */
+void   gp__dag__init
+                     (GP__DAG         *message);
+size_t gp__dag__get_packed_size
+                     (const GP__DAG   *message);
+size_t gp__dag__pack
+                     (const GP__DAG   *message,
+                      uint8_t             *out);
+size_t gp__dag__pack_to_buffer
+                     (const GP__DAG   *message,
+                      ProtobufCBuffer     *buffer);
+GP__DAG *
+       gp__dag__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   gp__dag__free_unpacked
+                     (GP__DAG *message,
+                      ProtobufCAllocator *allocator);
 /* --- per-message closures --- */
 
 typedef void (*GP__Point_Closure)
                  (const GP__Point *message,
+                  void *closure_data);
+typedef void (*GP__PointGroup_Closure)
+                 (const GP__PointGroup *message,
+                  void *closure_data);
+typedef void (*GP__FuncInfo_Closure)
+                 (const GP__FuncInfo *message,
+                  void *closure_data);
+typedef void (*GP__ParallelType_Closure)
+                 (const GP__ParallelType *message,
+                  void *closure_data);
+typedef void (*GP__DAGPoint_Closure)
+                 (const GP__DAGPoint *message,
+                  void *closure_data);
+typedef void (*GP__DAG__Connection_Closure)
+                 (const GP__DAG__Connection *message,
+                  void *closure_data);
+typedef void (*GP__DAG_Closure)
+                 (const GP__DAG *message,
                   void *closure_data);
 
 /* --- services --- */
@@ -109,6 +316,13 @@ typedef void (*GP__Point_Closure)
 extern const ProtobufCMessageDescriptor gp__point__descriptor;
 extern const ProtobufCEnumDescriptor    gp__point__type__descriptor;
 extern const ProtobufCEnumDescriptor    gp__point__paralleltpye__descriptor;
+extern const ProtobufCMessageDescriptor gp__point_group__descriptor;
+extern const ProtobufCMessageDescriptor gp__func_info__descriptor;
+extern const ProtobufCMessageDescriptor gp__parallel_type__descriptor;
+extern const ProtobufCMessageDescriptor gp__dagpoint__descriptor;
+extern const ProtobufCEnumDescriptor    gp__dagpoint__type__descriptor;
+extern const ProtobufCMessageDescriptor gp__dag__descriptor;
+extern const ProtobufCMessageDescriptor gp__dag__connection__descriptor;
 
 PROTOBUF_C__END_DECLS
 
