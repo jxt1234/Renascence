@@ -1,0 +1,24 @@
+syntax = "proto2";
+package GP;
+message Point {
+    enum TYPE {
+        FUNCTION = 0;
+        INPUT = 1;
+        STRING = 2;
+        PARALLEL = 3;
+        OUTPUT = 4;
+    }
+    required TYPE type = 1 [default=INPUT];
+    repeated Point children = 2;
+    optional uint32 input_number = 3;//For INPUT
+    enum PARALLELTPYE {
+        MAP = 0;
+        REDUCE = 1;
+        PAL_FUNCTION = 2;
+    }
+    optional PARALLELTPYE parallel_type = 4;//For PARALLEL
+    optional string parallel_function = 5;//For PARALLEL
+    optional string function_name = 6;//For FUNCTION
+    optional string content = 7;//For STRING
+    repeated string output_names = 8;//For OUTPUT
+}

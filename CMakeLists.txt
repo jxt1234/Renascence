@@ -5,8 +5,8 @@ MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 ")
 
-include_directories(include ./third/tinyxml/ ./third/pystring/)
-file(GLOB SRC_LIBS "src/*/*.cpp" "src/*/*.c" "src/*.cpp" "./third/tinyxml/tiny*.cpp" "./third/pystring/pystring.cpp")
+include_directories(include ./third/tinyxml/ ./third/pystring/ ./third/ ./)
+file(GLOB SRC_LIBS "src/*/*.cpp" "src/*/*.c" "src/*.cpp" "./third/tinyxml/tiny*.cpp" "./third/pystring/pystring.cpp" "./third/protobuf-c/protobuf-c.c" "./proto/*.c")
 file(GLOB SRC_TEST "test/*.cpp")
 
 add_library(Renascence SHARED ${SRC_LIBS})
