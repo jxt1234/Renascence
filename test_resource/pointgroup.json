@@ -1,0 +1,46 @@
+{
+    "formulas":[
+        {
+            "type":"OUTPUT",
+            "output_names":["t0","y0"],
+            "input_variable":[
+                {
+                    "type":"FUNCTION",
+                    "content":"Divide",
+                    "input_variable":[
+                        {
+                            "type":"INPUT",
+                            "content":"x0"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type":"OUTPUT",
+            "output_names":["y1"],
+            "input_variable":[
+                {
+                    "type":"FUNCTION",
+                    "content":"Compose",
+                    "input_variable":[
+                        {
+                            "type":"INPUT",
+                            "content":"t0"
+                        },
+                        {
+                            "type":"INPUT",
+                            "content":"x1"
+                        },
+                        {
+                            "type":"INPUT",
+                            "content":"x2"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "input_types":["TrBmp", "TrBmp", "TrBmp"],
+    "output_types":["TrBmp", "TrBmp"]
+}

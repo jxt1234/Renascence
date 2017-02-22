@@ -1,0 +1,4 @@
+{
+    t0,y0 = Divide(x0);
+    y1 = Compose(t0, x1, x2)
+}

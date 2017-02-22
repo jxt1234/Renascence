@@ -119,8 +119,8 @@ static int protobuf2json_process_field(
                                             *(int *)protobuf_value, ((ProtobufCEnumDescriptor *)field_descriptor->descriptor)->name
                                             );
             }
-            
-            *json_value = cJSON_CreateNumber(protobuf_enum_value->value);
+            *json_value = cJSON_CreateString(protobuf_enum_value->name);
+            //*json_value = cJSON_CreateNumber(protobuf_enum_value->value);
             break;
         }
         case PROTOBUF_C_TYPE_STRING:

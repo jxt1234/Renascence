@@ -18,7 +18,7 @@
 
 #include "proto/GPDAG.pb-c.h"
 #include "lowlevelAPI/IGPFunction.h"
-class IGPFrontEnd
+class IGPFrontEnd : public GPRefCount
 {
 public:
     virtual GP__PointGroup* vCreate(const char* content, const char** errorInfo) const = 0;
@@ -29,7 +29,7 @@ protected:
 };
 
 //Expand ADF or mutate expanded ADF
-class IGPAdaptor
+class IGPAdaptor : public GPRefCount
 {
 public:
     virtual GP__PointGroup* vExpand(const GP__PointGroup* origin) const = 0;
@@ -40,7 +40,7 @@ protected:
 };
 
 //Turn PointGroup to DAG. Do Optimization Here. The PointGroup shouldn't has ADF
-class IGPMidEnd
+class IGPMidEnd : public GPRefCount
 {
 public:
     virtual GP__DAG* vCreate(const GP__PointGroup* front) const = 0;
@@ -50,7 +50,7 @@ protected:
 };
 
 //Turn DAG to Function
-class IGPBackEnd
+class IGPBackEnd : public GPRefCount
 {
 public:
     virtual IGPFunction* vCreate(const GP__DAG* dag) const = 0;
