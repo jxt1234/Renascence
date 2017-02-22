@@ -40,7 +40,5 @@
                 }
             ]
         }
-    ],
-    "input_types":["TrBmp", "TrBmp", "TrBmp"],
-    "output_types":["TrBmp", "TrBmp"]
+    ]
 }

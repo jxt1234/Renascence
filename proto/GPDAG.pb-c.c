@@ -336,7 +336,7 @@ const ProtobufCEnumDescriptor gp__point__paralleltpye__descriptor =
   NULL,NULL,NULL,NULL   /* reserved[1234] */
 };
 static const GP__Point__TYPE gp__point__type__default_value = GP__POINT__TYPE__INPUT;
-static const ProtobufCFieldDescriptor gp__point__field_descriptors[6] =
+static const ProtobufCFieldDescriptor gp__point__field_descriptors[5] =
 {
   {
     "type",
@@ -387,18 +387,6 @@ static const ProtobufCFieldDescriptor gp__point__field_descriptors[6] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "output_types",
-    5,
-    PROTOBUF_C_LABEL_REPEATED,
-    PROTOBUF_C_TYPE_STRING,
-    offsetof(GP__Point, n_output_types),
-    offsetof(GP__Point, output_types),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
     "output_names",
     6,
     PROTOBUF_C_LABEL_REPEATED,
@@ -414,15 +402,15 @@ static const ProtobufCFieldDescriptor gp__point__field_descriptors[6] =
 static const unsigned gp__point__field_indices_by_name[] = {
   3,   /* field[3] = content */
   1,   /* field[1] = input_variable */
-  5,   /* field[5] = output_names */
-  4,   /* field[4] = output_types */
+  4,   /* field[4] = output_names */
   2,   /* field[2] = parallel_type */
   0,   /* field[0] = type */
 };
-static const ProtobufCIntRange gp__point__number_ranges[1 + 1] =
+static const ProtobufCIntRange gp__point__number_ranges[2 + 1] =
 {
   { 1, 0 },
-  { 0, 6 }
+  { 6, 4 },
+  { 0, 5 }
 };
 const ProtobufCMessageDescriptor gp__point__descriptor =
 {
@@ -432,14 +420,14 @@ const ProtobufCMessageDescriptor gp__point__descriptor =
   "GP__Point",
   "GP",
   sizeof(GP__Point),
-  6,
+  5,
   gp__point__field_descriptors,
   gp__point__field_indices_by_name,
-  1,  gp__point__number_ranges,
+  2,  gp__point__number_ranges,
   (ProtobufCMessageInit) gp__point__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor gp__point_group__field_descriptors[3] =
+static const ProtobufCFieldDescriptor gp__point_group__field_descriptors[1] =
 {
   {
     "formulas",
@@ -453,40 +441,14 @@ static const ProtobufCFieldDescriptor gp__point_group__field_descriptors[3] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
-  {
-    "input_types",
-    2,
-    PROTOBUF_C_LABEL_REPEATED,
-    PROTOBUF_C_TYPE_STRING,
-    offsetof(GP__PointGroup, n_input_types),
-    offsetof(GP__PointGroup, input_types),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "output_types",
-    3,
-    PROTOBUF_C_LABEL_REPEATED,
-    PROTOBUF_C_TYPE_STRING,
-    offsetof(GP__PointGroup, n_output_types),
-    offsetof(GP__PointGroup, output_types),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
 };
 static const unsigned gp__point_group__field_indices_by_name[] = {
   0,   /* field[0] = formulas */
-  1,   /* field[1] = input_types */
-  2,   /* field[2] = output_types */
 };
 static const ProtobufCIntRange gp__point_group__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 3 }
+  { 0, 1 }
 };
 const ProtobufCMessageDescriptor gp__point_group__descriptor =
 {
@@ -496,7 +458,7 @@ const ProtobufCMessageDescriptor gp__point_group__descriptor =
   "GP__PointGroup",
   "GP",
   sizeof(GP__PointGroup),
-  3,
+  1,
   gp__point_group__field_descriptors,
   gp__point_group__field_indices_by_name,
   1,  gp__point_group__number_ranges,

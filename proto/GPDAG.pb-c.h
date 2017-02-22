@@ -66,19 +66,14 @@ struct  _GP__Point
    */
   char *content;
   /*
-   *For ADF
-   */
-  size_t n_output_types;
-  char **output_types;
-  /*
-   *For OUTPUT
+   *For OUTPUT: variable names, For ADF: variable types
    */
   size_t n_output_names;
   char **output_names;
 };
 #define GP__POINT__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&gp__point__descriptor) \
-    , GP__POINT__TYPE__INPUT, 0,NULL, 0,0, NULL, 0,NULL, 0,NULL }
+    , GP__POINT__TYPE__INPUT, 0,NULL, 0,0, NULL, 0,NULL }
 
 
 struct  _GP__PointGroup
@@ -89,14 +84,10 @@ struct  _GP__PointGroup
    */
   size_t n_formulas;
   GP__Point **formulas;
-  size_t n_input_types;
-  char **input_types;
-  size_t n_output_types;
-  char **output_types;
 };
 #define GP__POINT_GROUP__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&gp__point_group__descriptor) \
-    , 0,NULL, 0,NULL, 0,NULL }
+    , 0,NULL }
 
 
 struct  _GP__FuncInfo

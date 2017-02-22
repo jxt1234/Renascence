@@ -17,17 +17,13 @@ static string readFile(const char* name)
 
 int main()
 {
-    GPPtr<IGPMidEnd> midend = GPCompilerCreator::createMidEnd();
-    auto frontJson = readFile("test_resource/pointgroup.json");
-    ProtobufCMessage* front = NULL;
-    json2protobuf_string(frontJson.c_str(), 0, &gp__point_group__descriptor, &front, NULL, 0);
-    GPASSERT(NULL!=front);
-    auto dag = midend->vCreate((const GP__PointGroup*)front);
-    protobuf_c_message_free_unpacked(front, NULL);
+    GPPtr<IGPFrontEnd> frontend = GPCompilerCreator::createFront();
+    auto frontFormula = readFile("test_resource/example_program.txt");
+    auto dag = frontend->vCreate(frontFormula.c_str(), NULL);
     char* dagjson = NULL;
     protobuf2json_string((ProtobufCMessage*)dag, 0, &dagjson, NULL, 0);
     protobuf_c_message_free_unpacked((ProtobufCMessage*)dag, NULL);
-    ofstream output("output/dag_test.json");
+    ofstream output("output/pbtest.json");
     output << dagjson;
     ::free(dagjson);
     
