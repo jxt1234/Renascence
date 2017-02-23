@@ -17,41 +17,41 @@
 #include "pystring.h"
 #include "utils/GPDebug.h"
 #include <string.h>
+#include "frontend/GPFormulaTree.h"
+static GP__Point* _createPoint(const GPFormulaTreePoint* point)
+{
+    GP__Point* p = NULL;
+    p = (GP__Point*)::malloc(sizeof(GP__Point));
+    gp__point__init(p);
+    p->content = ::strdup(point->name().c_str());
+    switch (point->type())
+    {
+        case GPFormulaTreePoint::NUM:
+            p->type = GP__POINT__TYPE__INPUT;
+            break;
+        case GPFormulaTreePoint::OPERATOR:
+            p->type = GP__POINT__TYPE__FUNCTION;
+            break;
+        default:
+            break;
+    }
+    p->n_input_variable = point->getChildrenNumber();
+    p->input_variable = (GP__Point**)::malloc(sizeof(GP__Point*)*point->getChildrenNumber());
+    for (int i=0; i<point->getChildrenNumber(); ++i)
+    {
+        GPFormulaTreePoint* subp = GPFORCECONVERT(GPFormulaTreePoint, point->getChild(i));
+        p->input_variable[i] = _createPoint(subp);
+    }
+    return p;
+}
+
 
 static GP__Point* _createFormula(const std::string& formula)
 {
     GPASSERT(!formula.empty());
-    auto mid_start = formula.find("(");
-    auto mid_end = formula.rfind(")");
-    if (mid_end == std::string::npos && mid_start == std::string::npos)
-    {
-        //Variable
-        GP__Point* point = (GP__Point*)::malloc(sizeof(GP__Point));
-        gp__point__init(point);
-        point->type = GP__POINT__TYPE__INPUT;
-        point->content = ::strdup(formula.c_str());
-        return point;
-    }
-    else if (mid_start != std::string::npos && mid_end != std::string::npos)
-    {
-        //Function
-        GP__Point* point = (GP__Point*)::malloc(sizeof(GP__Point));
-        gp__point__init(point);
-        point->type = GP__POINT__TYPE__FUNCTION;
-        point->content = ::strdup(formula.substr(0, mid_start).c_str());
-        auto variable_string = formula.substr(mid_start+1, mid_end-mid_start-1);
-        std::vector<std::string> variables;
-        pystring::split(variable_string, variables, ",");
-        point->n_input_variable = variables.size();
-        point->input_variable = (GP__Point**)malloc(sizeof(GP__Point*)*variables.size());
-        for (int i=0; i<variables.size(); ++i)
-        {
-            point->input_variable[i] = _createFormula(variables[i]);
-        }
-        return point;
-    }
-    GPPRINT_FL("Invalid subpart: %s", formula.c_str());
-    return NULL;
+    GPFormulaTree formulaTree;
+    formulaTree.setFormula(formula);
+    return _createPoint(formulaTree.root());
 }
 
 static GP__Point* _create(const std::string& sentence)

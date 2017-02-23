@@ -33,7 +33,7 @@ private:
     class Point:public GPRefCount
     {
     public:
-        Point(size_t inputNumber, size_t outputNumber):mOutputs(outputNumber, NULL), mInputs(inputNumber, NULL){}
+        Point(size_t inputNumber, size_t outputNumber){}
         virtual ~Point(){}
         virtual bool vReceive(CONTENT c, const Point* source) = 0;
         
@@ -49,15 +49,11 @@ private:
         void connectOutput(GPPtr<Point> p, int pos=-1)
         {
             GPASSERT(pos>=0);
-            if (pos >= mOutputs.size())
-            {
-                mOutputs.resize(pos+1);
-            }
-            mOutputs[pos] = p;
+            mOutputs.push_back(std::make_pair(pos, p));
         }
         
     protected:
-        std::vector<GPPtr<Point> > mOutputs;
+        std::vector<std::pair<int, GPPtr<Point>> > mOutputs;
         std::vector<const Point*> mInputs;
     };
     /*Source Point*/

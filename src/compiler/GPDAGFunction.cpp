@@ -22,7 +22,7 @@ bool GPDAGFunction::SP::vReceive(CONTENT con, const Point* source)
     GPASSERT(NULL!=con->content());
     for (auto& o : mOutputs)
     {
-        o->vReceive(con, this);
+        o.second->vReceive(con, this);
     }
     return true;
 }
@@ -39,7 +39,7 @@ bool GPDAGFunction::CP::vReceive(CONTENT c, const Point* source)
                 GPASSERT(comp->size() == mOutputs.size());
                 for (int j=0; j<mOutputs.size(); ++j)
                 {
-                    mOutputs[j]->vReceive(comp->getContent(j), this);
+                    mOutputs[j].second->vReceive(comp->getContent(mOutputs[j].first), this);
                 }
                 delete comp;
             }
@@ -76,7 +76,7 @@ bool GPDAGFunction::TP::vReceive(CONTENT c, const Point* source)
     GPASSERT(source == mInputs[0]);
     for (auto p : mOutputs)
     {
-        p->vReceive(c, this);
+        p.second->vReceive(c, this);
     }
     return true;
 }
@@ -115,7 +115,7 @@ GPDAGFunction::GPDAGFunction(const GP__DAG* dag, const GPFunctionDataBase* datab
             case GP__DAGPOINT__TYPE__OUTPUT:
             {
                 pointwrap = new DP;
-                inputPoints.insert(std::make_pair(p->position, pointwrap));
+                outputPoints.insert(std::make_pair(p->position, pointwrap));
             }
                 break;
             default:
