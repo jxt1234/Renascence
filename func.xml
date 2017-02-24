@@ -44,4 +44,11 @@
     <input>TrBmp TrFilterMatrix</input>
 </TrPackageFilterTransformFromRegress>
 
+
+<TrPackageDivide>
+    <shortName>DIV</shortName>
+	<output>TrBmp TrBmp</output>
+    <input>TrBmp</input>
+</TrPackageDivide>
+
 </libpics>

@@ -91,7 +91,7 @@ static GP__Point* _create(const std::string& sentence)
     return output_p;
 }
 
-GP__PointGroup* GPFrontEnd::vCreate(const char* content, const char** errorInfo) const
+GP__PointGroup* GPFrontEnd::vCreate(const char* content, char** errorInfo) const
 {
     GPASSERT(NULL!=content);
     std::string program = content;

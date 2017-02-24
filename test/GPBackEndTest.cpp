@@ -30,15 +30,9 @@ void GPBackEndTest::run()
 {
     GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
     {
-        GPPtr<IGPFrontEnd> frontend = GPCompilerCreator::createFront();
-        GPPtr<IGPMidEnd> midend = GPCompilerCreator::createMidEnd();
-        GPPtr<IGPBackEnd> backend = GPCompilerCreator::createBackEnd(base.get());
+        auto compiler = GPCompilerCreator::createBasicCompiler(base.get());
         auto frontFormula = readFile("test_resource/test_backend.txt");
-        auto tree = frontend->vCreate(frontFormula.c_str(), NULL);
-        auto dag = midend->vCreate(tree);
-        protobuf_c_message_free_unpacked((ProtobufCMessage*)tree, NULL);
-        GPPtr<IGPFunction> function = backend->vCreate(dag);
-        protobuf_c_message_free_unpacked((ProtobufCMessage*)dag, NULL);
+        GPPtr<IGPFunction> function = compiler(frontFormula.c_str(), NULL);
         
         auto bmp = base->vQueryType("TrBmp");
         GPPtr<GPStream> x0_s = GPStreamFactory::NewStream("input.jpg");

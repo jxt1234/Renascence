@@ -240,3 +240,35 @@ TrBmp* TrMixPicture(TrBmp** pictures, float* factor, int n, int width, int heigh
     }
     return dst;
 }
+
+void TrDivide(TrBmp* src, TrBmp** dst)
+{
+    int w = src->width;
+    int h = src->height;
+    int size = w*h;
+    int i;
+    dst[0] = TrAllocBmp(w, h);
+    dst[1] = TrAllocBmp(w, h);
+    {
+        TrPixels* srcP = src->pixels;
+        TrPixels* dst0P = dst[0]->pixels;
+        TrPixels* dst1P = dst[1]->pixels;
+        for (i=0; i<size; ++i)
+        {
+            dst0P[i].r = 0;
+            dst0P[i].g = 0;
+            dst0P[i].b = 0;
+            dst1P[i].r = 0;
+            dst1P[i].g = 0;
+            dst1P[i].b = 0;
+            if (srcP[i].r > 100)
+            {
+                dst0P[i] = srcP[i];
+            }
+            else
+            {
+                dst1P[i] = srcP[i];
+            }
+        }
+    }
+}

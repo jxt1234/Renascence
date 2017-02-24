@@ -14,40 +14,32 @@
    limitations under the License.
 ******************************************************************/
 #include "GPDAGFunction.h"
-bool GPDAGFunction::SP::vReceive(CONTENT con, const Point* source)
+bool GPDAGFunction::SP::vReceive(CONTENT con, int put_dst)
 {
-    GPASSERT(NULL==source);
+    GPASSERT(0==put_dst);
     GPASSERT(NULL!=con.get());
     GPASSERT(NULL!=con->type());
     GPASSERT(NULL!=con->content());
     for (auto& o : mOutputs)
     {
-        o.second->vReceive(con, this);
+        o.second.first->vReceive(con, o.second.second);
     }
     return true;
 }
 
-bool GPDAGFunction::CP::vReceive(CONTENT c, const Point* source)
+bool GPDAGFunction::CP::vReceive(CONTENT c, int put_dst)
 {
-    for (int i=0; i<mInputs.size(); ++i)
+    GPASSERT(put_dst>=0);
+    if (mPoint->receive(c, put_dst))
     {
-        if (mInputs[i] == source)
+        auto comp = mPoint->compute();
+        for (auto& o : mOutputs)
         {
-            if (mPoint->receive(c, i))
-            {
-                auto comp = mPoint->compute();
-                GPASSERT(comp->size() == mOutputs.size());
-                for (int j=0; j<mOutputs.size(); ++j)
-                {
-                    mOutputs[j].second->vReceive(comp->getContent(mOutputs[j].first), this);
-                }
-                delete comp;
-            }
-            return true;
+            o.second.first->vReceive(comp->getContent(o.first), o.second.second);
         }
+        delete comp;
     }
-    GPASSERT(0);
-    return false;
+    return true;
 }
 
 
@@ -57,9 +49,9 @@ GPDAGFunction::DP::DP():Point(1, 0)
 }
 
 
-bool GPDAGFunction::DP::vReceive(CONTENT c, const Point* source)
+bool GPDAGFunction::DP::vReceive(CONTENT c, int put_dst)
 {
-    GPASSERT(1 == mInputs.size());
+    GPASSERT(0 == put_dst);
     GPASSERT(NULL == mContents.get());
     mContents = c;
     return false;
@@ -71,12 +63,15 @@ void GPDAGFunction::DP::reset()
     mContents = NULL;
 }
 
-bool GPDAGFunction::TP::vReceive(CONTENT c, const Point* source)
+bool GPDAGFunction::TP::vReceive(CONTENT c, int put_dst)
 {
-    GPASSERT(source == mInputs[0]);
-    for (auto p : mOutputs)
+    GPASSERT(0 <= put_dst && put_dst < mOutputs.size());
+    for (auto &o : mOutputs)
     {
-        p.second->vReceive(c, this);
+        if (o.first == put_dst)
+        {
+            o.second.first->vReceive(c, o.second.second);
+        }
     }
     return true;
 }
@@ -85,7 +80,6 @@ bool GPDAGFunction::TP::vReceive(CONTENT c, const Point* source)
 GPDAGFunction::GPDAGFunction(const GP__DAG* dag, const GPFunctionDataBase* database)
 {
     std::map<uint32_t, GPPtr<Point>> pointmap;
-    std::map<uint32_t, GPPtr<Point>> inputPoints;
     std::map<uint32_t, GPPtr<Point>> outputPoints;
     for (int i=0; i<dag->n_points; ++i)
     {
@@ -104,7 +98,7 @@ GPDAGFunction::GPDAGFunction(const GP__DAG* dag, const GPFunctionDataBase* datab
             case GP__DAGPOINT__TYPE__INPUT:
             {
                 pointwrap = new SP;
-                inputPoints.insert(std::make_pair(p->position, pointwrap));
+                mSources.push_back(std::make_pair(p->position, pointwrap));
             }
                 break;
             case GP__DAGPOINT__TYPE__TRANSMIT:
@@ -131,15 +125,7 @@ GPDAGFunction::GPDAGFunction(const GP__DAG* dag, const GPFunctionDataBase* datab
         GPASSERT(pointmap.find(connection->srcpoint)!=pointmap.end());
         Point* src = pointmap.find(connection->srcpoint)->second.get();
         GPPtr<Point> dst = pointmap.find(connection->dstpoint)->second;
-        src->connectOutput(dst, connection->get_src);
-        dst->connectInput(src, connection->put_dst);
-    }
-    
-    mSources.resize(inputPoints.size());
-    for (auto iter : inputPoints)
-    {
-        GPASSERT(iter.first < mSources.size());
-        mSources[iter.first] = iter.second;
+        src->connectOutput(dst, connection->get_src, connection->put_dst);
     }
     
     mDest.resize(outputPoints.size());
@@ -156,11 +142,9 @@ GPDAGFunction::~GPDAGFunction()
 GPContents* GPDAGFunction::vRun(GPContents* inputs)
 {
     GPASSERT(NULL!=inputs);
-    GPASSERT(inputs->size() == mSources.size());
-    for (int i=0; i<mSources.size(); ++i)
+    for (auto s : mSources)
     {
-        CONTENT c(inputs->getContent(i));
-        mSources[i]->vReceive(c, NULL);
+        s.second->vReceive(inputs->getContent(s.first), 0);
     }
     GPContents* dst = new GPContents;
     for (int i=0; i<mDest.size(); ++i)

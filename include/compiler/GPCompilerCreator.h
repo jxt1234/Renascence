@@ -17,6 +17,7 @@
 #define COMPILER_GPCOMPILERCREATOR_H
 #include "IGPCompilerInterface.h"
 #include "core/GPFunctionDataBase.h"
+#include <functional>
 class GPCompilerCreator
 {
 public:
@@ -24,6 +25,9 @@ public:
     static IGPAdaptor* createAdaptor();
     static IGPMidEnd* createMidEnd();
     static IGPBackEnd* createBackEnd(const GPFunctionDataBase* base);
+    
+    
+    static std::function<IGPFunction*(const char*, char**)> createBasicCompiler(const GPFunctionDataBase* base);
 };
 
 #endif

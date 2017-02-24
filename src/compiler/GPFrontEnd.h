@@ -19,7 +19,7 @@
 class GPFrontEnd : public IGPFrontEnd
 {
 public:
-    virtual GP__PointGroup* vCreate(const char* content, const char** errorInfo) const override;
+    virtual GP__PointGroup* vCreate(const char* content, char** errorInfo) const override;
     
     GPFrontEnd(){}
     virtual ~ GPFrontEnd(){}

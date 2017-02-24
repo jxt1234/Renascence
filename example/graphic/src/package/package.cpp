@@ -111,3 +111,16 @@ GPContents* TrPackageFilterTransformFromRegress(GPContents* inputs)
 {
     return TrPackageFilterMatrix(inputs);
 }
+
+GPContents* TrPackageDivide(GPContents* inputs)
+{
+    GPContents* result = new GPContents;
+    assert(inputs->size()==1);
+    assert(inputs->getType(0)->name() == "TrBmp");
+    TrBmp* src = (TrBmp*)inputs->get(0);
+    TrBmp* dst[2];
+    TrDivide(src, dst);
+    result->push(dst[0], &gTrBmpType);
+    result->push(dst[1], &gTrBmpType);
+    return result;
+}

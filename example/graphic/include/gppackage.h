@@ -28,4 +28,6 @@ extern"C"
     GPContents* TrPackageCompse(GPContents*);
     /*Saturation*/
     GPContents* TrPackageSaturation(GPContents*);
+    /*Divide*/
+    GPContents* TrPackageDivide(GPContents*);
 }

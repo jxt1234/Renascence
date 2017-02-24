@@ -35,26 +35,17 @@ private:
     public:
         Point(size_t inputNumber, size_t outputNumber){}
         virtual ~Point(){}
-        virtual bool vReceive(CONTENT c, const Point* source) = 0;
+        virtual bool vReceive(CONTENT c, int put_dst) = 0;
         
-        void connectInput(const Point* input, int pos=-1)
+        void connectOutput(GPPtr<Point> p, int get_src, int put_dst)
         {
-            GPASSERT(pos>=0);
-            if (pos >= mInputs.size())
-            {
-                mInputs.resize(pos+1);
-            }
-            mInputs[pos] = input;
-        }
-        void connectOutput(GPPtr<Point> p, int pos=-1)
-        {
-            GPASSERT(pos>=0);
-            mOutputs.push_back(std::make_pair(pos, p));
+            GPASSERT(get_src>=0);
+            GPASSERT(put_dst>=0);
+            mOutputs.push_back(std::make_pair(get_src, std::make_pair(p, put_dst)));
         }
         
     protected:
-        std::vector<std::pair<int, GPPtr<Point>> > mOutputs;
-        std::vector<const Point*> mInputs;
+        std::vector<std::pair<int, std::pair<GPPtr<Point>, int>> > mOutputs;
     };
     /*Source Point*/
     class SP:public Point
@@ -62,20 +53,18 @@ private:
     public:
         SP():Point(0, 1){}
         virtual ~SP(){}
-        virtual bool vReceive(CONTENT con, const Point* source);
+        virtual bool vReceive(CONTENT con, int put_dst);
     };
     /*Compute Point*/
     class CP:public Point
     {
     public:
-        CP(GPPtr<GPComputePoint> point):mPoint(point), Point(point->get()->inputType.size(), point->get()->outputType.size()){mOpen = false;}
+        CP(GPPtr<GPComputePoint> point):mPoint(point), Point(point->get()->inputType.size(), point->get()->outputType.size()){}
         virtual ~CP(){}
         inline GPComputePoint* get() const {return mPoint.get();}
-        virtual bool vReceive(CONTENT c, const Point* source);
-        void open() {mOpen = true;}
+        virtual bool vReceive(CONTENT c, int put_dst);
     private:
         GPPtr<GPComputePoint> mPoint;
-        bool mOpen;
     };
     /*Transmit Point, Used to copy contents*/
     class TP:public Point
@@ -83,7 +72,7 @@ private:
     public:
         TP(int outputNumber=1):Point(1, outputNumber){}
         virtual ~TP(){}
-        virtual bool vReceive(CONTENT c, const Point* source);
+        virtual bool vReceive(CONTENT c, int put_dst);
     };
     /*Dest Point*/
     class DP:public Point
@@ -93,12 +82,12 @@ private:
         virtual ~DP() {}
         inline CONTENT get() {return mContents;}
         void reset();
-        virtual bool vReceive(CONTENT c, const Point* source);
+        virtual bool vReceive(CONTENT c, int put_dst);
     private:
         CONTENT mContents;
     };
     
-    std::vector<GPPtr<Point>> mSources;
+    std::vector<std::pair<uint32_t, GPPtr<Point>>> mSources;
     std::vector<GPPtr<Point>> mDest;
 
     std::vector<CP*> mFunctions;

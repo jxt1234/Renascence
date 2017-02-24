@@ -37,3 +37,22 @@ IGPBackEnd* GPCompilerCreator::createBackEnd(const GPFunctionDataBase* base)
 {
     return new GPBackEnd(base);
 }
+
+std::function<IGPFunction*(const char*, char**)> GPCompilerCreator::createBasicCompiler(const GPFunctionDataBase* base)
+{
+    GPPtr<IGPFrontEnd> front = new GPFrontEnd;
+    GPPtr<IGPMidEnd> mid = new GPBasicMidEnd;
+    GPPtr<IGPBackEnd> back = new GPBackEnd(base);
+    
+    return [front,mid,back](const char* formula, char** error) {
+        auto tree = front->vCreate(formula, error);
+        GPASSERT(NULL!=tree);//TODO
+        auto dag = mid->vCreate(tree);
+        GPASSERT(NULL!=dag);
+        protobuf_c_message_free_unpacked((ProtobufCMessage*)tree, NULL);
+        auto f = back->vCreate(dag);
+        GPASSERT(NULL!=f);
+        protobuf_c_message_free_unpacked((ProtobufCMessage*)dag, NULL);
+        return f;
+    };
+}

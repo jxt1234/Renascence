@@ -119,7 +119,7 @@ GP__DAG* GPBasicMidEnd::vCreate(const GP__PointGroup* front) const
         conn->put_dst = 0;
         conn->get_src = matchPos;
     }
-    
+
     //Create Output Points and Connect it
     for (auto output : outputPoints)
     {
@@ -199,7 +199,8 @@ GP__DAG* GPBasicMidEnd::vCreate(const GP__PointGroup* front) const
     dag->n_connections = connections.size();
     dag->points = (GP__DAGPoint**)::malloc(points.size()*sizeof(GP__DAGPoint*));
     ::memcpy(dag->points, points.data(), points.size()*sizeof(GP__DAGPoint*));
-    dag->connections = (GP__DAG__Connection**)::malloc(points.size()*sizeof(GP__DAG__Connection*));
+    
+    dag->connections = (GP__DAG__Connection**)::malloc(connections.size()*sizeof(GP__DAG__Connection*));
     ::memcpy(dag->connections, connections.data(), connections.size()*sizeof(GP__DAG__Connection*));
     return dag;
 }

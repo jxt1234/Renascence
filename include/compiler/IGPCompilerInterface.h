@@ -21,7 +21,7 @@
 class IGPFrontEnd : public GPRefCount
 {
 public:
-    virtual GP__PointGroup* vCreate(const char* content, const char** errorInfo) const = 0;
+    virtual GP__PointGroup* vCreate(const char* content, char** errorInfo) const = 0;
     virtual ~ IGPFrontEnd(){}
 
 protected:

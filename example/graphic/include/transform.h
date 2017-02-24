@@ -27,4 +27,6 @@ TrBmp* TrColorSwap(TrBmp* src, PixelsSwapFunc func);
 TrBmp* TrColorReverse(TrBmp* src);
 TrBmp* TrMixPicture(TrBmp** pictures, float* factor, int n, int width, int height);
 
+void TrDivide(TrBmp* src, TrBmp** dst);
+
 #endif
