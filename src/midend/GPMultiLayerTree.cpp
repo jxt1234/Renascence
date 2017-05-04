@@ -131,7 +131,7 @@ GPMultiLayerTree::GPMultiLayerTree(const GPFunctionTree* tree)
         }
         
         /*Generate New Points*/
-        for (auto iter : equallist)
+        for (auto& iter : equallist)
         {
             GPFunctionTreePoint* inputpoints = NULL;
             int inputCur = -1;

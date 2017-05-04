@@ -17,50 +17,41 @@ class GPSingleParallelMachineTest:public GPTest
 
 static void __run()
 {
-    GPSingleParallelMachine machine;
     GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
     {
         GPPtr<GPProducer> sys = GPFactory::createProducer(base.get());
+        GPSingleParallelMachine machine;
+        auto bmpType = base->vQueryType("TrBmp");
         {
             GPParallelType data;
-            GPPieces* output = machine.vCreatePieces("output/GPSingleParallelMachineTest_Map", std::vector<const IStatusType*>(), NULL, 0, IParallelMachine::OUTPUT);
+            unsigned int keySize = 5;
+            GPPieces* output = machine.vCreatePieces("output/GPSingleParallelMachineTest_Map", bmpType, &keySize, 1, IParallelMachine::OUTPUT);
             data.mOutputKey.push_back(std::make_pair(0, 0));
-            data.pContext = sys.get();
             data.sFuncInfo.formula = "S(x0)";
             data.sFuncInfo.variableKey.push_back(std::make_pair(0, 0));
-            auto p = machine.vPrepare(&data, IParallelMachine::MAP);
-            GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0);
-            inputs->pKeySize[0] = 5;
-            inputs->nKeyNumber = 1;
-            output->pKeySize[0] = 5;
-            output->nKeyNumber = 1;
-            p->vRun(output, &inputs, 1);
+            auto p = machine.vPrepare(&data, IParallelMachine::MAP, sys.get());
+            GPPieces* inputs = machine.vCreatePieces("res/pictures/", bmpType, &keySize, 1, IParallelMachine::INPUT);
+            GPContents parameter;
+            p(&output,1, &inputs, 1, &parameter);
 
             delete output;
             delete inputs;
-            delete p;
         }
         {
-            GPPieces* output = machine.vCreatePieces("output/GPSingleParallelMachineTest_Reduce", std::vector<const IStatusType*>(), NULL, 0, IParallelMachine::OUTPUT);
+            unsigned int keySize = 1;
+            GPPieces* output = machine.vCreatePieces("output/GPSingleParallelMachineTest_Reduce",bmpType  , &keySize, 1, IParallelMachine::OUTPUT);
             GPParallelType data;
-            data.pContext = sys.get();
             data.sFuncInfo.variableKey.push_back(std::make_pair(0, 0));
             data.sFuncInfo.variableKey.push_back(std::make_pair(1, 0));
+            data.mReduceInitKey.push_back(std::make_pair(0, 0));
             data.sFuncInfo.formula = "C(x0, x1)";
-            auto p = machine.vPrepare(&data, IParallelMachine::REDUCE);
-            GPPieces* inputs = GPPieceFactory::createLocalFilePiece(std::vector<const IStatusType*>{base->vQueryType("TrBmp")}, "res/pictures/", 0);
-            inputs->pKeySize[0] = 5;
-            inputs->nKeyNumber = 1;
-            output->pKeySize[0] = 1;
-            output->nKeyNumber = 1;
-            GPPieces* tempOutput = machine.vCreatePieces(NULL, std::vector<const IStatusType*>(), output->pKeySize, output->nKeyNumber, IParallelMachine::CACHE);
-            p->vRun(tempOutput, &inputs, 1);
-            machine.vCopyPieces(tempOutput, output);
-
+            auto p = machine.vPrepare(&data, IParallelMachine::REDUCE, sys.get());
+            keySize = 5;
+            GPPieces* inputs = machine.vCreatePieces("res/pictures/", bmpType, &keySize, 1, IParallelMachine::INPUT);
+            GPContents parameter;
+            p(&output, 1,  &inputs, 1, &parameter);
             delete inputs;
-            delete p;
             delete output;
-            delete tempOutput;
         }
     }
 }

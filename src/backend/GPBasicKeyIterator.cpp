@@ -51,7 +51,7 @@ GPBasicKeyIterator::GPBasicKeyIterator(GPPieces** inputs, int inputNumber, const
     unsigned int sumDim = 0;
     for (int i=0; i<inputNumber; ++i)
     {
-        sumDim += inputs[i]->nKeyNumber;
+        sumDim += inputs[i]->getKeySize().size();
     }
     for (int pos=0; pos < outputKeys.size(); ++pos)
     {
@@ -59,7 +59,7 @@ GPBasicKeyIterator::GPBasicKeyIterator(GPPieces** inputs, int inputNumber, const
         unsigned int outputPos = p.second;
         for (int i=0; i<p.first; ++i)
         {
-            outputPos += inputs[i]->nKeyNumber;
+            outputPos += inputs[i]->getKeySize().size();
         }
         mOutputPos.push_back(outputPos);
     }
@@ -70,8 +70,9 @@ GPBasicKeyIterator::GPBasicKeyIterator(GPPieces** inputs, int inputNumber, const
     unsigned int pos = 0;
     for (int i=0; i<inputNumber; ++i)
     {
-        ::memcpy(keyDimesions+pos, inputs[i]->pKeySize, sizeof(unsigned int)*inputs[i]->nKeyNumber);
-        pos += inputs[i]->nKeyNumber;
+        auto keysize = inputs[i]->getKeySize();
+        ::memcpy(keyDimesions+pos, keysize.data(), sizeof(unsigned int)*keysize.size());
+        pos += keysize.size();
     }
     mGroup = new GPCarryVaryGroup(keyDimesions, sumDim);
     mGroup->start(mCache, mCacheSize);

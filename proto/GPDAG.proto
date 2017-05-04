@@ -5,7 +5,6 @@ message Point {
         FUNCTION = 0;
         INPUT = 1;
         PARALLEL = 2;
-        ADF = 3;
         OUTPUT = 4;
     }
     required TYPE type = 1 [default=INPUT];
@@ -17,11 +16,19 @@ message Point {
     }
     optional PARALLELTPYE parallel_type = 3;//For PARALLEL
     optional string content = 4;//FUNCTION: function name, Input: variable name, PARALLEL: parallel function
-    repeated string output_names = 6;//For OUTPUT: variable names, For ADF: variable types
+    repeated string output_names = 6;//For OUTPUT: variable names
+}
+
+message ADF {
+    required string name = 1;
+    repeated string output_types = 2;
+    repeated Point input_point = 3;
+    repeated Point realization = 4;
 }
 
 message PointGroup {
     repeated Point formulas = 1;//Each point should be type of OUTPUT
+    repeated ADF adfs = 2;
 }
 
 message FuncInfo {

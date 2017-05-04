@@ -24,84 +24,59 @@
 class GPPieceInMemory : public GPPieces
 {
 public:
-    GPPieceInMemory(const std::vector<unsigned int>& keydimesions):mKeyDimesions(keydimesions)
+    GPPieceInMemory(const std::vector<unsigned int>& keydimesions):GPPieces(keydimesions)
     {
+        mKeySize = keydimesions;
         mMaxSize = 1;
-        if (keydimesions.empty())
+        for (int i=0; i<keydimesions.size(); ++i)
         {
-            pKeySize[0] = 1;
-            nKeyNumber = 1;
+            GPASSERT(keydimesions[i]>0);
+            mMaxSize *= keydimesions[i];
         }
-        else
-        {
-            nKeyNumber = (unsigned int)keydimesions.size();
-            for (int i=0; i<keydimesions.size(); ++i)
-            {
-                GPASSERT(keydimesions[i]>0);
-                mMaxSize *= keydimesions[i];
-                pKeySize[i] = keydimesions[i];
-            }
-        }
-        mPieces = new GPContents*[mMaxSize];
-        ::memset(mPieces, 0, mMaxSize*sizeof(GPContents*));
+        mPieces.resize(mMaxSize);
     }
     virtual ~GPPieceInMemory()
     {
-        //FUNC_PRINT_ALL(this, p);
-        for (size_t i=0; i<mMaxSize; ++i)
-        {
-            if (NULL!=mPieces[i])
-            {
-                mPieces[i]->decRef();
-            }
-        }
-        delete [] mPieces;
     }
     
-    virtual GPContents* vLoad(unsigned int* pKey, unsigned int keynum)
+    virtual GPContents::CONTENT vLoad(unsigned int* pKey, unsigned int keynum) override
     {
         auto sum = _computePos(pKey, keynum);
-        GPContents* res = mPieces[sum];
-        GPASSERT(NULL!=res);
-        res->addRef();
-        return res;
+        return mPieces[sum];
     }
     
-    virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents* c)
+    virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents::CONTENT c) override
     {
         auto sum = _computePos(pKey, keynum);
-        c->addRef();
-        if (NULL != mPieces[sum])
-        {
-            mPieces[sum]->decRef();
-        }
         mPieces[sum] = c;
     }
+    
 
 private:
     size_t _computePos(unsigned int* key, int keynum)
     {
-        GPASSERT(keynum <= mKeyDimesions.size() || (keynum==1 && mKeyDimesions.size()==0));
+        GPASSERT(keynum <= mKeySize.size() || (keynum==1 && mKeySize.size()==0));
         size_t sum = 0;
         for (int i=0; i<keynum; ++i)
         {
-            sum = sum*mKeyDimesions[i] + key[i];
+            sum = sum*mKeySize[i] + key[i];
         }
         GPASSERT(sum < mMaxSize);
         return sum;
     }
-    GPContents** mPieces;
-    std::vector<unsigned int> mKeyDimesions;
+    std::vector<GPContents::CONTENT> mPieces;
     size_t mMaxSize;
+    std::vector<unsigned int> mKeySize;
 };
 
 class GPLocalFilePiece : public GPPieces
 {
 public:
-    GPLocalFilePiece(const char* path, std::vector<const IStatusType*> types)
+    GPLocalFilePiece(const std::vector<unsigned int> &keydimesions, const char* path, const IStatusType* type):GPPieces(keydimesions)
     {
-        pTypes = types;
-        nKeyNumber = 0;
+        GPASSERT(NULL!=type);
+        GPASSERT(NULL!=path);
+        mType = type;
         mPath = path;
     }
     virtual ~GPLocalFilePiece()
@@ -112,36 +87,29 @@ public:
     {
         return GPPieceFactory::getFilePath(pKey, keynum, type, mPath);
     }
-    
-    virtual GPContents* vLoad(unsigned int* pKey, unsigned int keynum)
+
+    virtual GPContents::CONTENT vLoad(unsigned int* pKey, unsigned int keynum) override
     {
-        GPASSERT(!pTypes.empty());
-        GPContents* c = new GPContents;
         GPASSERT(keynum>0);
-        for (int i=0; i<pTypes.size(); ++i)
-        {
-            std::string path = generatePath(pKey, keynum, pTypes[i]->name());
-            GPPtr<GPStream> readStream = GPStreamFactory::NewStream(path.c_str());
-            GPASSERT(NULL!=readStream.get());
-            c->push(pTypes[i]->vLoad(readStream.get()), pTypes[i]);
-        }
-        return c;
+        std::string path = generatePath(pKey, keynum, mType->name());
+        GPPtr<GPStream> readStream = GPStreamFactory::NewStream(path.c_str());
+        GPASSERT(NULL!=readStream.get());
+        return new GPContents::GP_Unit(mType->vLoad(readStream.get()), mType);
     }
     
-    virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents* c)
+    virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents::CONTENT c) override
     {
-        GPASSERT(NULL!=c);
+        GPASSERT(NULL!=c.get());
         GPASSERT(keynum>0);
-        for (int i=0; i<c->size(); ++i)
-        {
-            auto type = c->getType(i);
-            std::string path = generatePath(pKey, keynum, type->name());
-            GPPtr<GPWStream> writeStream = GPStreamFactory::NewWStream(path.c_str());
-            type->vSave(c->get(i), writeStream.get());
-        }
+        auto type = c->type();
+        std::string path = generatePath(pKey, keynum, type->name());
+        GPPtr<GPWStream> writeStream = GPStreamFactory::NewWStream(path.c_str());
+        type->vSave(c->content(), writeStream.get());
     }
+
 private:
     std::string mPath;
+    const IStatusType* mType;
 };
 
 
@@ -157,9 +125,9 @@ GPPieces* GPPieceFactory::createMemoryPiece(const std::vector<unsigned int> &key
     return _createMemoryPieces(keydimesions);
 }
 
-GPPieces* GPPieceFactory::createLocalFilePiece(const std::vector<const IStatusType*>& types, const char* srcPath, size_t maxMemoryCacheSize/*MB*/)
+GPPieces* GPPieceFactory::createLocalFilePiece(const std::vector<unsigned int> &keydimesions, const IStatusType* types, const char* srcPath, size_t maxMemoryCacheSize/*MB*/)
 {
-    return new GPLocalFilePiece(srcPath, types);
+    return new GPLocalFilePiece(keydimesions, srcPath, types);
 }
 
 std::string GPPieceFactory::getFilePath(unsigned int* pKey, unsigned int keynum, const std::string& type, const std::string& basicPath)

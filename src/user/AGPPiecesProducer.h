@@ -15,33 +15,27 @@
 ******************************************************************/
 #ifndef USER_AGPPIECESPRODUCER_H
 #define USER_AGPPIECESPRODUCER_H
-#include "backend/GPPiecesFunctionCreator.h"
 #include "lowlevelAPI/GPPiecesFunction.h"
 class AGPPiecesProducer : public GPRefCount
 {
 public:
-    AGPPiecesProducer(GPParallelMachineSet* set, AGPProducer* producer, GPPiecesFunctionCreator* creator)
+    AGPPiecesProducer(GPParallelMachineSet* set, AGPProducer* producer)
     {
         set->addRef();
         mSet = set;
         producer->addRef();
         mProducer = producer;
-        mCreator = creator;
-        creator->addRef();
     }
     virtual ~AGPPiecesProducer()
     {
         mSet->decRef();
         mProducer->decRef();
-        mCreator->decRef();
     }
 
     GPParallelMachineSet* get() const {return mSet;}
     AGPProducer* getProducer() {return mProducer;}
-    GPPiecesFunctionCreator* getCreator() const {return mCreator;}
 private:
     GPParallelMachineSet* mSet;
     AGPProducer* mProducer;
-    GPPiecesFunctionCreator* mCreator;
 };
 #endif

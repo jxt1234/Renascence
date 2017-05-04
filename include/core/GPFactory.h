@@ -20,7 +20,6 @@
 #include <map>
 #include <string>
 class GPProducer;
-class GPPiecesFunctionCreator;
 class GPFactory
 {
 public:
@@ -35,7 +34,5 @@ public:
     static GPFunctionDataBase* createDataBase(GPStream* metafile, IFunctionTable* t);
     static GPParallelMachineSet* createParallelSet(const char* metafile, IFunctionTable* t);
     static GPParallelMachineSet* createParallelSet(GPStream* metafile, IFunctionTable* t);
-    static GPPiecesFunctionCreator* createPieceFunctionProducer(const GPProducer* producer, const GPFunctionDataBase* base, GPStream* metafile);
-    static GPPiecesFunctionCreator* createPieceFunctionProducer(const GPProducer* producer, const GPFunctionDataBase* base, const std::map<std::string, std::string>& map_reduce_formula);
 };
 #endif

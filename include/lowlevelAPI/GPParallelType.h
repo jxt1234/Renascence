@@ -21,14 +21,14 @@
 /*Create By Renascence, Used by low level lib*/
 struct GPParallelType
 {
-    typedef std::vector<std::pair<unsigned int, unsigned int>> KEYS;
+    typedef std::vector<std::pair<int, unsigned int>> KEYS;
     /*For GPFunction Reconstruct*/
     struct FuncInfo
     {
         std::string formula;
         std::string parameter;
 
-        /*x0: 0,0  y1: 1,1  and so on*/
+        /*p0: -1,0  p1: -1,1  x0: 0,0  y1: 1,1  and so on*/
         KEYS variableKey;
         
         std::vector<const IStatusType*> inputs;
@@ -47,18 +47,9 @@ struct GPParallelType
     
     //a0: 0,0  b2: 1,2  d2: 3,2  and so on
     KEYS mOutputKey;
-    
-    const IGPFunctionContext* pContext;
-    
-    GPParallelType()
-    {
-        pContext = NULL;
-    }
 
-    ~GPParallelType()
-    {
-    }
-
+    //x0: 0,0  x1: 0,1  p0:-1,0
+    KEYS mReduceInitKey;
 };
 
 #endif

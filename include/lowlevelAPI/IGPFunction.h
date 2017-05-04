@@ -41,7 +41,6 @@ class IGPFunctionContext : public GPRefCount
 {
 public:
     virtual IGPFunction* vCreateContentFunction(const std::string& formula, const std::string& parameters, const std::vector<const IStatusType*>& inputs) const = 0;
-    virtual IKeyFunction* vCreateKeyFunction(const std::string& formula, const std::string& variable) const = 0;
     
     virtual ~IGPFunctionContext() {}
 protected:

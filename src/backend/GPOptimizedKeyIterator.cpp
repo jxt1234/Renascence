@@ -72,7 +72,7 @@ GPOptimizedKeyIterator::GPOptimizedKeyIterator(GPPieces** inputs, int nInput, co
         int pos = sameKeys[k].second;
         for (int i=0; i<sameKeys[k].first; ++i)
         {
-            pos+= inputs[i]->nKeyNumber;
+            pos+= inputs[i]->getKeySize().size();
         }
         sameKeysPos[k] = pos;
     }
@@ -87,7 +87,7 @@ GPOptimizedKeyIterator::GPOptimizedKeyIterator(GPPieces** inputs, int nInput, co
     unsigned int totalInputDimesion = 0;
     for (int i=0; i<nInput; ++i)
     {
-        totalInputDimesion += inputs[i]->nKeyNumber;
+        totalInputDimesion += inputs[i]->getKeySize().size();
     }
     
     //One pos for the same keys as 0, others in order
@@ -100,20 +100,21 @@ GPOptimizedKeyIterator::GPOptimizedKeyIterator(GPPieces** inputs, int nInput, co
     for (int i=0; i<nInput; ++i)
     {
         auto piece = inputs[i];
-        for (int j=0; j<piece->nKeyNumber; ++j)
+        auto keysize = piece->getKeySize();
+        for (int j=0; j<keysize.size(); ++j)
         {
             if (sameSet.find(posOrigin)==sameSet.end())
             {
                 mMapPosForInput.push_back(pos);
-                dimesions[pos] = piece->pKeySize[j];
+                dimesions[pos] = keysize[j];
                 pos = pos + 1;
             }
             else
             {
                 mMapPosForInput.push_back(0);
-                if (0 == dimesions[0] || dimesions[0] > piece->pKeySize[j])
+                if (0 == dimesions[0] || dimesions[0] > keysize[j])
                 {
-                    dimesions[0] = piece->pKeySize[j];
+                    dimesions[0] = keysize[j];
                 }
             }
             posOrigin++;
@@ -132,7 +133,7 @@ GPOptimizedKeyIterator::GPOptimizedKeyIterator(GPPieces** inputs, int nInput, co
         unsigned int outputPos = p.second;
         for (int i=0; i<p.first; ++i)
         {
-            outputPos += inputs[i]->nKeyNumber;
+            outputPos += inputs[i]->getKeySize().size();
         }
         mOutputPos.push_back(outputPos);
     }

@@ -20,19 +20,19 @@
 class GPPieces : public GPRefCount
 {
 public:
-    unsigned int pKeySize[10];
-    unsigned int nKeyNumber;
-    std::vector<const IStatusType*> pTypes;
-    std::string sInfo;
-
-    virtual GPContents* vLoad(unsigned int* pKey, unsigned int keynum) = 0;
+    virtual GPPtr<GPContents::GP_Unit> vLoad(unsigned int* pKey, unsigned int keynum) = 0;
     
     virtual long vPreMeasure(unsigned int* pKey, unsigned int keynum) const {return -1;}
 
-    virtual void vSave(unsigned int* pKey, unsigned int keynum, GPContents* c) = 0;
+    virtual void vSave(unsigned int* pKey, unsigned int keynum, GPPtr<GPContents::GP_Unit> c) = 0;
+    
+    const std::vector<unsigned int>& getKeySize() const {return mKeySize;}
     
     virtual ~GPPieces(){}
+    
 protected:
-    GPPieces() {}
+    GPPieces(const std::vector<unsigned int>& keysize):mKeySize(keysize){}
+    std::vector<unsigned int> mKeySize;
+
 };
 #endif

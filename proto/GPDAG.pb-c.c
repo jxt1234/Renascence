@@ -50,6 +50,49 @@ void   gp__point__free_unpacked
   assert(message->base.descriptor == &gp__point__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
+void   gp__adf__init
+                     (GP__ADF         *message)
+{
+  static GP__ADF init_value = GP__ADF__INIT;
+  *message = init_value;
+}
+size_t gp__adf__get_packed_size
+                     (const GP__ADF *message)
+{
+  assert(message->base.descriptor == &gp__adf__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t gp__adf__pack
+                     (const GP__ADF *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &gp__adf__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t gp__adf__pack_to_buffer
+                     (const GP__ADF *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &gp__adf__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+GP__ADF *
+       gp__adf__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (GP__ADF *)
+     protobuf_c_message_unpack (&gp__adf__descriptor,
+                                allocator, len, data);
+}
+void   gp__adf__free_unpacked
+                     (GP__ADF *message,
+                      ProtobufCAllocator *allocator)
+{
+  assert(message->base.descriptor == &gp__adf__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
 void   gp__point_group__init
                      (GP__PointGroup         *message)
 {
@@ -271,23 +314,21 @@ void   gp__dag__free_unpacked
   assert(message->base.descriptor == &gp__dag__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-static const ProtobufCEnumValue gp__point__type__enum_values_by_number[5] =
+static const ProtobufCEnumValue gp__point__type__enum_values_by_number[4] =
 {
   { "FUNCTION", "GP__POINT__TYPE__FUNCTION", 0 },
   { "INPUT", "GP__POINT__TYPE__INPUT", 1 },
   { "PARALLEL", "GP__POINT__TYPE__PARALLEL", 2 },
-  { "ADF", "GP__POINT__TYPE__ADF", 3 },
   { "OUTPUT", "GP__POINT__TYPE__OUTPUT", 4 },
 };
 static const ProtobufCIntRange gp__point__type__value_ranges[] = {
-{0, 0},{0, 5}
+{0, 0},{4, 3},{0, 4}
 };
-static const ProtobufCEnumValueIndex gp__point__type__enum_values_by_name[5] =
+static const ProtobufCEnumValueIndex gp__point__type__enum_values_by_name[4] =
 {
-  { "ADF", 3 },
   { "FUNCTION", 0 },
   { "INPUT", 1 },
-  { "OUTPUT", 4 },
+  { "OUTPUT", 3 },
   { "PARALLEL", 2 },
 };
 const ProtobufCEnumDescriptor gp__point__type__descriptor =
@@ -297,11 +338,11 @@ const ProtobufCEnumDescriptor gp__point__type__descriptor =
   "TYPE",
   "GP__Point__TYPE",
   "GP",
-  5,
+  4,
   gp__point__type__enum_values_by_number,
-  5,
+  4,
   gp__point__type__enum_values_by_name,
-  1,
+  2,
   gp__point__type__value_ranges,
   NULL,NULL,NULL,NULL   /* reserved[1234] */
 };
@@ -427,7 +468,84 @@ const ProtobufCMessageDescriptor gp__point__descriptor =
   (ProtobufCMessageInit) gp__point__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor gp__point_group__field_descriptors[1] =
+static const ProtobufCFieldDescriptor gp__adf__field_descriptors[4] =
+{
+  {
+    "name",
+    1,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_STRING,
+    0,   /* quantifier_offset */
+    offsetof(GP__ADF, name),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "output_types",
+    2,
+    PROTOBUF_C_LABEL_REPEATED,
+    PROTOBUF_C_TYPE_STRING,
+    offsetof(GP__ADF, n_output_types),
+    offsetof(GP__ADF, output_types),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "input_point",
+    3,
+    PROTOBUF_C_LABEL_REPEATED,
+    PROTOBUF_C_TYPE_MESSAGE,
+    offsetof(GP__ADF, n_input_point),
+    offsetof(GP__ADF, input_point),
+    &gp__point__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "realization",
+    4,
+    PROTOBUF_C_LABEL_REPEATED,
+    PROTOBUF_C_TYPE_MESSAGE,
+    offsetof(GP__ADF, n_realization),
+    offsetof(GP__ADF, realization),
+    &gp__point__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned gp__adf__field_indices_by_name[] = {
+  2,   /* field[2] = input_point */
+  0,   /* field[0] = name */
+  1,   /* field[1] = output_types */
+  3,   /* field[3] = realization */
+};
+static const ProtobufCIntRange gp__adf__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 4 }
+};
+const ProtobufCMessageDescriptor gp__adf__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "GP.ADF",
+  "ADF",
+  "GP__ADF",
+  "GP",
+  sizeof(GP__ADF),
+  4,
+  gp__adf__field_descriptors,
+  gp__adf__field_indices_by_name,
+  1,  gp__adf__number_ranges,
+  (ProtobufCMessageInit) gp__adf__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
+static const ProtobufCFieldDescriptor gp__point_group__field_descriptors[2] =
 {
   {
     "formulas",
@@ -441,14 +559,27 @@ static const ProtobufCFieldDescriptor gp__point_group__field_descriptors[1] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "adfs",
+    2,
+    PROTOBUF_C_LABEL_REPEATED,
+    PROTOBUF_C_TYPE_MESSAGE,
+    offsetof(GP__PointGroup, n_adfs),
+    offsetof(GP__PointGroup, adfs),
+    &gp__adf__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned gp__point_group__field_indices_by_name[] = {
+  1,   /* field[1] = adfs */
   0,   /* field[0] = formulas */
 };
 static const ProtobufCIntRange gp__point_group__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 1 }
+  { 0, 2 }
 };
 const ProtobufCMessageDescriptor gp__point_group__descriptor =
 {
@@ -458,7 +589,7 @@ const ProtobufCMessageDescriptor gp__point_group__descriptor =
   "GP__PointGroup",
   "GP",
   sizeof(GP__PointGroup),
-  1,
+  2,
   gp__point_group__field_descriptors,
   gp__point_group__field_indices_by_name,
   1,  gp__point_group__number_ranges,

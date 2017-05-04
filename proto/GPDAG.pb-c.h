@@ -16,6 +16,7 @@ PROTOBUF_C__BEGIN_DECLS
 
 
 typedef struct _GP__Point GP__Point;
+typedef struct _GP__ADF GP__ADF;
 typedef struct _GP__PointGroup GP__PointGroup;
 typedef struct _GP__FuncInfo GP__FuncInfo;
 typedef struct _GP__ParallelType GP__ParallelType;
@@ -30,7 +31,6 @@ typedef enum _GP__Point__TYPE {
   GP__POINT__TYPE__FUNCTION = 0,
   GP__POINT__TYPE__INPUT = 1,
   GP__POINT__TYPE__PARALLEL = 2,
-  GP__POINT__TYPE__ADF = 3,
   GP__POINT__TYPE__OUTPUT = 4
     PROTOBUF_C__FORCE_ENUM_TO_BE_INT_SIZE(GP__POINT__TYPE)
 } GP__Point__TYPE;
@@ -66,7 +66,7 @@ struct  _GP__Point
    */
   char *content;
   /*
-   *For OUTPUT: variable names, For ADF: variable types
+   *For OUTPUT: variable names
    */
   size_t n_output_names;
   char **output_names;
@@ -74,6 +74,22 @@ struct  _GP__Point
 #define GP__POINT__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&gp__point__descriptor) \
     , GP__POINT__TYPE__INPUT, 0,NULL, 0,0, NULL, 0,NULL }
+
+
+struct  _GP__ADF
+{
+  ProtobufCMessage base;
+  char *name;
+  size_t n_output_types;
+  char **output_types;
+  size_t n_input_point;
+  GP__Point **input_point;
+  size_t n_realization;
+  GP__Point **realization;
+};
+#define GP__ADF__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&gp__adf__descriptor) \
+    , NULL, 0,NULL, 0,NULL, 0,NULL }
 
 
 struct  _GP__PointGroup
@@ -84,10 +100,12 @@ struct  _GP__PointGroup
    */
   size_t n_formulas;
   GP__Point **formulas;
+  size_t n_adfs;
+  GP__ADF **adfs;
 };
 #define GP__POINT_GROUP__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&gp__point_group__descriptor) \
-    , 0,NULL }
+    , 0,NULL, 0,NULL }
 
 
 struct  _GP__FuncInfo
@@ -176,6 +194,25 @@ GP__Point *
                       const uint8_t       *data);
 void   gp__point__free_unpacked
                      (GP__Point *message,
+                      ProtobufCAllocator *allocator);
+/* GP__ADF methods */
+void   gp__adf__init
+                     (GP__ADF         *message);
+size_t gp__adf__get_packed_size
+                     (const GP__ADF   *message);
+size_t gp__adf__pack
+                     (const GP__ADF   *message,
+                      uint8_t             *out);
+size_t gp__adf__pack_to_buffer
+                     (const GP__ADF   *message,
+                      ProtobufCBuffer     *buffer);
+GP__ADF *
+       gp__adf__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   gp__adf__free_unpacked
+                     (GP__ADF *message,
                       ProtobufCAllocator *allocator);
 /* GP__PointGroup methods */
 void   gp__point_group__init
@@ -280,6 +317,9 @@ void   gp__dag__free_unpacked
 typedef void (*GP__Point_Closure)
                  (const GP__Point *message,
                   void *closure_data);
+typedef void (*GP__ADF_Closure)
+                 (const GP__ADF *message,
+                  void *closure_data);
 typedef void (*GP__PointGroup_Closure)
                  (const GP__PointGroup *message,
                   void *closure_data);
@@ -307,6 +347,7 @@ typedef void (*GP__DAG_Closure)
 extern const ProtobufCMessageDescriptor gp__point__descriptor;
 extern const ProtobufCEnumDescriptor    gp__point__type__descriptor;
 extern const ProtobufCEnumDescriptor    gp__point__paralleltpye__descriptor;
+extern const ProtobufCMessageDescriptor gp__adf__descriptor;
 extern const ProtobufCMessageDescriptor gp__point_group__descriptor;
 extern const ProtobufCMessageDescriptor gp__func_info__descriptor;
 extern const ProtobufCMessageDescriptor gp__parallel_type__descriptor;

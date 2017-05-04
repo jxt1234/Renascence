@@ -30,68 +30,71 @@ public:
     public:
         virtual void vReset() {}
         /*Should Clear input*/
-        virtual void vHandle(IGPFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const = 0;
+        virtual void vHandle(IGPFunction* function, GPPieces** output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber, GPContents* p) const = 0;
     };
-    
-    SingleExecutor(GPPtr<IGPFunction> f, GPPtr<GPKeyIteratorFactory> c, const std::vector<std::pair<unsigned int, unsigned int>>& outputKey, GPPtr<Handle> h):mFunction(f), mKeyIteratorFactory(c), mOutputKey(outputKey), mHandle(h)
+};
+
+class ReduceHandle:public SingleExecutor::Handle
+{
+public:
+    ReduceHandle(GPParallelType::KEYS keys, GPParallelType::KEYS initKeys)
     {
+        mKey = keys;
+        mInit = false;
+        mInitKey = initKeys;
     }
     
-    virtual ~SingleExecutor()
+    virtual ~ ReduceHandle()
     {
     }
-    
-    virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber) const
+    virtual void vReset() override
     {
-        //GPCLOCK;
-        GPASSERT(NULL!=output);
-        GPASSERT(NULL!=inputs);
-        GPASSERT(inputNumber>0);
-        auto keyIterator = mKeyIteratorFactory->create(inputs, inputNumber, output);
-        auto size = keyIterator->vGetSize();
-        AUTOSTORAGE(keyOutput, unsigned int, (int)size.second);
-        AUTOSTORAGE(keyInput, unsigned int, (int)size.first);
-        bool hasData = keyIterator->vRewind(keyInput, keyOutput);
-        if (!hasData)
+        mInit = false;
+    }
+
+    virtual void vHandle(IGPFunction* function, GPPieces** output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber, GPContents* p) const override
+    {
+        if (!mInit)
         {
-            GPASSERT(0);//TODO
-            return false;
-        }
-        mHandle->vReset();
-        do
-        {
-//            for (int i=0; i<size.first; ++i)
-//            {
-//                printf("%d ", keyInput[i]);
-//            }
-//            printf(" -> ");
-//            for (int i=0; i<size.second; ++i)
-//            {
-//                printf("%d ", keyOutput[i]);
-//            }
-//            printf("\n");
-            
-            /*Get Current Input*/
-            unsigned int pos = 0;
-            GPContents* currentGPInputs = new GPContents;
-            for (int i=0; i<inputNumber; ++i)
+            for (int i=0; i<mInitKey.size(); ++i)
             {
-                GPContents* ci = inputs[i]->vLoad(keyInput+pos, inputs[i]->nKeyNumber);
-                pos += inputs[i]->nKeyNumber;
-                currentGPInputs->merge(*ci);
-                ci->decRef();//Don't delete content
+                auto k = mInitKey[i];
+                GPASSERT(k.first == 0);
+                output[i]->vSave(outputKey, keyNumber, input->getContent(k.second));
             }
-            mHandle->vHandle(mFunction.get(), output, currentGPInputs, keyOutput, size.second);
-            currentGPInputs->decRef();
-        } while (keyIterator->vNext(keyInput, keyOutput));
-        
-        return true;
+            mInit = true;
+            return;
+        }
+        GPContents mergeInput;
+        for (int i=0; i<mKey.size(); ++i)
+        {
+            if(mKey[i].first == 0)
+            {
+                mergeInput.pushContent(input->getContent(mKey[i].second));
+            }
+            else if (mKey[i].first == 1)
+            {
+                mergeInput.pushContent(output[mKey[i].second]->vLoad(outputKey, keyNumber));
+            }
+            else if (mKey[i].first == -1)
+            {
+                mergeInput.pushContent(p->getContent(mKey[i].second));
+            }
+            else
+            {
+                GPASSERT(false);
+            }
+        }
+        GPPtr<GPContents> currentGPOutput = function->vRun(&mergeInput);
+        for (int i=0; i<currentGPOutput->size(); ++i)
+        {
+            output[i]->vSave(outputKey, keyNumber, currentGPOutput->getContent(i));
+        }
     }
 private:
-    GPPtr<IGPFunction> mFunction;
-    GPPtr<GPKeyIteratorFactory> mKeyIteratorFactory;
-    std::vector<std::pair<unsigned int, unsigned int>> mOutputKey;
-    GPPtr<Handle> mHandle;
+    GPParallelType::KEYS mKey;
+    GPParallelType::KEYS mInitKey;
+    mutable bool mInit;
 };
 
 class MapHandle:public SingleExecutor::Handle
@@ -106,74 +109,39 @@ public:
     {
     }
 
-    virtual void vHandle(IGPFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const override
+    virtual void vHandle(IGPFunction* function, GPPieces** output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber, GPContents* p) const override
     {
         GPContents mergeInput;
         for (int i=0; i<mKey.size(); ++i)
         {
-            GPASSERT(mKey[i].first == 0);
-            mergeInput.pushContent(input->getContent(mKey[i].second));
-        }
-        GPPtr<GPContents> currentGPOutput = function->vRun(&mergeInput);
-        output->vSave(outputKey, keyNumber, currentGPOutput.get());
-    }
-private:
-    GPParallelType::KEYS mKey;
-};
-
-class ReduceHandle:public SingleExecutor::Handle
-{
-public:
-    ReduceHandle(GPParallelType::KEYS keys)
-    {
-        mKey = keys;
-    }
-    
-    virtual void vReset() override
-    {
-        mInit = false;
-    }
-    virtual ~ ReduceHandle()
-    {
-    }
-    
-    virtual void vHandle(IGPFunction* function, GPPieces* output, GPContents* input, unsigned int* outputKey, unsigned int keyNumber) const override
-    {
-        if (!mInit)
-        {
-            output->vSave(outputKey, keyNumber, input);
-            mInit = true;
-            return;
-        }
-        GPPtr<GPContents> oldOutput = output->vLoad(outputKey, keyNumber);
-        GPContents mergeOutput;
-        for (int i=0; i<mKey.size(); ++i)
-        {
-            GPASSERT(mKey[i].first <=1);
-            if (0 == mKey[i].first)
+            if(mKey[i].first == 0)
             {
-                mergeOutput.pushContent(input->getContent(mKey[i].second));
+                mergeInput.pushContent(input->getContent(mKey[i].second));
+            }
+            else if (mKey[i].first == -1)
+            {
+                mergeInput.pushContent(p->getContent(mKey[i].second));
             }
             else
             {
-                mergeOutput.pushContent(oldOutput->getContent(mKey[i].second));
+                GPASSERT(false);
             }
         }
-        /*Merge, the oldOutput should be before the input*/
-        GPPtr<GPContents> currentGPOutput = function->vRun(&mergeOutput);
-        output->vSave(outputKey, keyNumber, currentGPOutput.get());
+        GPPtr<GPContents> currentGPOutput = function->vRun(&mergeInput);
+        for (int i=0; i<currentGPOutput->size(); ++i)
+        {
+            output[i]->vSave(outputKey, keyNumber, currentGPOutput->getContent(i));
+        }
     }
-    GPParallelType::KEYS mKey;
 private:
-    mutable bool mInit = false;
+    GPParallelType::KEYS mKey;
 };
 
 
-
-IParallelMachine::Executor* GPSingleParallelMachine::vPrepare(const GPParallelType* data, PARALLELTYPE type) const
+IParallelMachine::Executor GPSingleParallelMachine::vPrepare(const GPParallelType* data, PARALLELTYPE type, const IGPFunctionContext* context) const
 {
     GPASSERT(NULL!=data);
-    GPASSERT(NULL!=data->pContext);
+    GPASSERT(NULL!=context);
     GPPtr<SingleExecutor::Handle> handle;
     switch (type)
     {
@@ -181,64 +149,88 @@ IParallelMachine::Executor* GPSingleParallelMachine::vPrepare(const GPParallelTy
             handle = new MapHandle(data->sFuncInfo.variableKey);
             break;
         case IParallelMachine::REDUCE:
-            handle = new ReduceHandle(data->sFuncInfo.variableKey);
+            handle = new ReduceHandle(data->sFuncInfo.variableKey, data->mReduceInitKey);
             break;
         default:
             GPASSERT(0);
             break;
     }
-    GPPtr<IGPFunction> func = data->pContext->vCreateContentFunction(data->sFuncInfo.formula, data->sFuncInfo.parameter, data->sFuncInfo.inputs);
-    GPPtr<IKeyFunction> condition;
-    if (!data->sConditionInfo.sConditionFormula.empty())
-    {
-        condition = data->pContext->vCreateKeyFunction(data->sConditionInfo.sConditionFormula, data->sVariableInfo);
-    }
+    GPPtr<IGPFunction> func = context->vCreateContentFunction(data->sFuncInfo.formula, data->sFuncInfo.parameter, data->sFuncInfo.inputs);
     GPPtr<GPKeyIteratorFactory> keyFactory = new GPKeyIteratorFactory(data);
 
-    Executor* executor = new SingleExecutor(func, keyFactory, data->mOutputKey, handle);
-    return executor;
+    return [=](GPPieces** outputs, int outputNumber, GPPieces** inputs, int inputNumber, GPContents* paramters) {
+        GPASSERT(NULL!=paramters);
+        GPASSERT(NULL!=outputs);
+        GPASSERT(NULL!=inputs);
+        GPASSERT(inputNumber>0);
+        GPASSERT(outputNumber>0);
+        auto keyIterator = keyFactory->create(inputs, inputNumber, outputs[0]);
+        auto size = keyIterator->vGetSize();
+        AUTOSTORAGE(keyOutput, unsigned int, (int)size.second);
+        AUTOSTORAGE(keyInput, unsigned int, (int)size.first);
+        bool hasData = keyIterator->vRewind(keyInput, keyOutput);
+        if (!hasData)
+        {
+            GPASSERT(0);//TODO
+            return false;
+        }
+        handle->vReset();
+        do
+        {
+            //            for (int i=0; i<size.first; ++i)
+            //            {
+            //                printf("%d ", keyInput[i]);
+            //            }
+            //            printf(" -> ");
+            //            for (int i=0; i<size.second; ++i)
+            //            {
+            //                printf("%d ", keyOutput[i]);
+            //            }
+            //            printf("\n");
+            
+            /*Get Current Input*/
+            unsigned int pos = 0;
+            GPPtr<GPContents> currentGPInputs = new GPContents;
+            for (int i=0; i<inputNumber; ++i)
+            {
+                auto ci = inputs[i]->vLoad(keyInput+pos, (int)inputs[i]->getKeySize().size());
+                pos += inputs[i]->getKeySize().size();
+                currentGPInputs->pushContent(ci);
+            }
+            handle->vHandle(func.get(), outputs, currentGPInputs.get(), keyOutput, size.second, paramters);
+        } while (keyIterator->vNext(keyInput, keyOutput));
+        
+        return true;
+    };
 }
 
 
 
-GPPieces* GPSingleParallelMachine::vCreatePieces(const char* description, std::vector<const IStatusType*> types, unsigned int* keys, int keyNum, USAGE usage) const
+GPPieces* GPSingleParallelMachine::vCreatePieces(const char* description, const IStatusType* types, unsigned int* keys, int keyNum, USAGE usage) const
 {
     GPASSERT(keyNum <= 10);
     GPPieces* pieces = NULL;
-    bool write = true;
+    std::vector<unsigned int> keysV;
+    for (int i=0; i<keyNum; ++i)
+    {
+        keysV.push_back(keys[i]);
+    }
     switch (usage) {
         case IParallelMachine::CACHE:
         {
-            std::vector<unsigned int> keysV;
-            for (int i=0; i<keyNum; ++i)
-            {
-                keysV.push_back(keys[i]);
-            }
             pieces = GPPieceFactory::createMemoryPiece(keysV);
             break;
         }
         case IParallelMachine::INPUT:
-            write = false;
         case IParallelMachine::OUTPUT:
         {
-            pieces = GPPieceFactory::createLocalFilePiece(types, description, 0);
+            pieces = GPPieceFactory::createLocalFilePiece(keysV, types, description, 0);
             GPASSERT(NULL!=pieces);
             break;
         }
         default:
             GPASSERT(0);
             break;
-    }
-    pieces->pTypes = types;
-    pieces->nKeyNumber = keyNum;
-    for (int i=0; i<keyNum; ++i)
-    {
-        pieces->pKeySize[i] = keys[i];
-    }
-    if (keyNum == 0 && usage != IParallelMachine::OUTPUT)
-    {
-        pieces->pKeySize[0] = 1;
-        pieces->nKeyNumber = 1;
     }
     return pieces;
 }
@@ -250,28 +242,23 @@ bool GPSingleParallelMachine::vCopyPieces(GPPieces* readPieces, GPPieces* writeP
      */
     GPASSERT(NULL!=readPieces);
     GPASSERT(NULL!=writePieces);
-    GPASSERT(readPieces->nKeyNumber == writePieces->nKeyNumber || writePieces->nKeyNumber == 0);
-    if (0 == writePieces->nKeyNumber)
+    auto readKey = readPieces->getKeySize();
+    auto writeKey = writePieces->getKeySize();
+    GPASSERT(readKey.size() == writeKey.size());
+    auto n = (int)readKey.size();
+    
+    for (int i=0; i<readKey.size(); ++i)
     {
-        writePieces->nKeyNumber = readPieces->nKeyNumber;
-        for (int i=0; i<readPieces->nKeyNumber; ++i)
-        {
-            writePieces->pKeySize[i] = readPieces->pKeySize[i];
-        }
+        GPASSERT(readKey[i] == writeKey[i]);
     }
-    for (int i=0; i<readPieces->nKeyNumber; ++i)
-    {
-        GPASSERT(readPieces->pKeySize[i] == writePieces->pKeySize[i]);
-    }
-    GPCarryVaryGroup group(readPieces->pKeySize, readPieces->nKeyNumber);
-    AUTOSTORAGE(keyCurrent, unsigned int, readPieces->nKeyNumber);
-    group.start(keyCurrent, readPieces->nKeyNumber);
+    GPCarryVaryGroup group(readKey.data(), n);
+    AUTOSTORAGE(keyCurrent, unsigned int, n);
+    group.start(keyCurrent, n);
     do
     {
-        GPContents* ci = readPieces->vLoad(keyCurrent, readPieces->nKeyNumber);
-        GPASSERT(NULL!=ci);
-        writePieces->vSave(keyCurrent, readPieces->nKeyNumber, ci);
-        ci->decRef();
-    } while (group.next(keyCurrent, readPieces->nKeyNumber));
+        auto ci = readPieces->vLoad(keyCurrent, n);
+        GPASSERT(NULL!=ci.get());
+        writePieces->vSave(keyCurrent, n, ci);
+    } while (group.next(keyCurrent, n));
     return true;
 }

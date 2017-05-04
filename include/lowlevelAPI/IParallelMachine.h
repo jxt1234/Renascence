@@ -17,6 +17,7 @@
 #define LOWLEVELAPI_IPARALLELMACHINE_H
 #include "GPPieces.h"
 #include "GPParallelType.h"
+#include <functional>
 class IParallelMachine
 {
 public:
@@ -25,14 +26,8 @@ public:
         REDUCE
     }PARALLELTYPE;
 
-    class Executor : public GPRefCount
-    {
-    public:
-        virtual ~Executor(){}
-        virtual bool vRun(GPPieces* output, GPPieces** inputs, int inputNumber) const = 0;
-    protected:
-        Executor(){}
-    };
+    
+    typedef std::function<bool(GPPieces** outputs, int outputNumber, GPPieces** inputs, int inputNumber, GPContents* parameters)> Executor;
 
 
     /*For Parameter adjust*/
@@ -41,7 +36,7 @@ public:
     /*Get Executor by Parallel Data
      *The API will be called when build ADF, so parallelMachine can run some optimization in this API
      */
-    virtual Executor* vPrepare(const GPParallelType* data, PARALLELTYPE type) const = 0;
+    virtual Executor vPrepare(const GPParallelType* data, PARALLELTYPE type, const IGPFunctionContext* context) const = 0;
 
 
     typedef enum {
@@ -50,19 +45,16 @@ public:
         OUTPUT//Can only write
     } USAGE;
 
-    /*Create Pieces from store system, or give a reference.
+    /*Create Pieces from Store System, or give a reference.
      *If don't support, return NULL
-     * For INPUT
-     * types and description is needed,
+     * For INPUT and OUTPUT
+     * type and description is needed,
      * if keys = NULL and keyNum = 0, the IParallelMachine should determine it by description.
-     *
-     * For OUTPUT
-     * description is needed for OUTPUT, keys and keyNum should be valid
      *
      * For CACHE
      * Only keys and keyNum is needed
      */
-    virtual GPPieces* vCreatePieces(const char* description, std::vector<const IStatusType*> types, unsigned int* keys, int keyNum, USAGE usage) const = 0;
+    virtual GPPieces* vCreatePieces(const char* description, const IStatusType* type, unsigned int* keys, int keyNum, USAGE usage) const = 0;
     
     /*Copy the contents of readPieces to the writePieces
      *If can not support, return false;

@@ -154,7 +154,7 @@ GPStreamADF::GPStreamADF(const GPMultiLayerTree* opttree)
         }
     }
     /*Connect Already Exists CP*/
-    for (auto cpiter : maplists)
+    for (auto& cpiter : maplists)
     {
         auto tree = cpiter.first;
         auto output = cpiter.second;

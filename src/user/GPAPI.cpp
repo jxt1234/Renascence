@@ -772,11 +772,8 @@ AGPPiecesProducer* GP_PiecesProducer_Create(AGPProducer* producer, GPStream** pi
             rules.insert(std::make_pair(p->name(), p->attr()));
         }
     }
-    GPPiecesFunctionCreator* creator = GPFactory::createPieceFunctionProducer(producer->P, producer->F, rules);
-    
-    AGPPiecesProducer* pproducer = new AGPPiecesProducer(set, producer, creator);
+    AGPPiecesProducer* pproducer = new AGPPiecesProducer(set, producer);
     set->decRef();
-    creator->decRef();
     return pproducer;
 }
 
@@ -795,34 +792,6 @@ AGPStrings* GP_PiecesProducer_ListType(AGPPiecesProducer* producer)
         result->a.push_back(s);
     }
     return result;
-}
-
-GPPiecesFunction* GP_PiecesFunction_Create(AGPPiecesProducer* producer, const char* formula, const char* inputType, const char* type)
-{
-    if (NULL == producer || NULL == formula || NULL == inputType || NULL == type)
-    {
-        FUNC_PRINT(1);
-        return NULL;
-    }
-    const IParallelMachine* machine = producer->get()->getMachine(type);
-    GPPtr<GPFunctionTree> tree = producer->getProducer()->P->getFront()->vCreateFromFormula(formula, _transform(inputType, producer->getProducer()));
-    GPPiecesFunction* function = producer->getCreator()->vCreateFromFuncTree(tree.get(), machine);
-    return function;
-}
-
-void GP_PiecesFunction_Destroy(GPPiecesFunction* pieceFunction)
-{
-    GPASSERT(NULL!=pieceFunction);
-    pieceFunction->decRef();
-}
-GPPieces* GP_PiecesFunction_Run(GPPiecesFunction* piecesFunction, GPPieces** inputs, int inputNumber)
-{
-    if (NULL == piecesFunction || NULL == inputs || 0>= inputNumber)
-    {
-        FUNC_PRINT(1);
-        return NULL;
-    }
-    return piecesFunction->vRun(inputs, inputNumber);
 }
 
 
@@ -859,14 +828,15 @@ GPPieces* GP_Pieces_Create(AGPPiecesProducer* producer, const char* type, const 
     {
         inputs = _transform(dataType, producer->getProducer());
     }
+    GPASSERT(inputs.size()==1);
     switch (usage)
     {
         case GP_PIECES_INPUT:
-            return machine->vCreatePieces(path, inputs, keys, keyNum, IParallelMachine::INPUT);
+            return machine->vCreatePieces(path, inputs[0], keys, keyNum, IParallelMachine::INPUT);
         case GP_PIECES_OUTPUT:
-            return machine->vCreatePieces(path, inputs, NULL, 0, IParallelMachine::OUTPUT);
+            return machine->vCreatePieces(path, inputs[0], NULL, 0, IParallelMachine::OUTPUT);
         case GP_PIECES_CACHE:
-            return machine->vCreatePieces(path, inputs, keys, keyNum, IParallelMachine::CACHE);
+            return machine->vCreatePieces(path, inputs[0], keys, keyNum, IParallelMachine::CACHE);
     }
     FUNC_PRINT(1);
     return NULL;
@@ -953,32 +923,3 @@ void GP_Unsigned_Int_Array_Set(unsigned int* array, unsigned int s, int n)
     array[n] = s;
 }
 
-GPContents* GP_Pieces_Read(GPPieces* pieces, const char* keys)
-{
-    //FIXME
-    GPASSERT(NULL!=pieces);
-    GPASSERT(NULL!=keys);
-    unsigned int keyNumbers[10];
-    std::istringstream input(keys);
-    for (int i=0; i<pieces->nKeyNumber; ++i)
-    {
-        keyNumbers[i] = 0;
-        input >> keyNumbers[i];
-    }
-    return pieces->vLoad(keyNumbers, pieces->nKeyNumber);
-}
-void GP_Pieces_Write(GPPieces* pieces, GPContents* src, const char* keys)
-{
-    //FIXME
-    GPASSERT(NULL!=pieces);
-    GPASSERT(NULL!=src);
-    GPASSERT(NULL!=keys);
-    unsigned int keyNumbers[10];
-    std::istringstream input(keys);
-    for (int i=0; i<pieces->nKeyNumber; ++i)
-    {
-        keyNumbers[i] = 0;
-        input >> keyNumbers[i];
-    }
-    pieces->vSave(keyNumbers, pieces->nKeyNumber, src);
-}

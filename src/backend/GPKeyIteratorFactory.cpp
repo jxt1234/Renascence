@@ -20,6 +20,7 @@
 #include "math/GPSingleTree.h"
 #include <sstream>
 #include <string>
+#include "math/GPSingleTree.h"
 GPKeyIteratorFactory::GPKeyIteratorFactory(const GPParallelType* type)
 {
     GPASSERT(NULL!=type);
@@ -74,8 +75,7 @@ GPKeyIteratorFactory::GPKeyIteratorFactory(const GPParallelType* type)
                 break;
             }
         }
-        
-        mConditionFunction = type->pContext->vCreateKeyFunction(type->sConditionInfo.sConditionFormula, type->sVariableInfo);
+        mConditionFunction = GPSingleTree::createFromFormula(type->sConditionInfo.sConditionFormula, type->sVariableInfo);
     }
 }
 GPKeyIteratorFactory::~GPKeyIteratorFactory()

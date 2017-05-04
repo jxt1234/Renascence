@@ -290,6 +290,9 @@ const GPFunction* GPFunctionDataBase::vQueryFunction (const string& name) const
             return mFunctionTable[i];
         }
     }
+    std::vector<const IStatusType*> ttt;
+    std::vector<std::vector<const IStatusType*>> ttts;
+    ttts.push_back(std::move(ttt));
     GPPRINT("Function %s Not Found!!\n", name.c_str());
     GPASSERT(0);
     return NULL;

@@ -46,6 +46,7 @@ public:
         const IStatusType* mType;
         bool mOwn;
     };
+    typedef GPPtr<GP_Unit> CONTENT;
 
     GPContents()
     {

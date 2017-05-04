@@ -6,7 +6,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O3")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 ")
 
 include_directories(include ./third/tinyxml/ ./third/pystring/ ./third/ ./third/protobuf2json-c/include/ ./)
-file(GLOB SRC_LIBS "src/*/*.cpp" "src/*/*.c" "src/*.cpp" "./third/tinyxml/tiny*.cpp" "./third/pystring/pystring.cpp" "./third/protobuf-c/protobuf-c.c" "./proto/*.c" "./third/protobuf2json-c/src/*.c")
+file(GLOB SRC_LIBS "src/*/*.*" "src/*/*.c" "src/*.cpp" "./third/tinyxml/tiny*.cpp" "./third/pystring/pystring.cpp" "./third/protobuf-c/protobuf-c.c" "./proto/*.c" "./third/protobuf2json-c/src/*.c" "include/*/*" "include/*")
 file(GLOB SRC_TEST "test/*.cpp")
 
 add_library(Renascence SHARED ${SRC_LIBS})
@@ -32,8 +32,8 @@ find_package (Threads)
 include_directories(include example/MultiThreadParallelMachine/include/)
 file(GLOB SRC_LIBS_MGP "example/MultiThreadParallelMachine/src/*.cpp")
 
-add_library(mthpGP SHARED ${SRC_LIBS_MGP})
+#add_library(mthpGP SHARED ${SRC_LIBS_MGP})
 
-target_link_libraries(mthpGP Renascence)
-target_link_libraries(mthpGP ${CMAKE_THREAD_LIBS_INIT})
+#target_link_libraries(mthpGP Renascence)
+#target_link_libraries(mthpGP ${CMAKE_THREAD_LIBS_INIT})
 

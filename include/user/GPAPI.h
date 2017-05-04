@@ -340,13 +340,13 @@ extern "C"{
      */
     AGPStrings* GP_PiecesProducer_ListType(AGPPiecesProducer* producer);
     
-    /*GPPieces API*/
-    /*GPPieces Function*/
-    GPPiecesFunction* GP_PiecesFunction_Create(AGPPiecesProducer* producer, const char* formula, const char* inputType, const char* type);
-
-    GPPieces* GP_PiecesFunction_Run(GPPiecesFunction* piecesFunction, GPPieces** inputs, int inputNumber);
-
-    void GP_PiecesFunction_Destroy(GPPiecesFunction* pieceFunction);
+//    /*GPPieces API*/
+//    /*GPPieces Function*/
+//    GPPiecesFunction* GP_PiecesFunction_Create(AGPPiecesProducer* producer, const char* formula, const char* inputType, const char* type);
+//
+//    GPPieces* GP_PiecesFunction_Run(GPPiecesFunction* piecesFunction, GPPieces** inputs, int inputNumber);
+//
+//    void GP_PiecesFunction_Destroy(GPPiecesFunction* pieceFunction);
 
     enum {
         GP_PIECES_INPUT = 0,
@@ -356,14 +356,6 @@ extern "C"{
 
     /*Pieces Create*/
     GPPieces* GP_Pieces_Create(AGPPiecesProducer* producer, const char* type, const char* dataType, const char* path, unsigned int* keys, int keyNum, int usage);
-
-    /*Example:
-     * GPContents* c = GP_Pieces_Read(output, "0 0 0");
-     * */
-    GPContents* GP_Pieces_Read(GPPieces* pieces, const char* keys);
-
-    //TODO
-    void GP_Pieces_Write(GPPieces* pieces, GPContents* src, const char* keys);
 
     void GP_Pieces_Destroy(GPPieces* pieces);
 
