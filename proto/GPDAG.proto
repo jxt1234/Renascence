@@ -22,7 +22,7 @@ message Point {
 message ADF {
     required string name = 1;
     repeated string output_types = 2;
-    repeated Point input_point = 3;
+    repeated string input_types = 3;
     repeated Point realization = 4;
 }
 

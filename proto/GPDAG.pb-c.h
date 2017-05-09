@@ -82,8 +82,8 @@ struct  _GP__ADF
   char *name;
   size_t n_output_types;
   char **output_types;
-  size_t n_input_point;
-  GP__Point **input_point;
+  size_t n_input_types;
+  char **input_types;
   size_t n_realization;
   GP__Point **realization;
 };

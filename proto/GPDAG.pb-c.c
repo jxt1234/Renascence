@@ -495,13 +495,13 @@ static const ProtobufCFieldDescriptor gp__adf__field_descriptors[4] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "input_point",
+    "input_types",
     3,
     PROTOBUF_C_LABEL_REPEATED,
-    PROTOBUF_C_TYPE_MESSAGE,
-    offsetof(GP__ADF, n_input_point),
-    offsetof(GP__ADF, input_point),
-    &gp__point__descriptor,
+    PROTOBUF_C_TYPE_STRING,
+    offsetof(GP__ADF, n_input_types),
+    offsetof(GP__ADF, input_types),
+    NULL,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
@@ -520,7 +520,7 @@ static const ProtobufCFieldDescriptor gp__adf__field_descriptors[4] =
   },
 };
 static const unsigned gp__adf__field_indices_by_name[] = {
-  2,   /* field[2] = input_point */
+  2,   /* field[2] = input_types */
   0,   /* field[0] = name */
   1,   /* field[1] = output_types */
   3,   /* field[3] = realization */

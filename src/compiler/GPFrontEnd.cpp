@@ -90,11 +90,11 @@ static GP__ADF* _createADF(const std::string& sentence, std::function<bool(const
     GPASSERT(inputPoint->name() == "Input");
     auto outputPoint = GPFORCECONVERT(GPFormulaTreePoint, root->getChild(0));
     GPASSERT(outputPoint->name() == "Output");
-    adf_result->n_input_point  = inputPoint->getChildrenNumber();
-    adf_result->input_point = (GP__Point**)malloc(sizeof(GP__Point*)*adf_result->n_input_point);
-    for (int i=0; i<adf_result->n_input_point; ++i)
+    adf_result->n_input_types  = inputPoint->getChildrenNumber();
+    adf_result->input_types = (char**)malloc(sizeof(char*)*adf_result->n_input_types);
+    for (int i=0; i<adf_result->n_input_types; ++i)
     {
-        adf_result->input_point[i] = _createPoint(GPFORCECONVERT(GPFormulaTreePoint, inputPoint->getChild(i)));
+        adf_result->input_types[i] = ::strdup(GPFORCECONVERT(GPFormulaTreePoint, inputPoint->getChild(i))->name().c_str());
     }
     adf_result->n_output_types = outputPoint->getChildrenNumber();
     adf_result->output_types = (char**)malloc(sizeof(char*)*outputPoint->getChildrenNumber());
