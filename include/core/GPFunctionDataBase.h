@@ -41,6 +41,7 @@ public:
     
     /*For debug*/
     void print(std::ostream& os);
+    
     GPFunctionDataBase();
     virtual ~GPFunctionDataBase();
 private:

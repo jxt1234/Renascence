@@ -18,6 +18,19 @@
 #include "utils/GPDebug.h"
 #include <string.h>
 #include "frontend/GPFormulaTree.h"
+template<typename T>
+static T* _vector2Array(const std::vector<T>& src)
+{
+    if (src.empty())
+    {
+        return NULL;
+    }
+    T* dst = (T*)malloc(sizeof(T)*src.size());
+    ::memcpy(dst, src.data(), sizeof(T)*src.size());
+    
+    return dst;
+}
+
 static GP__Point* _createPoint(const GPFormulaTreePoint* point)
 {
     GP__Point* p = NULL;
@@ -54,6 +67,44 @@ static GP__Point* _createFormula(const std::string& formula)
     return _createPoint(formulaTree.root());
 }
 
+static GP__ADF* _createADF(const std::string& sentence, std::function<bool(const std::string& error, const std::string sentence)> errorFunction)
+{
+    std::vector<std::string> parts;
+    pystring::split(sentence, parts, "=");
+    if (parts.size() != 2)
+    {
+        GPPRINT_FL("%s", "Has more than one = ");
+        return NULL;
+    }
+    auto outputVariable = parts[0];
+    auto adfFormula = parts[1];
+    GPFormulaTree formulaTree;
+    formulaTree.setFormula(adfFormula);
+    auto root = formulaTree.root();
+    GPASSERT(root->name() == "ADF");
+    GPASSERT(root->getChildrenNumber() == 2);
+    GP__ADF* adf_result = (GP__ADF*)malloc(sizeof(GP__ADF));
+    gp__adf__init(adf_result);
+    adf_result->name = ::strdup(outputVariable.c_str());
+    auto inputPoint = GPFORCECONVERT(GPFormulaTreePoint, root->getChild(1));
+    GPASSERT(inputPoint->name() == "Input");
+    auto outputPoint = GPFORCECONVERT(GPFormulaTreePoint, root->getChild(0));
+    GPASSERT(outputPoint->name() == "Output");
+    adf_result->n_input_point  = inputPoint->getChildrenNumber();
+    adf_result->input_point = (GP__Point**)malloc(sizeof(GP__Point*)*adf_result->n_input_point);
+    for (int i=0; i<adf_result->n_input_point; ++i)
+    {
+        adf_result->input_point[i] = _createPoint(GPFORCECONVERT(GPFormulaTreePoint, inputPoint->getChild(i)));
+    }
+    adf_result->n_output_types = outputPoint->getChildrenNumber();
+    adf_result->output_types = (char**)malloc(sizeof(char*)*outputPoint->getChildrenNumber());
+    for (int i=0; i<outputPoint->getChildrenNumber(); ++i)
+    {
+        adf_result->output_types[i] = ::strdup(GPFORCECONVERT(GPFormulaTreePoint, outputPoint->getChild(i))->name().c_str());
+    }
+    return adf_result;
+}
+
 static GP__Point* _create(const std::string& sentence)
 {
     if (sentence.find("=") == std::string::npos)
@@ -84,8 +135,8 @@ static GP__Point* _create(const std::string& sentence)
             output_p->output_names[i] = ::strdup(variables[i].c_str());
         }
     }
-    output_p->n_input_variable = 1;
     output_p->type = GP__POINT__TYPE__OUTPUT;
+    output_p->n_input_variable = 1;
     output_p->input_variable = (GP__Point**)::malloc(sizeof(GP__Point*));
     output_p->input_variable[0] = _createFormula(parts[1]);
     return output_p;
@@ -121,17 +172,33 @@ GP__PointGroup* GPFrontEnd::vCreate(const char* content, char** errorInfo) const
     std::vector<std::string> sentences;
     pystring::split(program, sentences, ";");
     std::vector<GP__Point*> points;
+    std::vector<GP__ADF*> adfs;
+
     
     std::vector<std::string> errors;
     auto errorFunction = [&errors](const std::string& error, const std::string& sentence){
         auto errorString = sentence + " : " + error;
         FUNC_PRINT_ALL(errorString.c_str(), s);
+        return true;
     };
     
     for (auto& sentence : sentences)
     {
         if (sentence.size() <= 1)
         {
+            continue;
+        }
+        if (sentence.find("ADF")!=std::string::npos)
+        {
+            auto adf = _createADF(sentence, errorFunction);
+            if (NULL!=adf)
+            {
+                adfs.push_back(adf);
+            }
+            else
+            {
+                errorFunction("Invalid sentence", sentence);
+            }
             continue;
         }
         auto p = _create(sentence);
@@ -144,15 +211,16 @@ GP__PointGroup* GPFrontEnd::vCreate(const char* content, char** errorInfo) const
     }
     if (points.empty())
     {
+        GPASSERT(false);//TODO
         return NULL;
     }
-    
+
     GP__PointGroup* result = (GP__PointGroup*)::malloc(sizeof(GP__PointGroup));
     gp__point_group__init(result);
     result->n_formulas = points.size();
-    result->formulas = (GP__Point**)::malloc(sizeof(GP__Point*)*points.size());
-    ::memcpy(result->formulas, points.data(), sizeof(GP__Point*)*points.size());
-    
+    result->formulas = _vector2Array(points);
+    result->n_adfs = adfs.size();
+    result->adfs = _vector2Array(adfs);
     
     return result;
 }

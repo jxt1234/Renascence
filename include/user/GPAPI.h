@@ -340,13 +340,13 @@ extern "C"{
      */
     AGPStrings* GP_PiecesProducer_ListType(AGPPiecesProducer* producer);
     
-//    /*GPPieces API*/
-//    /*GPPieces Function*/
-//    GPPiecesFunction* GP_PiecesFunction_Create(AGPPiecesProducer* producer, const char* formula, const char* inputType, const char* type);
-//
-//    GPPieces* GP_PiecesFunction_Run(GPPiecesFunction* piecesFunction, GPPieces** inputs, int inputNumber);
-//
-//    void GP_PiecesFunction_Destroy(GPPiecesFunction* pieceFunction);
+    /*GPPieces API*/
+    /*GPPieces Function*/
+    GPPiecesFunction* GP_PiecesFunction_Create(AGPPiecesProducer* producer, const char* formula, const char* inputType, const char* type);
+
+    bool GP_PiecesFunction_Run(GPPiecesFunction* piecesFunction, GPPieces** inputs, int inputNumber, GPPieces** output, int outputNumber, GPContents* paramters);
+
+    void GP_PiecesFunction_Destroy(GPPiecesFunction* pieceFunction);
 
     enum {
         GP_PIECES_INPUT = 0,

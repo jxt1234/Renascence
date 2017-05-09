@@ -3,7 +3,7 @@ GP_Function_Create_ByFormula
 {y0=f(x0, g(x1, h(x2), f(x2, x3)));}
 {y0,y1 = h(x0,x1);}
 {
-    f0 = ADF({TrBmp,TrBmp},{x0,x1,f(x2,x3)});
+    f0 = ADF(Output{TrBmp,TrBmp},Input{x0,x1,f(x2,x3)});
     t0,t1=f0(x0,x1,x2,x3);
     y0 = h(t0,t1);
     y1 = g(t0);
@@ -30,9 +30,9 @@ ADF：自动生成标志
 }
 3、自动生成
 自动生成是将某一个输入变量改由指定了输入的子函数替代，子函数由GP库去搜索得出
-格式为 ADF({TrBmp,TrBmp}, {x1, x2, x3, f(x0,x1), ...});
-第一个{}内为输出类型
-第二个{}为指定的输入
+格式为 ADF(Output{TrBmp,TrBmp}, Input{x1, x2, x3, f(x0,x1), ...});
+Output{}内为输出类型
+Input{}为指定的输入，在构造时会自动推断它们的类型
 f(x0,x1)：此表示ADF的一个输入为固定的式子
 自动生成函数的输入由[]中的内容描述，按类型:输入变量编号来排，输出类型就是该位置上的输入所应有的类型
 自动生成的函数确定用完所有输入，但有可能会重复利用

@@ -1,4 +1,6 @@
 {
+    f0 = ADF(Output(TrBmp), Input(x0));
     t0,y0 = Divide(x0);
-    y1 = Compose(t0, x1, x2)
+    t1 = f0(t0);
+    y1 = Compose(t1, x1, x2);
 }

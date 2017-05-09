@@ -20,7 +20,7 @@
 class GPPiecesFunction : public GPRefCount
 {
 public:
-    virtual void vRun(GPPieces** outputs, int outputNumber, GPPieces** inputs, int inputNumber) = 0;
+    virtual bool vRun(GPPieces** outputs, int outputNumber, GPPieces** inputs, int inputNumber, GPContents* parameters) = 0;
 
     virtual ~GPPiecesFunction() {}
 protected:

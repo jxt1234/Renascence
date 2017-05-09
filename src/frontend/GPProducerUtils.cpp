@@ -206,5 +206,5 @@ vector<const GPProducerUtils::func*> GPProducerUtils::_getFunctionsForOutput(TYP
             result.push_back(f.get());
         }
     }
-    return result;
+    return std::move(result);
 }
