@@ -468,7 +468,7 @@ const ProtobufCMessageDescriptor gp__point__descriptor =
   (ProtobufCMessageInit) gp__point__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor gp__adf__field_descriptors[4] =
+static const ProtobufCFieldDescriptor gp__adf__field_descriptors[5] =
 {
   {
     "name",
@@ -518,9 +518,22 @@ static const ProtobufCFieldDescriptor gp__adf__field_descriptors[4] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "limit_depth",
+    5,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT32,
+    offsetof(GP__ADF, has_limit_depth),
+    offsetof(GP__ADF, limit_depth),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned gp__adf__field_indices_by_name[] = {
   2,   /* field[2] = input_types */
+  4,   /* field[4] = limit_depth */
   0,   /* field[0] = name */
   1,   /* field[1] = output_types */
   3,   /* field[3] = realization */
@@ -528,7 +541,7 @@ static const unsigned gp__adf__field_indices_by_name[] = {
 static const ProtobufCIntRange gp__adf__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 4 }
+  { 0, 5 }
 };
 const ProtobufCMessageDescriptor gp__adf__descriptor =
 {
@@ -538,7 +551,7 @@ const ProtobufCMessageDescriptor gp__adf__descriptor =
   "GP__ADF",
   "GP",
   sizeof(GP__ADF),
-  4,
+  5,
   gp__adf__field_descriptors,
   gp__adf__field_indices_by_name,
   1,  gp__adf__number_ranges,

@@ -86,10 +86,12 @@ struct  _GP__ADF
   char **input_types;
   size_t n_realization;
   GP__Point **realization;
+  protobuf_c_boolean has_limit_depth;
+  uint32_t limit_depth;
 };
 #define GP__ADF__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&gp__adf__descriptor) \
-    , NULL, 0,NULL, 0,NULL, 0,NULL }
+    , NULL, 0,NULL, 0,NULL, 0,NULL, 0,0 }
 
 
 struct  _GP__PointGroup
