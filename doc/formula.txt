@@ -30,9 +30,10 @@ ADF：自动生成标志
 }
 3、自动生成
 自动生成是将某一个输入变量改由指定了输入的子函数替代，子函数由GP库去搜索得出
-格式为 ADF(Output{TrBmp,TrBmp}, Input{TrBmp, TrBmp, TrBmp});
+格式为 ADF(Output{TrBmp,TrBmp}, Input{TrBmp, TrBmp, TrBmp}, Depth{5});
 Output{}内为输出类型
 Input{}为输入类型
+Depth{}中为最大深度
 自动生成的函数确定用完所有输入，但有可能会重复利用
 
 2017.2.20 重新定义，以支持多输出

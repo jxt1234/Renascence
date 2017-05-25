@@ -1,2 +1,2 @@
 #!/bin/bash
-protoc-c ./proto/GPDAG.proto --c_out=.
+protoc-c ./proto/*.proto --c_out=.

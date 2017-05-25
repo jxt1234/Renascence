@@ -1,0 +1,12 @@
+syntax = "proto2";
+package GP;
+message Lib {
+    required string name = 1;
+    message Function {
+        required string name = 1;
+        repeated string output = 2;
+        repeated string input = 3;
+        repeated string status = 4;
+    }
+    repeated Function functions = 2;
+}

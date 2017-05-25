@@ -23,7 +23,7 @@ message ADF {
     required string name = 1;
     repeated string output_types = 2;
     repeated string input_types = 3;
-    repeated Point realization = 4;
+    optional Point realization = 4;
     optional uint32 limit_depth = 5;
 }
 

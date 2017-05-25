@@ -509,9 +509,9 @@ static const ProtobufCFieldDescriptor gp__adf__field_descriptors[5] =
   {
     "realization",
     4,
-    PROTOBUF_C_LABEL_REPEATED,
+    PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_MESSAGE,
-    offsetof(GP__ADF, n_realization),
+    0,   /* quantifier_offset */
     offsetof(GP__ADF, realization),
     &gp__point__descriptor,
     NULL,

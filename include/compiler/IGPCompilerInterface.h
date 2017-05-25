@@ -33,8 +33,10 @@ class IGPAdaptor : public GPRefCount
 {
 public:
     //If the origin has no ADF, Do nothing and return false
-    virtual bool vExpand(GP__ADF* origin) const = 0;
-    virtual int vMapStructure(GP__ADF* target, const double* paramters, int n_paramters) const = 0;
+    virtual bool vExpand(GP__PointGroup* origin) const = 0;
+    
+    //Return n_paramters if the paramters is NULL
+    virtual int vMapStructure(GP__PointGroup* target, const double* paramters, int n_paramters) const = 0;
     virtual ~ IGPAdaptor(){}
 protected:
     IGPAdaptor(){}
