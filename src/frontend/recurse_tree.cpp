@@ -15,7 +15,7 @@
 ******************************************************************/
 #include <list>
 #include <algorithm>
-#include "recurse_tree.h"
+#include "frontend/recurse_tree.h"
 using namespace std;
 
 vector<int> computePoint::filter(const vector<vector<const GPProducerUtils::func*> >& combo, const vector<const GPProducerUtils::func*>& output)

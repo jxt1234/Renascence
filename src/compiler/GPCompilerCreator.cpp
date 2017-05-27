@@ -17,17 +17,13 @@
 #include "GPFrontEnd.h"
 #include "GPBackEnd.h"
 #include "GPBasicMidEnd.h"
+#include "GPBasicAdaptor.h"
 
 
 IGPFrontEnd* GPCompilerCreator::createFront()
 {
     return new GPFrontEnd;
 }
-IGPAdaptor* GPCompilerCreator::createAdaptor()
-{
-    return NULL;
-}
-
 IGPMidEnd* GPCompilerCreator::createMidEnd()
 {
     return new GPBasicMidEnd;
@@ -38,15 +34,35 @@ IGPBackEnd* GPCompilerCreator::createBackEnd(const GPFunctionDataBase* base)
     return new GPBackEnd(base);
 }
 
-std::function<IGPFunction*(const char*, char**)> GPCompilerCreator::createBasicCompiler(const GPFunctionDataBase* base)
+IGPAdaptor* GPCompilerCreator::createAdaptor(const GPFunctionDataBase* base)
+{
+    return new GPBasicAdaptor(base);
+}
+
+std::function<IGPFunction*(const char*, char**)> GPCompilerCreator::createBasicCompiler(const GPFunctionDataBase* base, bool support_adf)
 {
     GPPtr<IGPFrontEnd> front = new GPFrontEnd;
     GPPtr<IGPMidEnd> mid = new GPBasicMidEnd;
     GPPtr<IGPBackEnd> back = new GPBackEnd(base);
-    
-    return [front,mid,back](const char* formula, char** error) {
+    if (!support_adf)
+    {
+        return [front,mid,back](const char* formula, char** error) {
+            auto tree = front->vCreate(formula, error);
+            GPASSERT(NULL!=tree);//TODO, check compile error
+            auto dag = mid->vCreate(tree);
+            GPASSERT(NULL!=dag);
+            protobuf_c_message_free_unpacked((ProtobufCMessage*)tree, NULL);
+            auto f = back->vCreate(dag);
+            GPASSERT(NULL!=f);
+            protobuf_c_message_free_unpacked((ProtobufCMessage*)dag, NULL);
+            return f;
+        };
+    }
+    GPPtr<IGPAdaptor> adaptor = new GPBasicAdaptor(base);
+    return [front,mid,back, adaptor](const char* formula, char** error) {
         auto tree = front->vCreate(formula, error);
-        GPASSERT(NULL!=tree);//TODO
+        GPASSERT(NULL!=tree);//TODO, check compile error
+        adaptor->vExpand(tree);
         auto dag = mid->vCreate(tree);
         GPASSERT(NULL!=dag);
         protobuf_c_message_free_unpacked((ProtobufCMessage*)tree, NULL);

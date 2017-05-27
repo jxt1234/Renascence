@@ -17,7 +17,7 @@
 #include "frontend/GPFunctionFrontEndProducer.h"
 #include "frontend/GPFormulaTree.h"
 #include "math/carryGroup.h"
-#include "recurse_tree.h"
+#include "frontend/recurse_tree.h"
 #include <algorithm>
 #include <sstream>
 using namespace std;
@@ -236,11 +236,6 @@ static GPFunctionTreePoint* _createOnePoint(const std::vector<const IStatusType*
 }
 
 
-GPFunctionTree* GPFunctionFrontEndProducer::vCreateOneFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
-{
-    return new GPFunctionTree(_createOnePoint(outputType, inputType, mUtils));
-}
-
 static std::vector<GPFunctionTreePoint*> _searchAllFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType, const GPProducerUtils& utils, int depth)
 {
     vector<vector<const GPProducerUtils::func*> > warpOutput;
@@ -301,6 +296,13 @@ std::vector<GPFunctionTree*> GPFunctionFrontEndProducer::vCreateAllFunction(cons
     }
     return result;
 }
+
+GPFunctionTree* GPFunctionFrontEndProducer::vCreateOneFunction(const std::vector<const IStatusType*>& outputType, const std::vector<const IStatusType*>& inputType) const
+{
+    return new GPFunctionTree(_createOnePoint(outputType, inputType, mUtils));
+}
+
+
 class formulaCopy:public GPAbstractPoint::IPointCopy
 {
 public:

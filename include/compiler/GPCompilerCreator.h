@@ -22,12 +22,12 @@ class GPCompilerCreator
 {
 public:
     static IGPFrontEnd* createFront();
-    static IGPAdaptor* createAdaptor();
     static IGPMidEnd* createMidEnd();
     static IGPBackEnd* createBackEnd(const GPFunctionDataBase* base);
+    static IGPAdaptor* createAdaptor(const GPFunctionDataBase* base);
     
     
-    static std::function<IGPFunction*(const char*, char**)> createBasicCompiler(const GPFunctionDataBase* base);
+    static std::function<IGPFunction*(const char*, char**)> createBasicCompiler(const GPFunctionDataBase* base, bool support_adf = false);
 };
 
 #endif
