@@ -89,10 +89,15 @@ GPDAGFunction::GPDAGFunction(const GP__DAG* dag, const GPFunctionDataBase* datab
         {
             case GP__DAGPOINT__TYPE__FUNCTION:
             {
-                GPPtr<GPComputePoint> cppoint = new GPComputePoint(database->vQueryFunctionByShortName(p->function));
+                auto f = database->vQueryFunctionByShortName(p->function);
+                if (NULL == f)
+                {
+                    FUNC_PRINT_ALL(p->function, s);
+                    GPASSERT(false);
+                }
+                GPPtr<GPComputePoint> cppoint = new GPComputePoint(f);
                 auto cp = new CP(cppoint);
                 pointwrap = cp;
-                mFunctions.push_back(cp);
             }
                 break;
             case GP__DAGPOINT__TYPE__INPUT:

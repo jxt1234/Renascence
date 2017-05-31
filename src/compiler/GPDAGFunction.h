@@ -89,8 +89,6 @@ private:
     
     std::vector<std::pair<uint32_t, GPPtr<Point>>> mSources;
     std::vector<GPPtr<Point>> mDest;
-
-    std::vector<CP*> mFunctions;
 };
 
 

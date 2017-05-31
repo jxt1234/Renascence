@@ -17,6 +17,7 @@
 #define COMPILER_GPBASICADAPTOR_H
 #include "compiler/IGPCompilerInterface.h"
 #include "frontend/GPProducerUtils.h"
+#include "core/GPFunctionTree.h"
 
 
 class GPBasicAdaptor : public IGPAdaptor
@@ -32,6 +33,8 @@ public:
     virtual int vMapStructure(GP__PointGroup* target, const double* paramters, int n_paramters) const override;
 protected:
     GP__Point* _expand(const GP__ADF* adf) const;
+    GPFunctionTreePoint* _revert(const GP__Point* src) const;
+
     GPProducerUtils mUtils;
     const GPFunctionDataBase* mDataBase;
 };

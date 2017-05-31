@@ -25,7 +25,6 @@ class IGPFunction : public GPRefCount
 public:
     virtual GPContents* vRun(GPContents* inputs) = 0;
     virtual ~IGPFunction() {}
-    
 protected:
     IGPFunction() {}
 };

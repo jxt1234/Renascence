@@ -18,6 +18,8 @@
 #include "GPBackEnd.h"
 #include "GPBasicMidEnd.h"
 #include "GPBasicAdaptor.h"
+#include "protobuf2json.h"
+#include <fstream>
 
 
 IGPFrontEnd* GPCompilerCreator::createFront()
@@ -37,6 +39,18 @@ IGPBackEnd* GPCompilerCreator::createBackEnd(const GPFunctionDataBase* base)
 IGPAdaptor* GPCompilerCreator::createAdaptor(const GPFunctionDataBase* base)
 {
     return new GPBasicAdaptor(base);
+}
+
+static void _saveProto(void* m, std::ofstream& output)
+{
+    auto size = protobuf_c_message_get_packed_size((const ProtobufCMessage *)m);
+    uint8_t* buffer = (uint8_t*)::malloc(size*sizeof(uint8_t));
+    protobuf_c_message_pack((const ProtobufCMessage *)m, buffer);
+    char* jsonString = NULL;
+    protobuf2json_string((ProtobufCMessage *)m, 0, &jsonString, NULL, 0);
+    output<<jsonString;
+    ::free(buffer);
+    ::free(jsonString);
 }
 
 std::function<IGPFunction*(const char*, char**)> GPCompilerCreator::createBasicCompiler(const GPFunctionDataBase* base, bool support_adf)

@@ -30,7 +30,7 @@ void GPBackEndTest::run()
 {
     GPPtr<GPFunctionDataBase> base = GPFactory::createDataBase("func.xml", NULL);
     {
-        auto compiler = GPCompilerCreator::createBasicCompiler(base.get());
+        auto compiler = GPCompilerCreator::createBasicCompiler(base.get(), true);
         auto frontFormula = readFile("test_resource/test_backend.txt");
         GPPtr<IGPFunction> function = compiler(frontFormula.c_str(), NULL);
         

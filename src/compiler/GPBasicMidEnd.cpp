@@ -19,6 +19,9 @@
 #include <string.h>
 #include <queue>
 #include <map>
+#include <memory>
+#include <string.h>
+#include "utils/AutoStorage.h"
 
 static int getNumber(const std::string& name)
 {
@@ -31,13 +34,104 @@ static int getNumber(const std::string& name)
     return p;
 }
 
+static std::function<void(GP__Point* message)> gFreePoint = [](GP__Point* message){
+    gp__point__free_unpacked(message, NULL);
+};
+
+static GP__Point* _copyPoint(const GP__Point* formula)
+{
+    auto size = gp__point__get_packed_size(formula);
+    AUTOSTORAGE(content, uint8_t, (int)size);
+    gp__point__pack(formula, content);
+    return gp__point__unpack(NULL, size, content);
+}
+
+static void _replaceVariable(GP__Point* dst, const std::map<int, std::shared_ptr<GP__Point>>& inputmap)
+{
+    GPASSERT(NULL!=dst);
+    for (int i=0; i<dst->n_input_variable; ++i)
+    {
+        auto p = dst->input_variable[i];
+        if (GP__POINT__TYPE__INPUT == p->type)
+        {
+            auto number = getNumber(p->content);
+            GPASSERT(inputmap.end()!=inputmap.find(number));
+            gFreePoint(p);
+            dst->input_variable[i] = _copyPoint(inputmap.find(number)->second.get());
+            continue;
+        }
+        _replaceVariable(p, inputmap);
+    }
+}
+
+static void _replaced(GP__Point* dst, const GP__Point* adf, const char* name)
+{
+    GPASSERT(NULL!=dst);
+    GPASSERT(NULL!=adf);
+    if (GP__POINT__TYPE__FUNCTION == dst->type && 0 == ::strcmp(dst->content, name))
+    {
+        std::map<int, std::shared_ptr<GP__Point>> inputmap;
+        for (int i=0; i<dst->n_input_variable; ++i)
+        {
+            auto p = _copyPoint(dst->input_variable[i]);
+            inputmap.insert(std::make_pair(i, std::shared_ptr<GP__Point>(p, gFreePoint)));
+        }
+        auto copyed_adf = _copyPoint(adf);
+        GPASSERT(GP__POINT__TYPE__FUNCTION == copyed_adf->type);
+        _replaceVariable(copyed_adf, inputmap);
+        
+        //Replace the child of dst by copyed_adf's child
+        for (int i=0; i<dst->n_input_variable; ++i)
+        {
+            gFreePoint(dst->input_variable[i]);
+        }
+        ::free(dst->input_variable);
+        dst->input_variable = copyed_adf->input_variable;
+        dst->n_input_variable = copyed_adf->n_input_variable;
+        copyed_adf->n_input_variable = 0;
+        copyed_adf->input_variable = NULL;
+        
+        //copy the content of copyed_adf
+        ::free(dst->content);
+        dst->content = ::strdup(copyed_adf->content);
+        
+        gFreePoint(copyed_adf);
+    }
+    for (int i=0; i<dst->n_input_variable; ++i)
+    {
+        _replaced(dst->input_variable[i], adf, name);
+    }
+}
+
+static std::shared_ptr<GP__Point> _convertFormula(const GP__Point* formula, const GP__PointGroup* background)
+{
+    GPASSERT(NULL!=formula);
+    GPASSERT(NULL!=background);
+    auto treated = std::shared_ptr<GP__Point>(_copyPoint(formula), gFreePoint);
+
+    //Search ADF Function and replace
+    for (int i=0; i<background->n_adfs; ++i)
+    {
+        auto adf = background->adfs[i];
+        GPASSERT(NULL!=adf->realization);
+        GPASSERT(treated->type!=GP__POINT__TYPE__FUNCTION);
+        _replaced(treated.get(), adf->realization, adf->name);
+    }
+    return treated;
+}
+
 GP__DAG* GPBasicMidEnd::vCreate(const GP__PointGroup* front) const
 {
     //Get All Points
-    std::queue<GP__Point*> workqueue;
+    std::vector<std::shared_ptr<GP__Point>> copyFormulas;
     for (int i=0; i<front->n_formulas; ++i)
     {
-        workqueue.push(front->formulas[i]);
+        copyFormulas.push_back(_convertFormula(front->formulas[i], front));
+    }
+    std::queue<GP__Point*> workqueue;
+    for (int i=0; i<copyFormulas.size(); ++i)
+    {
+        workqueue.push(copyFormulas[i].get());
     }
     std::vector<GP__DAGPoint*> points;
     std::map<GP__Point*, uint32_t> originPoints;
@@ -70,6 +164,7 @@ GP__DAG* GPBasicMidEnd::vCreate(const GP__PointGroup* front) const
                 {
                     dag_point->type = GP__DAGPOINT__TYPE__INPUT;
                     dag_point->position = getNumber(key);
+                    dag_point->has_position = true;
                 }
                 else
                 {
@@ -137,6 +232,7 @@ GP__DAG* GPBasicMidEnd::vCreate(const GP__PointGroup* front) const
             points.push_back(dag_point);
             dag_point->type = GP__DAGPOINT__TYPE__OUTPUT;
             dag_point->position = getNumber(key);
+            dag_point->has_position = true;
             
             GP__DAG__Connection* conn = (GP__DAG__Connection*)malloc(sizeof(GP__DAG__Connection));
             gp__dag__connection__init(conn);
@@ -149,14 +245,16 @@ GP__DAG* GPBasicMidEnd::vCreate(const GP__PointGroup* front) const
     }
     
     //Connect Parent and Children
-    for (int i=0; i<front->n_formulas; ++i)
+    GPASSERT(workqueue.empty());
+    for (int i=0; i<copyFormulas.size(); ++i)
     {
-        workqueue.push(front->formulas[i]);
+        workqueue.push(copyFormulas[i].get());
     }
     while (!workqueue.empty())
     {
         auto current = workqueue.front();
         workqueue.pop();
+        GPASSERT(originPoints.find(current)!=originPoints.end());
         uint32_t dstId = originPoints.find(current)->second;
         for (int i=0; i<current->n_input_variable; ++i)
         {
@@ -175,6 +273,7 @@ GP__DAG* GPBasicMidEnd::vCreate(const GP__PointGroup* front) const
                 conn->srcpoint = srcId;
                 conn->put_dst = i;
                 conn->get_src = i;
+
             }
             continue;
         }
