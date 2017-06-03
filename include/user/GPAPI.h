@@ -21,18 +21,13 @@ extern "C"{
     typedef struct GPPieces GPPieces;
     typedef struct GPPiecesFunction GPPiecesFunction;
     typedef struct AGPPiecesProducer AGPPiecesProducer;
-    typedef struct IGPAutoDefFunction IGPAutoDefFunction;
+    typedef struct IGPFunction IGPFunction;
     typedef struct AGPProducer AGPProducer;
     typedef struct GPContents GPContents;
     typedef struct GPStreamFactory GPStreamFactory;
     typedef struct GPStream GPStream;
     typedef struct GPWStream GPWStream;
     typedef struct IFunctionTable IFunctionTable;
-    enum
-    {
-        GP_PRODUCER_TREE=0,
-        GP_PRODUCER_STREAM=2
-    };
     
     /*Set basic path of lib
      * The lib will be loaded  from basic_path/
@@ -132,15 +127,13 @@ extern "C"{
     void GP_Contents_Collect(GPContents* Collector, GPContents* B, int n);
     
     
-    
-    
     /*Create AGPProducer by function table, meta file and type
      * metaStream:
      * table: obtain the method to get function, can be NULL, then GP will create table by the path decribed by meta file
      * n: the number of stream and tables
      * type: ALL:-1, TREE:0, GRAPIC:1, STREAM:2
      */
-    AGPProducer* GP_Producer_Create(GPStream** metaStream, IFunctionTable** table, int n, int type);
+    AGPProducer* GP_Producer_Create(GPStream** metaStream, IFunctionTable** table, int n);
     
     /*Destroy the AGPProducer, before using this API, Make sure that all function created by p is destroyed*/
     void GP_Producer_Destroy(AGPProducer* p);
@@ -158,7 +151,7 @@ extern "C"{
         int nOptimizeType;
         
         /*The Function to Determine whether the Auto-Generate-Function is good, the larger the better*/
-        double(*pFitComputeFunction)(IGPAutoDefFunction* adf, void* pMeta);
+        double(*pFitComputeFunction)(IGPFunction* adf, void* pMeta);
         void* pMeta;
 
         /*The max time for pFitComputeFunction to call in optimization*/
@@ -180,42 +173,27 @@ extern "C"{
         
     }GPOptimizorInfo;
     
-    /*Create a IGPAutoDefFunction by inputTypes and outputTypes, the types must be divided by space*/
-    /*For example: IGPAutoDefFunction* f = GP_Create_Function_ByType(p, "SkBitmap SkPaint", "SkStream", false)*/
-    /*
-     * p: the AGPProducer created by GP_Producer_Create
-     * outputTypes: the name of all output types
-     * inputTypes: all the input types obtained for the IGPAutoDefFunction, not orderred, if set "", GP will not care about the input
-     */
-    IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, GPOptimizorInfo* pInfo);
     
-    /*Create GP by formula like this: f(g(a, b), c)
+    /*Create GP by formula as described in doc/formula.txt
      * p: the AGPProducer created by GP_Producer_Create
      * formula: the string of formula
      * inputType: the string of all types
      * pInfo：The Optimization info, only valid where formula contains ADF
-     * Example: auto adf = GP_Function_Create_ByFormula(p, "f(x0, g(x1))", "Matrix Matrix", NULL);
+     * Example: auto adf = GP_Function_Create_ByFormula(p, "y0=f(x0, g(x1))", NULL);
      */
-    IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula, const char* inputType, GPOptimizorInfo* pInfo);
+    IGPFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula, GPOptimizorInfo* pInfo);
     
     /*The Inputs should be generate from stream by IStatusType inorder by the inputTypes return from GP_Function_Get_Inputs*/
-    GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input);
+    GPContents* GP_Function_Run(IGPFunction* f, GPContents* input);
     /*Free the memory of function*/
-    void GP_Function_Destroy(IGPAutoDefFunction* f);
+    void GP_Function_Destroy(IGPFunction* f);
     
-    /*Load f from input stream, which mainly come from a xmlfile*/
-    IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, GPStream* xmlFile);
-    
-    /*Save f to output, use xml format*/
-    void GP_Function_Save(IGPAutoDefFunction* f, GPWStream* output);
-    
-    
-    /*Optimize IGPAutoDefFunction by adjust its parameters*/
+    /*Optimize IGPFunction by adjust its parameters*/
     /*REMIND: the f's parameters will be changed after this api*/
     /*If fit_fun is not random, this api make sure that fit_fun(f) will at least not decrease*/
     /*
-     f: The IGPAutoDefFunction to be Optimize
-     pInfo: obtain function to determine f's fit, nMaxRunTimes is the maxTimes to run IGPAutoDefFunction in these api, will affect the algorithm of PSO. The nMaxADFDepth make no sense
+     f: The IGPFunction to be Optimize
+     pInfo: obtain function to determine f's fit, nMaxRunTimes is the maxTimes to run IGPFunction in these api, will affect the algorithm of PSO. The nMaxADFDepth make no sense
      pInfo.nOptimizeType: 0 (use PSO, will compute maxTimes), 1(Use random golden divide Optimization, fast but not very accuracy)
      
      example: 
@@ -227,7 +205,7 @@ extern "C"{
         GP_Function_Optimize(f, &info);
      }
      */
-    void GP_Function_Optimize(IGPAutoDefFunction* f, GPOptimizorInfo* pInfo);
+    void GP_Function_Optimize(IGPFunction* f, GPOptimizorInfo* pInfo);
     
     /*For the convenience of Python/Go API*/
     GPStream** GP_Streams_Malloc(int n);
@@ -245,7 +223,7 @@ extern "C"{
     
     /*Return the formula string of ADF with the name of adfName, if adfName == NULL, return the whole function name. The size of string is 1
      *Example:
-     * IGPAutoDefFunction* adffunction = GP_Function_Create_ByFormula(p, "f(x0, ADF(filter, x1))", "Matrix Matrix", NULL);
+     * IGPFunction* adffunction = GP_Function_Create_ByFormula(p, "f(x0, ADF(filter, x1))", "Matrix Matrix", NULL);
      * AGPStrings* formula = GP_Function_GetFormula(adffunction, NULL);
      * printf("The whole function is: %s\n", GP_Strings_Get(formula, 0));
      * GP_Strings_Free(formula);
@@ -253,16 +231,7 @@ extern "C"{
      * printf("The filter function is: %s\n", GP_Strings_Get(formula, 0));
      * GP_Strings_Free(formula);
      */
-    AGPStrings* GP_Function_GetFormula(IGPAutoDefFunction* f, const char* adfName);
-    /*Get Parameters like this: "0.1 0.5 0.3"*/
-    AGPStrings* GP_Function_GetParameters(IGPAutoDefFunction* f);
-    
-    /*Map f by parameters, the parameters come from GP_Function_GetParameters or outsize file
-     *Example:
-     * const char* p = "0.5 0.3 0.77";
-     * GP_Function_MapParameters(f, p);
-     */
-    void GP_Function_MapParameters(IGPAutoDefFunction* f, const char* parameters);
+    AGPStrings* GP_Function_GetFormula(IGPFunction* f, const char* adfName);
 
     /*Return All functions as a list
      *Example:
@@ -298,7 +267,7 @@ extern "C"{
      *pPostFunction: the post treat function that will act with the result of target function, can be NULL
      *pPostExtraInput: the extra input to run pPostFunction, For example, P(x0, x1, x2), extra inputs is x1, x2
      */
-    GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, GPContents* pInput, GPWStream* bestCache, IGPAutoDefFunction* pPostFunction, GPContents* pPostExtraInput);
+    GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, GPContents* pInput, GPWStream* bestCache, IGPFunction* pPostFunction, GPContents* pPostExtraInput);
     
     /*The info be freed must be come from GP_OptimzorInfo_CreateTemplate and can't be modified*/
     void GP_OptimzorInfo_FreeTemplate(GPOptimizorInfo* pInfo);

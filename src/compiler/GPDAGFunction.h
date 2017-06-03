@@ -22,6 +22,7 @@ class GPDAGFunction : public IGPFunction
 {
 public:
     virtual GPContents* vRun(GPContents* inputs) override;
+    virtual size_t vMapParameters(const double* p, size_t n) override;
 
     GPDAGFunction(const GP__DAG* dag, const GPFunctionDataBase* database);
     virtual ~GPDAGFunction();
@@ -89,6 +90,8 @@ private:
     
     std::vector<std::pair<uint32_t, GPPtr<Point>>> mSources;
     std::vector<GPPtr<Point>> mDest;
+    
+    std::vector<GPComputePoint*> mComputePoints;//For map paramters
 };
 
 

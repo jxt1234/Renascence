@@ -27,7 +27,7 @@ static void __run()
             unsigned int keySize = 5;
             GPPieces* output = machine.vCreatePieces("output/GPSingleParallelMachineTest_Map", bmpType, &keySize, 1, IParallelMachine::OUTPUT);
             data.mOutputKey.push_back(std::make_pair(0, 0));
-            data.sFuncInfo.formula = "S(x0)";
+            data.sFuncInfo.formula = "{y0=S(x0);}";
             data.sFuncInfo.variableKey.push_back(std::make_pair(0, 0));
             auto p = machine.vPrepare(&data, IParallelMachine::MAP, sys.get());
             GPPieces* inputs = machine.vCreatePieces("res/pictures/", bmpType, &keySize, 1, IParallelMachine::INPUT);
@@ -44,7 +44,7 @@ static void __run()
             data.sFuncInfo.variableKey.push_back(std::make_pair(0, 0));
             data.sFuncInfo.variableKey.push_back(std::make_pair(1, 0));
             data.mReduceInitKey.push_back(std::make_pair(0, 0));
-            data.sFuncInfo.formula = "C(x0, x1)";
+            data.sFuncInfo.formula = "{y0=C(x0, x1);}";
             auto p = machine.vPrepare(&data, IParallelMachine::REDUCE, sys.get());
             keySize = 5;
             GPPieces* inputs = machine.vCreatePieces("res/pictures/", bmpType, &keySize, 1, IParallelMachine::INPUT);

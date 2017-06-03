@@ -29,7 +29,7 @@ public:
     /*inputs can only has one content*/
     bool receive(GPPtr<ContentWrap> inputs, int n);
     inline const GPFunction* get() const {return mF;}
-    int map(double* value, int n);
+    int map(const double* value, int n);
     inline bool completed() const {return mComplte;}
     GPContents* compute();
 private:

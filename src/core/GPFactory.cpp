@@ -15,29 +15,12 @@
 ******************************************************************/
 #include "core/GPFactory.h"
 #include "core/GPProducer.h"
-#include "frontend/GPFunctionFrontEndProducer.h"
-#include "backend/GPTreeProducer.h"
-#include "backend/GPStreamADFProducer.h"
 #include "core/GPStreamFactory.h"
 #include "xml/xmlReader.h"
 
-GPProducer* GPFactory::createProducer(const GPFunctionDataBase* base, GPFactory::TYPE t)
+GPProducer* GPFactory::createProducer(const GPFunctionDataBase* base)
 {
-    GPPtr<GPFrontEndProducer> front = new GPFunctionFrontEndProducer(base);
-    GPPtr<GPBackEndProducer> back;
-    switch(t)
-    {
-        case TREE:
-            back = new GPTreeProducer();
-            break;
-        case STREAM:
-            back = new GPStreamADFProducer();
-            break;
-        default:
-            GPASSERT(0);
-            break;
-    }
-    return new GPProducer(front.get(), back.get(), base);
+    return new GPProducer(base);
 }
 GPFunctionDataBase* GPFactory::createDataBase(const char* metafile, IFunctionTable* t)
 {

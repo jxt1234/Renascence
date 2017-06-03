@@ -23,13 +23,7 @@ class GPProducer;
 class GPFactory
 {
 public:
-    typedef enum
-    {
-        TREE,
-        STREAM,
-        UNKNOWN
-    }TYPE;
-    static GPProducer* createProducer(const GPFunctionDataBase* base, TYPE t = TREE);
+    static GPProducer* createProducer(const GPFunctionDataBase* base);
     static GPFunctionDataBase* createDataBase(const char* metafile, IFunctionTable* t);
     static GPFunctionDataBase* createDataBase(GPStream* metafile, IFunctionTable* t);
     static GPParallelMachineSet* createParallelSet(const char* metafile, IFunctionTable* t);

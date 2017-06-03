@@ -17,33 +17,17 @@
 #define CORE_GPPRODUCER_H
 #include "lowlevelAPI/GPRefCount.h"
 #include "lowlevelAPI/IGPFunction.h"
-#include "IGPAutoDefFunction.h"
-#include "GPFunctionTree.h"
+#include "compiler/GPCompilerCreator.h"
 #include <vector>
-class GPFrontEndProducer;
-class GPBackEndProducer;
 class GPProducer:public IGPFunctionContext
 {
 public:
-    GPProducer(GPFrontEndProducer* front, GPBackEndProducer* back, const GPFunctionDataBase* base);
+    GPProducer(const GPFunctionDataBase* base, bool supportADF=true);
     virtual ~GPProducer();
     
-    IGPAutoDefFunction* createFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs) const;
-    std::vector<GPPtr<IGPAutoDefFunction>> listAllFunction(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth=0) const;
-    IGPAutoDefFunction* createFunction(const std::string& formula, const std::vector<const IStatusType*>& inputs) const;
-    IGPAutoDefFunction* createFunction(const GPTreeNode* node) const;
-    
-    std::vector<GPPtr<IGPAutoDefFunction>> listAllFunctionWithBackUp(const std::vector<const IStatusType*>& outputs, const std::vector<const IStatusType*>& inputs, int depth=0) const;
-    
-    inline const GPBackEndProducer* getBack() const {return mBack;}
-    inline const GPFrontEndProducer* getFront() const {return mFront;}
-    inline const GPFunctionDataBase* getDataBase() const {return mBase;}
-    
-    virtual IGPFunction* vCreateContentFunction(const std::string& formula, const std::string& parameters, const std::vector<const IStatusType*>& inputs) const override;
+    virtual IGPFunction* vCreateContentFunction(const std::string& formula) const override;
 
 private:
-    GPBackEndProducer* mBack;
-    GPFrontEndProducer* mFront;
-    const GPFunctionDataBase* mBase;
+    std::function<IGPFunction*(const char*, char**)> mCreateFunction;
 };
 #endif

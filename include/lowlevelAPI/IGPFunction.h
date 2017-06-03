@@ -24,6 +24,9 @@ class IGPFunction : public GPRefCount
 {
 public:
     virtual GPContents* vRun(GPContents* inputs) = 0;
+
+    //If NULL==p, just return the number of parameter needed
+    virtual size_t vMapParameters(const double* p, size_t n) = 0;
     virtual ~IGPFunction() {}
 protected:
     IGPFunction() {}
@@ -39,7 +42,7 @@ protected:
 class IGPFunctionContext : public GPRefCount
 {
 public:
-    virtual IGPFunction* vCreateContentFunction(const std::string& formula, const std::string& parameters, const std::vector<const IStatusType*>& inputs) const = 0;
+    virtual IGPFunction* vCreateContentFunction(const std::string& formula) const = 0;
     
     virtual ~IGPFunctionContext() {}
 protected:

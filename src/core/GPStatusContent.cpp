@@ -78,7 +78,7 @@ void GPStatusContent::print(std::ostream& out) const
     }
 }
 
-void GPStatusContent::setValue(double* value, int n)
+void GPStatusContent::setValue(const double* value, int n)
 {
     GPASSERT(n >= mNumber);
     ::memcpy(mValues, value, mNumber*sizeof(double));

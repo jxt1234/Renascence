@@ -17,7 +17,6 @@
 #include "backend/GPKeyIteratorFactory.h"
 #include "backend/GPSingleParallelMachine.h"
 #include "core/GPPieceFactory.h"
-#include "core/IGPAutoDefFunction.h"
 #include "math/GPSingleTree.h"
 #include "math/GPCarryVaryGroup.h"
 #include <string.h>
@@ -155,7 +154,10 @@ IParallelMachine::Executor GPSingleParallelMachine::vPrepare(const GPParallelTyp
             GPASSERT(0);
             break;
     }
-    GPPtr<IGPFunction> func = context->vCreateContentFunction(data->sFuncInfo.formula, data->sFuncInfo.parameter, data->sFuncInfo.inputs);
+    GPPtr<IGPFunction> func = context->vCreateContentFunction(data->sFuncInfo.formula);
+    
+    //TODO
+    //, data->sFuncInfo.parameter, data->sFuncInfo.inputs);
     GPPtr<GPKeyIteratorFactory> keyFactory = new GPKeyIteratorFactory(data);
 
     return [=](GPPieces** outputs, int outputNumber, GPPieces** inputs, int inputNumber, GPContents* paramters) {

@@ -62,7 +62,7 @@ bool GPComputePoint::_computeCompleteStatus() const
     }
     return res;
 }
-int GPComputePoint::map(double* value, int n)
+int GPComputePoint::map(const double* value, int n)
 {
     if (NULL == value)
     {

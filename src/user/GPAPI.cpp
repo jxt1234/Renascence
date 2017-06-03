@@ -17,13 +17,9 @@
 #include <sstream>
 #include <string.h>
 #include "platform/system_lib.h"
-#include "core/IGPAutoDefFunction.h"
 #include "core/GPProducer.h"
 #include "core/GPFactory.h"
 #include "core/GPPieceFactory.h"
-#include "frontend/GPFrontEndProducer.h"
-#include "backend/GPBackEndProducer.h"
-#include "evolution/GPEvolutionGroup.h"
 #include "optimizor/GPOptimizorFactory.h"
 #include "AGPProducer.h"
 #include "AGPPiecesProducer.h"
@@ -45,9 +41,8 @@ void GP_Set_Lib_Path(const char* basic_path)
     system_set_path(basic_path);
 }
 
-AGPProducer* GP_Producer_Create(GPStream** metaStream, IFunctionTable** table, int n, int type)
+AGPProducer* GP_Producer_Create(GPStream** metaStream, IFunctionTable** table, int n)
 {
-    FUNC_PRINT(type);
     if (n <= 0 || NULL == metaStream)
     {
         GPPRINT("InValid parameters!!");
@@ -76,18 +71,7 @@ AGPProducer* GP_Producer_Create(GPStream** metaStream, IFunctionTable** table, i
             f->loadXml(metaStream[i], table[i]);
         }
     }
-    GPProducer* p = NULL;
-    switch(type)
-    {
-        case GP_PRODUCER_TREE:
-            p = GPFactory::createProducer(f, GPFactory::TREE);
-            break;
-        case GP_PRODUCER_STREAM:
-            p = GPFactory::createProducer(f, GPFactory::STREAM);
-            break;
-        default:
-            break;
-    }
+    GPProducer* p = GPFactory::createProducer(f);
     if (NULL == p)
     {
         FUNC_PRINT_ALL(p, p);
@@ -126,75 +110,19 @@ static std::vector<const IStatusType*> _transform(const char* types, const AGPPr
     return res;
 }
 
-IGPAutoDefFunction* GP_Function_Create_ByType(const AGPProducer* p, const char* outputTypes, const char* inputTypes, GPOptimizorInfo* pInfo)
-{
-    if (NULL == outputTypes || NULL == inputTypes || NULL == p)
-    {
-        FUNC_PRINT(1);
-        return NULL;
-    }
-    std::vector<const IStatusType*> inputs = _transform(inputTypes, p);
-    std::vector<const IStatusType*> outputs = _transform(outputTypes, p);
-    if (NULL == pInfo)
-    {
-        return p->P->createFunction(outputs, inputs);
-    }
-    GPPtr<GPEvolutionGroup> group = new GPEvolutionGroup(p->P, pInfo->nMaxRunTimes/20, 20, pInfo->nMaxADFDepth);
-    group->vSetInput(inputs);
-    group->vSetOutput(outputs);
-    auto fit_func = [pInfo](IGPAutoDefFunction* f){
-        return pInfo->pFitComputeFunction(f, pInfo->pMeta);
-    };
-    group->vEvolutionFunc(fit_func, pInfo->pBestInfo);
-    auto best = group->getBest();
-    best->addRef();
-    pInfo->fOutputBest = group->getBestFit();
-    return best.get();
-
-}
-IGPAutoDefFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula, const char* inputType, GPOptimizorInfo* pInfo)
+IGPFunction* GP_Function_Create_ByFormula(const AGPProducer* p, const char* formula, GPOptimizorInfo* pInfo)
 {
     if (NULL == formula || NULL == p)
     {
         FUNC_PRINT(1);
         return NULL;;
     }
-    if (NULL == pInfo)
-    {
-        return p->P->createFunction(std::string(formula), _transform(inputType, p));
-    }
-    GPPtr<GPFunctionTree> first = p->P->getFront()->vCreateFromFormula(formula, _transform(inputType, p));
-    if (first->getVariable().empty())
-    {
-        auto result = p->P->getBack()->vCreateFromFuncTree(first.get());
-        result->setBasicTree(first);
-        int n = result->vMap(NULL);
-        if (n > 0)
-        {
-            GPPtr<GPParameter> p = new GPParameter(result->vMap(NULL));
-            result->vMap(p.get());
-            result->setParameters(p);
-        }
-        return result;
-    }
-    int evolutiontime = pInfo->nMaxRunTimes/20;
-    if (evolutiontime < 1)
-    {
-        evolutiontime = 1;
-    }
-    GPPtr<GPEvolutionGroup> group = new GPEvolutionGroup(p->P, evolutiontime, 20, pInfo->nMaxADFDepth);
-    auto fit_func = [pInfo](IGPAutoDefFunction* f){
-        return pInfo->pFitComputeFunction(f, pInfo->pMeta);
-    };
-    group->setBestTree(first);
-    group->vEvolutionFunc(fit_func, pInfo->pBestInfo);
-    auto best = group->getBest();
-    best->addRef();
-    pInfo->fOutputBest = group->getBestFit();
-    return best.get();
+    return p->P->vCreateContentFunction(formula);
+    
+    //TODO Complete Optimization
 }
 
-GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input)
+GPContents* GP_Function_Run(IGPFunction* f, GPContents* input)
 {
     GPASSERT(NULL!=f);
     if(NULL == input)
@@ -205,25 +133,7 @@ GPContents* GP_Function_Run(IGPAutoDefFunction* f, GPContents* input)
     return f->vRun(input);
 }
 
-IGPAutoDefFunction* GP_Function_Create_ByStream(const AGPProducer* p, GPStream* xmlFile)
-{
-    if (NULL == p)
-    {
-        FUNC_PRINT(1);
-        return NULL;
-    }
-    xmlReader r;
-    const GPTreeNode* root = r.loadStream(xmlFile);
-    return p->P->createFunction(root);
-}
-void GP_Function_Save(IGPAutoDefFunction* f, GPWStream* output)
-{
-    GPASSERT(NULL!=f);//FIXME
-    GPPtr<GPTreeNode> node = f->vSave();
-    xmlReader::dumpNodes(node.get(), output);
-}
-
-void GP_Function_Destroy(IGPAutoDefFunction* f)
+void GP_Function_Destroy(IGPFunction* f)
 {
     if (NULL!=f)
     {
@@ -231,7 +141,7 @@ void GP_Function_Destroy(IGPAutoDefFunction* f)
     }
 }
 
-void GP_Function_Optimize(IGPAutoDefFunction* origin, GPOptimizorInfo* pInfo)
+void GP_Function_Optimize(IGPFunction* origin, GPOptimizorInfo* pInfo)
 {
     if (NULL == pInfo || NULL == origin)
     {
@@ -244,8 +154,7 @@ void GP_Function_Optimize(IGPAutoDefFunction* origin, GPOptimizorInfo* pInfo)
         return;
     }
     GPPtr<IGPOptimizor> opt;
-    GPPtr<GPParameter> origin_paramera = origin->getParameters();
-    double originfit = pInfo->pFitComputeFunction(origin, pInfo->pMeta);
+    auto paramterSize = origin->vMapParameters(NULL, 0);
     switch(pInfo->nOptimizeType)
     {
         case 0:
@@ -263,20 +172,11 @@ void GP_Function_Optimize(IGPAutoDefFunction* origin, GPOptimizorInfo* pInfo)
         return;
     }
     auto optfun = [pInfo, origin](GPPtr<GPParameter> para){
-        origin->vMap(para.get());
+        origin->vMapParameters(para->get(), para->size());
         return pInfo->pFitComputeFunction(origin, pInfo->pMeta);
     };
-    int n = origin->vMap(NULL);//Get the count
-    GPPtr<GPParameter> result = opt->vFindBest(n, optfun);
-    origin->vMap(result.get());
-    origin->setParameters(result);
-    auto newfit = pInfo->pFitComputeFunction(origin, pInfo->pMeta);
-    if (newfit < originfit && origin_paramera.get() != NULL)
-    {
-        /*Revert to first one*/
-        origin->vMap(origin_paramera.get());
-        origin->setParameters(origin_paramera);
-    }
+    GPPtr<GPParameter> result = opt->vFindBest(paramterSize, optfun);
+    origin->vMapParameters(result->get(), result->size());
 }
 
 
@@ -426,43 +326,6 @@ const char* GP_Strings_Get(AGPStrings* strings, int n)
     GPASSERT(0<=n && n<strings->a.size());
     return strings->a[n].c_str();
 }
-AGPStrings* GP_Function_GetFormula(IGPAutoDefFunction* f, const char* name)
-{
-    const GPFunctionTree* tree = f->getBasicTree().get();
-    GPASSERT(NULL!=tree);
-    if (NULL == name || "" == std::string(name))
-    {
-        AGPStrings* result = new AGPStrings;
-        result->a.push_back(tree->dump());
-        return result;
-    }
-    auto iter = tree->getSubTreeName().find(name);
-    if (iter == tree->getSubTreeName().end())
-    {
-        FUNC_PRINT(1);
-        return NULL;
-    }
-    std::ostringstream tempoutput;
-    iter->second->render(tempoutput);
-    AGPStrings* result = new AGPStrings;
-    result->a.push_back(tempoutput.str());
-    return result;
-}
-AGPStrings* GP_Function_GetParameters(IGPAutoDefFunction* f)
-{
-    GPASSERT(NULL!=f);//FIXME
-    GPPtr<GPParameter> p = f->getParameters();
-    GPASSERT(NULL!=p.get());//FIXME
-    auto n = p->size();
-    std::ostringstream tempoutput;
-    for (int i=0; i<n; ++i)
-    {
-        tempoutput << p->get(i) << " ";
-    }
-    AGPStrings* result = new AGPStrings;
-    result->a.push_back(tempoutput.str());
-    return result;
-}
 AGPStrings* GP_Producer_ListFunctions(AGPProducer* producer)
 {
     GPASSERT(NULL!=producer);//FIXME
@@ -496,12 +359,12 @@ AGPStrings* GP_Producer_ListTypes(AGPProducer* producer)
 struct GPTemplateMeta
 {
     GPContents* pInput;
-    IGPAutoDefFunction* pPostFunction;
+    IGPFunction* pPostFunction;
     GPContents* pPostExtraInput;
 };
 
 
-static double _FitValue(IGPAutoDefFunction* adf, void* pMeta)
+static double _FitValue(IGPFunction* adf, void* pMeta)
 {
     GPTemplateMeta* meta = (GPTemplateMeta*)pMeta;
     GPContents* input = meta->pInput;
@@ -529,7 +392,7 @@ static double _FitValue(IGPAutoDefFunction* adf, void* pMeta)
     delete postOutput;
     return res;
 }
-static double _FitTime(IGPAutoDefFunction* adf, void* pMeta)
+static double _FitTime(IGPFunction* adf, void* pMeta)
 {
     GPTemplateMeta* meta = (GPTemplateMeta*)pMeta;
     GPContents* input = meta->pInput;
@@ -558,7 +421,7 @@ static double _FitTime(IGPAutoDefFunction* adf, void* pMeta)
 }
 
 
-GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, GPContents* pInput, GPWStream* bestCache, IGPAutoDefFunction* pPostFunction, GPContents* pPostExtraInput)
+GPOptimizorInfo* GP_OptimzorInfo_CreateTemplate(int depth, int maxtimes, int type, GPContents* pInput, GPWStream* bestCache, IGPFunction* pPostFunction, GPContents* pPostExtraInput)
 {
     if (depth<0 || maxtimes < 1 || (type != GP_OPTIMIZOR_TIME && type !=GP_OPTIMIZOR_VALUE))
     {
@@ -677,7 +540,14 @@ AGPStrings* GP_Contents_Dump(GPContents* contents, int n)
     return s;
 }
 
-void GP_Function_MapParameters(IGPAutoDefFunction* f, const char* parameters)
+AGPStrings* GP_Function_GetFormula(IGPFunction* f, const char* adfName)
+{
+    GPASSERT(false);
+    //TODO
+    return NULL;
+}
+
+void GP_Function_MapParameters(IGPFunction* f, const char* parameters)
 {
     if (NULL == parameters)
     {
@@ -696,14 +566,7 @@ void GP_Function_MapParameters(IGPAutoDefFunction* f, const char* parameters)
         FUNC_PRINT(1);
         return;
     }
-    GPPtr<GPParameter> param = new GPParameter((int)values.size());
-    auto p = param->attach();
-    for (int i=0; i<values.size(); ++i)
-    {
-        p[i] = values[i];
-    }
-    f->vMap(param.get());
-    f->setParameters(param);
+    f->vMapParameters(values.data(), values.size());
 }
 
 GPOptimizorInfo::GPOptimizorInfo()

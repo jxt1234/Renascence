@@ -97,6 +97,7 @@ GPDAGFunction::GPDAGFunction(const GP__DAG* dag, const GPFunctionDataBase* datab
                 }
                 GPPtr<GPComputePoint> cppoint = new GPComputePoint(f);
                 auto cp = new CP(cppoint);
+                mComputePoints.push_back(cppoint.get());
                 pointwrap = cp;
             }
                 break;
@@ -147,6 +148,11 @@ GPDAGFunction::~GPDAGFunction()
 GPContents* GPDAGFunction::vRun(GPContents* inputs)
 {
     GPASSERT(NULL!=inputs);
+    for (int i=0; i<mDest.size(); ++i)
+    {
+        auto d = GPFORCECONVERT(DP, mDest[i].get());
+        d->reset();
+    }
     for (auto s : mSources)
     {
         s.second->vReceive(inputs->getContent(s.first), 0);
@@ -158,4 +164,28 @@ GPContents* GPDAGFunction::vRun(GPContents* inputs)
         dst->pushContent(d->get());
     }
     return dst;
+}
+
+size_t GPDAGFunction::vMapParameters(const double* p, size_t n)
+{
+    int sum = 0;
+    std::vector<int> numbers;
+    for (auto c : mComputePoints)
+    {
+        auto number = c->map(NULL, 0);
+        sum += number;
+        numbers.push_back(number);
+    }
+    if (NULL == p)
+    {
+        return sum;
+    }
+    GPASSERT(n == sum);
+    int offset = 0;
+    for (int i=0; i<mComputePoints.size(); ++i)
+    {
+        mComputePoints[i]->map(p+offset, numbers[i]);
+        offset += numbers[i];
+    }
+    return sum;
 }
