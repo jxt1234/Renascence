@@ -20,6 +20,7 @@
 #include "math/carryGroup.h"
 #include <string.h>
 #include <sstream>
+#include <algorithm>
 using namespace std;
 
 static int _loadXn(const string& s)
