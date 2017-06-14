@@ -24,7 +24,6 @@ extern "C"{
     typedef struct IGPFunction IGPFunction;
     typedef struct AGPProducer AGPProducer;
     typedef struct GPContents GPContents;
-    typedef struct GPStreamFactory GPStreamFactory;
     typedef struct GPStream GPStream;
     typedef struct GPWStream GPWStream;
     typedef struct IFunctionTable IFunctionTable;

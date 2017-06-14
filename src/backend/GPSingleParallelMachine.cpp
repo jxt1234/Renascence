@@ -179,17 +179,6 @@ IParallelMachine::Executor GPSingleParallelMachine::vPrepare(const GPParallelTyp
         handle->vReset();
         do
         {
-            //            for (int i=0; i<size.first; ++i)
-            //            {
-            //                printf("%d ", keyInput[i]);
-            //            }
-            //            printf(" -> ");
-            //            for (int i=0; i<size.second; ++i)
-            //            {
-            //                printf("%d ", keyOutput[i]);
-            //            }
-            //            printf("\n");
-            
             /*Get Current Input*/
             unsigned int pos = 0;
             GPPtr<GPContents> currentGPInputs = new GPContents;
@@ -217,7 +206,8 @@ GPPieces* GPSingleParallelMachine::vCreatePieces(const char* description, const 
     {
         keysV.push_back(keys[i]);
     }
-    switch (usage) {
+    switch (usage)
+    {
         case IParallelMachine::CACHE:
         {
             pieces = GPPieceFactory::createMemoryPiece(keysV);

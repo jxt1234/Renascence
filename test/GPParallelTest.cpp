@@ -1,6 +1,5 @@
 #include "test/GPTest.h"
 #include "frontend/GPFormulaTree.h"
-#include "frontend/GPFunctionFrontEndProducer.h"
 #include "core/GPFunctionTree.h"
 #include <iostream>
 #include <fstream>
@@ -32,9 +31,9 @@ void GPParallelTest::run()
         base->loadXml(input.get());
     }
     {
-        GPPtr<GPFunctionFrontEndProducer> producer = new GPFunctionFrontEndProducer(base.get());
-        GPPtr<GPFunctionTree> tree = producer->vCreateFromFormula(gFormulaNew, std::vector<const IStatusType*>());
-        FUNC_PRINT_ALL(tree->dump().c_str(), s);
+        //GPPtr<GPFunctionFrontEndProducer> producer = new GPFunctionFrontEndProducer(base.get());
+        //GPPtr<GPFunctionTree> tree = producer->vCreateFromFormula(gFormulaNew, std::vector<const IStatusType*>());
+        //FUNC_PRINT_ALL(tree->dump().c_str(), s);
     }
 }
 
