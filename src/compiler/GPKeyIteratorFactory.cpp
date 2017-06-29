@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "backend/GPKeyIteratorFactory.h"
+#include "compiler/GPKeyIteratorFactory.h"
 #include "GPBasicKeyIterator.h"
 #include "GPOptimizedKeyIterator.h"
 #include "utils/GPDebug.h"

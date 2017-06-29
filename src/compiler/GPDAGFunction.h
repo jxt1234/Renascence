@@ -17,7 +17,7 @@
 #define COMPILER_GPDAGFUNCTION_H
 #include <stdio.h>
 #include "compiler/IGPCompilerInterface.h"
-#include "backend/GPComputePoint.h"
+#include "compiler/GPComputePoint.h"
 class GPDAGFunction : public IGPFunction
 {
 public:

@@ -14,8 +14,8 @@
  limitations under the License.
  ******************************************************************/
 #include "head.h"
-#include "backend/GPKeyIteratorFactory.h"
-#include "backend/GPSingleParallelMachine.h"
+#include "compiler/GPKeyIteratorFactory.h"
+#include "compiler/GPSingleParallelMachine.h"
 #include "core/GPPieceFactory.h"
 #include "math/GPSingleTree.h"
 #include "math/GPCarryVaryGroup.h"

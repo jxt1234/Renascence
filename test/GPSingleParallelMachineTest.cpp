@@ -1,5 +1,5 @@
 #include "test/GPTest.h"
-#include "backend/GPSingleParallelMachine.h"
+#include "compiler/GPSingleParallelMachine.h"
 #include "core/GPFactory.h"
 #include "core/GPProducer.h"
 #include "core/GPPieceFactory.h"

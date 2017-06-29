@@ -16,7 +16,7 @@
 #ifndef BACKEND_GPOPTIMIZEDKEYITERATOR_H
 #define BACKEND_GPOPTIMIZEDKEYITERATOR_H
 #include <vector>
-#include "backend/IGPKeyIterator.h"
+#include "compiler/IGPKeyIterator.h"
 #include "math/GPCarryVaryGroup.h"
 #include "lowlevelAPI/GPPieces.h"
 #include "lowlevelAPI/IGPFunction.h"

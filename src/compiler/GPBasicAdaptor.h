@@ -16,7 +16,7 @@
 #ifndef COMPILER_GPBASICADAPTOR_H
 #define COMPILER_GPBASICADAPTOR_H
 #include "compiler/IGPCompilerInterface.h"
-#include "frontend/GPProducerUtils.h"
+#include "compiler/GPProducerUtils.h"
 #include "core/GPFunctionTree.h"
 
 

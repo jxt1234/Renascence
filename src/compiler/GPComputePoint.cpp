@@ -21,7 +21,7 @@
 //  Copyright (c) 2015年 jiangxiaotang. All rights reserved.
 //
 
-#include "backend/GPComputePoint.h"
+#include "compiler/GPComputePoint.h"
 GPComputePoint::GPComputePoint(const GPFunction* f)
 {
     mF = f;

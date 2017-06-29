@@ -17,7 +17,7 @@
 #include <algorithm>
 #include <map>
 #include <set>
-#include "frontend/GPProducerUtils.h"
+#include "compiler/GPProducerUtils.h"
 #include "math/carryArray.h"
 #include "math/carryGroup.h"
 using namespace std;

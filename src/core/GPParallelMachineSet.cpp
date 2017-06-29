@@ -14,7 +14,7 @@
    limitations under the License.
 ******************************************************************/
 #include "core/GPParallelMachineSet.h"
-#include "backend/GPSingleParallelMachine.h"
+#include "compiler/GPSingleParallelMachine.h"
 #include "platform/system_lib.h"
 #include "GPStrings.h"
 

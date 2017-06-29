@@ -15,8 +15,8 @@
 ******************************************************************/
 #include "GPBasicAdaptor.h"
 #include "utils/GPDebug.h"
-#include "frontend/GPProducerUtils.h"
-#include "frontend/recurse_tree.h"
+#include "compiler/GPProducerUtils.h"
+#include "compiler/recurse_tree.h"
 #include "math/carryGroup.h"
 #include <string.h>
 #include <sstream>

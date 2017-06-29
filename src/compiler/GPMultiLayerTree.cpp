@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "midend/GPMultiLayerTree.h"
+#include "compiler/GPMultiLayerTree.h"
 #include <set>
 
 int GPMultiLayerTree::getOutputPos(int pos)

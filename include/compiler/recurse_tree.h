@@ -18,7 +18,7 @@
 #include "math/carryTree.h"
 #include "utils/GPDebug.h"
 #include "core/GPFunctionTree.h"
-#include "frontend/GPProducerUtils.h"
+#include "GPProducerUtils.h"
 class computePoint:public carryPoint
 {
 friend class computeSearchTree;

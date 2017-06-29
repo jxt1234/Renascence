@@ -17,7 +17,7 @@
 #include "pystring.h"
 #include "utils/GPDebug.h"
 #include <string.h>
-#include "frontend/GPFormulaTree.h"
+#include "compiler/GPFormulaTree.h"
 #include <functional>
 template<typename T>
 static T* _vector2Array(const std::vector<T>& src)

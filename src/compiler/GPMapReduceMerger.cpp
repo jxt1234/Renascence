@@ -13,8 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ******************************************************************/
-#include "frontend/GPFormulaTree.h"
-#include "midend/GPMapReduceMerger.h"
+#include "compiler/GPFormulaTree.h"
+#include "compiler/GPMapReduceMerger.h"
 #include "math/GPSingleTree.h"
 #include <queue>
 #include <vector>
