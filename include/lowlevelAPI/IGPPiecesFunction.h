@@ -17,13 +17,13 @@
 #define LOWLEVELAPI_GPPIECESFUNCTION_H
 #include "GPPieces.h"
 #include "IParallelMachine.h"
-class GPPiecesFunction : public GPRefCount
+class IGPPiecesFunction : public GPRefCount
 {
 public:
     virtual bool vRun(GPPieces** outputs, int outputNumber, GPPieces** inputs, int inputNumber, GPContents* parameters) = 0;
 
-    virtual ~GPPiecesFunction() {}
+    virtual ~IGPPiecesFunction() {}
 protected:
-    GPPiecesFunction() {}
+    IGPPiecesFunction() {}
 };
 #endif

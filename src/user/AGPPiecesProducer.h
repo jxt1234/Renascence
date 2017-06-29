@@ -15,7 +15,7 @@
 ******************************************************************/
 #ifndef USER_AGPPIECESPRODUCER_H
 #define USER_AGPPIECESPRODUCER_H
-#include "lowlevelAPI/GPPiecesFunction.h"
+#include "lowlevelAPI/IGPPiecesFunction.h"
 class AGPPiecesProducer : public GPRefCount
 {
 public:

@@ -18,6 +18,7 @@
 
 #include "proto/GPDAG.pb-c.h"
 #include "lowlevelAPI/IGPFunction.h"
+#include "lowlevelAPI/IGPPiecesFunction.h"
 class IGPFrontEnd : public GPRefCount
 {
 public:
@@ -61,5 +62,16 @@ public:
 protected:
     IGPBackEnd(){}
 };
+
+//Turn DAG to ParralFunction
+class IGPPiecesBackEnd : public GPRefCount
+{
+public:
+    virtual IGPPiecesFunction* vCreate(const GP__DAG* dag) const = 0;
+    virtual ~ IGPPiecesBackEnd(){}
+protected:
+    IGPPiecesBackEnd(){}
+};
+
 
 #endif

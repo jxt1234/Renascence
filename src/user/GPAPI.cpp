@@ -786,18 +786,18 @@ void GP_Unsigned_Int_Array_Set(unsigned int* array, unsigned int s, int n)
     array[n] = s;
 }
 
-GPPiecesFunction* GP_PiecesFunction_Create(AGPPiecesProducer* producer, const char* formula, const char* inputType, const char* type)
+IGPPiecesFunction* GP_PiecesFunction_Create(AGPPiecesProducer* producer, const char* formula, const char* inputType, const char* type)
 {
     return NULL;
 }
 
-bool GP_PiecesFunction_Run(GPPiecesFunction* piecesFunction, GPPieces** inputs, int inputNumber, GPPieces** output, int outputNumber, GPContents* paramters)
+bool GP_PiecesFunction_Run(IGPPiecesFunction* piecesFunction, GPPieces** inputs, int inputNumber, GPPieces** output, int outputNumber, GPContents* paramters)
 {
     GPASSERT(NULL!=piecesFunction);
     return piecesFunction->vRun(output, outputNumber, inputs, inputNumber, paramters);
 }
 
-void GP_PiecesFunction_Destroy(GPPiecesFunction* pieceFunction)
+void GP_PiecesFunction_Destroy(IGPPiecesFunction* pieceFunction)
 {
     GPASSERT(NULL!=pieceFunction);
     delete pieceFunction;

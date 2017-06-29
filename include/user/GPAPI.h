@@ -19,7 +19,7 @@
 extern "C"{
 #endif
     typedef struct GPPieces GPPieces;
-    typedef struct GPPiecesFunction GPPiecesFunction;
+    typedef struct IGPPiecesFunction IGPPiecesFunction;
     typedef struct AGPPiecesProducer AGPPiecesProducer;
     typedef struct IGPFunction IGPFunction;
     typedef struct AGPProducer AGPProducer;
@@ -298,7 +298,7 @@ extern "C"{
     
     /*
      * Release the producer created by GP_PiecesProducer_Create
-     * Must be called by all GPPieces and GPPiecesFunction created by this producer released
+     * Must be called by all GPPieces and IGPPiecesFunction created by this producer released
      */
     void GP_PiecesProducer_Destroy(AGPPiecesProducer* producer);
     
@@ -310,11 +310,11 @@ extern "C"{
     
     /*GPPieces API*/
     /*GPPieces Function*/
-    GPPiecesFunction* GP_PiecesFunction_Create(AGPPiecesProducer* producer, const char* formula, const char* inputType, const char* type);
+    IGPPiecesFunction* GP_PiecesFunction_Create(AGPPiecesProducer* producer, const char* formula, const char* inputType, const char* type);
 
-    bool GP_PiecesFunction_Run(GPPiecesFunction* piecesFunction, GPPieces** inputs, int inputNumber, GPPieces** output, int outputNumber, GPContents* paramters);
+    bool GP_PiecesFunction_Run(IGPPiecesFunction* piecesFunction, GPPieces** inputs, int inputNumber, GPPieces** output, int outputNumber, GPContents* paramters);
 
-    void GP_PiecesFunction_Destroy(GPPiecesFunction* pieceFunction);
+    void GP_PiecesFunction_Destroy(IGPPiecesFunction* pieceFunction);
 
     enum {
         GP_PIECES_INPUT = 0,
